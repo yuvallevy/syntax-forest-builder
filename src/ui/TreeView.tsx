@@ -45,7 +45,7 @@ const renderNodeFlat = ([nodeId, node]: [Id, PositionedNode]): React.ReactNode[]
   ...('children' in node)
     ? [
       ...renderChildNodeConnections(node),
-      ...mapEntries(node.children, renderNodeFlat)
+      ...mapEntries(node.children, renderNodeFlat),
     ] : [],
 ];
 
