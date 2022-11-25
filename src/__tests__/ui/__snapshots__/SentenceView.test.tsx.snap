@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sentence rendering renders an input box with the sentence 1`] = `
+<DocumentFragment>
+  <input
+    class="SentenceView-input"
+    style="left: -100px; top: 20px; width: 123px;"
+    type="text"
+    value="Noun verb phrases."
+  />
+</DocumentFragment>
+`;

@@ -1,0 +1,11 @@
+.SentenceView-input {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  font-size: 16px;
+  font-family: 'Times New Roman', Times, serif;
+
+  &:focus {
+    outline: unset;
+  }
+}
