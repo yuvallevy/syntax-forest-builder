@@ -2,8 +2,6 @@ import { render } from '@testing-library/react';
 import { PositionedTree } from '../../core/types';
 import TreeView from '../../ui/TreeView';
 
-const zeroOffset = { offset: { dTreeX: 0, dTreeY: 0 } };
-
 describe('tree rendering', () => {
   const tree: PositionedTree = {
     sentence: 'Noun verbs very adverbly.',
