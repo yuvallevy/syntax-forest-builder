@@ -19,6 +19,7 @@ describe('tree rendering', () => {
       } },
     },
     position: { plotX: 50, plotY: -32 },
+    width: 104,
   };
 
   it('renders a tree with position-assigned nodes', () => {

@@ -64,4 +64,9 @@ describe('Node positioning', () => {
     const triangleNode = result.nodes['b'] as PositionedTerminalNode;
     expect(triangleNode.triangle).toStrictEqual({ treeX1: 40, treeX2: 119 });
   });
+
+  it('measures tree width', () => {
+    const result = applyNodePositionsToTree(mockStrWidth)(treeWithBranchingAndTriangleNodes);
+    expect(result.width).toBe(123);
+  });
 });

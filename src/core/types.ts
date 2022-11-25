@@ -12,6 +12,7 @@ type DPlotX = number;
 type DPlotY = number;
 type DTreeX = number;
 type DTreeY = number;
+type Width = number;
 
 type IdMap<T> = Record<Id, T>;
 
@@ -75,7 +76,8 @@ export type PositionedTree = TreeCommon & {
   position: {
     plotX: PlotX;
     plotY: PlotY;
-  }
+  };
+  width: Width;
 };
 
 export type PositionedPlot = { trees: IdMap<PositionedTree> };

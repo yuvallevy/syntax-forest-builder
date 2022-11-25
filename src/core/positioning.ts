@@ -58,6 +58,7 @@ export const applyNodePositionsToTree = (strWidthFunc: StrWidthFunc) => (tree: U
     plotX: tree.offset.dPlotX,
     plotY: tree.offset.dPlotY,
   },
+  width: strWidthFunc(tree.sentence),
 });
 
 /**
