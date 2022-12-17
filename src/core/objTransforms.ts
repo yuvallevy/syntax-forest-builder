@@ -20,3 +20,5 @@ export const omitKey = <K extends string, V>(record: Record<K, V>, keyToOmit: K)
       [key]: value,
     }, {} as Record<K, V>)
     : record;
+
+export const isEmpty = (objOrArray: any): boolean => (objOrArray instanceof Array ? objOrArray : Object.keys(objOrArray)).length === 0;

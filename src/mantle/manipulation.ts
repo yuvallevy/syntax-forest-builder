@@ -1,7 +1,9 @@
-import { omitKey, transformValues, without } from '../core/objTransforms';
+import { isEmpty, omitKey, transformValues, without } from '../core/objTransforms';
 import { Id, IdMap, isBranching, NodeCommon, NodeSlice, UnpositionedBranchingNode, UnpositionedNode, UnpositionedTree } from '../core/types';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
+
+type NodeMapTransformFunc = (oldNodes: IdMap<UnpositionedNode>) => IdMap<UnpositionedNode>;
 
 type InsertedNodeCommon = NodeCommon & { targetParentId?: Id; }
 
@@ -11,61 +13,55 @@ type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: NodeSlice; };
 
 type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 
+const isIn = (nodes: IdMap<UnpositionedNode>) => (nodeId: Id) => nodes.hasOwnProperty(nodeId);
+
+const childrenOrEmpty = (node: UnpositionedNode) => isBranching(node) ? node.children : {};
+
+const transformChildrenOfNode =
+  (nodeMapTransformFunc: NodeMapTransformFunc) =>
+  (node: UnpositionedNode) =>
+    isBranching(node) ? {
+      ...node,
+      children: nodeMapTransformFunc(node.children),
+    } as UnpositionedBranchingNode : node;
+
+const transformChildrenOfNodes =
+  (nodeMapTransformFunc: NodeMapTransformFunc) =>
+  (nodes: IdMap<UnpositionedNode>) =>
+    transformValues(nodes, transformChildrenOfNode(nodeMapTransformFunc));
+
 const findNodeAndDescendantsRecursively =
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): UnpositionedNode | undefined =>
-    nodes.hasOwnProperty(nodeId)
+    isIn(nodes)(nodeId)
       ? nodes[nodeId]
-      : Object.keys(nodes).length === 0
+      : isEmpty(nodes)
       ? undefined
       : findNodeAndDescendantsRecursively(nodeId)(Object.values(nodes).reduce((accum, node) => ({
         ...accum,
-        ...isBranching(node) ? node.children : {},
+        ...childrenOrEmpty(node),
       }), {} as IdMap<UnpositionedNode>));
 
 const findNodesAndDescendantsRecursively =
   (nodeIds: Id[]) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    Object.keys(nodes).length === 0
+    isEmpty(nodes)
       ? nodes
       : {
         ...nodeIds
-          .filter(nodeId => nodes.hasOwnProperty(nodeId))
+          .filter(isIn(nodes))
           .reduce((accum, nodeId) => ({ ...accum, [nodeId]: nodes[nodeId] }), {}),
         ...findNodesAndDescendantsRecursively(nodeIds)(Object.values(nodes).reduce((accum, node) => ({
           ...accum,
-          ...isBranching(node) ? node.children : {},
+          ...childrenOrEmpty(node),
         }), {})),
       };
 
-const insertNodeRecursively =
+const insertNodeAtTopLevel =
   (insertedNode: InsertedNode) =>
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    insertedNode.targetParentId
-      ? nodes.hasOwnProperty(insertedNode.targetParentId)
-        ? {
-          ...nodes,
-          [insertedNode.targetParentId]: {
-            ...nodes[insertedNode.targetParentId],
-            children: insertNodeRecursively({
-              ...insertedNode,
-              targetParentId: undefined,
-            })(nodeId)(
-              isBranching(nodes[insertedNode.targetParentId])
-                ? (nodes[insertedNode.targetParentId] as UnpositionedBranchingNode).children
-                : {}
-            ),
-          },
-        }
-        : transformValues(
-          nodes,
-          node => isBranching(node) ? {
-            ...node,
-            children: insertNodeRecursively(insertedNode)(nodeId)(node.children),
-          } : node,
-        )
-      : 'targetChildIds' in insertedNode
+    'targetChildIds' in insertedNode
       ? {
         ...deleteNodesAndDescendantsRecursively(insertedNode.targetChildIds)(nodes),
         [nodeId]: {
@@ -84,75 +80,72 @@ const insertNodeRecursively =
         },
       };
 
+const insertNodeRecursively =
+  (insertedNode: InsertedNode) =>
+  (nodeId: Id) =>
+  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
+    insertedNode.targetParentId
+      ? isIn(nodes)(insertedNode.targetParentId)
+        ? {
+          ...nodes,
+          [insertedNode.targetParentId]: {
+            ...nodes[insertedNode.targetParentId],
+            children: insertNodeRecursively({
+              ...insertedNode,
+              targetParentId: undefined,
+            })(nodeId)(childrenOrEmpty(nodes[insertedNode.targetParentId])),
+          },
+        }
+        : transformChildrenOfNodes(insertNodeRecursively(insertedNode)(nodeId))(nodes)
+      : insertNodeAtTopLevel(insertedNode)(nodeId)(nodes);
+
 const transformNodeRecursively =
   (transformFunc: NodeTransformFunc) =>
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    nodes.hasOwnProperty(nodeId)
+    isIn(nodes)(nodeId)
       ? {
         ...nodes,
         [nodeId]: transformFunc(nodes[nodeId]),
       }
-      : transformValues(
-        nodes,
-        node => isBranching(node) ? {
-          ...node,
-          children: transformNodeRecursively(transformFunc)(nodeId)(node.children),
-        } : node,
-      );
+      : transformChildrenOfNodes(transformNodeRecursively(transformFunc)(nodeId))(nodes);
 
 const deleteNodeRecursively =
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    nodes.hasOwnProperty(nodeId)
+    isIn(nodes)(nodeId)
       ? omitKey({
         ...nodes,
-        ...isBranching(nodes[nodeId])
-          ? (nodes[nodeId] as UnpositionedBranchingNode).children
-          : {},
+        ...childrenOrEmpty(nodes[nodeId]),
       }, nodeId)
-      : transformValues(
-        nodes,
-        node => isBranching(node) ? {
-          ...node,
-          children: deleteNodeRecursively(nodeId)(node.children),
-        } : node,
-      );
+      : transformChildrenOfNodes(deleteNodeRecursively(nodeId))(nodes);
 
 const deleteNodesRecursively =
   (nodeIds: Id[]) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    nodeIds.length === 0 || Object.keys(nodes).length === 0
+    isEmpty(nodeIds) || isEmpty(nodes)
       ? nodes
       : nodeIds
-        .filter(nodeId => nodes.hasOwnProperty(nodeId))
-        .reduce((filteredNodes, nodeId) => omitKey(isBranching(nodes[nodeId]) ? {
-          ...filteredNodes,
-          ...deleteNodesRecursively(without(nodeIds, nodeId))((nodes[nodeId] as UnpositionedBranchingNode).children),
-        } : filteredNodes, nodeId), transformValues(
-          nodes,
-          node => isBranching(node) ? {
-            ...node,
-            children: deleteNodesRecursively(nodeIds)(node.children),
-          } : node,
-        ));
+        .filter(isIn(nodes))
+        .reduce((filteredNodes, nodeId) => omitKey(
+          isBranching(nodes[nodeId]) ? {
+            ...filteredNodes,
+            ...deleteNodesRecursively(without(nodeIds, nodeId))((nodes[nodeId] as UnpositionedBranchingNode).children),
+          } : filteredNodes,
+          nodeId,
+        ), transformChildrenOfNodes(deleteNodesRecursively(nodeIds))(nodes));
 
 const deleteNodesAndDescendantsRecursively =
   (nodeIds: Id[]) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    nodeIds.length === 0 || Object.keys(nodes).length === 0
+    isEmpty(nodeIds) || isEmpty(nodes)
       ? nodes
       : nodeIds
-      .filter(nodeId => nodes.hasOwnProperty(nodeId))
-      .reduce(
-        (filteredNodes, nodeId) => omitKey(filteredNodes, nodeId),
-        transformValues(
-          nodes,
-          node => isBranching(node) ? {
-            ...node,
-            children: deleteNodesRecursively(nodeIds)(node.children),
-          } : node,
-        ));
+        .filter(isIn(nodes))
+        .reduce(
+          omitKey,
+          transformChildrenOfNodes(deleteNodesRecursively(nodeIds))(nodes)
+        );
 
 /**
  * Returns the node with the given ID in the given tree, or undefined if no node with this ID is found.
