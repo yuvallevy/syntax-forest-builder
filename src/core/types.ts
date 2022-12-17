@@ -1,6 +1,6 @@
 export type Id = string;
 export type Sentence = string;
-type NodeLabel = string;
+export type NodeLabel = string;
 
 type SliceStart = number;
 type SliceEndExclusive = number;
@@ -14,7 +14,9 @@ type DTreeX = number;
 type DTreeY = number;
 type Width = number;
 
-type IdMap<T> = Record<Id, T>;
+export type NodeSlice = [SliceStart, SliceEndExclusive];
+
+export type IdMap<T> = Record<Id, T>;
 
 export type UnpositionedForest = { plots: IdMap<UnpositionedPlot>; };
 
@@ -29,7 +31,7 @@ export type UnpositionedTree = TreeCommon & {
   offset: { dPlotX: DPlotX; dPlotY: DPlotY; };
 };
 
-type NodeCommon = {
+export type NodeCommon = {
   label: NodeLabel;
 };
 
@@ -40,16 +42,19 @@ type WithOffsetInTree = {
   };
 };
 
-type UnpositionedBranchingNode = NodeCommon & WithOffsetInTree & {
+export type UnpositionedBranchingNode = NodeCommon & WithOffsetInTree & {
   children: IdMap<UnpositionedNode>;
 };
 
-type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
-  slice: [SliceStart, SliceEndExclusive];
+export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
+  slice: NodeSlice;
   triangle: boolean;
 };
 
 export type UnpositionedNode = UnpositionedBranchingNode | UnpositionedTerminalNode;
+
+export const isBranching = (node: UnpositionedNode): node is UnpositionedBranchingNode =>
+  'children' in node;
 
 export type PositionInTree = {
   treeX: TreeX;
