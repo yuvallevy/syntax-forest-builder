@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI state selects one node adding to current selection 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "wxy",
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
+
+exports[`UI state selects one node replacing current selection 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
+
+exports[`UI state selects two nodes adding to current selection 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "wxy",
+    "vwx",
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
+
+exports[`UI state selects two nodes adding to current selection where one node is already selected 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "wxy",
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
+
+exports[`UI state selects two nodes replacing current selection 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "vwx",
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
+
+exports[`UI state selects two nodes replacing current selection where one node is already selected 1`] = `
+Object {
+  "activePlotId": "abc",
+  "plots": Object {},
+  "selectedNodeIds": Array [
+    "wxy",
+    "xyz",
+  ],
+  "selectedTreeIds": Array [
+    "pqr",
+  ],
+}
+`;
