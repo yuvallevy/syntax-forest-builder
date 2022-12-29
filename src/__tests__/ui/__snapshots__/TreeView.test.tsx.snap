@@ -9,6 +9,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
       style="transform: translate(50px, -32px);"
     >
       <text
+        class="TreeView-node"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"
@@ -32,6 +33,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
         y2="-80"
       />
       <text
+        class="TreeView-node"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"
@@ -48,6 +50,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
         y2="-22"
       />
       <text
+        class="TreeView-node"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"
@@ -57,6 +60,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
         N
       </text>
       <text
+        class="TreeView-node"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"
@@ -80,6 +84,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
         y2="-50"
       />
       <text
+        class="TreeView-node"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"
@@ -89,6 +94,119 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
         V
       </text>
       <text
+        class="TreeView-node"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="121.5"
+        y="-30"
+      >
+        AdvP
+      </text>
+      <path
+        d="M121.5 -30 L72 -2  L104 -2 Z"
+        fill="none"
+        stroke="#000"
+      />
+    </g>
+  </svg>
+</DocumentFragment>
+`;
+
+exports[`tree rendering renders a tree with position-assigned nodes where some are selected 1`] = `
+<DocumentFragment>
+  <svg>
+    <g
+      id="tree-tree1"
+      style="transform: translate(50px, -32px);"
+    >
+      <text
+        class="TreeView-node"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="53.625"
+        y="-80"
+      >
+        S
+      </text>
+      <line
+        stroke="#000"
+        x1="53.625"
+        x2="18"
+        y1="-80"
+        y2="-80"
+      />
+      <line
+        stroke="#000"
+        x1="53.625"
+        x2="89.25"
+        y1="-80"
+        y2="-80"
+      />
+      <text
+        class="TreeView-node TreeView-node-selected"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="18"
+        y="-60"
+      >
+        NP
+      </text>
+      <line
+        stroke="#000"
+        x1="18"
+        x2="18"
+        y1="-60"
+        y2="-22"
+      />
+      <text
+        class="TreeView-node"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="18"
+        y="-2"
+      >
+        N
+      </text>
+      <text
+        class="TreeView-node"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="89.25"
+        y="-60"
+      >
+        VP
+      </text>
+      <line
+        stroke="#000"
+        x1="89.25"
+        x2="57"
+        y1="-60"
+        y2="-22"
+      />
+      <line
+        stroke="#000"
+        x1="89.25"
+        x2="121.5"
+        y1="-60"
+        y2="-50"
+      />
+      <text
+        class="TreeView-node"
+        dominant-baseline="text-after-edge"
+        fill="#000"
+        text-anchor="middle"
+        x="57"
+        y="-2"
+      >
+        V
+      </text>
+      <text
+        class="TreeView-node TreeView-node-selected"
         dominant-baseline="text-after-edge"
         fill="#000"
         text-anchor="middle"

@@ -23,7 +23,15 @@ describe('tree rendering', () => {
   it('renders a tree with position-assigned nodes', () => {
     expect(render(
       <svg>  {/** Render inside an SVG tag to prevent "unrecognized tag" errors in console */}
-        <TreeView treeId="tree1" tree={tree} />
+        <TreeView treeId="tree1" tree={tree} selectedNodeIds={[]} />
+      </svg>
+    ).asFragment()).toMatchSnapshot();
+  });
+
+  it('renders a tree with position-assigned nodes where some are selected', () => {
+    expect(render(
+      <svg>
+        <TreeView treeId="tree1" tree={tree} selectedNodeIds={['b', 'f']} />
       </svg>
     ).asFragment()).toMatchSnapshot();
   });

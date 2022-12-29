@@ -1,6 +1,7 @@
 import React from 'react';
 import { mapEntries } from '../core/objTransforms';
 import { Id, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree } from '../core/types';
+import './TreeView.scss';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -8,6 +9,8 @@ const TRIANGLE_BASE_Y = -2;
 interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
+  selectedNodeIds: Id[];
+  onNodeSelect?: (nodeId: Id) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode): React.ReactNode[] =>
@@ -30,14 +33,17 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 
-const renderNodeFlat = ([nodeId, node]: [Id, PositionedNode]): React.ReactNode[] => [
+const renderNodeFlat =
+  (nodeId: Id, node: PositionedNode, selectedNodeIds: Id[], onSelect?: (id: Id) => void): React.ReactNode[] => [
   <text
     key={nodeId}
     x={node.position.treeX}
     y={node.position.treeY}
+    className={'TreeView-node' + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
     fill="#000"
     textAnchor="middle"
     dominantBaseline="text-after-edge"
+    onMouseDown={() => onSelect && onSelect(nodeId)}
   >
     {node.label}
   </text>,
@@ -45,13 +51,13 @@ const renderNodeFlat = ([nodeId, node]: [Id, PositionedNode]): React.ReactNode[]
   ...('children' in node)
     ? [
       ...renderChildNodeConnections(node),
-      ...mapEntries(node.children, renderNodeFlat),
+      ...mapEntries(node.children, ([nodeId, node]) => renderNodeFlat(nodeId, node, selectedNodeIds, onSelect)),
     ] : [],
 ];
 
-const TreeView: React.FC<TreeViewProps> = ({ treeId, tree }) =>
+const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onNodeSelect }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {mapEntries(tree.nodes, renderNodeFlat)}
+    {mapEntries(tree.nodes, ([nodeId, node]) => renderNodeFlat(nodeId, node, selectedNodeIds, onNodeSelect))}
   </g>;
 
 export default TreeView;
