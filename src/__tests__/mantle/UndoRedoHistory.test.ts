@@ -35,13 +35,13 @@ describe('undo/redo history', () => {
   const undoRedoHistoryAfterUndoOnce: UndoRedoHistory<TestAction, TestState> = {
     current: { ...initialState, valueString: 'alright cool!' },
     undoStack: [action1],
-    redoStack: [reverseAction(action2)],  // Assume the reverse function works as intended - this is tested elsewhere
+    redoStack: [action2],
   };
 
   const undoRedoHistoryAfterUndoTwice: UndoRedoHistory<TestAction, TestState> = {
     current: { ...initialState },
     undoStack: [],
-    redoStack: [reverseAction(action1), reverseAction(action2)],
+    redoStack: [action1, action2],
   };
 
   it('applies two actions and writes them to history', () => {

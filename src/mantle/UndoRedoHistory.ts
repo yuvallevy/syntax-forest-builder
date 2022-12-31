@@ -19,26 +19,20 @@ export const applyToHistory =
 export const undo =
   <A extends ActionCommon, S>(applyAction: ApplyActionFunc<A, S>) =>
   (reverseAction: ReverseActionFunc<A>) =>
-  (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => {
-    const reversedAction = reverseAction(history.undoStack[0]);
-    return {
-      current: applyAction(reversedAction)(history.current),
+  (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => ({
+    current: applyAction(reverseAction(history.undoStack[0]))(history.current),
       undoStack: history.undoStack.slice(1),
-      redoStack: [reversedAction, ...history.redoStack],
-    };
-  };
+    redoStack: [history.undoStack[0], ...history.redoStack],
+  });
 
 export const redo =
   <A extends ActionCommon, S>(applyAction: ApplyActionFunc<A, S>) =>
   (reverseAction: ReverseActionFunc<A>) =>
-  (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => {
-    const reversed = reverseAction(history.redoStack[0]);
-    return {
-      current: applyAction(reversed)(history.current),
-      undoStack: [reversed, ...history.undoStack],
+  (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => ({
+    current: applyAction(history.redoStack[0])(history.current),
+    undoStack: [history.redoStack[0], ...history.undoStack],
       redoStack: history.redoStack.slice(1),
-    };
-  };
+  });
 
 type UndoRedoHistory<A extends ActionCommon, S> = {
   current: S;
