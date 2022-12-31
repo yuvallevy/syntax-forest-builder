@@ -21,7 +21,7 @@ export const undo =
   (reverseAction: ReverseActionFunc<A>) =>
   (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => ({
     current: applyAction(reverseAction(history.undoStack[0]))(history.current),
-      undoStack: history.undoStack.slice(1),
+    undoStack: history.undoStack.slice(1),
     redoStack: [history.undoStack[0], ...history.redoStack],
   });
 
@@ -31,7 +31,7 @@ export const redo =
   (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => ({
     current: applyAction(history.redoStack[0])(history.current),
     undoStack: [history.redoStack[0], ...history.undoStack],
-      redoStack: history.redoStack.slice(1),
+    redoStack: history.redoStack.slice(1),
   });
 
 type UndoRedoHistory<A extends ActionCommon, S> = {
