@@ -1,5 +1,4 @@
-import { reducer } from '../../ui/actions';
-import { UiState } from '../../ui/state';
+import { UiState, reducer } from '../../ui/state';
 
 describe('UI state', () => {
   const initialState: UiState = {

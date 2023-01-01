@@ -1,4 +1,26 @@
+import { union } from '../core/objTransforms';
 import { Id, IdMap, UnpositionedPlot } from '../core/types';
+import UndoRedoHistory, { UndoableActionCommon } from '../mantle/UndoRedoHistory';
+
+type UiAction =
+  | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
+;
+
+export type UndoableUiAction = UndoableActionCommon & UiAction;
+
+export const reducer = (state: UiState, action: UiAction): UiState => {
+  switch (action.type) {
+    case 'selectNodes':
+      return {
+        ...state,
+        activePlotId: action.plotId,
+        selectedTreeIds: action.mode === 'add' ? union(state.selectedTreeIds, action.treeIds) : action.treeIds,
+        selectedNodeIds: action.mode === 'add' ? union(state.selectedNodeIds, action.nodeIds) : action.nodeIds,
+      };
+    default:
+      return state;
+  }
+};
 
 export type UiState = {
   plots: IdMap<UnpositionedPlot>;
@@ -6,6 +28,8 @@ export type UiState = {
   selectedTreeIds: Id[];
   selectedNodeIds: Id[];
 };
+
+export type UndoableUiState = UndoRedoHistory<UndoableUiAction, UiState>;
 
 export const initialState: UiState = {
   plots: {

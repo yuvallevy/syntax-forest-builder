@@ -2,9 +2,8 @@ import { useMemo, useReducer } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import { Id, PositionedPlot, UnpositionedPlot } from './core/types';
-import { reducer } from './ui/actions';
 import PlotView from './ui/PlotView';
-import { initialState } from './ui/state';
+import { initialState, reducer } from './ui/state';
 import strWidth from './ui/strWidth';
 
 const App = () => {

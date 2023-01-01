@@ -1,11 +1,11 @@
-import { ApplyActionFunc, ActionCommon, ReverseActionFunc } from '../../mantle/UndoRedoHistory';
+import { ApplyActionFunc, ReverseActionFunc, UndoableActionCommon } from '../../mantle/UndoRedoHistory';
 
 export type TestState = {
   valueNumber: number;
   valueString: string;
 };
 
-export type TestAction = ActionCommon & (
+export type TestAction = UndoableActionCommon & (
   {
     type: 'INCREMENT_NUMBER' | 'DECREMENT_NUMBER';
     difference: number;
