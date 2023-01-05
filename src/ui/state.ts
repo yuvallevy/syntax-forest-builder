@@ -1,24 +1,73 @@
 import { union } from '../core/objTransforms';
 import { Id, IdMap, UnpositionedPlot } from '../core/types';
-import UndoRedoHistory, { UndoableActionCommon } from '../mantle/UndoRedoHistory';
+import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
 type UiAction =
   | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
 ;
 
-export type UndoableUiAction = UndoableActionCommon & UiAction;
+/**
+ * Represents a change in state as a result of an action done by the user.
+ * Each state change includes information about the state before it so it can be easily undone,
+ * and each action by the user is translated into a state change so that undo/redo can work smoothly.
+ */
+type UndoableUiStateChange = UndoableActionCommon & (
+  | {
+    type: 'setSelectedNodes',
+    old: {
+      activePlotId: Id,
+      selectedTreeIds: Id[],
+      selectedNodeIds: Id[],
+    },
+    new: {
+      activePlotId: Id,
+      selectedTreeIds: Id[],
+      selectedNodeIds: Id[],
+    },
+  }
+);
 
-export const reducer = (state: UiState, action: UiAction): UiState => {
+/**
+ * Translates a non-undoable user action into an undoable state change.
+ */
+const makeUndoable = (state: UiState) => (action: UiAction): Omit<UndoableUiStateChange, 'timestamp'> => {
   switch (action.type) {
     case 'selectNodes':
       return {
-        ...state,
-        activePlotId: action.plotId,
-        selectedTreeIds: action.mode === 'add' ? union(state.selectedTreeIds, action.treeIds) : action.treeIds,
-        selectedNodeIds: action.mode === 'add' ? union(state.selectedNodeIds, action.nodeIds) : action.nodeIds,
+        type: 'setSelectedNodes',
+        old: {
+          activePlotId: state.activePlotId,
+          selectedTreeIds: state.selectedTreeIds,
+          selectedNodeIds: state.selectedNodeIds,
+        },
+        new: {
+          activePlotId: action.plotId,
+          selectedTreeIds: action.mode === 'add' ? union(state.selectedTreeIds, action.treeIds) : action.treeIds,
+          selectedNodeIds: action.mode === 'add' ? union(state.selectedNodeIds, action.nodeIds) : action.nodeIds,
+        }
       };
+  }
+};
+
+const applyUndoableAction: ApplyActionFunc<UndoableUiStateChange, UiState> = action => state => {
+  switch (action.type) {
+    case 'setSelectedNodes':
+      return { ...state, ...action.new };
     default:
       return state;
+  }
+};
+
+const reverseUndoableAction: ReverseActionFunc<UndoableUiStateChange> = action => {
+  switch (action.type) {
+    case 'setSelectedNodes':
+      return {
+        ...action,
+        old: action.new,
+        new: action.old,
+      };
+    default:
+      return action;
   }
 };
 
@@ -29,9 +78,9 @@ export type UiState = {
   selectedNodeIds: Id[];
 };
 
-export type UndoableUiState = UndoRedoHistory<UndoableUiAction, UiState>;
+export type UndoableUiState = UndoRedoHistory<UndoableUiStateChange, UiState>;
 
-export const initialState: UiState = {
+const initialState: UiState = {
   plots: {
     'plot': {
       trees: {
@@ -63,3 +112,14 @@ export const initialState: UiState = {
   selectedTreeIds: [],
   selectedNodeIds: [],
 };
+
+export const undoableInitialState: UndoableUiState = {
+  current: initialState,
+  undoStack: [],
+  redoStack: [],
+};
+
+export const undoableReducer = (state: UndoableUiState, action: UiAction | { type: 'undo' } | { type: 'redo' }): UndoableUiState =>
+  action.type === 'undo' ? undo(applyUndoableAction)(reverseUndoableAction)(state)
+    : action.type === 'redo' ? redo(applyUndoableAction)(reverseUndoableAction)(state)
+    : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);
