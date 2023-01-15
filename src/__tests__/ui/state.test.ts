@@ -1,4 +1,4 @@
-import { UiState, undoableReducer, UndoableUiState } from '../../ui/state';
+import { UiAction, UiState, undoableReducer, UndoableUiState } from '../../ui/state';
 
 describe('UI state', () => {
   const initialState: UiState = {
@@ -14,33 +14,32 @@ describe('UI state', () => {
     redoStack: [],
   };
 
-  it('selects one node replacing current selection', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'set' }).current)
-      .toMatchSnapshot();
-  });
+  const testCases: [string, UiAction][] = [
+    [
+      'selects one node replacing current selection',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'set' }
+    ],
+    [
+      'selects one node adding to current selection',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'add' }
+    ],
+    [
+      'selects two nodes replacing current selection',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'set' }
+    ],
+    [
+      'selects two nodes adding to current selection',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'add' }
+    ],
+    [
+      'selects two nodes replacing current selection where one node is already selected',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'set' }
+    ],
+    [
+      'selects two nodes adding to current selection where one node is already selected',
+      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'add' }
+    ],
+  ];
 
-  it('selects one node adding to current selection', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'add' }).current)
-      .toMatchSnapshot();
-  });
-
-  it('selects two nodes replacing current selection', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'set' }).current)
-      .toMatchSnapshot();
-  });
-
-  it('selects two nodes adding to current selection', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'add' }).current)
-      .toMatchSnapshot();
-  });
-
-  it('selects two nodes replacing current selection where one node is already selected', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'set' }).current)
-      .toMatchSnapshot();
-  });
-
-  it('selects two nodes adding to current selection where one node is already selected', () => {
-    expect(undoableReducer(undoableInitialState, { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'add' }).current)
-      .toMatchSnapshot();
-  });
+  it.each(testCases)('%s', (name, action) => expect(undoableReducer(undoableInitialState, action).current).toMatchSnapshot());
 });

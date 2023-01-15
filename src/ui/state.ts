@@ -2,7 +2,7 @@ import { union } from '../core/objTransforms';
 import { Id, IdMap, UnpositionedPlot } from '../core/types';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
-type UiAction =
+export type UiAction =
   | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
 ;
 
