@@ -1,5 +1,6 @@
 import { union } from '../core/objTransforms';
-import { Id, IdMap, UnpositionedPlot } from '../core/types';
+import { Id, IdMap, UnpositionedPlot, UnpositionedTree } from '../core/types';
+import { deleteNodesInTree, InsertedNode, insertNodeIntoTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
 /**
@@ -9,6 +10,8 @@ import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFu
  */
 export type UiAction =
   | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
+  | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
+  | { type: 'deleteNodes', plotId: Id, treeId: Id, nodeIds: Id[] }
 ;
 
 /**
@@ -29,6 +32,13 @@ type UiStateChange = (
       selectedTreeIds: Id[],
       selectedNodeIds: Id[],
     },
+  }
+  | {
+    type: 'setTree',
+    plotId: Id,
+    treeId: Id,
+    old: UnpositionedTree,
+    new: UnpositionedTree,
   }
 );
 
@@ -53,6 +63,22 @@ const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
           selectedNodeIds: action.mode === 'add' ? union(state.selectedNodeIds, action.nodeIds) : action.nodeIds,
         }
       };
+    case 'insertNode':
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: insertNodeIntoTree(action.newNode)(action.newNodeId)(state.plots[action.plotId].trees[action.treeId]),
+      };
+    case 'deleteNodes':
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: deleteNodesInTree(action.nodeIds)(state.plots[action.plotId].trees[action.treeId]),
+      };
   }
 };
 
@@ -60,6 +86,20 @@ const applyUndoableAction: ApplyActionFunc<UndoableUiStateChange, UiState> = act
   switch (action.type) {
     case 'setSelectedNodes':
       return { ...state, ...action.new };
+    case 'setTree':
+      return {
+        ...state,
+        plots: {
+          ...state.plots,
+          [action.plotId]: {
+            ...state.plots[action.plotId],
+            trees: {
+              ...state.plots[action.plotId].trees,
+              [action.treeId]: action.new,
+            },
+          },
+        },
+      };
     default:
       return state;
   }
@@ -68,6 +108,12 @@ const applyUndoableAction: ApplyActionFunc<UndoableUiStateChange, UiState> = act
 const reverseUndoableAction: ReverseActionFunc<UndoableUiStateChange> = action => {
   switch (action.type) {
     case 'setSelectedNodes':
+      return {
+        ...action,
+        old: action.new,
+        new: action.old,
+      };
+    case 'setTree':
       return {
         ...action,
         old: action.new,

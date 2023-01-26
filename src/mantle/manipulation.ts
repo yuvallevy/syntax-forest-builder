@@ -11,7 +11,7 @@ type InsertedBranchingNode = InsertedNodeCommon & { targetChildIds: Id[]; };
 
 type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: NodeSlice; };
 
-type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
+export type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 
 const isIn = (nodes: IdMap<UnpositionedNode>) => (nodeId: Id) => nodes.hasOwnProperty(nodeId);
 
