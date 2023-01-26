@@ -2,6 +2,11 @@ import { union } from '../core/objTransforms';
 import { Id, IdMap, UnpositionedPlot } from '../core/types';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
+/**
+ * Represents an action taken by the user.
+ * To integrate with the undo/redo system, each action is translated into an undoable "state change",
+ * which is subsequently applied in a reversible fashion.
+ */
 export type UiAction =
   | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
 ;
@@ -11,7 +16,7 @@ export type UiAction =
  * Each state change includes information about the state before it so it can be easily undone,
  * and each action by the user is translated into a state change so that undo/redo can work smoothly.
  */
-type UndoableUiStateChange = UndoableActionCommon & (
+type UiStateChange = (
   | {
     type: 'setSelectedNodes',
     old: {
@@ -27,10 +32,12 @@ type UndoableUiStateChange = UndoableActionCommon & (
   }
 );
 
+type UndoableUiStateChange = UndoableActionCommon & UiStateChange;
+
 /**
- * Translates a non-undoable user action into an undoable state change.
+ * Translates a user action into a state change, which can later be undone.
  */
-const makeUndoable = (state: UiState) => (action: UiAction): Omit<UndoableUiStateChange, 'timestamp'> => {
+const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
   switch (action.type) {
     case 'selectNodes':
       return {
