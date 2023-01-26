@@ -140,8 +140,8 @@ const initialState: UiState = {
         'aa': {
           sentence: 'Noun verbs very adverbly.',
           nodes: {
-            'a': {
-              label: 'S', offset: { dTreeX: 0, dTreeY: 0 }, children: {
+            // 'a': {
+            //   label: 'S', offset: { dTreeX: 0, dTreeY: 0 }, children: {
                 'b': {
                   label: 'NP', offset: { dTreeX: 0, dTreeY: -10 }, children: {
                     'c': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
@@ -153,8 +153,8 @@ const initialState: UiState = {
                     'f': { label: 'AdvP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [11, 24], triangle: true },
                   }
                 },
-              }
-            },
+            //   }
+            // },
           },
           offset: { dPlotX: 200, dPlotY: 250 },
         },
