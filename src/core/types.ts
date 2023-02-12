@@ -14,6 +14,16 @@ type DTreeX = number;
 type DTreeY = number;
 type Width = number;
 
+export type PlotCoords = {
+  plotX: PlotX;
+  plotY: PlotY;
+};
+
+export type PlotRect = {
+  topLeft: PlotCoords;
+  bottomRight: PlotCoords;
+};
+
 export type NodeSlice = [SliceStart, SliceEndExclusive];
 
 export type IdMap<T> = Record<Id, T>;
@@ -78,10 +88,7 @@ export type PositionedNode = PositionedBranchingNode | PositionedTerminalNode;
 
 export type PositionedTree = TreeCommon & {
   nodes: IdMap<PositionedNode>;
-  position: {
-    plotX: PlotX;
-    plotY: PlotY;
-  };
+  position: PlotCoords;
   width: Width;
 };
 
