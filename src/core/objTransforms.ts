@@ -10,6 +10,15 @@ export const mapValues = <K extends string, V, R>(record: Record<K, V>, valueTra
 export const mapEntries = <K extends string, V, R>(record: Record<K, V>, entryTransform: (entry: [K, V]) => R): R[] =>
   (Object.entries(record) as [K, V][]).map(entryTransform);
 
+export const filterEntries = <K extends string, V>(record: Record<K, V>, predicate: (entry: [K, V]) => boolean): Record<K, V> =>
+  (Object.entries(record) as [K, V][]).reduce((filteredRecord, entry) =>
+    predicate(entry) ? {
+      ...filteredRecord,
+      [entry[0]]: entry[1],
+    } : filteredRecord,
+    {} as Record<K, V>
+  );
+
 export const without = <T>(array: T[], elementToRemove: T): T[] =>
   array.reduce((accum, element) => element === elementToRemove ? accum : [...accum, element], [] as T[]);
 
