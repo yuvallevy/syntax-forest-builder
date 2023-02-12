@@ -1,5 +1,5 @@
 ## Alpha
-### 0.3 (2022-1x, in progress)
+### 0.3 (2022&ndash;2023, in progress)
 * Complete rewrite boasting better UX, multiple trees and other goodies.
 ### 0.2 (2021-12-18)
 * Added the long-overdue undo/redo functionality.
