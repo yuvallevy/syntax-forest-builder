@@ -5,3 +5,11 @@
   cursor: crosshair;
   user-select: none;
 }
+
+.PlotView-selection-box {
+  fill: none;
+  stroke: gray;
+  stroke-width: 1px;
+  stroke-dasharray: 4 3;
+  transform: translate(0.5px, 0.5px);  // snap to pixel on lower-dpi screens? TODO: demystify
+}
