@@ -10,7 +10,7 @@ interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
   selectedNodeIds: Id[];
-  onNodeSelect?: (nodeId: Id) => void;
+  onSingleNodeSelect?: (nodeId: Id) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode): React.ReactNode[] =>
@@ -55,7 +55,7 @@ const renderNodeFlat =
     ] : [],
 ];
 
-const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onNodeSelect }) =>
+const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect: onNodeSelect }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
     {mapEntries(tree.nodes, ([nodeId, node]) => renderNodeFlat(nodeId, node, selectedNodeIds, onNodeSelect))}
   </g>;

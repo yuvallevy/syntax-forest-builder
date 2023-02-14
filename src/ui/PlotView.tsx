@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { filterEntries, mapEntries, transformValues } from '../core/objTransforms';
+import { filterEntries, flatten, mapEntries, transformValues } from '../core/objTransforms';
 import { Id, PlotRect, PositionedPlot } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -24,10 +24,10 @@ const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
 interface PlotViewProps {
   plot: PositionedPlot;
   selectedNodeIds: Id[];
-  onNodeSelect: (treeId: Id, nodeId: Id) => void;
+  onNodesSelect: (treeIds: Id[], nodeIds: Id[]) => void;
 }
 
-const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodeSelect }) => {
+const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodesSelect }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
 
@@ -66,10 +66,8 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodeSelect
         ([_, nodeIds]) => nodeIds.length > 0
       );
       const newSelectedTreeIds = Object.keys(newSelectedNodeIdsByTree);
-      // Incomplete solution - only take one node if multiple are selected
-      const newSelectedTreeId = newSelectedTreeIds.length > 0 ? newSelectedTreeIds[0] : null;
-      const newSelectedNodeId = newSelectedTreeId ? newSelectedNodeIdsByTree[newSelectedTreeId][0] : null;
-      if (newSelectedTreeId && newSelectedNodeId) onNodeSelect(newSelectedTreeId, newSelectedNodeId);
+      const newSelectedNodeIds = flatten(Object.values(newSelectedNodeIdsByTree));
+      onNodesSelect(newSelectedTreeIds, newSelectedNodeIds);
     }
     setSelectionBoxStart(undefined);
     setSelectionBoxEnd(undefined);
@@ -90,7 +88,7 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodeSelect
           treeId={treeId}
           tree={tree}
           selectedNodeIds={selectedNodeIds}
-          onNodeSelect={nodeId => onNodeSelect(treeId, nodeId)}
+          onSingleNodeSelect={nodeId => onNodesSelect([treeId], [nodeId])}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView-selection-box"

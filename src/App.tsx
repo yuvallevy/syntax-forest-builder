@@ -15,11 +15,11 @@ const App = () => {
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
-  const handleNodeSelect = (treeId: Id, nodeId: Id) => dispatch({
+  const handleNodesSelect = (treeIds: Id[], nodeIds: Id[]) => dispatch({
     type: 'selectNodes',
     plotId: state.activePlotId,
-    treeIds: [treeId],
-    nodeIds: [nodeId],
+    treeIds: treeIds,
+    nodeIds: nodeIds,
     mode: 'set',
   });
 
@@ -45,7 +45,7 @@ const App = () => {
     <PlotView
       plot={positionedPlot}
       selectedNodeIds={state.selectedNodeIds}
-      onNodeSelect={handleNodeSelect}
+      onNodesSelect={handleNodesSelect}
     />
     <button style={{ position: 'absolute', left: 0, top: 0 }} onClick={undo}>Undo</button>
     <button style={{ position: 'absolute', left: 80, top: 0 }} onClick={redo}>Redo</button>
