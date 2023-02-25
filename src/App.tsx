@@ -23,22 +23,22 @@ const App = () => {
     mode: 'set',
   });
 
-  const addS = () => dispatch({
+  const addNode = () => dispatch({
     type: 'insertNode',
-    plotId: 'plot',
-    treeId: 'aa',
-    newNodeId: 'a',
+    plotId: state.activePlotId,
+    treeId: state.selectedTreeIds[0],
+    newNodeId: '1J3I0',
     newNode: {
-      targetChildIds: ['b', 'd'],
+      targetChildIds: state.selectedNodeIds,
       label: 'S',
     },
   });
 
-  const deleteS = () => dispatch({
+  const deleteNode = () => dispatch({
     type: 'deleteNodes',
-    plotId: 'plot',
-    treeId: 'aa',
-    nodeIds: ['a'],
+    plotId: state.activePlotId,
+    treeId: state.selectedTreeIds[0],
+    nodeIds: state.selectedNodeIds,
   });
 
   return <>
@@ -47,10 +47,6 @@ const App = () => {
       selectedNodeIds={state.selectedNodeIds}
       onNodesSelect={handleNodesSelect}
     />
-    <button style={{ position: 'absolute', left: 0, top: 0 }} onClick={undo}>Undo</button>
-    <button style={{ position: 'absolute', left: 80, top: 0 }} onClick={redo}>Redo</button>
-    <button style={{ position: 'absolute', left: 160, top: 0 }} onClick={addS}>Add S</button>
-    <button style={{ position: 'absolute', left: 240, top: 0 }} onClick={deleteS}>Delete S</button>
   </>;
 }
 
