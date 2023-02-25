@@ -5,6 +5,7 @@ import { Id, PositionedPlot, UnpositionedPlot } from './core/types';
 import PlotView from './ui/PlotView';
 import { undoableReducer, undoableInitialState } from './ui/state';
 import strWidth from './ui/strWidth';
+import Toolbar, { ToolbarItem } from './ui/Toolbar';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
@@ -41,7 +42,15 @@ const App = () => {
     nodeIds: state.selectedNodeIds,
   });
 
+  const toolbarItems: ToolbarItem[] = [
+    { title: 'Undo', action: undo },
+    { title: 'Redo', action: redo },
+    { title: 'Add', action: addNode },
+    { title: 'Delete', action: deleteNode, }
+  ];
+
   return <>
+    <Toolbar items={toolbarItems} />
     <PlotView
       plot={positionedPlot}
       selectedNodeIds={state.selectedNodeIds}
