@@ -17,7 +17,7 @@ const filterPositionedNodesRecursively =
       };
 
 /**
- * Returns the node with the given ID in the given tree, or undefined if no node with this ID is found.
+ * Returns nodes matching the given predicate in the given tree.
  */
 export const filterPositionedNodesInTree =
   (predicate: (node: PositionedNode) => boolean) =>
