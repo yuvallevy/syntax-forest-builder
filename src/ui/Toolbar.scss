@@ -1,0 +1,29 @@
+.Toolbar {
+  position: fixed;
+  background-color: #444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  left: 0;
+  top: 0;
+  right: 0;
+  cursor: default;
+  z-index: 5;
+  display: flex;
+}
+
+.Toolbar--button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 2px;
+  margin: 1px;
+  background-color: transparent;
+  color: #ddd;
+}
+
+.Toolbar--button:hover {
+  background-color: #555;
+}
+
+.Toolbar--button:active {
+  background-color: #222;
+}
