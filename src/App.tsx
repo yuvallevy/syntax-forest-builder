@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import { Id, PositionedPlot, UnpositionedPlot } from './core/types';
@@ -12,6 +12,8 @@ const App = () => {
 
   const activePlot: UnpositionedPlot = useMemo(() => state.plots[state.activePlotId], [state.plots, state.activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
+
+  const [editing, setEditing] = useState<boolean>(false);
 
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
@@ -42,11 +44,14 @@ const App = () => {
     nodeIds: state.selectedNodeIds,
   });
 
+  const toggleEditing = () => setEditing(!editing);
+
   const toolbarItems: ToolbarItem[] = [
     { title: 'Undo', action: undo },
     { title: 'Redo', action: redo },
     { title: 'Add', action: addNode },
-    { title: 'Delete', action: deleteNode, }
+    { title: 'Delete', action: deleteNode },
+    { title: 'Edit', action: toggleEditing },
   ];
 
   return <>
