@@ -6,19 +6,13 @@ import SentenceView from './SentenceView';
 import ClientCoords, { ClientRect } from './ClientCoords';
 import './PlotView.scss';
 import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
+import { clientCoordsToPlotCoords } from './coordConversions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 
 const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
-  // Calculate plot coords from client coords, when they're different (when zoom and/or pan are implemented)
-  topLeft: {
-    plotX: clientRect.topLeft.clientX,
-    plotY: clientRect.topLeft.clientY,
-  },
-  bottomRight: {
-    plotX: clientRect.bottomRight.clientX,
-    plotY: clientRect.bottomRight.clientY,
-  },
+  topLeft: clientCoordsToPlotCoords(clientRect.topLeft),
+  bottomRight: clientCoordsToPlotCoords(clientRect.bottomRight),
 });
 
 interface PlotViewProps {
