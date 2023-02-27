@@ -3,6 +3,7 @@ import { filterEntries, flatten, mapEntries, transformValues } from '../core/obj
 import { Id, PlotRect, PositionedPlot } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
+import LabelNodeEditor from './LabelNodeEditor';
 import ClientCoords, { ClientRect } from './ClientCoords';
 import './PlotView.scss';
 import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
@@ -17,11 +18,14 @@ const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
 
 interface PlotViewProps {
   plot: PositionedPlot;
+  selectedTreeIds: Id[];
   selectedNodeIds: Id[];
+  editing: boolean;
+  onDoneEditing: (newLabel?: string) => void;
   onNodesSelect: (treeIds: Id[], nodeIds: Id[]) => void;
 }
 
-const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodesSelect }) => {
+const PlotView: React.FC<PlotViewProps> = ({ plot, selectedTreeIds, selectedNodeIds, editing, onDoneEditing, onNodesSelect }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
 
@@ -93,6 +97,13 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, onNodesSelec
       />}
     </svg>
     {mapEntries(plot.trees, ([treeId, tree]) => <SentenceView key={`sentence-${treeId}`} tree={tree} onChange={console.log} />)}
+    {editing && selectedNodeIds.length === 1 && <LabelNodeEditor
+      key={`editable-nodes-${selectedTreeIds[0]}`}
+      tree={plot.trees[selectedTreeIds[0]]}
+      nodeId={selectedNodeIds[0]}
+      onDone={onDoneEditing}
+      onCancel={() => onDoneEditing(undefined)}
+    />}
   </>;
 };
 

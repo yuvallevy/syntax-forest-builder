@@ -44,7 +44,20 @@ const App = () => {
     nodeIds: state.selectedNodeIds,
   });
 
-  const toggleEditing = () => setEditing(!editing);
+  const toggleEditing = () => setEditing(!editing && state.selectedNodeIds.length === 1);
+
+  const handleDoneEditing = (newLabel?: string) => {
+    if (newLabel !== undefined) {
+      dispatch({
+        type: 'setNodeLabel',
+        plotId: state.activePlotId,
+        treeId: state.selectedTreeIds[0],
+        nodeId: state.selectedNodeIds[0],
+        newLabel,
+      })
+    }
+    setEditing(false);
+  }
 
   const toolbarItems: ToolbarItem[] = [
     { title: 'Undo', action: undo },
@@ -58,7 +71,10 @@ const App = () => {
     <Toolbar items={toolbarItems} />
     <PlotView
       plot={positionedPlot}
+      selectedTreeIds={state.selectedTreeIds}
       selectedNodeIds={state.selectedNodeIds}
+      editing={editing}
+      onDoneEditing={handleDoneEditing}
       onNodesSelect={handleNodesSelect}
     />
   </>;

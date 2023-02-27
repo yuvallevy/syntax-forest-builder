@@ -1,15 +1,15 @@
 import { filterEntries, isEmpty } from '../core/objTransforms';
-import { IdMap, PlotCoords, PlotRect, PositionedNode, PositionedTree } from '../core/types';
+import { Id, IdMap, PlotCoords, PlotRect, PositionedNode, PositionedTree } from '../core/types';
 
 const childrenOrEmpty = (node: PositionedNode) => 'children' in node ? node.children : {};
 
 const filterPositionedNodesRecursively =
-  (predicate: (node: PositionedNode) => boolean) =>
+  (predicate: ([nodeId, node]: [Id, PositionedNode]) => boolean) =>
   (nodes: IdMap<PositionedNode>): IdMap<PositionedNode> =>
     isEmpty(nodes)
       ? nodes
       : {
-        ...filterEntries(nodes, ([_, node]) => predicate(node)),
+        ...filterEntries(nodes, predicate),
         ...filterPositionedNodesRecursively(predicate)(Object.values(nodes).reduce((accum, node) => ({
           ...accum,
           ...childrenOrEmpty(node),
@@ -22,12 +22,20 @@ const filterPositionedNodesRecursively =
 export const filterPositionedNodesInTree =
   (predicate: (node: PositionedNode) => boolean) =>
   (tree: PositionedTree): IdMap<PositionedNode> =>
-    filterPositionedNodesRecursively(predicate)(tree.nodes);
+    filterPositionedNodesRecursively(([_, node]) => predicate(node))(tree.nodes);
+
+/**
+ * Returns nodes with the given IDs in the given tree.
+ */
+export const filterPositionedNodesInTreeById =
+  (nodeIds: Id[]) =>
+  (tree: PositionedTree): IdMap<PositionedNode> =>
+    filterPositionedNodesRecursively(([nodeId, _]) => nodeIds.includes(nodeId))(tree.nodes);
 
 /**
  * Returns the position of the given node in the given tree with respect to its containing plot.
  */
-const calculateNodePositionOnPlot = (tree: PositionedTree) => (node: PositionedNode): PlotCoords => ({
+export const calculateNodePositionOnPlot = (tree: PositionedTree) => (node: PositionedNode): PlotCoords => ({
   plotX: tree.position.plotX + node.position.treeX,
   plotY: tree.position.plotY + node.position.treeY
 });

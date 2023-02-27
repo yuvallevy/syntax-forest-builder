@@ -6,6 +6,12 @@
   user-select: none;
 }
 
+.PlotView--node-label-field {
+  position: absolute;
+  font-size: 16px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
 .PlotView-selection-box {
   fill: none;
   stroke: gray;
