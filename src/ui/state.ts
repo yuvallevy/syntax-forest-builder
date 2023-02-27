@@ -1,6 +1,6 @@
 import { union } from '../core/objTransforms';
 import { Id, IdMap, UnpositionedPlot, UnpositionedTree } from '../core/types';
-import { deleteNodesInTree, InsertedNode, insertNodeIntoTree } from '../mantle/manipulation';
+import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
 /**
@@ -12,6 +12,7 @@ export type UiAction =
   | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, treeId: Id, nodeIds: Id[] }
+  | { type: 'setNodeLabel', plotId: Id, treeId: Id, nodeId: Id, newLabel: string }
 ;
 
 /**
@@ -78,6 +79,15 @@ const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
         treeId: action.treeId,
         old: state.plots[action.plotId].trees[action.treeId],
         new: deleteNodesInTree(action.nodeIds)(state.plots[action.plotId].trees[action.treeId]),
+      };
+    case 'setNodeLabel':
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.nodeId)(
+          state.plots[action.plotId].trees[action.treeId])
       };
   }
 };
