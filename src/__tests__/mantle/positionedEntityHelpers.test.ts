@@ -1,5 +1,10 @@
-import { IdMap, PlotRect, PositionedNode, PositionedTree } from '../../core/types';
-import { filterPositionedNodesInTree, isNodeInRect } from '../../mantle/positionedEntityHelpers';
+import { IdMap, PlotCoords, PlotRect, PositionedNode, PositionedTree } from '../../core/types';
+import {
+  calculateNodePositionOnPlot,
+  filterPositionedNodesInTree,
+  filterPositionedNodesInTreeById,
+  isNodeInRect,
+} from '../../mantle/positionedEntityHelpers';
 
 describe('positioned tree/node functions', () => {
   const tree: PositionedTree = {
@@ -43,6 +48,28 @@ describe('positioned tree/node functions', () => {
 
   it.each(predicates)('filters nodes by arbitrary predicates %#', (predicate, expectedFilteredNodes) => {
     expect(filterPositionedNodesInTree(predicate)(tree)).toStrictEqual(expectedFilteredNodes);
+  });
+
+  it('filters nodes by IDs', () => {
+    expect(filterPositionedNodesInTreeById(['a', 'e'])(tree)).toStrictEqual({
+      'a': tree.nodes['a'],
+      'e': { label: 'V', position: { treeX: 57, treeY: -2 } },
+    });
+  });
+
+  const nodesAndPlotPositions: [PositionedNode, PlotCoords][] = [
+    [
+      { label: 'N', position: { treeX: 18, treeY: -2 } },
+      { plotX: 68, plotY: -34 },
+    ],
+    [
+      { label: 'VP', position: { treeX: 89.25, treeY: -60 } },
+      { plotX: 139.25, plotY: -92 },
+    ],
+  ];
+
+  it.each(nodesAndPlotPositions)('returns the plot-level position of a node', (node, expectedResult) => {
+    expect(calculateNodePositionOnPlot(tree)(node)).toStrictEqual(expectedResult);
   });
 
   const nodesAndRects: [PositionedNode, PlotRect, boolean][] = [
