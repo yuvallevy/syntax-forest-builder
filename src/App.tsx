@@ -6,6 +6,7 @@ import PlotView from './ui/PlotView';
 import { undoableReducer, undoableInitialState } from './ui/state';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
+import generateNodeId from './ui/generateNodeId';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
@@ -26,16 +27,28 @@ const App = () => {
     mode: 'set',
   });
 
-  const addNode = () => dispatch({
-    type: 'insertNode',
-    plotId: state.activePlotId,
-    treeId: state.selectedTreeIds[0],
-    newNodeId: '1J3I0',
-    newNode: {
-      targetChildIds: state.selectedNodeIds,
-      label: 'S',
-    },
-  });
+  const addNode = () => {
+    const newNodeId = generateNodeId();
+    /* TODO: don't use two dispatches for this */
+    dispatch({
+      type: 'insertNode',
+      plotId: state.activePlotId,
+      treeId: state.selectedTreeIds[0],
+      newNodeId,
+      newNode: {
+        targetChildIds: state.selectedNodeIds,
+        label: '',
+      },
+    });
+    dispatch({
+      type: 'selectNodes',
+      plotId: state.activePlotId,
+      treeIds: [state.selectedTreeIds[0]],
+      nodeIds: [newNodeId],
+      mode: 'set',
+    });
+    setEditing(true);
+  };
 
   const deleteNode = () => dispatch({
     type: 'deleteNodes',
