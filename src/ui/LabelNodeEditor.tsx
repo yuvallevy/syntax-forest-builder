@@ -8,7 +8,6 @@ import './LabelNodeEditor.scss';
 interface LabelNodeEditorInputProps {
   value: string;
   baseCoords: ClientCoords,
-  autoFocus: boolean;
   onInput: (inputValue: string) => void;
   onDone: (newLabel: string) => void;
   onCancel: () => void;
@@ -24,7 +23,6 @@ interface LabelNodeEditorProps {
 const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   value,
   baseCoords,
-  autoFocus,
   onInput,
   onDone,
   onCancel,
@@ -32,7 +30,7 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   type="text"
   className="LabelNodeEditorInput"
   value={value}
-  autoFocus={autoFocus}
+  autoFocus
   style={{ left: baseCoords.clientX, top: baseCoords.clientY }}
   onInput={e => onInput(e.currentTarget.value)}
   onBlur={e => onDone(e.currentTarget.value)}
@@ -53,7 +51,6 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     key={`editable-node-${nodeId}`}
     value={inputValue}
     baseCoords={nodePositionOnPlot}
-    autoFocus
     onInput={setInputValue}
     onDone={onDone}
     onCancel={onCancel}
