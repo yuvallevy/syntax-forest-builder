@@ -20,12 +20,12 @@ interface PlotViewProps {
   plot: PositionedPlot;
   selectedTreeIds: Id[];
   selectedNodeIds: Id[];
-  editing: boolean;
+  editing: { treeId: Id, nodeId: Id } | undefined;
   onDoneEditing: (newLabel?: string) => void;
   onNodesSelect: (treeIds: Id[], nodeIds: Id[]) => void;
 }
 
-const PlotView: React.FC<PlotViewProps> = ({ plot, selectedTreeIds, selectedNodeIds, editing, onDoneEditing, onNodesSelect }) => {
+const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, editing, onDoneEditing, onNodesSelect }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
 
@@ -97,10 +97,10 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedTreeIds, selectedNode
       />}
     </svg>
     {mapEntries(plot.trees, ([treeId, tree]) => <SentenceView key={`sentence-${treeId}`} tree={tree} onChange={console.log} />)}
-    {editing && selectedNodeIds.length === 1 && <LabelNodeEditor
-      key={`editable-nodes-${selectedTreeIds[0]}`}
-      tree={plot.trees[selectedTreeIds[0]]}
-      nodeId={selectedNodeIds[0]}
+    {editing && <LabelNodeEditor
+      key={`editable-nodes-${editing.nodeId}`}
+      tree={plot.trees[editing.treeId]}
+      nodeId={editing.nodeId}
       onDone={onDoneEditing}
       onCancel={() => onDoneEditing(undefined)}
     />}

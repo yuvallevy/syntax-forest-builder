@@ -14,7 +14,7 @@ const App = () => {
   const activePlot: UnpositionedPlot = useMemo(() => state.plots[state.activePlotId], [state.plots, state.activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
-  const [editing, setEditing] = useState<boolean>(false);
+  const [editing, setEditing] = useState<{ treeId: Id, nodeId: Id } | undefined>(undefined);
 
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
@@ -47,7 +47,7 @@ const App = () => {
       nodeIds: [newNodeId],
       mode: 'set',
     });
-    setEditing(true);
+    setEditing({ treeId: state.selectedTreeIds[0], nodeId: newNodeId });
   };
 
   const deleteNode = () => dispatch({
@@ -57,19 +57,22 @@ const App = () => {
     nodeIds: state.selectedNodeIds,
   });
 
-  const toggleEditing = () => setEditing(!editing && state.selectedNodeIds.length === 1);
+  const toggleEditing = () => setEditing(
+    !editing && state.selectedNodeIds.length === 1
+      ? { treeId: state.selectedTreeIds[0], nodeId: state.selectedNodeIds[0] }
+      : undefined);
 
   const handleDoneEditing = (newLabel?: string) => {
-    if (newLabel !== undefined) {
+    if (editing && newLabel !== undefined) {
       dispatch({
         type: 'setNodeLabel',
         plotId: state.activePlotId,
-        treeId: state.selectedTreeIds[0],
-        nodeId: state.selectedNodeIds[0],
+        treeId: editing.treeId,
+        nodeId: editing.nodeId,
         newLabel,
       })
     }
-    setEditing(false);
+    setEditing(undefined);
   }
 
   const toolbarItems: ToolbarItem[] = [
