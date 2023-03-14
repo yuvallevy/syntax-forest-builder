@@ -10,8 +10,10 @@ import generateNodeId from './ui/generateNodeId';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
+  const [activePlotId, setActivePlotId] = useState<Id>('plot');
+  const [selectedNodes, setSelectedNodes] = useState<TreeAndNodeId[]>([]);
 
-  const activePlot: UnpositionedPlot = useMemo(() => state.plots[state.activePlotId], [state.plots, state.activePlotId]);
+  const activePlot: UnpositionedPlot = useMemo(() => state.plots[activePlotId], [state.plots, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
   const [editingNode, setEditingNode] = useState<{ treeId: Id, nodeId: Id } | undefined>(undefined);
@@ -19,48 +21,35 @@ const App = () => {
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
-  const handleNodesSelect = (nodes: TreeAndNodeId[]) => dispatch({
-    type: 'selectNodes',
-    plotId: state.activePlotId,
-    nodes,
-    mode: 'set',
-  });
-
   const addNode = () => {
     const newNodeId = generateNodeId();
-    /* TODO: don't use two dispatches for this */
     dispatch({
       type: 'insertNode',
-      plotId: state.activePlotId,
-      treeId: state.selectedNodes[0].treeId,
+      plotId: activePlotId,
+      treeId: selectedNodes[0].treeId,
       newNodeId,
       newNode: {
-        targetChildIds: state.selectedNodes.map(({ nodeId }) => nodeId),
+        targetChildIds: selectedNodes.map(({ nodeId }) => nodeId),
         label: '',
       },
     });
-    dispatch({
-      type: 'selectNodes',
-      plotId: state.activePlotId,
-      nodes: [{ treeId: state.selectedNodes[0].treeId, nodeId: newNodeId }],
-      mode: 'set',
-    });
-    setEditingNode({ treeId: state.selectedNodes[0].treeId, nodeId: newNodeId });
+    setSelectedNodes([{ treeId: selectedNodes[0].treeId, nodeId: newNodeId }]);
+    setEditingNode({ treeId: selectedNodes[0].treeId, nodeId: newNodeId });
   };
 
   const deleteNode = () => dispatch({
     type: 'deleteNodes',
-    plotId: state.activePlotId,
-    nodes: state.selectedNodes,
+    plotId: activePlotId,
+    nodes: selectedNodes,
   });
 
-  const toggleEditing = () => setEditingNode(!editingNode && state.selectedNodes.length === 1 ? state.selectedNodes[0] : undefined);
+  const toggleEditing = () => setEditingNode(!editingNode && selectedNodes.length === 1 ? selectedNodes[0] : undefined);
 
   const handleDoneEditing = (newLabel?: string) => {
     if (editingNode && newLabel !== undefined) {
       dispatch({
         type: 'setNodeLabel',
-        plotId: state.activePlotId,
+        plotId: activePlotId,
         node: editingNode,
         newLabel,
       })
@@ -80,10 +69,10 @@ const App = () => {
     <Toolbar items={toolbarItems} />
     <PlotView
       plot={positionedPlot}
-      selectedNodes={state.selectedNodes}
+      selectedNodes={selectedNodes}
       editing={editingNode}
       onDoneEditing={handleDoneEditing}
-      onNodesSelect={handleNodesSelect}
+      onNodesSelect={setSelectedNodes}
     />
   </>;
 }
