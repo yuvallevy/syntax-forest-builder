@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI state deletes a node from a tree 1`] = `
+Object {
+  "plots": Object {
+    "plot": Object {
+      "trees": Object {
+        "aa": Object {
+          "nodes": Object {
+            "a": Object {
+              "label": "N",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": Array [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": Object {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`UI state inserts a node into a tree 1`] = `
+Object {
+  "plots": Object {
+    "plot": Object {
+      "trees": Object {
+        "aa": Object {
+          "nodes": Object {
+            "c": Object {
+              "children": Object {
+                "a": Object {
+                  "label": "N",
+                  "offset": Object {
+                    "dTreeX": 0,
+                    "dTreeY": 0,
+                  },
+                  "slice": Array [
+                    0,
+                    4,
+                  ],
+                  "triangle": false,
+                },
+                "b": Object {
+                  "label": "N",
+                  "offset": Object {
+                    "dTreeX": 0,
+                    "dTreeY": 0,
+                  },
+                  "slice": Array [
+                    5,
+                    10,
+                  ],
+                  "triangle": false,
+                },
+              },
+              "label": "NP",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
+          },
+          "offset": Object {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`UI state sets the label of a node 1`] = `
+Object {
+  "plots": Object {
+    "plot": Object {
+      "trees": Object {
+        "aa": Object {
+          "nodes": Object {
+            "a": Object {
+              "label": "NP",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": Array [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+            "b": Object {
+              "label": "N",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": Array [
+                5,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": Object {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+      },
+    },
+  },
+}
+`;
