@@ -4,8 +4,7 @@ describe('UI state', () => {
   const initialState: UiState = {
     plots: {},
     activePlotId: 'abc',
-    selectedTreeIds: ['pqr'],
-    selectedNodeIds: ['wxy'],
+    selectedNodes: [{ treeId: 'pqr', nodeId: 'wxy' }],
   };
 
   const undoableInitialState: UndoableUiState = {
@@ -17,27 +16,27 @@ describe('UI state', () => {
   const testCases: [string, UiAction][] = [
     [
       'selects one node replacing current selection',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'set' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'xyz' }], mode: 'set' }
     ],
     [
       'selects one node adding to current selection',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['xyz'], mode: 'add' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'xyz' }], mode: 'add' }
     ],
     [
       'selects two nodes replacing current selection',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'set' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'vwx' }, { treeId: 'pqr', nodeId: 'xyz' }], mode: 'set' }
     ],
     [
       'selects two nodes adding to current selection',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['vwx', 'xyz'], mode: 'add' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'vwx' }, { treeId: 'pqr', nodeId: 'xyz' }], mode: 'add' }
     ],
     [
       'selects two nodes replacing current selection where one node is already selected',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'set' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'wxy' }, { treeId: 'pqr', nodeId: 'xyz' }], mode: 'set' }
     ],
     [
       'selects two nodes adding to current selection where one node is already selected',
-      { type: 'selectNodes', plotId: 'abc', treeIds: ['pqr'], nodeIds: ['wxy', 'xyz'], mode: 'add' }
+      { type: 'selectNodes', plotId: 'abc', nodes: [{ treeId: 'pqr', nodeId: 'wxy' }, { treeId: 'pqr', nodeId: 'xyz' }], mode: 'add' }
     ],
   ];
 

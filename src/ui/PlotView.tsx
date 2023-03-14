@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { filterEntries, flatten, mapEntries, transformValues } from '../core/objTransforms';
-import { Id, PlotRect, PositionedPlot } from '../core/types';
+import { filterEntries, mapEntries, transformValues } from '../core/objTransforms';
+import { PlotRect, PositionedPlot } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
@@ -8,6 +8,7 @@ import ClientCoords, { ClientRect } from './ClientCoords';
 import './PlotView.scss';
 import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
 import { clientCoordsToPlotCoords } from './coordConversions';
+import { TreeAndNodeId } from './state';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 
@@ -18,16 +19,17 @@ const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
 
 interface PlotViewProps {
   plot: PositionedPlot;
-  selectedTreeIds: Id[];
-  selectedNodeIds: Id[];
-  editing: { treeId: Id, nodeId: Id } | undefined;
+  selectedNodes: TreeAndNodeId[];
+  editing: TreeAndNodeId | undefined;
   onDoneEditing: (newLabel?: string) => void;
-  onNodesSelect: (treeIds: Id[], nodeIds: Id[]) => void;
+  onNodesSelect: (nodes: TreeAndNodeId[]) => void;
 }
 
-const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, editing, onDoneEditing, onNodesSelect }) => {
+const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodes, editing, onDoneEditing, onNodesSelect }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
+
+  const selectedNodeIds = selectedNodes.map(({ nodeId }) => nodeId);
 
   const selectionBoxTopLeft: ClientCoords | undefined = selectionBoxStart && selectionBoxEnd ? {
     clientX: Math.min(selectionBoxStart.clientX, selectionBoxEnd.clientX),
@@ -63,9 +65,11 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, editing, onD
         ),
         ([_, nodeIds]) => nodeIds.length > 0
       );
-      const newSelectedTreeIds = Object.keys(newSelectedNodeIdsByTree);
-      const newSelectedNodeIds = flatten(Object.values(newSelectedNodeIdsByTree));
-      onNodesSelect(newSelectedTreeIds, newSelectedNodeIds);
+      const newSelectedNodes = Object.entries(newSelectedNodeIdsByTree)
+        .reduce(
+          (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
+          [] as TreeAndNodeId[]);
+      onNodesSelect(newSelectedNodes);
     }
     setSelectionBoxStart(undefined);
     setSelectionBoxEnd(undefined);
@@ -86,7 +90,7 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodeIds, editing, onD
           treeId={treeId}
           tree={tree}
           selectedNodeIds={selectedNodeIds}
-          onSingleNodeSelect={nodeId => onNodesSelect([treeId], [nodeId])}
+          onSingleNodeSelect={nodeId => onNodesSelect([{ treeId, nodeId }])}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView-selection-box"

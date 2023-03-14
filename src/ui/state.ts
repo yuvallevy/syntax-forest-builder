@@ -3,16 +3,21 @@ import { Id, IdMap, UnpositionedPlot, UnpositionedTree } from '../core/types';
 import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 
+export type TreeAndNodeId = {
+  treeId: Id;
+  nodeId: Id;
+};
+
 /**
  * Represents an action taken by the user.
  * To integrate with the undo/redo system, each action is translated into an undoable "state change",
  * which is subsequently applied in a reversible fashion.
  */
 export type UiAction =
-  | { type: 'selectNodes', plotId: Id, treeIds: Id[], nodeIds: Id[], mode: 'set' | 'add' }
+  | { type: 'selectNodes', plotId: Id, nodes: TreeAndNodeId[], mode: 'set' | 'add' }
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
-  | { type: 'deleteNodes', plotId: Id, treeId: Id, nodeIds: Id[] }
-  | { type: 'setNodeLabel', plotId: Id, treeId: Id, nodeId: Id, newLabel: string }
+  | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
+  | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
 ;
 
 /**
@@ -25,13 +30,11 @@ type UiStateChange = (
     type: 'setSelectedNodes',
     old: {
       activePlotId: Id,
-      selectedTreeIds: Id[],
-      selectedNodeIds: Id[],
+      selectedNodes: TreeAndNodeId[],
     },
     new: {
       activePlotId: Id,
-      selectedTreeIds: Id[],
-      selectedNodeIds: Id[],
+      selectedNodes: TreeAndNodeId[],
     },
   }
   | {
@@ -55,13 +58,11 @@ const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
         type: 'setSelectedNodes',
         old: {
           activePlotId: state.activePlotId,
-          selectedTreeIds: state.selectedTreeIds,
-          selectedNodeIds: state.selectedNodeIds,
+          selectedNodes: state.selectedNodes,
         },
         new: {
           activePlotId: action.plotId,
-          selectedTreeIds: action.mode === 'add' ? union(state.selectedTreeIds, action.treeIds) : action.treeIds,
-          selectedNodeIds: action.mode === 'add' ? union(state.selectedNodeIds, action.nodeIds) : action.nodeIds,
+          selectedNodes: action.mode === 'add' ? union(state.selectedNodes, action.nodes) : action.nodes,
         }
       };
     case 'insertNode':
@@ -73,21 +74,22 @@ const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
         new: insertNodeIntoTree(action.newNode)(action.newNodeId)(state.plots[action.plotId].trees[action.treeId]),
       };
     case 'deleteNodes':
+      const treeId = action.nodes[0].treeId;  // TODO: Use all trees
       return {
         type: 'setTree',
         plotId: action.plotId,
-        treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
-        new: deleteNodesInTree(action.nodeIds)(state.plots[action.plotId].trees[action.treeId]),
+        treeId: treeId,
+        old: state.plots[action.plotId].trees[treeId],
+        new: deleteNodesInTree(action.nodes.map(({ nodeId }) => nodeId))(state.plots[action.plotId].trees[treeId]),
       };
     case 'setNodeLabel':
       return {
         type: 'setTree',
         plotId: action.plotId,
-        treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
-        new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.nodeId)(
-          state.plots[action.plotId].trees[action.treeId])
+        treeId: action.node.treeId,
+        old: state.plots[action.plotId].trees[action.node.treeId],
+        new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.node.nodeId)(
+          state.plots[action.plotId].trees[action.node.treeId])
       };
   }
 };
@@ -137,8 +139,7 @@ const reverseUndoableAction: ReverseActionFunc<UndoableUiStateChange> = action =
 export type UiState = {
   plots: IdMap<UnpositionedPlot>;
   activePlotId: Id;
-  selectedTreeIds: Id[];
-  selectedNodeIds: Id[];
+  selectedNodes: TreeAndNodeId[];
 };
 
 export type UndoableUiState = UndoRedoHistory<UndoableUiStateChange, UiState>;
@@ -172,8 +173,7 @@ const initialState: UiState = {
     },
   },
   activePlotId: 'plot',
-  selectedTreeIds: [],
-  selectedNodeIds: [],
+  selectedNodes: [],
 };
 
 export const undoableInitialState: UndoableUiState = {
