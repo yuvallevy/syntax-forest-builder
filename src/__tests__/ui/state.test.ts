@@ -1,7 +1,7 @@
-import { UiAction, UiState, undoableReducer, UndoableUiState } from '../../ui/state';
+import { ContentAction, ContentState, undoableReducer, UndoableContentState } from '../../ui/state';
 
-describe('UI state', () => {
-  const initialState: UiState = {
+describe('content state', () => {
+  const initialState: ContentState = {
     plots: {
       'plot': {
         trees: {
@@ -18,13 +18,13 @@ describe('UI state', () => {
     },
   };
 
-  const undoableInitialState: UndoableUiState = {
+  const undoableInitialState: UndoableContentState = {
     current: initialState,
     undoStack: [],
     redoStack: [],
   };
 
-  const testCases: [string, UiAction][] = [
+  const testCases: [string, ContentAction][] = [
     [
       'inserts a node into a tree',
       { type: 'insertNode', plotId: 'plot', treeId: 'aa', newNodeId: 'c', newNode: { label: 'NP', targetChildIds: ['a', 'b'] } }

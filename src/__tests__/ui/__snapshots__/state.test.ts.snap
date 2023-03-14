@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UI state deletes a node from a tree 1`] = `
+exports[`content state deletes a node from a tree 1`] = `
 Object {
   "plots": Object {
     "plot": Object {
@@ -32,7 +32,7 @@ Object {
 }
 `;
 
-exports[`UI state inserts a node into a tree 1`] = `
+exports[`content state inserts a node into a tree 1`] = `
 Object {
   "plots": Object {
     "plot": Object {
@@ -85,7 +85,7 @@ Object {
 }
 `;
 
-exports[`UI state sets the label of a node 1`] = `
+exports[`content state sets the label of a node 1`] = `
 Object {
   "plots": Object {
     "plot": Object {

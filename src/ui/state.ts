@@ -12,7 +12,7 @@ export type TreeAndNodeId = {
  * To integrate with the undo/redo system, each action is translated into an undoable "state change",
  * which is subsequently applied in a reversible fashion.
  */
-export type UiAction =
+export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
@@ -23,7 +23,7 @@ export type UiAction =
  * Each state change includes information about the state before it so it can be easily undone,
  * and each action by the user is translated into a state change so that undo/redo can work smoothly.
  */
-type UiStateChange = (
+type ContentChange = (
   | {
     type: 'setTree',
     plotId: Id,
@@ -33,12 +33,12 @@ type UiStateChange = (
   }
 );
 
-type UndoableUiStateChange = UndoableActionCommon & UiStateChange;
+type UndoableContentChange = UndoableActionCommon & ContentChange;
 
 /**
  * Translates a user action into a state change, which can later be undone.
  */
-const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
+const makeUndoable = (state: ContentState) => (action: ContentAction): ContentChange => {
   switch (action.type) {
     case 'insertNode':
       return {
@@ -69,7 +69,7 @@ const makeUndoable = (state: UiState) => (action: UiAction): UiStateChange => {
   }
 };
 
-const applyUndoableAction: ApplyActionFunc<UndoableUiStateChange, UiState> = action => state => {
+const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> = action => state => {
   switch (action.type) {
     case 'setTree':
       return {
@@ -90,7 +90,7 @@ const applyUndoableAction: ApplyActionFunc<UndoableUiStateChange, UiState> = act
   }
 };
 
-const reverseUndoableAction: ReverseActionFunc<UndoableUiStateChange> = action => {
+const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action => {
   switch (action.type) {
     case 'setTree':
       return {
@@ -103,13 +103,13 @@ const reverseUndoableAction: ReverseActionFunc<UndoableUiStateChange> = action =
   }
 };
 
-export type UiState = {
+export type ContentState = {
   plots: IdMap<UnpositionedPlot>;
 };
 
-export type UndoableUiState = UndoRedoHistory<UndoableUiStateChange, UiState>;
+export type UndoableContentState = UndoRedoHistory<UndoableContentChange, ContentState>;
 
-const initialState: UiState = {
+const initialState: ContentState = {
   plots: {
     'plot': {
       trees: {
@@ -139,13 +139,13 @@ const initialState: UiState = {
   },
 };
 
-export const undoableInitialState: UndoableUiState = {
+export const undoableInitialState: UndoableContentState = {
   current: initialState,
   undoStack: [],
   redoStack: [],
 };
 
-export const undoableReducer = (state: UndoableUiState, action: UiAction | { type: 'undo' } | { type: 'redo' }): UndoableUiState =>
+export const undoableReducer = (state: UndoableContentState, action: ContentAction | { type: 'undo' } | { type: 'redo' }): UndoableContentState =>
   action.type === 'undo' ? undo(applyUndoableAction)(reverseUndoableAction)(state)
     : action.type === 'redo' ? redo(applyUndoableAction)(reverseUndoableAction)(state)
     : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);
