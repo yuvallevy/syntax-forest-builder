@@ -12,7 +12,7 @@ describe('sentence rendering', () => {
 
   it('renders an input box with the sentence', () => {
     expect(render(
-      <SentenceView tree={tree} onChange={() => null} />
+      <SentenceView tree={tree} onChange={() => null} onSelect={() => null} />
     ).asFragment()).toMatchSnapshot();
   });
 });

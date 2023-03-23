@@ -1,40 +1,45 @@
 import { useMemo, useReducer, useState } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, PositionedPlot, UnpositionedPlot } from './core/types';
+import { Id, NodeSlice, PositionedPlot, UnpositionedPlot } from './core/types';
 import PlotView from './ui/PlotView';
 import { undoableReducer, undoableInitialState, TreeAndNodeId } from './ui/state';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';
+import { newNodeFromSelection, SelectionInPlot } from './ui/newNodes';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
   const [activePlotId, setActivePlotId] = useState<Id>('plot');
-  const [selectedNodes, setSelectedNodes] = useState<TreeAndNodeId[]>([]);
+  const [selection, setSelection] = useState<SelectionInPlot>({ nodes: [] });
+
+  const selectedNodes = 'nodes' in selection ? selection.nodes : [];
+  const setSelectedNodes = (nodes: TreeAndNodeId[]) => setSelection({ nodes });
+  const setSelectedSlice = (treeId: Id, slice: NodeSlice) => setSelection({ treeId, slice });
 
   const activePlot: UnpositionedPlot = useMemo(() => state.plots[activePlotId], [state.plots, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
-  const [editingNode, setEditingNode] = useState<{ treeId: Id, nodeId: Id } | undefined>(undefined);
+  const [editingNode, setEditingNode] = useState<TreeAndNodeId | undefined>(undefined);
 
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
   const addNode = () => {
+    const treeId = 'treeId' in selection ? selection.treeId : selectedNodes[0].treeId;
     const newNodeId = generateNodeId();
     dispatch({
       type: 'insertNode',
       plotId: activePlotId,
-      treeId: selectedNodes[0].treeId,
+      treeId,
       newNodeId,
-      newNode: {
-        targetChildIds: selectedNodes.map(({ nodeId }) => nodeId),
-        label: '',
-      },
+      newNode: newNodeFromSelection(selection, activePlot.trees[treeId].sentence),
     });
-    setSelectedNodes([{ treeId: selectedNodes[0].treeId, nodeId: newNodeId }]);
-    setEditingNode({ treeId: selectedNodes[0].treeId, nodeId: newNodeId });
+
+    const newNodeIndicator = { treeId, nodeId: newNodeId };
+    setSelectedNodes([newNodeIndicator]);
+    setEditingNode(newNodeIndicator);
   };
 
   const deleteNode = () => dispatch({
@@ -73,6 +78,7 @@ const App = () => {
       editing={editingNode}
       onDoneEditing={handleDoneEditing}
       onNodesSelect={setSelectedNodes}
+      onSliceSelect={setSelectedSlice}
     />
   </>;
 }
