@@ -1,13 +1,13 @@
 import { useMemo, useReducer, useState } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, NodeSlice, PositionedPlot, UnpositionedPlot } from './core/types';
+import { Id, NodeSlice, PositionedPlot, Sentence, UnpositionedPlot } from './core/types';
 import PlotView from './ui/PlotView';
 import { undoableReducer, undoableInitialState, TreeAndNodeId } from './ui/state';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';
-import { newNodeFromSelection, SelectionInPlot } from './ui/newNodes';
+import { newNodeFromSelection, SelectionInPlot } from './ui/editNodes';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
@@ -48,6 +48,14 @@ const App = () => {
     nodes: selectedNodes,
   });
 
+  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelection: NodeSlice) => dispatch({
+    type: 'setSentence',
+    plotId: activePlotId,
+    treeId,
+    newSentence,
+    oldSelection,
+  });
+
   const toggleEditing = () => setEditingNode(!editingNode && selectedNodes.length === 1 ? selectedNodes[0] : undefined);
 
   const handleDoneEditing = (newLabel?: string) => {
@@ -79,6 +87,7 @@ const App = () => {
       onDoneEditing={handleDoneEditing}
       onNodesSelect={setSelectedNodes}
       onSliceSelect={setSelectedSlice}
+      onSentenceChange={handleSentenceChange}
     />
   </>;
 }

@@ -1,5 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`tree manipulation changes all nodes in the tree 1`] = `
+Object {
+  "top": Object {
+    "children": Object {
+      "branch1": Object {
+        "children": Object {
+          "term1": Object {
+            "label": "test",
+            "offset": Object {
+              "dTreeX": 0,
+              "dTreeY": 0,
+            },
+            "slice": Array [
+              0,
+              4,
+            ],
+            "triangle": false,
+          },
+        },
+        "label": "test",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+      },
+      "term2": Object {
+        "label": "test",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+        "slice": Array [
+          5,
+          11,
+        ],
+        "triangle": false,
+      },
+    },
+    "label": "test",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 5,
+    },
+  },
+}
+`;
+
 exports[`tree manipulation changes the label of a branching node down the tree 1`] = `
 Object {
   "top": Object {

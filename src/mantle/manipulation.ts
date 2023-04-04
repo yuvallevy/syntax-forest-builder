@@ -110,6 +110,13 @@ const transformNodeRecursively =
       }
       : transformChildrenOfNodes(transformNodeRecursively(transformFunc)(nodeId))(nodes);
 
+const transformAllNodesRecursively =
+  (transformFunc: NodeTransformFunc) =>
+  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
+    isEmpty(nodes)
+      ? nodes
+      : transformChildrenOfNodes(transformAllNodesRecursively(transformFunc))(transformValues(nodes, transformFunc));
+
 const deleteNodeRecursively =
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
@@ -176,6 +183,16 @@ export const transformNodeInTree =
   (tree: UnpositionedTree): UnpositionedTree => ({
     ...tree,
     nodes: transformNodeRecursively(transformFunc)(nodeId)(tree.nodes),
+  });
+
+/**
+ * Transforms all nodes in the given tree using the given transform function.
+ */
+export const transformAllNodesInTree =
+  (transformFunc: NodeTransformFunc) =>
+  (tree: UnpositionedTree): UnpositionedTree => ({
+    ...tree,
+    nodes: transformAllNodesRecursively(transformFunc)(tree.nodes),
   });
 
 /**

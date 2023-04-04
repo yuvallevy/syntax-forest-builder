@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { filterEntries, mapEntries, transformValues } from '../core/objTransforms';
-import { Id, NodeSlice, PlotRect, PositionedPlot } from '../core/types';
+import { Id, NodeSlice, PlotRect, PositionedPlot, Sentence } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
@@ -24,9 +24,18 @@ interface PlotViewProps {
   onDoneEditing: (newLabel?: string) => void;
   onNodesSelect: (nodes: TreeAndNodeId[]) => void;
   onSliceSelect: (treeId: Id, slice: NodeSlice) => void;
+  onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: NodeSlice) => void;
 }
 
-const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodes, editing, onDoneEditing, onNodesSelect, onSliceSelect }) => {
+const PlotView: React.FC<PlotViewProps> = ({
+  plot,
+  selectedNodes,
+  editing,
+  onDoneEditing,
+  onNodesSelect,
+  onSliceSelect,
+  onSentenceChange,
+}) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
 
@@ -105,7 +114,7 @@ const PlotView: React.FC<PlotViewProps> = ({ plot, selectedNodes, editing, onDon
       <SentenceView
         key={`sentence-${treeId}`}
         tree={tree}
-        onChange={console.log}
+        onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
         onSelect={slice => onSliceSelect(treeId, slice)}
       />)}
     {editing && <LabelNodeEditor

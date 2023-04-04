@@ -1,5 +1,5 @@
 import { UnpositionedBranchingNode, UnpositionedTree } from '../../core/types';
-import { deleteNodesInTree, findNodeInTree, insertNodeIntoTree, transformNodeInTree } from '../../mantle/manipulation';
+import { deleteNodesInTree, findNodeInTree, insertNodeIntoTree, transformAllNodesInTree, transformNodeInTree } from '../../mantle/manipulation';
 
 describe('tree manipulation', () => {
   const tree: UnpositionedTree = {
@@ -156,6 +156,10 @@ describe('tree manipulation', () => {
 
   it('changes the label of a terminal node down the tree', () => {
     expect(changeLabel('term1')(tree).nodes).toMatchSnapshot();
+  });
+
+  it('changes all nodes in the tree', () => {
+    expect(transformAllNodesInTree(node => ({ ...node, label: 'test' }))(tree).nodes).toMatchSnapshot();
   });
 
   it('deletes a top-level node', () => {

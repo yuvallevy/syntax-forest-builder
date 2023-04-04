@@ -37,6 +37,10 @@ describe('content state', () => {
       'sets the label of a node',
       { type: 'setNodeLabel', plotId: 'plot', node: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
     ],
+    [
+      'reacts to a change in the sentence',
+      { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelection: [2, 2] }
+    ],
   ];
 
   it.each(testCases)('%s', (name, action) => expect(undoableReducer(undoableInitialState, action).current).toMatchSnapshot());

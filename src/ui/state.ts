@@ -1,6 +1,7 @@
-import { Id, IdMap, UnpositionedPlot, UnpositionedTree } from '../core/types';
+import { Id, IdMap, NodeSlice, Sentence, UnpositionedPlot, UnpositionedTree } from '../core/types';
 import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
+import { handleLocalSentenceChange } from './editNodes';
 
 export type TreeAndNodeId = {
   treeId: Id;
@@ -16,6 +17,7 @@ export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
+  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelection: NodeSlice }
 ;
 
 /**
@@ -64,8 +66,17 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         treeId: action.node.treeId,
         old: state.plots[action.plotId].trees[action.node.treeId],
         new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.node.nodeId)(
-          state.plots[action.plotId].trees[action.node.treeId])
+          state.plots[action.plotId].trees[action.node.treeId]),
       };
+    case 'setSentence':
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: handleLocalSentenceChange(action.newSentence, action.oldSelection)(
+          state.plots[action.plotId].trees[action.treeId]),
+      }
   }
 };
 
