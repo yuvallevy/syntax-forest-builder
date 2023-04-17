@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { filterEntries, mapEntries, transformValues } from '../core/objTransforms';
-import { Id, NodeSlice, PlotRect, PositionedPlot, Sentence } from '../core/types';
+import { Id, StringSlice, PlotRect, PositionedPlot, Sentence } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
@@ -23,8 +23,8 @@ interface PlotViewProps {
   editing: TreeAndNodeId | undefined;
   onDoneEditing: (newLabel?: string) => void;
   onNodesSelect: (nodes: TreeAndNodeId[]) => void;
-  onSliceSelect: (treeId: Id, slice: NodeSlice) => void;
-  onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: NodeSlice) => void;
+  onSliceSelect: (treeId: Id, slice: StringSlice) => void;
+  onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
 }
 
 const PlotView: React.FC<PlotViewProps> = ({

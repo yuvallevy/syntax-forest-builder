@@ -1,14 +1,14 @@
 import { useRef } from 'react';
-import { NodeSlice, PositionedTree, Sentence } from '../core/types';
+import { StringSlice, PositionedTree, Sentence } from '../core/types';
 import './SentenceView.scss';
 
 interface SentenceViewProps {
   tree: PositionedTree;
-  onChange: (newSentence: Sentence, oldSelectedSlice: NodeSlice) => void;
-  onSelect: (slice: NodeSlice) => void;
+  onChange: (newSentence: Sentence, oldSelectedSlice: StringSlice) => void;
+  onSelect: (slice: StringSlice) => void;
 }
 
-const getSelectionSlice = (element: HTMLInputElement): NodeSlice | null =>
+const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
   element.selectionStart !== null && element.selectionEnd !== null
     ? [element.selectionStart, element.selectionEnd]
     : null;
@@ -16,7 +16,7 @@ const getSelectionSlice = (element: HTMLInputElement): NodeSlice | null =>
 const SentenceView: React.FC<SentenceViewProps> = ({ tree, onChange, onSelect }) => {
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
-  const oldSelection = useRef<NodeSlice | null>(null);
+  const oldSelection = useRef<StringSlice | null>(null);
 
   return <input
     type="text"

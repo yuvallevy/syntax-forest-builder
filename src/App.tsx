@@ -1,7 +1,7 @@
 import { useMemo, useReducer, useState } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, NodeSlice, PositionedPlot, Sentence, UnpositionedPlot } from './core/types';
+import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot } from './core/types';
 import PlotView from './ui/PlotView';
 import { undoableReducer, undoableInitialState, TreeAndNodeId } from './ui/state';
 import strWidth from './ui/strWidth';
@@ -16,7 +16,7 @@ const App = () => {
 
   const selectedNodes = 'nodes' in selection ? selection.nodes : [];
   const setSelectedNodes = (nodes: TreeAndNodeId[]) => setSelection({ nodes });
-  const setSelectedSlice = (treeId: Id, slice: NodeSlice) => setSelection({ treeId, slice });
+  const setSelectedSlice = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
   const activePlot: UnpositionedPlot = useMemo(() => state.plots[activePlotId], [state.plots, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
@@ -48,7 +48,7 @@ const App = () => {
     nodes: selectedNodes,
   });
 
-  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelection: NodeSlice) => dispatch({
+  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => dispatch({
     type: 'setSentence',
     plotId: activePlotId,
     treeId,

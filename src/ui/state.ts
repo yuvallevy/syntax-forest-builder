@@ -1,4 +1,4 @@
-import { Id, IdMap, NodeSlice, Sentence, UnpositionedPlot, UnpositionedTree } from '../core/types';
+import { Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree } from '../core/types';
 import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
@@ -17,7 +17,7 @@ export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
-  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelection: NodeSlice }
+  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelection: StringSlice }
 ;
 
 /**

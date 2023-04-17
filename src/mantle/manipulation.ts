@@ -1,5 +1,5 @@
 import { isEmpty, omitKey, transformValues, without } from '../core/objTransforms';
-import { Id, IdMap, isBranching, NodeCommon, NodeSlice, UnpositionedBranchingNode, UnpositionedNode, UnpositionedTree } from '../core/types';
+import { Id, IdMap, isBranching, NodeCommon, StringSlice, UnpositionedBranchingNode, UnpositionedNode, UnpositionedTree } from '../core/types';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
 
@@ -9,7 +9,7 @@ type InsertedNodeCommon = NodeCommon & { targetParentId?: Id; }
 
 type InsertedBranchingNode = InsertedNodeCommon & { targetChildIds: Id[]; };
 
-type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: NodeSlice; };
+type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: StringSlice; };
 
 export type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 

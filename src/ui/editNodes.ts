@@ -1,8 +1,8 @@
 import { TreeAndNodeId } from './state';
-import { Id, isBranching, NodeSlice, Sentence, UnpositionedNode, UnpositionedTree } from '../core/types';
+import { Id, isBranching, StringSlice, Sentence, UnpositionedNode, UnpositionedTree } from '../core/types';
 import { InsertedNode, transformAllNodesInTree } from '../mantle/manipulation';
 
-export type SelectionInPlot = { nodes: TreeAndNodeId[] } | { treeId: Id, slice: NodeSlice };
+export type SelectionInPlot = { nodes: TreeAndNodeId[] } | { treeId: Id, slice: StringSlice };
 
 const isWordChar = (char: string) => /['A-Za-z\u00c0-\u1fff]/.test(char);
 
@@ -50,7 +50,7 @@ export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sente
  * Node slices will not expand when adding characters, but may contract when removing characters.
  */
 const shiftNodeSliceAfterChange =
-  (oldSelection: NodeSlice, shiftBy: number) =>
+  (oldSelection: StringSlice, shiftBy: number) =>
   (node: UnpositionedNode): UnpositionedNode => {
     if (                               // If:
       isBranching(node) ||             // this is a branching node, or
@@ -59,7 +59,7 @@ const shiftNodeSliceAfterChange =
     ) return node;                     // no change is necessary
 
     const [oldNodeSliceStart, oldNodeSliceEnd] = node.slice;
-    let newNodeSlice: NodeSlice = [oldNodeSliceStart, oldNodeSliceEnd];
+    let newNodeSlice: StringSlice = [oldNodeSliceStart, oldNodeSliceEnd];
     if (oldSelection[0] === oldSelection[1]) {  // No selection, just a cursor
       const oldCursorPos = oldSelection[0];
       if (oldCursorPos === oldNodeSliceStart) {  // Cursor was at the beginning of the slice
@@ -94,7 +94,7 @@ const shiftNodeSliceAfterChange =
  *   This is used to determine how exactly node ranges should change.
  */
 export const handleLocalSentenceChange =
-  (newSentence: Sentence, oldSelection: NodeSlice) =>
+  (newSentence: Sentence, oldSelection: StringSlice) =>
   (tree: UnpositionedTree): UnpositionedTree => transformAllNodesInTree(
     shiftNodeSliceAfterChange(oldSelection, newSentence.length - tree.sentence.length)
   )({

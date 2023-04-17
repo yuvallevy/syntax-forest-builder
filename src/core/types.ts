@@ -24,7 +24,7 @@ export type PlotRect = {
   bottomRight: PlotCoords;
 };
 
-export type NodeSlice = [SliceStart, SliceEndExclusive];
+export type StringSlice = [SliceStart, SliceEndExclusive];
 
 export type IdMap<T> = Record<Id, T>;
 
@@ -57,7 +57,7 @@ export type UnpositionedBranchingNode = NodeCommon & WithOffsetInTree & {
 };
 
 export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
-  slice: NodeSlice;
+  slice: StringSlice;
   triangle: boolean;
 };
 

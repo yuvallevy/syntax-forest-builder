@@ -1,4 +1,4 @@
-import { NodeSlice, Sentence, UnpositionedTree } from '../../core/types';
+import { StringSlice, Sentence, UnpositionedTree } from '../../core/types';
 import { handleLocalSentenceChange, newNodeFromSelection } from '../../ui/editNodes';
 
 describe('high-level tree editing routines', () => {
@@ -9,7 +9,7 @@ describe('high-level tree editing routines', () => {
     });
 
     describe('defines a new terminal node', () => {
-      const testSentencesForWordRanges: [Sentence, number, NodeSlice][] = [
+      const testSentencesForWordRanges: [Sentence, number, StringSlice][] = [
         // The word in...                          ...at position...     ...is in range...
         ['She will buy the red sweater.',          2,                    [0, 3]],
         ['I have nowhere to go.',                  18,                   [18, 20]],
@@ -81,7 +81,7 @@ describe('high-level tree editing routines', () => {
       ['The do jumped.', [6, 6]],  // Forward delete from index 6
       ['The g jumped.', [6, 6]],  // Backward word delete from index 6
       ['The d jumped.', [5, 5]],  // Forward word delete from index 5
-    ] as [Sentence, NodeSlice][])('reassigns terminal node slices when changing sentence to "%s"', (newSentence, oldSelection) => {
+    ] as [Sentence, StringSlice][])('reassigns terminal node slices when changing sentence to "%s"', (newSentence, oldSelection) => {
       expect(handleLocalSentenceChange(newSentence, oldSelection)(tree).nodes).toMatchSnapshot();
     });
   });
