@@ -39,33 +39,35 @@ Object {
       "trees": Object {
         "aa": Object {
           "nodes": Object {
-            "c": Object {
-              "children": Object {
-                "a": Object {
-                  "label": "N",
-                  "offset": Object {
-                    "dTreeX": 0,
-                    "dTreeY": 0,
-                  },
-                  "slice": Array [
-                    0,
-                    4,
-                  ],
-                  "triangle": false,
-                },
-                "b": Object {
-                  "label": "N",
-                  "offset": Object {
-                    "dTreeX": 0,
-                    "dTreeY": 0,
-                  },
-                  "slice": Array [
-                    5,
-                    10,
-                  ],
-                  "triangle": false,
-                },
+            "a": Object {
+              "label": "N",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
               },
+              "slice": Array [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+            "b": Object {
+              "label": "N",
+              "offset": Object {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": Array [
+                5,
+                10,
+              ],
+              "triangle": false,
+            },
+            "c": Object {
+              "children": Array [
+                "a",
+                "b",
+              ],
               "label": "NP",
               "offset": Object {
                 "dTreeX": 0,

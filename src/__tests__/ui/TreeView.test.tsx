@@ -6,15 +6,12 @@ describe('tree rendering', () => {
   const tree: PositionedTree = {
     sentence: 'Noun verbs very adverbly.',
     nodes: {
-      'a': { label: 'S', position: { treeX: 53.625, treeY: -80 }, children: {
-        'b': { label: 'NP', position: { treeX: 18, treeY: -60 }, children: {
-          'c': { label: 'N', position: { treeX: 18, treeY: -2 } },
-        } },
-        'd': { label: 'VP', position: { treeX: 89.25, treeY: -60 }, children: {
-          'e': { label: 'V', position: { treeX: 57, treeY: -2 } },
-          'f': { label: 'AdvP', position: { treeX: 121.5, treeY: -30 }, triangle: { treeX1: 72, treeX2: 104 } },
-        } },
-      } },
+      'a': { label: 'S', position: { treeX: 53.625, treeY: -80 }, children: ['b', 'd'] },
+      'b': { label: 'NP', position: { treeX: 18, treeY: -60 }, children: ['c'] },
+      'c': { label: 'N', position: { treeX: 18, treeY: -2 } },
+      'd': { label: 'VP', position: { treeX: 89.25, treeY: -60 }, children: ['e', 'f'] },
+      'e': { label: 'V', position: { treeX: 57, treeY: -2 } },
+      'f': { label: 'AdvP', position: { treeX: 121.5, treeY: -30 }, triangle: { treeX1: 72, treeX2: 104 } },
     },
     position: { plotX: 50, plotY: -32 },
     width: 104,

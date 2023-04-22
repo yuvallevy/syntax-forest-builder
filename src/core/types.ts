@@ -53,7 +53,7 @@ type WithOffsetInTree = {
 };
 
 export type UnpositionedBranchingNode = NodeCommon & WithOffsetInTree & {
-  children: IdMap<UnpositionedNode>;
+  children: Id[];
 };
 
 export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
@@ -79,7 +79,7 @@ export type PositionInTree = {
 type WithPositionInTree = { position: PositionInTree };
 
 export type PositionedBranchingNode = NodeCommon & WithPositionInTree & {
-  children: IdMap<PositionedNode>;
+  children: Id[];
 };
 
 export type PositionedTerminalNode = NodeCommon & WithPositionInTree & {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { mapEntries } from '../core/objTransforms';
-import { Id, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree } from '../core/types';
+import {
+  Id, IdMap, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
+} from '../core/types';
 import './TreeView.scss';
 
 const NODE_LEVEL_SPACING = 20;
@@ -13,15 +15,15 @@ interface TreeViewProps {
   onSingleNodeSelect?: (nodeId: Id) => void;
 }
 
-const renderChildNodeConnections = (node: PositionedBranchingNode): React.ReactNode[] =>
-  mapEntries(node.children, ([childId, child]) =>
+const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
+  node.children.map(childId =>
     <line
       key={`to-${childId}`}
       stroke="#000"
       x1={node.position.treeX}
       y1={node.position.treeY}
-      x2={child.position.treeX}
-      y2={child.position.treeY - NODE_LEVEL_SPACING}
+      x2={allNodes[childId].position.treeX}
+      y2={allNodes[childId].position.treeY - NODE_LEVEL_SPACING}
     />
   );
 
@@ -33,8 +35,13 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 
-const renderNodeFlat =
-  (nodeId: Id, node: PositionedNode, selectedNodeIds: Id[], onSelect?: (id: Id) => void): React.ReactNode[] => [
+const renderNode = (
+  nodeId: Id,
+  node: PositionedNode,
+  allNodes: IdMap<PositionedNode>,
+  selectedNodeIds: Id[],
+  onSelect?: (id: Id) => void
+): React.ReactNode[] => [
   <text
     key={nodeId}
     x={node.position.treeX}
@@ -48,16 +55,12 @@ const renderNodeFlat =
     {node.label}
   </text>,
   'triangle' in node && renderTriangleConnection(nodeId, node),
-  ...('children' in node)
-    ? [
-      ...renderChildNodeConnections(node),
-      ...mapEntries(node.children, ([nodeId, node]) => renderNodeFlat(nodeId, node, selectedNodeIds, onSelect)),
-    ] : [],
+  'children' in node && renderChildNodeConnections(node, allNodes),
 ];
 
 const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect: onNodeSelect }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {mapEntries(tree.nodes, ([nodeId, node]) => renderNodeFlat(nodeId, node, selectedNodeIds, onNodeSelect))}
+    {mapEntries(tree.nodes, ([nodeId, node]) => renderNode(nodeId, node, tree.nodes, selectedNodeIds, onNodeSelect))}
   </g>;
 
 export default TreeView;

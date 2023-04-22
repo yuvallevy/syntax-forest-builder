@@ -2,54 +2,58 @@
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The d jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              5,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          6,
-          12,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      5,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      6,
+      12,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -61,54 +65,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dg jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -120,54 +128,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dg jumped." 2`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -179,54 +191,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The do jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -238,54 +254,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The do jumped." 2`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -297,54 +317,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dogs jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              7,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          9,
-          15,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      7,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      9,
+      15,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -356,54 +380,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The doug jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              8,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          9,
-          15,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      8,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      9,
+      15,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -415,54 +443,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The g jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              5,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          6,
-          12,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      5,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      6,
+      12,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -474,54 +506,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The og jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -533,54 +569,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The og jumped." 2`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              4,
-              6,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          7,
-          13,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      4,
+      6,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      7,
+      13,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
@@ -592,54 +632,58 @@ Object {
 
 exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The wdog jumped." 1`] = `
 Object {
-  "top": Object {
-    "children": Object {
-      "branch1": Object {
-        "children": Object {
-          "term1": Object {
-            "label": "Det",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              0,
-              3,
-            ],
-            "triangle": false,
-          },
-          "term2": Object {
-            "label": "N",
-            "offset": Object {
-              "dTreeX": 0,
-              "dTreeY": 0,
-            },
-            "slice": Array [
-              5,
-              8,
-            ],
-            "triangle": false,
-          },
-        },
-        "label": "NP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-      },
-      "term3": Object {
-        "label": "VP",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          9,
-          15,
-        ],
-        "triangle": true,
-      },
+  "branch1": Object {
+    "children": Array [
+      "term1",
+      "term2",
+    ],
+    "label": "NP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
     },
+  },
+  "term1": Object {
+    "label": "Det",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      3,
+    ],
+    "triangle": false,
+  },
+  "term2": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      5,
+      8,
+    ],
+    "triangle": false,
+  },
+  "term3": Object {
+    "label": "VP",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      9,
+      15,
+    ],
+    "triangle": true,
+  },
+  "top": Object {
+    "children": Array [
+      "branch1",
+      "term3",
+    ],
     "label": "S",
     "offset": Object {
       "dTreeX": 0,

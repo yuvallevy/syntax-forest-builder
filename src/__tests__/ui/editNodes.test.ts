@@ -31,35 +31,33 @@ describe('high-level tree editing routines', () => {
     const tree: UnpositionedTree = {
       sentence: 'The dog jumped.',
       nodes: {
+        'branch1': {
+          label: 'NP',
+          offset: { dTreeX: 0, dTreeY: 0 },
+          children: ['term1', 'term2'],
+        },
+        'term1': {
+          label: 'Det',
+          offset: { dTreeX: 0, dTreeY: 0 },
+          slice: [0, 3],
+          triangle: false,
+        },
+        'term2': {
+          label: 'N',
+          offset: { dTreeX: 0, dTreeY: 0 },
+          slice: [4, 7],
+          triangle: false,
+        },
+        'term3': {
+          label: 'VP',
+          offset: { dTreeX: 0, dTreeY: 0 },
+          slice: [8, 14],
+          triangle: true,
+        },
         'top': {
           label: 'S',
           offset: { dTreeX: 0, dTreeY: 5 },
-          children: {
-            'branch1': {
-              label: 'NP',
-              offset: { dTreeX: 0, dTreeY: 0 },
-              children: {
-                'term1': {
-                  label: 'Det',
-                  offset: { dTreeX: 0, dTreeY: 0 },
-                  slice: [0, 3],
-                  triangle: false,
-                },
-                'term2': {
-                  label: 'N',
-                  offset: { dTreeX: 0, dTreeY: 0 },
-                  slice: [4, 7],
-                  triangle: false,
-                },
-              },
-            },
-            'term3': {
-              label: 'VP',
-              offset: { dTreeX: 0, dTreeY: 0 },
-              slice: [8, 14],
-              triangle: true,
-            },
-          },
+          children: ['branch1', 'term3'],
         },
       },
       offset: { dPlotX: 0, dPlotY: 0 },

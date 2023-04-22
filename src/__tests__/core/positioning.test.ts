@@ -35,14 +35,16 @@ describe('Node positioning', () => {
   const treeWithBranchingNodes: UnpositionedTree = {
     ...treeWithTerminalNodes,
     nodes: {
-      'c': { label: 'S', ...zeroOffset, children: treeWithTerminalNodes.nodes },
+      ...treeWithTerminalNodes.nodes,
+      'c': { label: 'S', ...zeroOffset, children: ['a', 'b'] },
     },
   };
 
   const treeWithBranchingAndTriangleNodes: UnpositionedTree = {
     ...treeWithTriangleNodes,
     nodes: {
-      'c': { label: 'S', ...zeroOffset, children: treeWithTriangleNodes.nodes },
+      ...treeWithTriangleNodes.nodes,
+      'c': { label: 'S', ...zeroOffset, children: ['a', 'b'] },
     },
   };
 
