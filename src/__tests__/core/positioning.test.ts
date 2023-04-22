@@ -1,4 +1,4 @@
-import { PositionedBranchingNode, PositionedTerminalNode, UnpositionedTree } from '../../core/types';
+import { PositionedTerminalNode, UnpositionedTree } from '../../core/types';
 import { applyNodePositionsToTree } from '../../core/positioning';
 import mockStrWidth from '../__mocks__/mockStrWidth';
 
@@ -20,6 +20,15 @@ describe('Node positioning', () => {
     nodes: {
       'a': { label: 'N', offset: { dTreeX: 0, dTreeY: -10 }, slice: [0, 4], triangle: false },
       'b': { label: 'VP', ...zeroOffset, slice: [5, 17], triangle: true },
+    },
+  };
+
+  const treeWithStrandedNodes: UnpositionedTree = {
+    sentence: 'Noun verb phrases.',
+    offset: { dPlotX: 0, dPlotY: 0 },
+    nodes: {
+      'a': { label: 'N', offset: { dTreeX: 0, dTreeY: -10 }, slice: [0, 4], triangle: false },
+      'b': { label: 'VP', offset: { dTreeX: 80, dTreeY: -20 } },
     },
   };
 
@@ -47,6 +56,11 @@ describe('Node positioning', () => {
     const result = applyNodePositionsToTree(mockStrWidth)(treeWithTriangleNodes);
     expect(result.nodes['a'].position).toStrictEqual({ treeX: 18, treeY: -12 });
     expect(result.nodes['b'].position).toStrictEqual({ treeX: 79.5, treeY: -20 });
+  });
+
+  it('positions stranded nodes', () => {
+    const result = applyNodePositionsToTree(mockStrWidth)(treeWithStrandedNodes);
+    expect(result.nodes['b'].position).toStrictEqual({ treeX: 80, treeY: -20 });
   });
 
   it('positions branching nodes', () => {

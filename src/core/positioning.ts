@@ -1,11 +1,56 @@
 import { mapValues, transformValues } from './objTransforms';
-import { PositionedNode, PositionedPlot, PositionedTree, Sentence, UnpositionedNode, UnpositionedPlot, UnpositionedTree } from './types';
+import { PositionedNode, PositionedPlot, PositionedTree, PositionInTree, Sentence, UnpositionedNode, UnpositionedPlot, UnpositionedTree } from './types';
 
 const DEFAULT_TERMINAL_NODE_Y = -2;
 const DEFAULT_TRIANGLE_NODE_Y = -20;
 const DEFAULT_NODE_LEVEL_DIFF = -40;
 
 type StrWidthFunc = (str: string) => number;
+
+const determineNodePosition =
+  (strWidthFunc: StrWidthFunc) =>
+  (sentence: Sentence) =>
+  (node: UnpositionedNode): { position: PositionInTree, triangle: { treeX1: number, treeX2: number } | undefined } => {
+    if ('slice' in node) {
+      // This is a terminal node
+      const [sliceStart, sliceEnd] = node.slice;
+      const widthBeforeSlice = strWidthFunc(sentence.slice(0, sliceStart));
+      const sliceWidth = strWidthFunc(sentence.slice(sliceStart, sliceEnd));
+      return {
+        position: {
+          treeX: widthBeforeSlice + (sliceWidth / 2) + node.offset.dTreeX,
+          treeY: (node.triangle ? DEFAULT_TRIANGLE_NODE_Y : DEFAULT_TERMINAL_NODE_Y) + node.offset.dTreeY,
+        },
+        triangle: node.triangle ? {
+          treeX1: widthBeforeSlice,
+          treeX2: widthBeforeSlice + sliceWidth,
+        } : undefined,
+      };
+    }
+
+    if ('children' in node) {
+      // This is a branching node
+      const childNodePositions = transformValues(node.children, determineNodePosition(strWidthFunc)(sentence));
+      const childXs = mapValues(childNodePositions, node => node.position.treeX);
+      const childYs = mapValues(childNodePositions, node => node.position.treeY);
+      return {
+        position: {
+          treeX: childXs.reduce((accum, cur) => accum + cur, 0) / childXs.length + node.offset.dTreeX,
+          treeY: Math.min(...childYs) + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
+        },
+        triangle: undefined,
+      };
+    }
+
+    // This is a stranded node
+    return {
+      position: {
+        treeX: node.offset.dTreeX,
+        treeY: node.offset.dTreeY,
+      },
+      triangle: undefined,
+    };
+  };
 
 /**
  * Returns a node and its descendants, if any, with positions.
@@ -16,35 +61,20 @@ const applyNodePosition = (strWidthFunc: StrWidthFunc) => (sentence: Sentence) =
     return node;
   }
 
-  if ('slice' in node) {
-    // This is a terminal node
-    const [sliceStart, sliceEnd] = node.slice;
-    const widthBeforeSlice = strWidthFunc(sentence.slice(0, sliceStart));
-    const sliceWidth = strWidthFunc(sentence.slice(sliceStart, sliceEnd));
+  if ('children' in node) {
+    // This is a branching node - calculate child positions as well
+    const positionedChildNodes = transformValues(node.children, applyNodePosition(strWidthFunc)(sentence));
     return {
       ...node,
-      position: {
-        treeX: widthBeforeSlice + (sliceWidth / 2) + node.offset.dTreeX,
-        treeY: (node.triangle ? DEFAULT_TRIANGLE_NODE_Y : DEFAULT_TERMINAL_NODE_Y) + node.offset.dTreeY,
-      },
-      triangle: node.triangle ? {
-        treeX1: widthBeforeSlice,
-        treeX2: widthBeforeSlice + sliceWidth,
-      } : undefined,
+      children: positionedChildNodes,
+      ...determineNodePosition(strWidthFunc)(sentence)(node),
     };
   }
 
-  // This is a branching node
-  const positionedChildNodes = transformValues(node.children, applyNodePosition(strWidthFunc)(sentence));
-  const childXs = mapValues(positionedChildNodes, node => node.position.treeX);
-  const childYs = mapValues(positionedChildNodes, node => node.position.treeY);
+  // This is a terminal node or a stranded node
   return {
     ...node,
-    children: positionedChildNodes,
-    position: {
-      treeX: childXs.reduce((accum, cur) => accum + cur, 0) / childXs.length + node.offset.dTreeX,
-      treeY: Math.min(...childYs) + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
-    },
+    ...determineNodePosition(strWidthFunc)(sentence)(node),
   };
 }
 

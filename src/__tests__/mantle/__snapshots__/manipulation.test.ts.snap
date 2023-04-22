@@ -190,20 +190,20 @@ Object {
 
 exports[`tree manipulation deletes a branching node down the tree 1`] = `
 Object {
+  "term1": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      4,
+    ],
+    "triangle": false,
+  },
   "top": Object {
     "children": Object {
-      "term1": Object {
-        "label": "N",
-        "offset": Object {
-          "dTreeX": 0,
-          "dTreeY": 0,
-        },
-        "slice": Array [
-          0,
-          4,
-        ],
-        "triangle": false,
-      },
       "term2": Object {
         "label": "VP",
         "offset": Object {
@@ -302,7 +302,6 @@ Object {
 exports[`tree manipulation deletes two nodes with ancestor-descendant relationship at once 1`] = `
 Object {
   "branch1": Object {
-    "children": Object {},
     "label": "NP",
     "offset": Object {
       "dTreeX": 0,
@@ -355,7 +354,6 @@ Object {
   "top": Object {
     "children": Object {
       "branch1": Object {
-        "children": Object {},
         "label": "NP",
         "offset": Object {
           "dTreeX": 0,
@@ -720,5 +718,29 @@ Object {
     "dPlotY": 0,
   },
   "sentence": "Noun verbed.",
+}
+`;
+
+exports[`tree manipulation makes a branching node stranded when its children are gone 1`] = `
+Object {
+  "term1": Object {
+    "label": "N",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": Array [
+      0,
+      4,
+    ],
+    "triangle": false,
+  },
+  "top": Object {
+    "label": "S",
+    "offset": Object {
+      "dTreeX": 0,
+      "dTreeY": 5,
+    },
+  },
 }
 `;

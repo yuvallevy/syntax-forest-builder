@@ -1,5 +1,8 @@
-import { isEmpty, omitKey, transformValues, without } from '../core/objTransforms';
-import { Id, IdMap, isBranching, NodeCommon, StringSlice, UnpositionedBranchingNode, UnpositionedNode, UnpositionedTree } from '../core/types';
+import { isEmpty, omitKeys, transformValues } from '../core/objTransforms';
+import {
+  Id, IdMap, isBranching, NodeCommon, StringSlice, UnpositionedBranchingNode, UnpositionedNode,
+  UnpositionedStrandedNode, UnpositionedTree
+} from '../core/types';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
 
@@ -17,9 +20,12 @@ const isIn = (nodes: IdMap<UnpositionedNode>) => (nodeId: Id) => nodes.hasOwnPro
 
 const childrenOrEmpty = (node: UnpositionedNode) => isBranching(node) ? node.children : {};
 
+const toStrandedNode = (node: UnpositionedNode): UnpositionedStrandedNode =>
+  ({ label: node.label, offset: node.offset });
+
 const transformChildrenOfNode =
   (nodeMapTransformFunc: NodeMapTransformFunc) =>
-  (node: UnpositionedNode) =>
+  (node: UnpositionedNode): UnpositionedNode =>
     isBranching(node) ? {
       ...node,
       children: nodeMapTransformFunc(node.children),
@@ -27,7 +33,7 @@ const transformChildrenOfNode =
 
 const transformChildrenOfNodes =
   (nodeMapTransformFunc: NodeMapTransformFunc) =>
-  (nodes: IdMap<UnpositionedNode>) =>
+  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
     transformValues(nodes, transformChildrenOfNode(nodeMapTransformFunc));
 
 const findNodeAndDescendantsRecursively =
@@ -52,6 +58,21 @@ const findNodesAndDescendantsRecursively =
           .filter(isIn(nodes))
           .reduce((accum, nodeId) => ({ ...accum, [nodeId]: nodes[nodeId] }), {}),
         ...findNodesAndDescendantsRecursively(nodeIds)(Object.values(nodes).reduce((accum, node) => ({
+          ...accum,
+          ...childrenOrEmpty(node),
+        }), {})),
+      };
+
+const findDescendantsOfNodesRecursively =
+  (nodeIds: Id[]) =>
+  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
+    isEmpty(nodes)
+      ? nodes
+      : {
+        ...nodeIds
+          .filter(isIn(nodes))
+          .reduce((accum, nodeId) => ({ ...accum, ...childrenOrEmpty(nodes[nodeId]) }), {}),
+        ...findDescendantsOfNodesRecursively(nodeIds)(Object.values(nodes).reduce((accum, node) => ({
           ...accum,
           ...childrenOrEmpty(node),
         }), {})),
@@ -117,42 +138,18 @@ const transformAllNodesRecursively =
       ? nodes
       : transformChildrenOfNodes(transformAllNodesRecursively(transformFunc))(transformValues(nodes, transformFunc));
 
-const deleteNodeRecursively =
-  (nodeId: Id) =>
-  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    isIn(nodes)(nodeId)
-      ? omitKey({
-        ...nodes,
-        ...childrenOrEmpty(nodes[nodeId]),
-      }, nodeId)
-      : transformChildrenOfNodes(deleteNodeRecursively(nodeId))(nodes);
-
-const deleteNodesRecursively =
-  (nodeIds: Id[]) =>
-  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    isEmpty(nodeIds) || isEmpty(nodes)
-      ? nodes
-      : nodeIds
-        .filter(isIn(nodes))
-        .reduce((filteredNodes, nodeId) => omitKey(
-          isBranching(nodes[nodeId]) ? {
-            ...filteredNodes,
-            ...deleteNodesRecursively(without(nodeIds, nodeId))((nodes[nodeId] as UnpositionedBranchingNode).children),
-          } : filteredNodes,
-          nodeId,
-        ), transformChildrenOfNodes(deleteNodesRecursively(nodeIds))(nodes));
-
 const deleteNodesAndDescendantsRecursively =
   (nodeIds: Id[]) =>
-  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    isEmpty(nodeIds) || isEmpty(nodes)
-      ? nodes
-      : nodeIds
-        .filter(isIn(nodes))
-        .reduce(
-          omitKey,
-          transformChildrenOfNodes(deleteNodesRecursively(nodeIds))(nodes)
-        );
+  (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> => {
+    if (isEmpty(nodeIds) || isEmpty(nodes)) return nodes;
+    const filteredNodes = omitKeys(nodes, nodeIds);
+    const nodesWithFilteredDescendants =
+      transformChildrenOfNodes(deleteNodesAndDescendantsRecursively(nodeIds))(filteredNodes);
+    return transformValues(
+      nodesWithFilteredDescendants,
+      node => isBranching(node) && Object.keys(node.children).length === 0 ? toStrandedNode(node) : node,
+    );
+  };
 
 /**
  * Returns the node with the given ID in the given tree, or undefined if no node with this ID is found.
@@ -202,5 +199,8 @@ export const deleteNodesInTree =
   (nodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree => ({
     ...tree,
-    nodes: deleteNodesRecursively(nodeIds)(tree.nodes),
+    nodes: deleteNodesAndDescendantsRecursively(nodeIds)({
+      ...tree.nodes,
+      ...findDescendantsOfNodesRecursively(nodeIds)(tree.nodes),
+    }),
   });

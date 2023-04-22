@@ -1,5 +1,5 @@
 import { TreeAndNodeId } from './state';
-import { Id, isBranching, StringSlice, Sentence, UnpositionedNode, UnpositionedTree } from '../core/types';
+import { Id, StringSlice, Sentence, UnpositionedNode, UnpositionedTree, isTerminal } from '../core/types';
 import { InsertedNode, transformAllNodesInTree } from '../mantle/manipulation';
 
 export type SelectionInPlot = { nodes: TreeAndNodeId[] } | { treeId: Id, slice: StringSlice };
@@ -53,7 +53,7 @@ const shiftNodeSliceAfterChange =
   (oldSelection: StringSlice, shiftBy: number) =>
   (node: UnpositionedNode): UnpositionedNode => {
     if (                               // If:
-      isBranching(node) ||             // this is a branching node, or
+      !isTerminal(node) ||             // this is not a terminal node, or
       shiftBy === 0 ||                 // the sentence length did not change, or
       node.slice[1] < oldSelection[0]  // the selection was entirely after the node, then
     ) return node;                     // no change is necessary

@@ -61,10 +61,15 @@ export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
   triangle: boolean;
 };
 
-export type UnpositionedNode = UnpositionedBranchingNode | UnpositionedTerminalNode;
+export type UnpositionedStrandedNode = NodeCommon & WithOffsetInTree;
+
+export type UnpositionedNode = UnpositionedBranchingNode | UnpositionedTerminalNode | UnpositionedStrandedNode;
 
 export const isBranching = (node: UnpositionedNode): node is UnpositionedBranchingNode =>
   'children' in node;
+
+export const isTerminal = (node: UnpositionedNode): node is UnpositionedTerminalNode =>
+  'slice' in node;
 
 export type PositionInTree = {
   treeX: TreeX;
@@ -84,7 +89,9 @@ export type PositionedTerminalNode = NodeCommon & WithPositionInTree & {
   }
 };
 
-export type PositionedNode = PositionedBranchingNode | PositionedTerminalNode;
+export type PositionedStrandedNode = NodeCommon & WithPositionInTree;
+
+export type PositionedNode = PositionedBranchingNode | PositionedTerminalNode | PositionedStrandedNode;
 
 export type PositionedTree = TreeCommon & {
   nodes: IdMap<PositionedNode>;
