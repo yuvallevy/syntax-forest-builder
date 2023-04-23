@@ -61,7 +61,11 @@ export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
   triangle: boolean;
 };
 
-export type UnpositionedStrandedNode = NodeCommon & WithOffsetInTree;
+export type UnpositionedStrandedNode = NodeCommon & WithOffsetInTree & {
+  formerDescendants?: IdMap<UnpositionedNode>;
+  formerSlice?: StringSlice;
+  formerlyTriangle?: boolean;
+};
 
 export type UnpositionedNode = UnpositionedBranchingNode | UnpositionedTerminalNode | UnpositionedStrandedNode;
 

@@ -24,11 +24,10 @@ describe('Node positioning', () => {
   };
 
   const treeWithStrandedNodes: UnpositionedTree = {
-    sentence: 'Noun verb phrases.',
+    sentence: 'Noun verbs.',
     offset: { dPlotX: 0, dPlotY: 0 },
     nodes: {
-      'a': { label: 'N', offset: { dTreeX: 0, dTreeY: -10 }, slice: [0, 4], triangle: false },
-      'b': { label: 'VP', offset: { dTreeX: 80, dTreeY: -20 } },
+      'c': { label: 'S', ...zeroOffset, formerDescendants: treeWithTerminalNodes.nodes },
     },
   };
 
@@ -62,7 +61,7 @@ describe('Node positioning', () => {
 
   it('positions stranded nodes', () => {
     const result = applyNodePositionsToTree(mockStrWidth)(treeWithStrandedNodes);
-    expect(result.nodes['b'].position).toStrictEqual({ treeX: 80, treeY: -20 });
+    expect(result.nodes['c'].position).toStrictEqual({ treeX: 40, treeY: -42 });
   });
 
   it('positions branching nodes', () => {

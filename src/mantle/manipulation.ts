@@ -1,6 +1,7 @@
-import { isEmpty, omitKeys, transformValues } from '../core/objTransforms';
+import { associateWith, flatten, isEmpty, omitKeys, transformValues } from '../core/objTransforms';
 import {
-  Id, IdMap, isBranching, NodeCommon, StringSlice, UnpositionedNode, UnpositionedStrandedNode, UnpositionedTree
+  Id, IdMap, isBranching, isTerminal, NodeCommon, StringSlice, UnpositionedBranchingNode, UnpositionedNode,
+  UnpositionedStrandedNode, UnpositionedTree
 } from '../core/types';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
@@ -15,8 +16,22 @@ export type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 
 const isIn = (nodes: IdMap<UnpositionedNode>) => (nodeId: Id) => nodes.hasOwnProperty(nodeId);
 
-const toStrandedNode = (node: UnpositionedNode): UnpositionedStrandedNode =>
-  ({ label: node.label, offset: node.offset });
+const descendantIds = (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedBranchingNode): Id[] => {
+  const directChildren = node.children.map(childId => nodes[childId]);
+  const indirectDescendantIds = flatten(directChildren.filter(isBranching).map(descendantIds(nodes)));
+  return [...node.children, ...indirectDescendantIds];
+}
+
+const descendantsOf = (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedBranchingNode): IdMap<UnpositionedNode> =>
+  associateWith(descendantIds(nodes)(node), childId => nodes[childId]);
+
+const toStrandedNode = (oldNodes: IdMap<UnpositionedNode>) => (node: UnpositionedNode): UnpositionedStrandedNode => ({
+  label: node.label,
+  offset: node.offset,
+  formerDescendants: isBranching(node) ? descendantsOf(oldNodes)(node) : undefined,
+  formerSlice: isTerminal(node) ? node.slice : undefined,
+  formerlyTriangle: isTerminal(node) ? node.triangle : undefined,
+});
 
 const insertNode =
   (insertedNode: InsertedNode) =>
@@ -66,7 +81,7 @@ const deleteNodes =
       if (!isBranching(node)) return node;
       const filteredChildren = node.children.filter(childId => !nodeIds.includes(childId));
       if (node.children.length === filteredChildren.length) return node;
-      if (isEmpty(filteredChildren)) return toStrandedNode(node);
+      if (isEmpty(filteredChildren)) return toStrandedNode(nodes)(node);
       return { ...node, children: filteredChildren };
     });
   };

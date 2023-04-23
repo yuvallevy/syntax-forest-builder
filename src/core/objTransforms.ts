@@ -19,6 +19,9 @@ export const filterEntries = <K extends string, V>(record: Record<K, V>, predica
     {} as Record<K, V>
   );
 
+export const associateWith = <T extends string, V>(array: T[], transform: (element: T) => V) =>
+  array.reduce((accum, element) => ({ ...accum, [element]: transform(element) }), {} as Record<T, V>)
+
 export const without = <T>(array: T[], elementToRemove: T): T[] =>
   array.reduce((accum, element) => element === elementToRemove ? accum : [...accum, element], [] as T[]);
 

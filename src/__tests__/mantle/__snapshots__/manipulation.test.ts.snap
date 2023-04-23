@@ -218,6 +218,22 @@ Object {
 exports[`tree manipulation deletes two nodes with ancestor-descendant relationship at once 1`] = `
 Object {
   "branch1": Object {
+    "formerDescendants": Object {
+      "term1": Object {
+        "label": "N",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+        "slice": Array [
+          0,
+          4,
+        ],
+        "triangle": false,
+      },
+    },
+    "formerSlice": undefined,
+    "formerlyTriangle": undefined,
     "label": "NP",
     "offset": Object {
       "dTreeX": 0,
@@ -269,6 +285,22 @@ Object {
 exports[`tree manipulation deletes two nodes with no ancestor-descendant relationship at once 1`] = `
 Object {
   "branch1": Object {
+    "formerDescendants": Object {
+      "term1": Object {
+        "label": "N",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+        "slice": Array [
+          0,
+          4,
+        ],
+        "triangle": false,
+      },
+    },
+    "formerSlice": undefined,
+    "formerlyTriangle": undefined,
     "label": "NP",
     "offset": Object {
       "dTreeX": 0,
@@ -674,6 +706,44 @@ Object {
     "triangle": false,
   },
   "top": Object {
+    "formerDescendants": Object {
+      "branch1": Object {
+        "children": Array [
+          "term1",
+        ],
+        "label": "NP",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+      },
+      "term1": Object {
+        "label": "N",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+        "slice": Array [
+          0,
+          4,
+        ],
+        "triangle": false,
+      },
+      "term2": Object {
+        "label": "VP",
+        "offset": Object {
+          "dTreeX": 0,
+          "dTreeY": 0,
+        },
+        "slice": Array [
+          5,
+          11,
+        ],
+        "triangle": false,
+      },
+    },
+    "formerSlice": undefined,
+    "formerlyTriangle": undefined,
     "label": "S",
     "offset": Object {
       "dTreeX": 0,
