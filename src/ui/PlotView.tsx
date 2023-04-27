@@ -9,6 +9,7 @@ import './PlotView.scss';
 import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
 import { clientCoordsToPlotCoords } from './coordConversions';
 import { TreeAndNodeId } from './state';
+import { NodeSelectionMode } from './NodeSelectionMode';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 
@@ -22,7 +23,7 @@ interface PlotViewProps {
   selectedNodes: TreeAndNodeId[];
   editing: TreeAndNodeId | undefined;
   onDoneEditing: (newLabel?: string) => void;
-  onNodesSelect: (nodes: TreeAndNodeId[]) => void;
+  onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
 }
@@ -79,7 +80,7 @@ const PlotView: React.FC<PlotViewProps> = ({
         .reduce(
           (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
           [] as TreeAndNodeId[]);
-      onNodesSelect(newSelectedNodes);
+      onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
     }
     setSelectionBoxStart(undefined);
     setSelectionBoxEnd(undefined);
@@ -100,7 +101,7 @@ const PlotView: React.FC<PlotViewProps> = ({
           treeId={treeId}
           tree={tree}
           selectedNodeIds={selectedNodeIds}
-          onSingleNodeSelect={nodeId => onNodesSelect([{ treeId, nodeId }])}
+          onSingleNodeSelect={(nodeId, mode) => onNodesSelect([{ treeId, nodeId }], mode)}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView-selection-box"

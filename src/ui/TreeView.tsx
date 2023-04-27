@@ -4,6 +4,7 @@ import {
   Id, IdMap, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
 } from '../core/types';
 import './TreeView.scss';
+import { NodeSelectionMode } from './NodeSelectionMode';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -12,7 +13,7 @@ interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
   selectedNodeIds: Id[];
-  onSingleNodeSelect?: (nodeId: Id) => void;
+  onSingleNodeSelect?: (nodeId: Id, mode: NodeSelectionMode) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
@@ -40,7 +41,7 @@ const renderNode = (
   node: PositionedNode,
   allNodes: IdMap<PositionedNode>,
   selectedNodeIds: Id[],
-  onSelect?: (id: Id) => void
+  onSelect?: (id: Id, mode: NodeSelectionMode) => void
 ): React.ReactNode[] => [
   <text
     key={nodeId}
@@ -50,7 +51,7 @@ const renderNode = (
     fill="#000"
     textAnchor="middle"
     dominantBaseline="text-after-edge"
-    onMouseDown={() => onSelect && onSelect(nodeId)}
+    onMouseDown={event => onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET')}
   >
     {node.label}
   </text>,
@@ -58,9 +59,9 @@ const renderNode = (
   'children' in node && renderChildNodeConnections(node, allNodes),
 ];
 
-const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect: onNodeSelect }) =>
+const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {mapEntries(tree.nodes, ([nodeId, node]) => renderNode(nodeId, node, tree.nodes, selectedNodeIds, onNodeSelect))}
+    {mapEntries(tree.nodes, ([nodeId, node]) => renderNode(nodeId, node, tree.nodes, selectedNodeIds, onSingleNodeSelect))}
   </g>;
 
 export default TreeView;

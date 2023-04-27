@@ -8,6 +8,7 @@ import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';
 import { newNodeFromSelection, SelectionInPlot } from './ui/editNodes';
+import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
@@ -15,7 +16,9 @@ const App = () => {
   const [selection, setSelection] = useState<SelectionInPlot>({ nodes: [] });
 
   const selectedNodes = 'nodes' in selection ? selection.nodes : [];
-  const setSelectedNodes = (nodes: TreeAndNodeId[]) => setSelection({ nodes });
+  const setSelectedNodes = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
+    nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
+  });
   const setSelectedSlice = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
   const activePlot: UnpositionedPlot = useMemo(() => state.plots[activePlotId], [state.plots, activePlotId]);
