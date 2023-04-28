@@ -23,7 +23,7 @@ describe('tree manipulation', () => {
   const treeWithoutTopLevelTerminalNode: UnpositionedTree = {
     ...tree,
     nodes: {
-      'top': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['branch1', 'term2'] },
+      'top': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['branch1'] },
       'branch1': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['term1'] },
       'term1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
     },

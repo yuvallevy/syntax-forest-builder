@@ -674,7 +674,6 @@ Object {
     "top": Object {
       "children": Array [
         "branch1",
-        "term2",
       ],
       "label": "S",
       "offset": Object {
