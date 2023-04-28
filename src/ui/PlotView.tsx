@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { filterEntries, mapEntries, transformValues } from '../core/objTransforms';
-import { Id, StringSlice, PlotRect, PositionedPlot, Sentence } from '../core/types';
+import { Id, StringSlice, PlotRect, PositionedPlot, Sentence, TreeAndNodeId } from '../core/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
@@ -8,7 +8,6 @@ import ClientCoords, { ClientRect } from './ClientCoords';
 import './PlotView.scss';
 import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
 import { clientCoordsToPlotCoords } from './coordConversions';
-import { TreeAndNodeId } from './state';
 import { NodeSelectionMode } from './NodeSelectionMode';
 
 const PRIMARY_MOUSE_BUTTON = 1;

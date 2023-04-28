@@ -1,9 +1,9 @@
 import { useMemo, useReducer, useState } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot } from './core/types';
+import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId } from './core/types';
 import PlotView from './ui/PlotView';
-import { undoableReducer, undoableInitialState, TreeAndNodeId } from './ui/state';
+import { undoableReducer, undoableInitialState } from './ui/state';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';

@@ -1,5 +1,5 @@
 import { union } from '../core/objTransforms';
-import { TreeAndNodeId } from './state';
+import { TreeAndNodeId } from '../core/types';
 
 export type NodeSelectionMode = 'SET' | 'ADD';
 

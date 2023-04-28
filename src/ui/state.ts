@@ -1,12 +1,7 @@
-import { Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree } from '../core/types';
+import { Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree, TreeAndNodeId } from '../core/types';
 import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
-
-export type TreeAndNodeId = {
-  treeId: Id;
-  nodeId: Id;
-};
 
 /**
  * Represents an action taken by the user.

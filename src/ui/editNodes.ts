@@ -1,5 +1,6 @@
-import { TreeAndNodeId } from './state';
-import { Id, StringSlice, Sentence, UnpositionedNode, UnpositionedTree, isTerminal } from '../core/types';
+import {
+  Id, StringSlice, Sentence, UnpositionedNode, UnpositionedTree, isTerminal, TreeAndNodeId
+} from '../core/types';
 import { InsertedNode, transformAllNodesInTree } from '../mantle/manipulation';
 
 export type SelectionInPlot = { nodes: TreeAndNodeId[] } | { treeId: Id, slice: StringSlice };

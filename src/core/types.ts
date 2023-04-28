@@ -28,6 +28,11 @@ export type StringSlice = [SliceStart, SliceEndExclusive];
 
 export type IdMap<T> = Record<Id, T>;
 
+export type TreeAndNodeId = {
+  treeId: Id;
+  nodeId: Id;
+};
+
 export type UnpositionedForest = { plots: IdMap<UnpositionedPlot>; };
 
 export type UnpositionedPlot = { trees: IdMap<UnpositionedTree>; };
