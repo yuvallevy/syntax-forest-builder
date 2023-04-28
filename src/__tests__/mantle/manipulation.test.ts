@@ -1,5 +1,11 @@
 import { UnpositionedTree } from '../../core/types';
-import { deleteNodesInTree, insertNodeIntoTree, transformAllNodesInTree, transformNodeInTree } from '../../mantle/manipulation';
+import {
+  deleteNodesInTree,
+  getParentNodeIdsInTree,
+  insertNodeIntoTree,
+  transformAllNodesInTree,
+  transformNodeInTree,
+} from '../../mantle/manipulation';
 
 describe('tree manipulation', () => {
   const tree: UnpositionedTree = {
@@ -32,6 +38,26 @@ describe('tree manipulation', () => {
   };
 
   const changeLabel = transformNodeInTree(node => ({ ...node, label: 'test' }));
+
+  it('retrieves the parent ID of a single node', () => {
+    expect(getParentNodeIdsInTree(['term1'])(tree)).toStrictEqual(['branch1']);
+  });
+
+  it('retrieves the parent ID of two sibling nodes', () => {
+    expect(getParentNodeIdsInTree(['branch1', 'term2'])(tree)).toStrictEqual(['top']);
+  });
+
+  it('retrieve the parent IDs of two non-sibling nodes', () => {
+    expect(getParentNodeIdsInTree(['branch1', 'term1'])(tree)).toStrictEqual(['top', 'branch1']);
+  });
+
+  it('retrieves no parent IDs for a top-level node', () => {
+    expect(getParentNodeIdsInTree(['top'])(tree)).toStrictEqual([]);
+  });
+
+  it('retrieves only one parent ID for two non-sibling nodes of which one is a top-level node', () => {
+    expect(getParentNodeIdsInTree(['top', 'term1'])(tree)).toStrictEqual(['branch1']);
+  });
 
   it('inserts a top-level terminal node', () => {
     expect(insertNodeIntoTree({

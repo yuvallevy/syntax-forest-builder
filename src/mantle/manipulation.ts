@@ -1,4 +1,4 @@
-import { associateWith, flatten, isEmpty, omitKeys, transformValues } from '../core/objTransforms';
+import { associateWith, filterEntries, flatten, isEmpty, omitKeys, transformValues } from '../core/objTransforms';
 import {
   Id, IdMap, isBranching, isTerminal, NodeCommon, StringSlice, UnpositionedBranchingNode, UnpositionedNode,
   UnpositionedStrandedNode, UnpositionedTree
@@ -128,3 +128,9 @@ export const deleteNodesInTree =
     ...tree,
     nodes: deleteNodes(nodeIds)(tree.nodes),
   });
+
+export const getParentNodeIdsInTree =
+  (nodeIds: Id[]) =>
+  (tree: UnpositionedTree): Id[] =>
+    Object.keys(filterEntries(tree.nodes, ([_, node]) =>
+      isBranching(node) && nodeIds.some(selectedNodeId => node.children.includes(selectedNodeId))));
