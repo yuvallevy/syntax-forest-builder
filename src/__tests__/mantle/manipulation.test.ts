@@ -1,6 +1,7 @@
 import { UnpositionedTree } from '../../core/types';
 import {
   deleteNodesInTree,
+  getNodeIdsAssignedToSlice,
   getParentNodeIdsInTree,
   insertNodeIntoTree,
   transformAllNodesInTree,
@@ -57,6 +58,22 @@ describe('tree manipulation', () => {
 
   it('retrieves only one parent ID for two non-sibling nodes of which one is a top-level node', () => {
     expect(getParentNodeIdsInTree(['top', 'term1'])(tree)).toStrictEqual(['branch1']);
+  });
+
+  it('retrieves the terminal ID associated with a slice when there is only one', () => {
+    expect(getNodeIdsAssignedToSlice([5, 11])(tree)).toStrictEqual(['term2']);
+  });
+
+  it('retrieves the terminal ID associated with a slice when there is only one and it covers more than the slice', () => {
+    expect(getNodeIdsAssignedToSlice([6, 10])(tree)).toStrictEqual(['term2']);
+  });
+
+  it('retrieves all terminal IDs associated with a slice when there are multiple', () => {
+    expect(getNodeIdsAssignedToSlice([3, 9])(tree)).toStrictEqual(['term1', 'term2']);
+  });
+
+  it('retrieves no terminal IDs associated with a slice when there are none', () => {
+    expect(getNodeIdsAssignedToSlice([5, 11])(treeWithoutTopLevelTerminalNode)).toStrictEqual([]);
   });
 
   it('inserts a top-level terminal node', () => {
