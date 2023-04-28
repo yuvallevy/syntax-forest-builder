@@ -6,6 +6,7 @@ interface SentenceViewProps {
   tree: PositionedTree;
   onChange: (newSentence: Sentence, oldSelectedSlice: StringSlice) => void;
   onSelect: (slice: StringSlice) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
@@ -13,7 +14,7 @@ const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
     ? [element.selectionStart, element.selectionEnd]
     : null;
 
-const SentenceView: React.FC<SentenceViewProps> = ({ tree, onChange, onSelect }) => {
+const SentenceView: React.FC<SentenceViewProps> = ({ tree, onChange, onSelect, onKeyDown }) => {
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
@@ -34,6 +35,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({ tree, onChange, onSelect })
       if (slice) onSelect(slice);
       oldSelection.current = getSelectionSlice(e.currentTarget);
     }}
+    onKeyDown={onKeyDown}
   />;
 };
 

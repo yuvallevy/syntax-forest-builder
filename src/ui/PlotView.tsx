@@ -25,6 +25,7 @@ interface PlotViewProps {
   onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
+  onSentenceKeyDown: (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const PlotView: React.FC<PlotViewProps> = ({
@@ -35,6 +36,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   onNodesSelect,
   onSliceSelect,
   onSentenceChange,
+  onSentenceKeyDown,
 }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
@@ -116,6 +118,7 @@ const PlotView: React.FC<PlotViewProps> = ({
         tree={tree}
         onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
         onSelect={slice => onSliceSelect(treeId, slice)}
+        onKeyDown={event => onSentenceKeyDown(treeId, event)}
       />)}
     {editing && <LabelNodeEditor
       key={`editable-nodes-${editing.nodeId}`}

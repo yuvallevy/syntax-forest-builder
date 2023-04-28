@@ -9,6 +9,9 @@ import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';
 import { newNodeFromSelection, SelectionInPlot } from './ui/editNodes';
 import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
+import useHotkeys from '@reecelucas/react-use-hotkeys';
+import { allTopLevelInPlot, getParentNodeIdsInPlot } from './mantle/plotManipulation';
+import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
 
 const App = () => {
   const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
@@ -73,6 +76,36 @@ const App = () => {
     setEditingNode(undefined);
   }
 
+  const selectParentNodes = () => {
+    if ('slice' in selection) {
+      setSelectedNodes(getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
+        .map(nodeId => ({ treeId: selection.treeId, nodeId })));
+    } else {
+      if (selectedNodes.length === 0) return;
+      setSelectedNodes(getParentNodeIdsInPlot(selectedNodes)(activePlot));
+    }
+  };
+
+  const handleSentenceKeyDown = (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowUp') {
+      event.currentTarget.blur();
+      if ('slice' in selection &&
+        getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId]).length === 0) {
+        addNode();
+      } else {
+        selectParentNodes();
+      }
+    }
+  };
+
+  useHotkeys(['ArrowUp'], () => {
+    if (selectedNodes.length > 0 && allTopLevelInPlot(selectedNodes)(activePlot)) {
+      addNode();
+    } else {
+      selectParentNodes();
+    }
+  });
+
   const toolbarItems: ToolbarItem[] = [
     { title: 'Undo', action: undo },
     { title: 'Redo', action: redo },
@@ -91,6 +124,7 @@ const App = () => {
       onNodesSelect={setSelectedNodes}
       onSliceSelect={setSelectedSlice}
       onSentenceChange={handleSentenceChange}
+      onSentenceKeyDown={handleSentenceKeyDown}
     />
   </>;
 }
