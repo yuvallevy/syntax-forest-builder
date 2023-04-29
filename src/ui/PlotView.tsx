@@ -21,22 +21,24 @@ interface PlotViewProps {
   plot: PositionedPlot;
   selectedNodes: TreeAndNodeId[];
   editing: TreeAndNodeId | undefined;
-  onDoneEditing: (newLabel?: string) => void;
   onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
   onSentenceKeyDown: (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => void;
+  onNodeEditorBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onNodeEditorKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const PlotView: React.FC<PlotViewProps> = ({
   plot,
   selectedNodes,
   editing,
-  onDoneEditing,
   onNodesSelect,
   onSliceSelect,
   onSentenceChange,
   onSentenceKeyDown,
+  onNodeEditorBlur,
+  onNodeEditorKeyDown,
 }) => {
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
@@ -124,8 +126,8 @@ const PlotView: React.FC<PlotViewProps> = ({
       key={`editable-nodes-${editing.nodeId}`}
       tree={plot.trees[editing.treeId]}
       nodeId={editing.nodeId}
-      onDone={onDoneEditing}
-      onCancel={() => onDoneEditing(undefined)}
+      onBlur={onNodeEditorBlur}
+      onKeyDown={onNodeEditorKeyDown}
     />}
   </>;
 };

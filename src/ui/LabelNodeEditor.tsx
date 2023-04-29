@@ -9,23 +9,23 @@ interface LabelNodeEditorInputProps {
   value: string;
   baseCoords: ClientCoords,
   onInput: (inputValue: string) => void;
-  onDone: (newLabel: string) => void;
-  onCancel: () => void;
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 interface LabelNodeEditorProps {
   tree: PositionedTree;
   nodeId: Id;
-  onDone: (newLabel: string) => void;
-  onCancel: () => void;
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   value,
   baseCoords,
   onInput,
-  onDone,
-  onCancel,
+  onBlur,
+  onKeyDown,
 }) => <input
   type="text"
   className="LabelNodeEditorInput"
@@ -33,15 +33,15 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   autoFocus
   style={{ left: baseCoords.clientX, top: baseCoords.clientY }}
   onInput={e => onInput(e.currentTarget.value)}
-  onBlur={e => onDone(e.currentTarget.value)}
-  onKeyDown={e => {if (e.code === 'Escape') { e.preventDefault(); onCancel(); }}}
+  onBlur={onBlur}
+  onKeyDown={onKeyDown}
 />;
 
 const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   tree,
   nodeId,
-  onDone,
-  onCancel,
+  onBlur,
+  onKeyDown,
 }) => {
   const editedNodeData = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
   const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodePositionOnPlot(tree)(editedNodeData));
@@ -52,8 +52,8 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     value={inputValue}
     baseCoords={nodePositionOnPlot}
     onInput={setInputValue}
-    onDone={onDone}
-    onCancel={onCancel}
+    onBlur={onBlur}
+    onKeyDown={onKeyDown}
   />;
 };
 

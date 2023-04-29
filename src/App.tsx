@@ -62,19 +62,20 @@ const App = () => {
     oldSelection,
   });
 
-  const toggleEditing = () => setEditingNode(!editingNode && selectedNodes.length === 1 ? selectedNodes[0] : undefined);
+  const startEditing = () => setEditingNode(selectedNodes.length === 1 ? selectedNodes[0] : undefined);
 
-  const handleDoneEditing = (newLabel?: string) => {
-    if (editingNode && newLabel !== undefined) {
+  const stopEditing = () => setEditingNode(undefined);
+
+  const setEditedNodeLabel = (newLabel: string) => {
+    if (editingNode) {
       dispatch({
         type: 'setNodeLabel',
         plotId: activePlotId,
         node: editingNode,
         newLabel,
-      })
+      });
     }
-    setEditingNode(undefined);
-  }
+  };
 
   const selectParentNodes = () => {
     if ('slice' in selection) {
@@ -82,7 +83,11 @@ const App = () => {
         .map(nodeId => ({ treeId: selection.treeId, nodeId })));
     } else {
       if (selectedNodes.length === 0) return;
-      setSelectedNodes(getParentNodeIdsInPlot(selectedNodes)(activePlot));
+      const parentNodes = getParentNodeIdsInPlot(selectedNodes)(activePlot);
+      setSelectedNodes(parentNodes);
+      if (editingNode) {
+        setEditingNode(parentNodes[0]);
+      }
     }
   };
 
@@ -98,6 +103,23 @@ const App = () => {
     }
   };
 
+  const handleNodeEditorKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!editingNode) return;
+    if (event.key === 'ArrowUp') {
+      setEditedNodeLabel(event.currentTarget.value);
+      if (allTopLevelInPlot([editingNode])(activePlot)) {
+        addNode();
+      } else {
+        selectParentNodes();
+      }
+    } else if (event.key === 'Enter') {
+      setEditedNodeLabel(event.currentTarget.value);
+      stopEditing();
+    } else if (event.key === 'Escape') {
+      stopEditing();
+    }
+  };
+
   useHotkeys(['ArrowUp'], () => {
     if (selectedNodes.length > 0 && allTopLevelInPlot(selectedNodes)(activePlot)) {
       addNode();
@@ -106,12 +128,20 @@ const App = () => {
     }
   });
 
+  useHotkeys(['Enter', 'F2'], startEditing);
+
+  useHotkeys(['Backspace', 'Delete'], deleteNode);
+
+  useHotkeys(['Control+z', 'Meta+z'], event => { event.preventDefault(); undo(); });
+
+  useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
+
   const toolbarItems: ToolbarItem[] = [
     { title: 'Undo', action: undo },
     { title: 'Redo', action: redo },
     { title: 'Add', action: addNode },
     { title: 'Delete', action: deleteNode },
-    { title: 'Edit', action: toggleEditing },
+    { title: 'Edit', action: startEditing },
   ];
 
   return <>
@@ -120,11 +150,12 @@ const App = () => {
       plot={positionedPlot}
       selectedNodes={selectedNodes}
       editing={editingNode}
-      onDoneEditing={handleDoneEditing}
       onNodesSelect={setSelectedNodes}
       onSliceSelect={setSelectedSlice}
       onSentenceChange={handleSentenceChange}
       onSentenceKeyDown={handleSentenceKeyDown}
+      onNodeEditorBlur={stopEditing}
+      onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
   </>;
 }
