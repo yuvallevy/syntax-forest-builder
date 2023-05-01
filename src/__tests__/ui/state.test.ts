@@ -41,6 +41,10 @@ describe('content state', () => {
       'reacts to a change in the sentence',
       { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
     ],
+    [
+      'adds a tree to a plot',
+      { type: 'addTree', plotId: 'plot', newTreeId: 'zz', offset: { dPlotX: 105, dPlotY: 88 } }
+    ],
   ];
 
   it.each(testCases)('%s', (name, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());
