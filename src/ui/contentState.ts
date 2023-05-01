@@ -12,7 +12,7 @@ export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
-  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelection: StringSlice }
+  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
 ;
 
 /**
@@ -69,7 +69,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotId: action.plotId,
         treeId: action.treeId,
         old: state.plots[action.plotId].trees[action.treeId],
-        new: handleLocalSentenceChange(action.newSentence, action.oldSelection)(
+        new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
           state.plots[action.plotId].trees[action.treeId]),
       }
   }
@@ -136,13 +136,13 @@ const initialState: ContentState = {
   },
 };
 
-export const undoableInitialState: UndoableContentState = {
+export const initialContentState: UndoableContentState = {
   current: initialState,
   undoStack: [],
   redoStack: [],
 };
 
-export const undoableReducer = (state: UndoableContentState, action: ContentAction | { type: 'undo' } | { type: 'redo' }): UndoableContentState =>
+export const contentReducer = (state: UndoableContentState, action: ContentAction | { type: 'undo' } | { type: 'redo' }): UndoableContentState =>
   action.type === 'undo' ? undo(applyUndoableAction)(reverseUndoableAction)(state)
     : action.type === 'redo' ? redo(applyUndoableAction)(reverseUndoableAction)(state)
     : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);

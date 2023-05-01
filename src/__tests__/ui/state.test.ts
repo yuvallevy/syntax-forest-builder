@@ -1,4 +1,4 @@
-import { ContentAction, ContentState, undoableReducer, UndoableContentState } from '../../ui/state';
+import { ContentAction, ContentState, contentReducer, UndoableContentState } from '../../ui/contentState';
 
 describe('content state', () => {
   const initialState: ContentState = {
@@ -39,9 +39,9 @@ describe('content state', () => {
     ],
     [
       'reacts to a change in the sentence',
-      { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelection: [2, 2] }
+      { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
     ],
   ];
 
-  it.each(testCases)('%s', (name, action) => expect(undoableReducer(undoableInitialState, action).current).toMatchSnapshot());
+  it.each(testCases)('%s', (name, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());
 });

@@ -1,95 +1,48 @@
-import { useMemo, useReducer, useState } from 'react';
+import { useMemo, useReducer } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId } from './core/types';
+import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel } from './core/types';
 import PlotView from './ui/PlotView';
-import { undoableReducer, undoableInitialState } from './ui/state';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import generateNodeId from './ui/generateNodeId';
-import { newNodeFromSelection, SelectionInPlot } from './ui/editNodes';
+import { SelectionInPlot } from './ui/editNodes';
 import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { allTopLevelInPlot, getParentNodeIdsInPlot } from './mantle/plotManipulation';
+import { allTopLevelInPlot } from './mantle/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
+import { initialUiState, uiReducer } from './ui/uiState';
 
 const App = () => {
-  const [{ current: state }, dispatch] = useReducer(undoableReducer, undoableInitialState);
-  const [activePlotId, setActivePlotId] = useState<Id>('plot');
-  const [selection, setSelection] = useState<SelectionInPlot>({ nodes: [] });
+  const [state, dispatch] = useReducer(uiReducer, initialUiState);
+  const { selection, activePlotId, editingNode } = state;
 
   const selectedNodes = 'nodes' in selection ? selection.nodes : [];
-  const setSelectedNodes = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
-    nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
-  });
-  const setSelectedSlice = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
-  const activePlot: UnpositionedPlot = useMemo(() => state.plots[activePlotId], [state.plots, activePlotId]);
+  const activePlot: UnpositionedPlot =
+    useMemo(() => state.contentState.current.plots[activePlotId], [state.contentState, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
-  const [editingNode, setEditingNode] = useState<TreeAndNodeId | undefined>(undefined);
-
+  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
+  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
+  const startEditing = () => dispatch({ type: 'startEditing' });
+  const stopEditing = () => dispatch({ type: 'stopEditing' });
+  const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
+  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
+  const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
-  const addNode = () => {
-    const treeId = 'treeId' in selection ? selection.treeId : selectedNodes[0].treeId;
-    const newNodeId = generateNodeId();
-    dispatch({
-      type: 'insertNode',
-      plotId: activePlotId,
-      treeId,
-      newNodeId,
-      newNode: newNodeFromSelection(selection, activePlot.trees[treeId].sentence),
-    });
-
-    const newNodeIndicator = { treeId, nodeId: newNodeId };
-    setSelectedNodes([newNodeIndicator]);
-    setEditingNode(newNodeIndicator);
-  };
-
-  const deleteNode = () => dispatch({
-    type: 'deleteNodes',
-    plotId: activePlotId,
-    nodes: selectedNodes,
+  const handleNodesSelect = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
+    nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
   });
+  const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
-  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => dispatch({
+  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
     type: 'setSentence',
-    plotId: activePlotId,
-    treeId,
     newSentence,
-    oldSelection,
+    oldSelectedSlice,
   });
-
-  const startEditing = () => setEditingNode(selectedNodes.length === 1 ? selectedNodes[0] : undefined);
-
-  const stopEditing = () => setEditingNode(undefined);
-
-  const setEditedNodeLabel = (newLabel: string) => {
-    if (editingNode) {
-      dispatch({
-        type: 'setNodeLabel',
-        plotId: activePlotId,
-        node: editingNode,
-        newLabel,
-      });
-    }
-  };
-
-  const selectParentNodes = () => {
-    if ('slice' in selection) {
-      setSelectedNodes(getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
-        .map(nodeId => ({ treeId: selection.treeId, nodeId })));
-    } else {
-      if (selectedNodes.length === 0) return;
-      const parentNodes = getParentNodeIdsInPlot(selectedNodes)(activePlot);
-      setSelectedNodes(parentNodes);
-      if (editingNode) {
-        setEditingNode(parentNodes[0]);
-      }
-    }
-  };
 
   const handleSentenceKeyDown = (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowUp') {
@@ -150,8 +103,8 @@ const App = () => {
       plot={positionedPlot}
       selectedNodes={selectedNodes}
       editing={editingNode}
-      onNodesSelect={setSelectedNodes}
-      onSliceSelect={setSelectedSlice}
+      onNodesSelect={handleNodesSelect}
+      onSliceSelect={handleSliceSelect}
       onSentenceChange={handleSentenceChange}
       onSentenceKeyDown={handleSentenceKeyDown}
       onNodeEditorBlur={stopEditing}
