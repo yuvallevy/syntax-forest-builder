@@ -56,6 +56,11 @@ const App = () => {
     }
   };
 
+  const handleNodeEditorBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    setEditedNodeLabel(event.currentTarget.value);
+    stopEditing();
+  };
+
   const handleNodeEditorKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!editingNode) return;
     if (event.key === 'ArrowUp') {
@@ -107,7 +112,7 @@ const App = () => {
       onSliceSelect={handleSliceSelect}
       onSentenceChange={handleSentenceChange}
       onSentenceKeyDown={handleSentenceKeyDown}
-      onNodeEditorBlur={stopEditing}
+      onNodeEditorBlur={handleNodeEditorBlur}
       onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
   </>;
