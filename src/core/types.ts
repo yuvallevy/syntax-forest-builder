@@ -19,6 +19,11 @@ export type PlotCoords = {
   plotY: PlotY;
 };
 
+export type PlotCoordsOffset = {
+  dPlotX: DPlotX;
+  dPlotY: DPlotY;
+};
+
 export type PlotRect = {
   topLeft: PlotCoords;
   bottomRight: PlotCoords;
@@ -43,7 +48,7 @@ type TreeCommon = {
 
 export type UnpositionedTree = TreeCommon & {
   nodes: IdMap<UnpositionedNode>;
-  offset: { dPlotX: DPlotX; dPlotY: DPlotY; };
+  offset: PlotCoordsOffset;
 };
 
 export type NodeCommon = {

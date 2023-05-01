@@ -1,7 +1,10 @@
-import { Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree, TreeAndNodeId } from '../core/types';
+import {
+  Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree, TreeAndNodeId, PlotCoordsOffset
+} from '../core/types';
 import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
+import { omitKey } from '../core/objTransforms';
 
 /**
  * Represents an action taken by the user.
@@ -13,6 +16,7 @@ export type ContentAction =
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
+  | { type: 'addTree', plotId: Id, newTreeId: Id, offset: PlotCoordsOffset }
 ;
 
 /**
@@ -21,13 +25,9 @@ export type ContentAction =
  * and each action by the user is translated into a state change so that undo/redo can work smoothly.
  */
 type ContentChange = (
-  | {
-    type: 'setTree',
-    plotId: Id,
-    treeId: Id,
-    old: UnpositionedTree,
-    new: UnpositionedTree,
-  }
+  | { type: 'setTree', plotId: Id, treeId: Id, old: UnpositionedTree, new: UnpositionedTree }
+  | { type: 'addTree', plotId: Id, newTreeId: Id, newTree: UnpositionedTree }
+  | { type: 'removeTree', plotId: Id, treeId: Id, removedTree: UnpositionedTree }
 );
 
 type UndoableContentChange = UndoableActionCommon & ContentChange;
@@ -71,7 +71,18 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         old: state.plots[action.plotId].trees[action.treeId],
         new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
           state.plots[action.plotId].trees[action.treeId]),
-      }
+      };
+    case 'addTree':
+      return {
+        type: 'addTree',
+        plotId: action.plotId,
+        newTreeId: action.newTreeId,
+        newTree: {
+          nodes: {},
+          sentence: '',
+          offset: action.offset,
+        },
+      };
   }
 };
 
@@ -91,6 +102,31 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
           },
         },
       };
+    case 'addTree':
+      return {
+        ...state,
+        plots: {
+          ...state.plots,
+          [action.plotId]: {
+            ...state.plots[action.plotId],
+            trees: {
+              ...state.plots[action.plotId].trees,
+              [action.newTreeId]: action.newTree,
+            },
+          },
+        },
+      };
+    case 'removeTree':
+      return {
+        ...state,
+        plots: {
+          ...state.plots,
+          [action.plotId]: {
+            ...state.plots[action.plotId],
+            trees: omitKey(state.plots[action.plotId].trees, action.treeId)
+          },
+        },
+      };
     default:
       return state;
   }
@@ -103,6 +139,22 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
         ...action,
         old: action.new,
         new: action.old,
+      };
+    case 'addTree':
+      return {
+        ...action,
+        type: 'removeTree',
+        plotId: action.plotId,
+        treeId: action.newTreeId,
+        removedTree: action.newTree,
+      };
+    case 'removeTree':
+      return {
+        ...action,
+        type: 'addTree',
+        plotId: action.plotId,
+        newTreeId: action.treeId,
+        newTree: action.removedTree,
       };
     default:
       return action;

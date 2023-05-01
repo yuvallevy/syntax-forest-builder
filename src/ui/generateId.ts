@@ -9,8 +9,10 @@ const padLeft = (str: string, char: string, minLength: number) =>
   str.length >= minLength ? str
     : (char.repeat(minLength - str.length) + str);
 
-const generateNodeId = () =>
+const generateId = (prefix: string = '') =>
+  prefix +
   padLeft((new Date().valueOf() % maxTimestamp).toString(ID_BASE), '0', ID_TIME_LENGTH) +
   padLeft(Math.floor(Math.random() * maxRandom).toString(ID_BASE), '0', ID_RANDOM_LENGTH);
 
-export default generateNodeId;
+export const generateTreeId = () => generateId('t');
+export const generateNodeId = () => generateId('n');

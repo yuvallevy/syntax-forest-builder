@@ -1,4 +1,4 @@
-import { Id, NodeLabel, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot } from '../core/types';
+import { Id, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot } from '../core/types';
 import { newNodeFromSelection, SelectionInPlot } from './editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './contentState';
 import { getNodeIdsAssignedToSlice } from '../mantle/manipulation';
@@ -13,6 +13,7 @@ export type UiAction =
   | { type: 'addNodeBySelection', newNodeId: Id }
   | { type: 'deleteSelectedNodes' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
+  | { type: 'addTree', newTreeId: Id, offset: PlotCoordsOffset }
   | { type: 'undo' }
   | { type: 'redo' }
 ;
@@ -119,6 +120,16 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           treeId: action.treeId || selectedTreeId,
           newSentence: action.newSentence,
           oldSelectedSlice: action.oldSelectedSlice,
+        }),
+      };
+    case 'addTree':
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'addTree',
+          plotId: state.activePlotId,
+          newTreeId: action.newTreeId,
+          offset: action.offset,
         }),
       };
     default:
