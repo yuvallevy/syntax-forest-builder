@@ -4,6 +4,7 @@ exports[`sentence rendering renders an input box with the sentence 1`] = `
 <DocumentFragment>
   <input
     class="SentenceView-input"
+    id="t123456"
     placeholder="Type a sentence..."
     style="left: -100px; top: 20px; width: 127px;"
     type="text"

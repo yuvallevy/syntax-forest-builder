@@ -33,14 +33,18 @@ const App = () => {
   const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
-  const addTree = (position: PlotCoordsOffset) =>
-    dispatch({ type: 'addTree', newTreeId: generateTreeId(), offset: position });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
+  const addTreeAndFocus = (position: PlotCoordsOffset) => {
+    const newTreeId = generateTreeId();
+    dispatch({ type: 'addTree', newTreeId, offset: position });
+    setTimeout(() => document.getElementById(newTreeId)?.focus(), 50);
+  };
+
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
-      addTree({ dPlotX: event.clientX, dPlotY: event.clientY });
+      addTreeAndFocus({ dPlotX: event.clientX, dPlotY: event.clientY });
     } else {
       setSelection({ nodes: [] });
     }

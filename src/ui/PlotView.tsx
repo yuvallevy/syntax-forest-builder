@@ -127,6 +127,7 @@ const PlotView: React.FC<PlotViewProps> = ({
       <SentenceView
         key={`sentence-${treeId}`}
         tree={tree}
+        treeId={treeId}
         onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
         onSelect={slice => onSliceSelect(treeId, slice)}
         onKeyDown={event => onSentenceKeyDown(treeId, event)}

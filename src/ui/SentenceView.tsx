@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { StringSlice, PositionedTree, Sentence } from '../core/types';
+import { StringSlice, PositionedTree, Sentence, Id } from '../core/types';
 import './SentenceView.scss';
 
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
@@ -12,6 +12,7 @@ const EXTRA_SENTENCE_WIDTH = 4;
 
 interface SentenceViewProps {
   tree: PositionedTree;
+  treeId: Id;
   onChange: (newSentence: Sentence, oldSelectedSlice: StringSlice) => void;
   onSelect: (slice: StringSlice) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -22,13 +23,14 @@ const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
     ? [element.selectionStart, element.selectionEnd]
     : null;
 
-const SentenceView: React.FC<SentenceViewProps> = ({ tree, onChange, onSelect, onKeyDown }) => {
+const SentenceView: React.FC<SentenceViewProps> = ({ tree, treeId, onChange, onSelect, onKeyDown }) => {
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
 
   return <input
     type="text"
+    id={treeId}
     value={tree.sentence}
     className="SentenceView-input"
     style={{
