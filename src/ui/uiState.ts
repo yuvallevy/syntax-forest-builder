@@ -1,5 +1,7 @@
-import { Id, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot } from '../core/types';
-import { newNodeFromSelection, SelectionInPlot } from './editNodes';
+import {
+  Id, isBranching, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot
+} from '../core/types';
+import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './contentState';
 import { getNodeIdsAssignedToSlice } from '../mantle/manipulation';
 import { getParentNodeIdsInPlot } from '../mantle/plotManipulation';
@@ -7,6 +9,7 @@ import { getParentNodeIdsInPlot } from '../mantle/plotManipulation';
 export type UiAction =
   | { type: 'setSelection', newSelection: SelectionInPlot }
   | { type: 'selectParentNodes' }
+  | { type: 'selectChildNode', side: 'left' | 'right' | 'center' }
   | { type: 'startEditing' }
   | { type: 'stopEditing' }
   | { type: 'setEditedNodeLabel', newLabel: NodeLabel }
@@ -58,12 +61,43 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         selection: action.newSelection,
       };
     case 'selectParentNodes':
-      const newSelection = selectParentNodes(activePlot, state.selection);
+      const parentSelection = selectParentNodes(activePlot, state.selection);
       return {
         ...state,
-        selection: newSelection,
-        editingNode: state.editingNode ? newSelection.nodes[0] : undefined,
+        selection: parentSelection,
+        editingNode: state.editingNode ? parentSelection.nodes[0] : undefined,
       };
+    case 'selectChildNode':
+      if (
+        !('nodes' in state.selection) ||  // no nodes selected
+        ('nodes' in state.selection && state.selection.nodes.length > 1) ||  // multiple nodes selected
+        !selectedTreeId  // could not figure out tree ID for some other reason
+      ) return state;
+      const selectedNode = activePlot.trees[selectedTreeId].nodes[state.selection.nodes[0].nodeId];
+      if (!isBranching(selectedNode)) return state;
+
+      const childSelection: NodeSelectionInPlot | undefined =
+        action.side === 'center' && selectedNode.children.length === 1 ?
+          { nodes: [{ treeId: selectedTreeId, nodeId: selectedNode.children[0] }] } :
+        action.side === 'center' && selectedNode.children.length >= 3 ?
+          { nodes: [{ treeId: selectedTreeId, nodeId: selectedNode.children[1] }] } :
+        action.side !== 'center' && selectedNode.children.length >= 2 ?
+          {
+            nodes: [
+              {
+                treeId: selectedTreeId,
+                // FIXME: this way of determining which node to go to is not correct - they are not sorted by X-coord
+                nodeId: selectedNode.children[action.side === 'left' ? 0 : (selectedNode.children.length - 1)]
+              }
+            ]
+          } : undefined;
+
+      if (!childSelection) return state;
+      return {
+        ...state,
+        selection: childSelection,
+        editingNode: state.editingNode ? childSelection.nodes[0] : undefined,
+      }
     case 'startEditing':
       if (!('nodes' in state.selection) || state.selection.nodes.length !== 1) return state;
       return {

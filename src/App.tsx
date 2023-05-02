@@ -2,7 +2,8 @@ import { useMemo, useReducer } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import {
-  Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel, PlotCoordsOffset
+  Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel, PlotCoordsOffset, isBranching,
+  isTerminal
 } from './core/types';
 import PlotView from './ui/PlotView';
 import strWidth from './ui/strWidth';
@@ -28,6 +29,9 @@ const App = () => {
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
+  const selectLeftChildNode = () => dispatch({ type: 'selectChildNode', side: 'left' });
+  const selectRightChildNode = () => dispatch({ type: 'selectChildNode', side: 'right' });
+  const selectCenterChildNode = () => dispatch({ type: 'selectChildNode', side: 'center' });
   const startEditing = () => dispatch({ type: 'startEditing' });
   const stopEditing = () => dispatch({ type: 'stopEditing' });
   const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
@@ -36,10 +40,18 @@ const App = () => {
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
+  /** Filthy hack - select a slice at the DOM level to trigger the appropriate changes in both state and DOM */
+  const selectSliceAtDomLevel = (treeId: Id, [start, end]: StringSlice) => {
+    const element: HTMLInputElement | null = document.querySelector('input#' + treeId);
+    if (!element) return;
+    element.setSelectionRange(start, end);
+    setTimeout(() => element.focus(), 5);
+  };
+
   const addTreeAndFocus = (position: PlotCoordsOffset) => {
     const newTreeId = generateTreeId();
     dispatch({ type: 'addTree', newTreeId, offset: position });
-    setTimeout(() => document.getElementById(newTreeId)?.focus(), 50);
+    setTimeout(() => selectSliceAtDomLevel(newTreeId, [0, 0]), 50);
   };
 
   const removeAndDeselectTree = (treeId: Id) => {
@@ -107,6 +119,20 @@ const App = () => {
       addNode();
     } else {
       selectParentNodes();
+    }
+  });
+
+  useHotkeys(['ArrowLeft'], selectLeftChildNode);
+
+  useHotkeys(['ArrowRight'], selectRightChildNode);
+
+  useHotkeys(['ArrowDown'], () => {
+    if (selectedNodes.length !== 1) return;
+    const selectedNode = activePlot.trees[selectedNodes[0].treeId].nodes[selectedNodes[0].nodeId];
+    if (isBranching(selectedNode)) {
+      selectCenterChildNode();
+    } else if (isTerminal(selectedNode)) {
+      selectSliceAtDomLevel(selectedNodes[0].treeId, selectedNode.slice);
     }
   });
 

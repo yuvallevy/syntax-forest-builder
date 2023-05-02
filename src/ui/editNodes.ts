@@ -3,7 +3,9 @@ import {
 } from '../core/types';
 import { InsertedNode, transformAllNodesInTree } from '../mantle/manipulation';
 
-export type SelectionInPlot = { nodes: TreeAndNodeId[] } | { treeId: Id, slice: StringSlice };
+export type NodeSelectionInPlot = { nodes: TreeAndNodeId[] };
+export type SliceSelectionInPlot = { treeId: Id, slice: StringSlice };
+export type SelectionInPlot = NodeSelectionInPlot | SliceSelectionInPlot;
 
 const isWordChar = (char: string) => /['A-Za-z\u00c0-\u1fff]/.test(char);
 
