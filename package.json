@@ -2,6 +2,7 @@
   "name": "synforest",
   "version": "0.3.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@reecelucas/react-use-hotkeys": "^2.0.0",
     "@testing-library/jest-dom": "^5.16.5",
