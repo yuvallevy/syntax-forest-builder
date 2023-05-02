@@ -7,7 +7,6 @@ import {
 } from './core/types';
 import PlotView from './ui/PlotView';
 import strWidth from './ui/strWidth';
-import Toolbar, { ToolbarItem } from './ui/Toolbar';
 import { generateNodeId, generateTreeId } from './ui/generateId';
 import { SelectionInPlot } from './ui/editNodes';
 import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
@@ -144,16 +143,7 @@ const App = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
-  const toolbarItems: ToolbarItem[] = [
-    { title: 'Undo', action: undo },
-    { title: 'Redo', action: redo },
-    { title: 'Add', action: addNode },
-    { title: 'Delete', action: deleteNode },
-    { title: 'Edit', action: startEditing },
-  ];
-
-  return <>
-    <Toolbar items={toolbarItems} />
+  return (
     <PlotView
       plot={positionedPlot}
       selectedNodes={selectedNodes}
@@ -166,7 +156,7 @@ const App = () => {
       onNodeEditorBlur={handleNodeEditorBlur}
       onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
-  </>;
+  );
 }
 
 export default App;
