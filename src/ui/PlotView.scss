@@ -1,9 +1,26 @@
+$plotViewFontFamily: 'Times New Roman', Times, serif;
+
 .PlotView-svg {
   position: relative;
   font-size: 16px;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: $plotViewFontFamily;
   cursor: crosshair;
   user-select: none;
+}
+
+.PlotView-placeholder {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  pointer-events: none;
+  opacity: 0.5;
+  font-family: $plotViewFontFamily;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .PlotView--node-label-field {
