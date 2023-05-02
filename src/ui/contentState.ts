@@ -17,6 +17,7 @@ export type ContentAction =
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
   | { type: 'addTree', plotId: Id, newTreeId: Id, offset: PlotCoordsOffset }
+  | { type: 'removeTree', plotId: Id, treeId: Id }
 ;
 
 /**
@@ -82,6 +83,11 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
           sentence: '',
           offset: action.offset,
         },
+      };
+    case 'removeTree':
+      return {
+        ...action,
+        removedTree: state.plots[action.plotId].trees[action.treeId],
       };
   }
 };

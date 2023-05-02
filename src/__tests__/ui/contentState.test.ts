@@ -45,6 +45,10 @@ describe('content state', () => {
       'adds a tree to a plot',
       { type: 'addTree', plotId: 'plot', newTreeId: 'zz', offset: { dPlotX: 105, dPlotY: 88 } }
     ],
+    [
+      'removes a tree from a plot',
+      { type: 'removeTree', plotId: 'plot', treeId: 'aa' }
+    ],
   ];
 
   it.each(testCases)('%s', (name, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());

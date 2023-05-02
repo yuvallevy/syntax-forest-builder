@@ -14,6 +14,7 @@ export type UiAction =
   | { type: 'deleteSelectedNodes' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
   | { type: 'addTree', newTreeId: Id, offset: PlotCoordsOffset }
+  | { type: 'removeTree', treeId: Id }
   | { type: 'undo' }
   | { type: 'redo' }
 ;
@@ -130,6 +131,15 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           plotId: state.activePlotId,
           newTreeId: action.newTreeId,
           offset: action.offset,
+        }),
+      };
+    case 'removeTree':
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'removeTree',
+          plotId: state.activePlotId,
+          treeId: action.treeId,
         }),
       };
     default:

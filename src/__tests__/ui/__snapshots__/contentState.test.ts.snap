@@ -183,6 +183,16 @@ Object {
 }
 `;
 
+exports[`content state removes a tree from a plot 1`] = `
+Object {
+  "plots": Object {
+    "plot": Object {
+      "trees": Object {},
+    },
+  },
+}
+`;
+
 exports[`content state sets the label of a node 1`] = `
 Object {
   "plots": Object {

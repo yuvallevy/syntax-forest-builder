@@ -42,6 +42,11 @@ const App = () => {
     setTimeout(() => document.getElementById(newTreeId)?.focus(), 50);
   };
 
+  const removeAndDeselectTree = (treeId: Id) => {
+    dispatch({ type: 'removeTree', treeId });
+    setSelection({ nodes: [] });
+  };
+
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
       addTreeAndFocus({ dPlotX: event.clientX, dPlotY: event.clientY });
@@ -70,6 +75,8 @@ const App = () => {
       } else {
         selectParentNodes();
       }
+    } else if ((event.key === 'Backspace' || event.key === 'Delete') && event.currentTarget.value === '') {
+      removeAndDeselectTree(treeId);
     }
   };
 
