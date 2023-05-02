@@ -1,11 +1,13 @@
 import { useMemo, useReducer } from 'react';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
-import { Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel } from './core/types';
+import {
+  Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel, PlotCoordsOffset
+} from './core/types';
 import PlotView from './ui/PlotView';
 import strWidth from './ui/strWidth';
 import Toolbar, { ToolbarItem } from './ui/Toolbar';
-import generateNodeId from './ui/generateNodeId';
+import { generateNodeId, generateTreeId } from './ui/generateId';
 import { SelectionInPlot } from './ui/editNodes';
 import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -17,6 +19,7 @@ const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
   const { selection, activePlotId, editingNode } = state;
 
+  const nothingSelected = 'nodes' in selection && selection.nodes.length === 0;
   const selectedNodes = 'nodes' in selection ? selection.nodes : [];
 
   const activePlot: UnpositionedPlot =
@@ -30,8 +33,18 @@ const App = () => {
   const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
+  const addTree = (position: PlotCoordsOffset) =>
+    dispatch({ type: 'addTree', newTreeId: generateTreeId(), offset: position });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
+
+  const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
+    if (nothingSelected) {
+      addTree({ dPlotX: event.clientX, dPlotY: event.clientY });
+    } else {
+      setSelection({ nodes: [] });
+    }
+  };
 
   const handleNodesSelect = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
     nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
@@ -108,6 +121,7 @@ const App = () => {
       plot={positionedPlot}
       selectedNodes={selectedNodes}
       editing={editingNode}
+      onClick={handlePlotClick}
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}
       onSentenceChange={handleSentenceChange}

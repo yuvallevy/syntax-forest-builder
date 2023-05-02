@@ -11,6 +11,7 @@ import { clientCoordsToPlotCoords } from './coordConversions';
 import { NodeSelectionMode } from './NodeSelectionMode';
 
 const PRIMARY_MOUSE_BUTTON = 1;
+const MINIMUM_SELECTION_BOX_DIMENSION = 8;  // to leave some wiggle room for the mouse to move while clicking
 
 const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
   topLeft: clientCoordsToPlotCoords(clientRect.topLeft),
@@ -21,6 +22,7 @@ interface PlotViewProps {
   plot: PositionedPlot;
   selectedNodes: TreeAndNodeId[];
   editing: TreeAndNodeId | undefined;
+  onClick: (event: React.MouseEvent<SVGElement>) => void;
   onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
@@ -33,6 +35,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   plot,
   selectedNodes,
   editing,
+  onClick,
   onNodesSelect,
   onSliceSelect,
   onSentenceChange,
@@ -58,13 +61,17 @@ const PlotView: React.FC<PlotViewProps> = ({
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.currentTarget === event.target) {  // Only start a selection box from an empty area
       setSelectionBoxStart({ clientX: event.clientX, clientY: event.clientY });
-      setSelectionBoxEnd({ clientX: event.clientX, clientY: event.clientY });
     }
   };
 
   const handlePlotMouseMove = (event: React.MouseEvent<SVGElement>) => {
-    if (event.buttons === PRIMARY_MOUSE_BUTTON) {
-      setSelectionBoxEnd({ clientX: event.clientX, clientY: event.clientY });
+    if (event.buttons === PRIMARY_MOUSE_BUTTON && selectionBoxStart) {
+      const xDistToSelectionBoxStart = Math.abs(selectionBoxStart?.clientX - event.clientX);
+      const yDistToSelectionBoxStart = Math.abs(selectionBoxStart?.clientY - event.clientY);
+      if (xDistToSelectionBoxStart > MINIMUM_SELECTION_BOX_DIMENSION ||
+        yDistToSelectionBoxStart > MINIMUM_SELECTION_BOX_DIMENSION) {
+        setSelectionBoxEnd({ clientX: event.clientX, clientY: event.clientY });
+      }
     }
   };
 
@@ -84,6 +91,8 @@ const PlotView: React.FC<PlotViewProps> = ({
           (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
           [] as TreeAndNodeId[]);
       onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
+    } else if (selectionBoxStart) {
+      onClick(event);
     }
     setSelectionBoxStart(undefined);
     setSelectionBoxEnd(undefined);
