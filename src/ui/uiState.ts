@@ -55,19 +55,21 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       : state.selection.nodes.length > 0 ? state.selection.nodes[0].treeId
       : undefined;
   switch (action.type) {
-    case 'setSelection':
+    case 'setSelection': {
       return {
         ...state,
         selection: action.newSelection,
       };
-    case 'selectParentNodes':
+    }
+    case 'selectParentNodes': {
       const parentSelection = selectParentNodes(activePlot, state.selection);
       return {
         ...state,
         selection: parentSelection,
         editingNode: state.editingNode ? parentSelection.nodes[0] : undefined,
       };
-    case 'selectChildNode':
+    }
+    case 'selectChildNode': {
       if (
         !('nodes' in state.selection) ||  // no nodes selected
         ('nodes' in state.selection && state.selection.nodes.length > 1) ||  // multiple nodes selected
@@ -97,19 +99,22 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         selection: childSelection,
         editingNode: state.editingNode ? childSelection.nodes[0] : undefined,
-      }
-    case 'startEditing':
+      };
+    }
+    case 'startEditing': {
       if (!('nodes' in state.selection) || state.selection.nodes.length !== 1) return state;
       return {
         ...state,
         editingNode: state.selection.nodes[0],
       };
-    case 'stopEditing':
+    }
+    case 'stopEditing': {
       return {
         ...state,
         editingNode: undefined,
       };
-    case 'setEditedNodeLabel':
+    }
+    case 'setEditedNodeLabel': {
       if (!state.editingNode) return state;
       return {
         ...state,
@@ -120,7 +125,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           newLabel: action.newLabel,
         }),
       };
-    case 'addNodeBySelection':
+    }
+    case 'addNodeBySelection': {
       if (!selectedTreeId) return state;
       const newNodeIndicator = { treeId: selectedTreeId, nodeId: action.newNodeId };
       return {
@@ -135,7 +141,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         selection: { nodes: [newNodeIndicator] },
         editingNode: newNodeIndicator,
       };
-    case 'deleteSelectedNodes':
+    }
+    case 'deleteSelectedNodes': {
       if (!('nodes' in state.selection)) return state;
       return {
         ...state,
@@ -145,7 +152,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           nodes: state.selection.nodes,
         })
       };
-    case 'setSentence':
+    }
+    case 'setSentence': {
       if (!selectedTreeId) return state;
       return {
         ...state,
@@ -157,7 +165,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           oldSelectedSlice: action.oldSelectedSlice,
         }),
       };
-    case 'addTree':
+    }
+    case 'addTree': {
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
@@ -167,7 +176,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           offset: action.offset,
         }),
       };
-    case 'removeTree':
+    }
+    case 'removeTree': {
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
@@ -176,10 +186,12 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           treeId: action.treeId,
         }),
       };
-    default:
+    }
+    default: {
       return {
         ...state,
         contentState: contentReducer(state.contentState, action)
       };
+    }
   }
 };

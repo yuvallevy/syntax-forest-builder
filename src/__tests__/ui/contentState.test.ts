@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ContentAction, ContentState, contentReducer, UndoableContentState } from '../../ui/contentState';
 
 describe('content state', () => {
@@ -51,5 +52,5 @@ describe('content state', () => {
     ],
   ];
 
-  it.each(testCases)('%s', (name, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());
+  it.each(testCases)('%s', (_, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());
 });

@@ -38,7 +38,7 @@ type UndoableContentChange = UndoableActionCommon & ContentChange;
  */
 const makeUndoable = (state: ContentState) => (action: ContentAction): ContentChange => {
   switch (action.type) {
-    case 'insertNode':
+    case 'insertNode': {
       return {
         type: 'setTree',
         plotId: action.plotId,
@@ -46,7 +46,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         old: state.plots[action.plotId].trees[action.treeId],
         new: insertNodeIntoTree(action.newNode)(action.newNodeId)(state.plots[action.plotId].trees[action.treeId]),
       };
-    case 'deleteNodes':
+    }
+    case 'deleteNodes': {
       const treeId = action.nodes[0].treeId;  // TODO: Use all trees
       return {
         type: 'setTree',
@@ -55,7 +56,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         old: state.plots[action.plotId].trees[treeId],
         new: deleteNodesInTree(action.nodes.map(({ nodeId }) => nodeId))(state.plots[action.plotId].trees[treeId]),
       };
-    case 'setNodeLabel':
+    }
+    case 'setNodeLabel': {
       return {
         type: 'setTree',
         plotId: action.plotId,
@@ -64,7 +66,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.node.nodeId)(
           state.plots[action.plotId].trees[action.node.treeId]),
       };
-    case 'setSentence':
+    }
+    case 'setSentence': {
       return {
         type: 'setTree',
         plotId: action.plotId,
@@ -73,7 +76,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
           state.plots[action.plotId].trees[action.treeId]),
       };
-    case 'addTree':
+    }
+    case 'addTree': {
       return {
         type: 'addTree',
         plotId: action.plotId,
@@ -84,17 +88,19 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
           offset: action.offset,
         },
       };
-    case 'removeTree':
+    }
+    case 'removeTree': {
       return {
         ...action,
         removedTree: state.plots[action.plotId].trees[action.treeId],
       };
+    }
   }
 };
 
 const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> = action => state => {
   switch (action.type) {
-    case 'setTree':
+    case 'setTree': {
       return {
         ...state,
         plots: {
@@ -108,7 +114,8 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
           },
         },
       };
-    case 'addTree':
+    }
+    case 'addTree': {
       return {
         ...state,
         plots: {
@@ -122,7 +129,8 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
           },
         },
       };
-    case 'removeTree':
+    }
+    case 'removeTree': {
       return {
         ...state,
         plots: {
@@ -133,6 +141,7 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
           },
         },
       };
+    }
     default:
       return state;
   }
@@ -140,13 +149,14 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
 
 const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action => {
   switch (action.type) {
-    case 'setTree':
+    case 'setTree': {
       return {
         ...action,
         old: action.new,
         new: action.old,
       };
-    case 'addTree':
+    }
+    case 'addTree': {
       return {
         ...action,
         type: 'removeTree',
@@ -154,7 +164,8 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
         treeId: action.newTreeId,
         removedTree: action.newTree,
       };
-    case 'removeTree':
+    }
+    case 'removeTree': {
       return {
         ...action,
         type: 'addTree',
@@ -162,6 +173,7 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
         newTreeId: action.treeId,
         newTree: action.removedTree,
       };
+    }
     default:
       return action;
   }
@@ -189,5 +201,5 @@ export const initialContentState: UndoableContentState = {
 
 export const contentReducer = (state: UndoableContentState, action: ContentAction | { type: 'undo' } | { type: 'redo' }): UndoableContentState =>
   action.type === 'undo' ? undo(applyUndoableAction)(reverseUndoableAction)(state)
-    : action.type === 'redo' ? redo(applyUndoableAction)(reverseUndoableAction)(state)
+    : action.type === 'redo' ? redo(applyUndoableAction)(state)
     : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);

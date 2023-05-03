@@ -27,7 +27,6 @@ export const undo =
 
 export const redo =
   <A extends UndoableActionCommon, S>(applyAction: ApplyActionFunc<A, S>) =>
-  (reverseAction: ReverseActionFunc<A>) =>
   (history: UndoRedoHistory<A, S>): UndoRedoHistory<A, S> => ({
     current: applyAction(history.redoStack[0])(history.current),
     undoStack: [history.redoStack[0], ...history.undoStack],

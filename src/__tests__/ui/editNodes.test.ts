@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { StringSlice, Sentence, UnpositionedTree } from '../../core/types';
 import { handleLocalSentenceChange, newNodeFromSelection } from '../../ui/editNodes';
 

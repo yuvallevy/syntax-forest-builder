@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { UnpositionedTree } from '../../core/types';
 import {
   deleteNodesInTree,

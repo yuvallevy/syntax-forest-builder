@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { PositionedTree } from '../../core/types';
 import TreeView from '../../ui/TreeView';

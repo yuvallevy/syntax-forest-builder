@@ -71,7 +71,7 @@ const App = () => {
   });
   const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
-  const handleSentenceChange = (treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
+  const handleSentenceChange = (_: Id, newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
     type: 'setSentence',
     newSentence,
     oldSelectedSlice,

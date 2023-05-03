@@ -1,48 +1,48 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`tree manipulation changes all nodes in the tree 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`tree manipulation > changes all nodes in the tree 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
     ],
     "label": "test",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "test",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "test",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       11,
     ],
     "triangle": false,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term2",
     ],
     "label": "test",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -50,49 +50,49 @@ Object {
 }
 `;
 
-exports[`tree manipulation changes the label of a node 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`tree manipulation > changes the label of a node 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
     ],
     "label": "test",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       11,
     ],
     "triangle": false,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term2",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -100,38 +100,38 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes a branching node down the tree 1`] = `
-Object {
-  "term1": Object {
+exports[`tree manipulation > deletes a branching node down the tree 1`] = `
+{
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       11,
     ],
     "triangle": false,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "term2",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -139,36 +139,36 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes a terminal node down the tree 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`tree manipulation > deletes a terminal node down the tree 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -176,37 +176,37 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes a top-level node 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`tree manipulation > deletes a top-level node 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       11,
     ],
@@ -215,17 +215,17 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes two nodes with ancestor-descendant relationship at once 1`] = `
-Object {
-  "branch1": Object {
-    "formerDescendants": Object {
-      "term1": Object {
+exports[`tree manipulation > deletes two nodes with ancestor-descendant relationship at once 1`] = `
+{
+  "branch1": {
+    "formerDescendants": {
+      "term1": {
         "label": "N",
-        "offset": Object {
+        "offset": {
           "dTreeX": 0,
           "dTreeY": 0,
         },
-        "slice": Array [
+        "slice": [
           0,
           4,
         ],
@@ -235,18 +235,18 @@ Object {
     "formerSlice": undefined,
     "formerlyTriangle": undefined,
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term2": Object {
+  "term2": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       11,
     ],
@@ -255,25 +255,25 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes two nodes with direct parent-child relationship at once 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`tree manipulation > deletes two nodes with direct parent-child relationship at once 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
@@ -282,17 +282,17 @@ Object {
 }
 `;
 
-exports[`tree manipulation deletes two nodes with no ancestor-descendant relationship at once 1`] = `
-Object {
-  "branch1": Object {
-    "formerDescendants": Object {
-      "term1": Object {
+exports[`tree manipulation > deletes two nodes with no ancestor-descendant relationship at once 1`] = `
+{
+  "branch1": {
+    "formerDescendants": {
+      "term1": {
         "label": "N",
-        "offset": Object {
+        "offset": {
           "dTreeX": 0,
           "dTreeY": 0,
         },
-        "slice": Array [
+        "slice": [
           0,
           4,
         ],
@@ -302,17 +302,17 @@ Object {
     "formerSlice": undefined,
     "formerlyTriangle": undefined,
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -320,66 +320,66 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a branching node down the tree with a branching child 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a branching node down the tree with a branching child 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "term1",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
-      "children": Array [
+    "new": {
+      "children": [
         "branch1",
       ],
       "label": "?",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "term2": Object {
+    "term2": {
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
-    "top": Object {
-      "children": Array [
+    "top": {
+      "children": [
         "term2",
         "new",
       ],
       "label": "S",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 5,
       },
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -387,66 +387,66 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a branching node down the tree with a terminal child 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a branching node down the tree with a terminal child 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "new",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
-      "children": Array [
+    "new": {
+      "children": [
         "term1",
       ],
       "label": "N'",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "term2": Object {
+    "term2": {
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
-    "top": Object {
-      "children": Array [
+    "top": {
+      "children": [
         "branch1",
         "term2",
       ],
       "label": "S",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 5,
       },
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -454,66 +454,66 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a branching node down the tree with two children 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a branching node down the tree with two children 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "term1",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
-      "children": Array [
+    "new": {
+      "children": [
         "branch1",
         "term2",
       ],
       "label": "?",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "term2": Object {
+    "term2": {
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
-    "top": Object {
-      "children": Array [
+    "top": {
+      "children": [
         "new",
       ],
       "label": "S",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 5,
       },
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -521,55 +521,55 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a top-level branching node with one child 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a top-level branching node with one child 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "term1",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
-      "children": Array [
+    "new": {
+      "children": [
         "term2",
       ],
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "term2": Object {
+    "term2": {
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -577,56 +577,56 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a top-level branching node with two children 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a top-level branching node with two children 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "term1",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
-      "children": Array [
+    "new": {
+      "children": [
         "branch1",
         "term2",
       ],
       "label": "S",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "term2": Object {
+    "term2": {
       "label": "VP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -634,55 +634,55 @@ Object {
 }
 `;
 
-exports[`tree manipulation inserts a top-level terminal node 1`] = `
-Object {
-  "nodes": Object {
-    "branch1": Object {
-      "children": Array [
+exports[`tree manipulation > inserts a top-level terminal node 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
         "term1",
       ],
       "label": "NP",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
     },
-    "new": Object {
+    "new": {
       "label": "V",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         5,
         11,
       ],
       "triangle": false,
     },
-    "term1": Object {
+    "term1": {
       "label": "N",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 0,
       },
-      "slice": Array [
+      "slice": [
         0,
         4,
       ],
       "triangle": false,
     },
-    "top": Object {
-      "children": Array [
+    "top": {
+      "children": [
         "branch1",
       ],
       "label": "S",
-      "offset": Object {
+      "offset": {
         "dTreeX": 0,
         "dTreeY": 5,
       },
     },
   },
-  "offset": Object {
+  "offset": {
     "dPlotX": 0,
     "dPlotY": 0,
   },
@@ -690,51 +690,51 @@ Object {
 }
 `;
 
-exports[`tree manipulation makes a branching node stranded when its children are gone 1`] = `
-Object {
-  "term1": Object {
+exports[`tree manipulation > makes a branching node stranded when its children are gone 1`] = `
+{
+  "term1": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       4,
     ],
     "triangle": false,
   },
-  "top": Object {
-    "formerDescendants": Object {
-      "branch1": Object {
-        "children": Array [
+  "top": {
+    "formerDescendants": {
+      "branch1": {
+        "children": [
           "term1",
         ],
         "label": "NP",
-        "offset": Object {
+        "offset": {
           "dTreeX": 0,
           "dTreeY": 0,
         },
       },
-      "term1": Object {
+      "term1": {
         "label": "N",
-        "offset": Object {
+        "offset": {
           "dTreeX": 0,
           "dTreeY": 0,
         },
-        "slice": Array [
+        "slice": [
           0,
           4,
         ],
         "triangle": false,
       },
-      "term2": Object {
+      "term2": {
         "label": "VP",
-        "offset": Object {
+        "offset": {
           "dTreeX": 0,
           "dTreeY": 0,
         },
-        "slice": Array [
+        "slice": [
           5,
           11,
         ],
@@ -744,7 +744,7 @@ Object {
     "formerSlice": undefined,
     "formerlyTriangle": undefined,
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },

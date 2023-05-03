@@ -56,7 +56,7 @@ const determineStrandedNodePosition =
   (strWidthFunc: StrWidthFunc) =>
   (sentence: Sentence) =>
   (node: UnpositionedStrandedNode): { position: PositionInTree, triangle: undefined } => {
-    let position: { treeX: any; treeY: any };
+    let position: PositionInTree;
     if (node.formerSlice) {
       const [widthBeforeSlice, sliceWidth] = sliceOffsetAndWidth(strWidthFunc)(sentence)(node.formerSlice);
       position = {

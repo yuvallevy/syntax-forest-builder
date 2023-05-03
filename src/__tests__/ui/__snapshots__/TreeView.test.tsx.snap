@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
+exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
 <DocumentFragment>
   <svg>
       
@@ -113,7 +113,7 @@ exports[`tree rendering renders a tree with position-assigned nodes 1`] = `
 </DocumentFragment>
 `;
 
-exports[`tree rendering renders a tree with position-assigned nodes where some are selected 1`] = `
+exports[`tree rendering > renders a tree with position-assigned nodes where some are selected 1`] = `
 <DocumentFragment>
   <svg>
     <g

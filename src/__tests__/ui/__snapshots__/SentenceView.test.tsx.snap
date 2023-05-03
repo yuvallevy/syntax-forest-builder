@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`sentence rendering renders an input box with the sentence 1`] = `
+exports[`sentence rendering > renders an input box with the sentence 1`] = `
 <DocumentFragment>
   <input
     class="SentenceView-input"

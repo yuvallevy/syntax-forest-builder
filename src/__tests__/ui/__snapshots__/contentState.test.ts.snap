@@ -1,46 +1,46 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`content state adds a tree to a plot 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {
-        "aa": Object {
-          "nodes": Object {
-            "a": Object {
+exports[`content state > adds a tree to a plot 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 0,
                 4,
               ],
               "triangle": false,
             },
-            "b": Object {
+            "b": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 5,
                 10,
               ],
               "triangle": false,
             },
           },
-          "offset": Object {
+          "offset": {
             "dPlotX": 0,
             "dPlotY": 0,
           },
           "sentence": "tree state",
         },
-        "zz": Object {
-          "nodes": Object {},
-          "offset": Object {
+        "zz": {
+          "nodes": {},
+          "offset": {
             "dPlotX": 105,
             "dPlotY": 88,
           },
@@ -52,27 +52,27 @@ Object {
 }
 `;
 
-exports[`content state deletes a node from a tree 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {
-        "aa": Object {
-          "nodes": Object {
-            "a": Object {
+exports[`content state > deletes a node from a tree 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 0,
                 4,
               ],
               "triangle": false,
             },
           },
-          "offset": Object {
+          "offset": {
             "dPlotX": 0,
             "dPlotY": 0,
           },
@@ -84,50 +84,50 @@ Object {
 }
 `;
 
-exports[`content state inserts a node into a tree 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {
-        "aa": Object {
-          "nodes": Object {
-            "a": Object {
+exports[`content state > inserts a node into a tree 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 0,
                 4,
               ],
               "triangle": false,
             },
-            "b": Object {
+            "b": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 5,
                 10,
               ],
               "triangle": false,
             },
-            "c": Object {
-              "children": Array [
+            "c": {
+              "children": [
                 "a",
                 "b",
               ],
               "label": "NP",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
             },
           },
-          "offset": Object {
+          "offset": {
             "dPlotX": 0,
             "dPlotY": 0,
           },
@@ -139,39 +139,39 @@ Object {
 }
 `;
 
-exports[`content state reacts to a change in the sentence 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {
-        "aa": Object {
-          "nodes": Object {
-            "a": Object {
+exports[`content state > reacts to a change in the sentence 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 0,
                 3,
               ],
               "triangle": false,
             },
-            "b": Object {
+            "b": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 4,
                 9,
               ],
               "triangle": false,
             },
           },
-          "offset": Object {
+          "offset": {
             "dPlotX": 0,
             "dPlotY": 0,
           },
@@ -183,49 +183,49 @@ Object {
 }
 `;
 
-exports[`content state removes a tree from a plot 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {},
+exports[`content state > removes a tree from a plot 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {},
     },
   },
 }
 `;
 
-exports[`content state sets the label of a node 1`] = `
-Object {
-  "plots": Object {
-    "plot": Object {
-      "trees": Object {
-        "aa": Object {
-          "nodes": Object {
-            "a": Object {
+exports[`content state > sets the label of a node 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
               "label": "NP",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 0,
                 4,
               ],
               "triangle": false,
             },
-            "b": Object {
+            "b": {
               "label": "N",
-              "offset": Object {
+              "offset": {
                 "dTreeX": 0,
                 "dTreeY": 0,
               },
-              "slice": Array [
+              "slice": [
                 5,
                 10,
               ],
               "triangle": false,
             },
           },
-          "offset": Object {
+          "offset": {
             "dPlotX": 0,
             "dPlotY": 0,
           },

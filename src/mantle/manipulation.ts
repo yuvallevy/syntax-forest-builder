@@ -40,7 +40,7 @@ const insertNode =
   (insertedNode: InsertedNode) =>
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> => {
-    let nodeMapWithNewNode = 'targetChildIds' in insertedNode
+    const nodeMapWithNewNode = 'targetChildIds' in insertedNode
       ? {
         ...transformValues(nodes, node => isBranching(node)
           ? { ...node, children: node.children.filter(childId => !insertedNode.targetChildIds.includes(childId)) }

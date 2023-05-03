@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import UndoRedoHistory, { applyToHistory, redo, undo } from '../../mantle/UndoRedoHistory';
 import { applyAction, reverseAction, TestAction, TestState } from './testActionAndState';
 
@@ -63,14 +64,14 @@ describe('undo/redo history', () => {
 
   it('undoes one action then redoes it', () => {
     const resultAfterUndo = undo(applyAction)(reverseAction)(undoRedoHistoryAfterTwoActions);
-    const resultAfterRedo = redo(applyAction)(reverseAction)(resultAfterUndo);
+    const resultAfterRedo = redo(applyAction)(resultAfterUndo);
     expect(resultAfterRedo).toStrictEqual(undoRedoHistoryAfterTwoActions);
   });
 
   it('undoes two actions then redoes one', () => {
     const resultAfterFirstUndo = undo(applyAction)(reverseAction)(undoRedoHistoryAfterTwoActions);
     const resultAfterSecondUndo = undo(applyAction)(reverseAction)(resultAfterFirstUndo);
-    const resultAfterRedo = redo(applyAction)(reverseAction)(resultAfterSecondUndo);
+    const resultAfterRedo = redo(applyAction)(resultAfterSecondUndo);
     expect(resultAfterRedo).toStrictEqual(undoRedoHistoryAfterUndoOnce);
   });
 });

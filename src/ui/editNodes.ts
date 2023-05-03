@@ -62,7 +62,7 @@ const shiftNodeSliceAfterChange =
     ) return node;                     // no change is necessary
 
     const [oldNodeSliceStart, oldNodeSliceEnd] = node.slice;
-    let newNodeSlice: StringSlice = [oldNodeSliceStart, oldNodeSliceEnd];
+    const newNodeSlice: StringSlice = [oldNodeSliceStart, oldNodeSliceEnd];
     if (oldSelection[0] === oldSelection[1]) {  // No selection, just a cursor
       const oldCursorPos = oldSelection[0];
       if (oldCursorPos === oldNodeSliceStart) {  // Cursor was at the beginning of the slice

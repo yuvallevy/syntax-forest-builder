@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { PositionedTerminalNode, UnpositionedTree } from '../../core/types';
 import { applyNodePositionsToTree } from '../../core/positioning';
 import mockStrWidth from '../__mocks__/mockStrWidth';

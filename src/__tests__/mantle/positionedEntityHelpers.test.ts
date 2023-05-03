@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { IdMap, PlotCoords, PlotRect, PositionedNode, PositionedTree } from '../../core/types';
 import {
   calculateNodePositionOnPlot,

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { UnpositionedPlot } from '../../core/types';
 import { getParentNodeIdsInPlot } from '../../mantle/plotManipulation';
 

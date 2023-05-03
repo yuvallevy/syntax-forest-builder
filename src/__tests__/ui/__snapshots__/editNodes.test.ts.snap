@@ -1,61 +1,61 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The d jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The d jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       5,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       6,
       12,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -63,62 +63,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dg jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The dg jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -126,62 +126,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dg jumped." 2`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The dg jumped." 2`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -189,62 +189,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The do jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The do jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -252,62 +252,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The do jumped." 2`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The do jumped." 2`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -315,62 +315,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The dogs jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The dogs jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       7,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       9,
       15,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -378,62 +378,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The doug jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The doug jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       8,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       9,
       15,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -441,62 +441,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The g jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The g jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       5,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       6,
       12,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -504,62 +504,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The og jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The og jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -567,62 +567,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The og jumped." 2`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The og jumped." 2`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       4,
       6,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       7,
       13,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
@@ -630,62 +630,62 @@ Object {
 }
 `;
 
-exports[`high-level tree editing routines accommodating sentence changes reassigns terminal node slices when changing sentence to "The wdog jumped." 1`] = `
-Object {
-  "branch1": Object {
-    "children": Array [
+exports[`high-level tree editing routines > accommodating sentence changes > reassigns terminal node slices when changing sentence to "The wdog jumped." 1`] = `
+{
+  "branch1": {
+    "children": [
       "term1",
       "term2",
     ],
     "label": "NP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
   },
-  "term1": Object {
+  "term1": {
     "label": "Det",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       0,
       3,
     ],
     "triangle": false,
   },
-  "term2": Object {
+  "term2": {
     "label": "N",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       5,
       8,
     ],
     "triangle": false,
   },
-  "term3": Object {
+  "term3": {
     "label": "VP",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 0,
     },
-    "slice": Array [
+    "slice": [
       9,
       15,
     ],
     "triangle": true,
   },
-  "top": Object {
-    "children": Array [
+  "top": {
+    "children": [
       "branch1",
       "term3",
     ],
     "label": "S",
-    "offset": Object {
+    "offset": {
       "dTreeX": 0,
       "dTreeY": 5,
     },
