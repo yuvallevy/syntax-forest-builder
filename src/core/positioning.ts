@@ -23,6 +23,9 @@ const sliceOffsetAndWidth = (strWidthFunc: StrWidthFunc) => (sentence: Sentence)
 const determineBranchingNodePosition =
   (alreadyPositionedNodes: IdMap<PositionedNode>) =>
   (node: UnpositionedBranchingNode): { position: PositionInTree, triangle: undefined } => {
+    // Branching nodes are positioned as follows:
+    // X - average of all X positions of its direct descendants (regardless of any descendants further down the tree)
+    // Y - a certain distance above the topmost child node
     const positionedChildNodes = filterEntries(alreadyPositionedNodes, ([nodeId, _]) => node.children.includes(nodeId));
     const childXs = mapValues(positionedChildNodes, node => node.position.treeX);
     const childYs = mapValues(positionedChildNodes, node => node.position.treeY);
@@ -39,6 +42,9 @@ const determineTerminalNodePosition =
   (strWidthFunc: StrWidthFunc) =>
   (sentence: Sentence) =>
   (node: UnpositionedTerminalNode): { position: PositionInTree, triangle: { treeX1: number, treeX2: number } | undefined } => {
+    // Terminal nodes are positioned as follows:
+    // X - exact center of the assigned slice, as measured in pixels
+    // Y - a little above the slice if it is not a triangle node; a larger distance above the slice if it is
     const [widthBeforeSlice, sliceWidth] = sliceOffsetAndWidth(strWidthFunc)(sentence)(node.slice);
     return {
       position: {
@@ -57,13 +63,13 @@ const determineStrandedNodePosition =
   (sentence: Sentence) =>
   (node: UnpositionedStrandedNode): { position: PositionInTree, triangle: undefined } => {
     let position: PositionInTree;
-    if (node.formerSlice) {
+    if (node.formerSlice) {  // Node was formerly terminal - determine its position based on its slice
       const [widthBeforeSlice, sliceWidth] = sliceOffsetAndWidth(strWidthFunc)(sentence)(node.formerSlice);
       position = {
         treeX: widthBeforeSlice + (sliceWidth / 2) + node.offset.dTreeX,
         treeY: (node.formerlyTriangle ? DEFAULT_TRIANGLE_NODE_Y : DEFAULT_TERMINAL_NODE_Y) + node.offset.dTreeY,
       };
-    } else if (node.formerDescendants) {
+    } else if (node.formerDescendants) {  // Node was formerly branching - determine its position based on past children
       const positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc);
       const childXs = mapValues(positionedChildNodes, node => node.position.treeX);
       const childYs = mapValues(positionedChildNodes, node => node.position.treeY);
@@ -71,7 +77,7 @@ const determineStrandedNodePosition =
         treeX: average(childXs) + node.offset.dTreeX,
         treeY: Math.min(...childYs) + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
       };
-    } else {
+    } else {  // Node was never anything other than stranded - just use its X and Y offset
       position = {
         treeX: node.offset.dTreeX,
         treeY: node.offset.dTreeY,
@@ -83,7 +89,10 @@ const determineStrandedNodePosition =
     };
   };
 
-export const determineNodePosition =
+/**
+ * Returns the appropriate position for the given unpositioned node.
+ */
+const determineNodePosition =
   (alreadyPositionedNodes: IdMap<PositionedNode>) =>
   (strWidthFunc: StrWidthFunc) =>
   (sentence: Sentence) =>
@@ -92,6 +101,10 @@ export const determineNodePosition =
       : isTerminal(node) ? determineTerminalNodePosition(strWidthFunc)(sentence)(node)
       : determineStrandedNodePosition(strWidthFunc)(sentence)(node);
 
+/**
+ * Returns a positioned node corresponding to the given unpositioned node, based on already assigned node positions,
+ * width calculation function and sentence associated with the tree.
+ */
 const applyNodePosition =
   (alreadyPositionedNodes: IdMap<PositionedNode>) =>
   (strWidthFunc: StrWidthFunc) =>
@@ -101,19 +114,36 @@ const applyNodePosition =
     ...determineNodePosition(alreadyPositionedNodes)(strWidthFunc)(sentence)(node),
   });
 
+/**
+ * Receives an ID map of unpositioned nodes and returns an equivalent map of nodes with assigned positions.
+ * This function is recursive and progressively assigns positions to more and more nodes until the whole tree is filled.
+ */
 const applyNodePositions = (
   nodes: IdMap<UnpositionedNode>,
   sentence: Sentence,
   strWidthFunc: StrWidthFunc,
   alreadyPositionedNodes: IdMap<PositionedNode> = {},
 ): IdMap<PositionedNode> => {
+  // If no unpositioned nodes are left, we're done
   if (isEmpty(nodes)) return alreadyPositionedNodes;
 
+  // Nodes that can be positioned at this point in the process are:
+  // * Terminal nodes, whose position is entirely based on their assigned slice
+  // * Stranded nodes, which internally store the descendants or slice that they once had
+  // * Branching nodes whose children all have known positions
   const nodesToPositionNow = filterEntries(nodes, ([_, node]) =>
     !isBranching(node) || node.children.every(childId => alreadyPositionedNodes.hasOwnProperty(childId)));
+
+  // Assign positions to all the nodes we've determined to be ready for positioning
+  const newPositionedNodes = transformValues(nodesToPositionNow,
+    applyNodePosition(alreadyPositionedNodes)(strWidthFunc)(sentence));
+
+  // All other nodes will be positioned in one of the next iterations
   const nodesToPositionNext = filterEntries(nodes, ([nodeId, _]) => !nodesToPositionNow.hasOwnProperty(nodeId));
-  const newPositionedNodes = transformValues(nodesToPositionNow, applyNodePosition(alreadyPositionedNodes)(strWidthFunc)(sentence));
-  return applyNodePositions(nodesToPositionNext, sentence, strWidthFunc, { ...alreadyPositionedNodes, ...newPositionedNodes });
+
+  // Repeat the process, using as unpositioned nodes only those nodes that are have not been assigned positions yet
+  return applyNodePositions(nodesToPositionNext, sentence, strWidthFunc,
+    { ...alreadyPositionedNodes, ...newPositionedNodes });
 };
 
 /**
