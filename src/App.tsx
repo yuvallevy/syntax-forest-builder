@@ -1,4 +1,5 @@
 import { useMemo, useReducer } from 'react';
+import { MantineProvider } from '@mantine/core';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import {
@@ -143,7 +144,7 @@ const App = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
-  return (
+  return <MantineProvider withGlobalStyles withNormalizeCSS>
     <PlotView
       plot={positionedPlot}
       selectedNodes={selectedNodes}
@@ -156,7 +157,7 @@ const App = () => {
       onNodeEditorBlur={handleNodeEditorBlur}
       onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
-  );
+  </MantineProvider>;
 }
 
 export default App;
