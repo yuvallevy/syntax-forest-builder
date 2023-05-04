@@ -1,8 +1,8 @@
-import { filterEntries, isEmpty, mapValues, transformValues } from './objTransforms';
+import { associateWith, filterEntries, isEmpty, mapValues, transformValues } from './objTransforms';
 import {
-  IdMap, isBranching, isTerminal, PositionedNode, PositionedPlot, PositionedTree, PositionInTree, Sentence, StringSlice,
-  UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot, UnpositionedStrandedNode, UnpositionedTerminalNode,
-  UnpositionedTree,
+  Id, IdMap, isBranching, isTerminal, PositionedNode, PositionedPlot, PositionedTree, PositionInTree, Sentence,
+  StringSlice, UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot, UnpositionedStrandedNode,
+  UnpositionedTerminalNode, UnpositionedTree,
 } from './types';
 
 const DEFAULT_TERMINAL_NODE_Y = -2;
@@ -166,3 +166,13 @@ export const applyNodePositionsToPlot = (strWidthFunc: StrWidthFunc) => (plot: U
   ...plot,
   trees: transformValues(plot.trees, applyNodePositionsToTree(strWidthFunc)),
 });
+
+/**
+ * Receives an array of node IDs in the given tree and returns them sorted by X-coordinate.
+ */
+export const sortNodesByXCoord = (strWidthFunc: StrWidthFunc) => (tree: UnpositionedTree) => (nodeIds: Id[]): Id[] => {
+  const positionedTree = applyNodePositionsToTree(strWidthFunc)(tree);
+  return Object.entries(associateWith(nodeIds, nodeId => positionedTree.nodes[nodeId].position.treeX))
+    .sort(([_, treeX1], [__, treeX2]) => treeX1 - treeX2)
+    .map(([nodeId, _]) => nodeId);
+};

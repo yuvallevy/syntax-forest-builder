@@ -5,6 +5,8 @@ import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './ed
 import { contentReducer, initialContentState, UndoableContentState } from './contentState';
 import { getNodeIdsAssignedToSlice } from '../mantle/manipulation';
 import { getParentNodeIdsInPlot } from '../mantle/plotManipulation';
+import { sortNodesByXCoord } from '../core/positioning';
+import strWidth from './strWidth';
 
 export type UiAction =
   | { type: 'setSelection', newSelection: SelectionInPlot }
@@ -78,18 +80,19 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       const selectedNode = activePlot.trees[selectedTreeId].nodes[state.selection.nodes[0].nodeId];
       if (!isBranching(selectedNode)) return state;
 
+      const childNodesSortedByX = sortNodesByXCoord(strWidth)(activePlot.trees[selectedTreeId])(selectedNode.children);
+
       const childSelection: NodeSelectionInPlot | undefined =
         action.side === 'center' && selectedNode.children.length === 1 ?
           { nodes: [{ treeId: selectedTreeId, nodeId: selectedNode.children[0] }] } :
         action.side === 'center' && selectedNode.children.length >= 3 ?
-          { nodes: [{ treeId: selectedTreeId, nodeId: selectedNode.children[1] }] } :
+          { nodes: [{ treeId: selectedTreeId, nodeId: childNodesSortedByX[1] }] } :
         action.side !== 'center' && selectedNode.children.length >= 2 ?
           {
             nodes: [
               {
                 treeId: selectedTreeId,
-                // FIXME: this way of determining which node to go to is not correct - they are not sorted by X-coord
-                nodeId: selectedNode.children[action.side === 'left' ? 0 : (selectedNode.children.length - 1)]
+                nodeId: childNodesSortedByX[action.side === 'left' ? 0 : (selectedNode.children.length - 1)]
               }
             ]
           } : undefined;

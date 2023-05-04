@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PositionedTerminalNode, UnpositionedTree } from '../../core/types';
-import { applyNodePositionsToTree } from '../../core/positioning';
+import { applyNodePositionsToTree, sortNodesByXCoord } from '../../core/positioning';
 import mockStrWidth from '../__mocks__/mockStrWidth';
 
 const zeroOffset = { offset: { dTreeX: 0, dTreeY: 0 } };
@@ -79,6 +79,11 @@ describe('Node positioning', () => {
     const result = applyNodePositionsToTree(mockStrWidth)(treeWithTriangleNodes);
     const triangleNode = result.nodes['b'] as PositionedTerminalNode;
     expect(triangleNode.triangle).toStrictEqual({ treeX1: 40, treeX2: 119 });
+  });
+
+  it('sorts node IDs by X coordinate, given a tree', () => {
+    expect(sortNodesByXCoord(mockStrWidth)(treeWithBranchingNodes)(['b', 'a'])).toStrictEqual(['a', 'b']);
+    expect(sortNodesByXCoord(mockStrWidth)(treeWithBranchingNodes)(['a', 'c'])).toStrictEqual(['a', 'c']);
   });
 
   it('measures tree width', () => {
