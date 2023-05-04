@@ -153,7 +153,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           type: 'deleteNodes',
           plotId: state.activePlotId,
           nodes: state.selection.nodes,
-        })
+        }),
+        selection: { nodes: [] },
       };
     }
     case 'setSentence': {
