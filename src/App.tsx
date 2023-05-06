@@ -4,7 +4,7 @@ import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import {
   Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel, PlotCoordsOffset, isBranching,
-  isTerminal
+  isTerminal, UnpositionedTerminalNode
 } from './core/types';
 import PlotView from './ui/PlotView';
 import strWidth from './ui/strWidth';
@@ -27,6 +27,8 @@ const App = () => {
   const activePlot: UnpositionedPlot =
     useMemo(() => state.contentState.current.plots[activePlotId], [state.contentState, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
+
+  const selectedNodeData = selectedNodes.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
@@ -146,13 +148,28 @@ const App = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
+  const getTriangleButtonState = (): { toggleState: 'on' | 'off' | 'indeterminate'; disabled?: boolean } => {
+    // No nodes selected, or some non-terminal nodes selected:
+    if (selectedNodes.length === 0 || !(selectedNodeData.every(isTerminal)))
+      return { disabled: true, toggleState: 'off' };
+
+    // At this point we know that there are selected nodes and that they are all terminal
+    const selectedTerminalNodes = selectedNodeData as UnpositionedTerminalNode[];
+    // Only triangle nodes selected:
+    if (selectedTerminalNodes.every(node => node.triangle)) return { toggleState: 'on' };
+    // Some triangle nodes and some non-triangle nodes selected:
+    if (selectedTerminalNodes.some(node => node.triangle)) return { toggleState: 'indeterminate' };
+    // Only non-triangle nodes selected:
+    return { toggleState: 'off' };
+  };
+
   const toolboxItems: ToolboxItem[] = [
     { title: 'Undo', action: undo },
     { title: 'Redo', action: redo },
     { title: 'Add', action: addNode },
     { title: 'Delete', action: deleteNode },
     { title: 'Edit', action: startEditing },
-    { title: 'Triangle', action: toggleTriangle },
+    { title: 'Triangle', action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS>
