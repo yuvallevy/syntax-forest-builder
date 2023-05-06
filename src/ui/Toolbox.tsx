@@ -16,7 +16,7 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
   <Paper
     shadow="sm"
     p="xs"
-    sx={{ position: 'fixed', left: '1em', top: '1em' }}
+    sx={{ position: 'fixed', left: '1rem', top: '1rem' }}
   >
     <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
       {items.map(item =>
