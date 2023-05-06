@@ -18,11 +18,11 @@ export const filterPositionedNodesInTreeById =
     filterEntries(tree.nodes, ([nodeId, _]) => nodeIds.includes(nodeId));
 
 /**
- * Returns the position of the given node in the given tree with respect to its containing plot.
+ * Returns the center coordinate of the given node in the given tree with respect to its containing plot.
  */
 export const calculateNodePositionOnPlot = (tree: PositionedTree) => (node: PositionedNode): PlotCoords => ({
   plotX: tree.position.plotX + node.position.treeX,
-  plotY: tree.position.plotY + node.position.treeY
+  plotY: tree.position.plotY + node.position.treeY - 8,
 });
 
 /**
@@ -33,4 +33,4 @@ const isPointInPlotRect = (rect: PlotRect) => (coords: PlotCoords) =>
   coords.plotX <= rect.bottomRight.plotX && coords.plotY <= rect.bottomRight.plotY;
 
 export const isNodeInRect = (rect: PlotRect) => (tree: PositionedTree) => (node: PositionedNode) =>
-  isPointInPlotRect(rect)(calculateNodePositionOnPlot(tree)(node))
+  isPointInPlotRect(rect)(calculateNodePositionOnPlot(tree)(node));
