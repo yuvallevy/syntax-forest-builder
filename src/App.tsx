@@ -15,6 +15,7 @@ import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { allTopLevelInPlot } from './mantle/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
 import { initialUiState, uiReducer } from './ui/uiState';
+import Toolbox, { ToolboxItem } from './ui/Toolbox';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -144,6 +145,14 @@ const App = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
+  const toolboxItems: ToolboxItem[] = [
+    { title: 'Undo', action: undo },
+    { title: 'Redo', action: redo },
+    { title: 'Add', action: addNode },
+    { title: 'Delete', action: deleteNode },
+    { title: 'Edit', action: startEditing },
+  ];
+
   return <MantineProvider withGlobalStyles withNormalizeCSS>
     <PlotView
       plot={positionedPlot}
@@ -157,6 +166,7 @@ const App = () => {
       onNodeEditorBlur={handleNodeEditorBlur}
       onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
+    <Toolbox items={toolboxItems} />
   </MantineProvider>;
 }
 
