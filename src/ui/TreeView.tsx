@@ -9,6 +9,11 @@ import { NodeSelectionMode } from './NodeSelectionMode';
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
 
+const NODE_AREA_WIDTH = 35;
+const NODE_AREA_HEIGHT = 20;
+const NODE_AREA_RELATIVE_X = -(NODE_AREA_WIDTH / 2);
+const NODE_AREA_RELATIVE_Y = -18.5;
+
 interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
@@ -43,18 +48,29 @@ const renderNode = (
   selectedNodeIds: Id[],
   onSelect?: (id: Id, mode: NodeSelectionMode) => void
 ): React.ReactNode[] => [
-  <text
+  <g
     key={nodeId}
-    x={node.position.treeX}
-    y={node.position.treeY}
     className={'TreeView-node' + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
-    fill="#000"
-    textAnchor="middle"
-    dominantBaseline="text-after-edge"
     onMouseDown={event => onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET')}
   >
-    {node.label}
-  </text>,
+    <rect
+      x={node.position.treeX + NODE_AREA_RELATIVE_X}
+      y={node.position.treeY + NODE_AREA_RELATIVE_Y}
+      width={NODE_AREA_WIDTH}
+      height={NODE_AREA_HEIGHT}
+      rx={3}
+      ry={3}
+    />
+    <text
+      x={node.position.treeX}
+      y={node.position.treeY}
+      fill="#000"
+      textAnchor="middle"
+      dominantBaseline="text-after-edge"
+    >
+      {node.label}
+    </text>
+  </g>,
   'triangle' in node && renderTriangleConnection(nodeId, node),
   'children' in node && renderChildNodeConnections(node, allNodes),
 ];

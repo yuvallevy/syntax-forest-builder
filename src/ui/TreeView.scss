@@ -2,6 +2,28 @@
   cursor: pointer;
 }
 
-.TreeView-node-selected {
-  fill: cornflowerblue;
+.TreeView-node rect {
+  fill: transparent;
+  stroke: none;
+}
+
+.TreeView-node:hover rect {
+  fill: #eee;
+}
+
+.TreeView-node-selected rect {
+  fill: #fafafa;
+  stroke: #444;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  animation: marching-ants .75s linear infinite;
+}
+
+@keyframes marching-ants {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -8px;
+  }
 }
