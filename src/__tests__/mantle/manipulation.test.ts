@@ -7,6 +7,7 @@ import {
   insertNodeIntoTree,
   transformAllNodesInTree,
   transformNodeInTree,
+  transformNodesInTree,
 } from '../../mantle/manipulation';
 
 describe('tree manipulation', () => {
@@ -124,6 +125,11 @@ describe('tree manipulation', () => {
 
   it('changes the label of a node', () => {
     expect(changeLabel('branch1')(tree).nodes).toMatchSnapshot();
+  });
+
+  it('changes trianglehood of two nodes at the same time', () => {
+    expect(transformNodesInTree(node => ({ ...node, triangle: true }))(['term1', 'term2'])(tree).nodes)
+      .toMatchSnapshot();
   });
 
   it('changes all nodes in the tree', () => {

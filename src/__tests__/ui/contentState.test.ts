@@ -39,6 +39,10 @@ describe('content state', () => {
       { type: 'setNodeLabel', plotId: 'plot', node: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
     ],
     [
+      'sets whether a terminal node connects to its slice with a triangle',
+      { type: 'setTriangle', plotId: 'plot', nodes: [{ treeId: 'aa', nodeId: 'b' }], triangle: true }
+    ],
+    [
       'reacts to a change in the sentence',
       { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
     ],

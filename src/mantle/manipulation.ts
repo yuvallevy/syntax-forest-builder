@@ -61,19 +61,22 @@ const insertNode =
         },
       };
     return insertedNode.targetParentId
-      ? transformNode(node =>
+      ? transformNodes(node =>
         isBranching(node) ? { ...node, children: [...node.children, nodeId] } : node)(
-          insertedNode.targetParentId)(nodeMapWithNewNode)
+          [insertedNode.targetParentId])(nodeMapWithNewNode)
       : nodeMapWithNewNode;
   };
 
-const transformNode =
+const transformNodes =
   (transformFunc: NodeTransformFunc) =>
-  (nodeId: Id) =>
+  (nodeIds: Id[]) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
-    isIn(nodes)(nodeId)
-      ? { ...nodes, [nodeId]: transformFunc(nodes[nodeId]) }
-      : nodes;
+    nodeIds.reduce((transformedNodes, nodeId) =>
+      isIn(nodes)(nodeId)
+        ? { ...transformedNodes, [nodeId]: transformFunc(nodes[nodeId]) }
+        : transformedNodes,
+      nodes
+    );
 
 const deleteNodes =
   (nodeIds: Id[]) =>
@@ -109,7 +112,19 @@ export const transformNodeInTree =
   (nodeId: Id) =>
   (tree: UnpositionedTree): UnpositionedTree => ({
     ...tree,
-    nodes: transformNode(transformFunc)(nodeId)(tree.nodes),
+    nodes: transformNodes(transformFunc)([nodeId])(tree.nodes),
+  });
+
+/**
+ * Transforms the nodes with the given IDs using the given transform function
+ * at any point in the given tree.
+ */
+export const transformNodesInTree =
+  (transformFunc: NodeTransformFunc) =>
+  (nodeIds: Id[]) =>
+  (tree: UnpositionedTree): UnpositionedTree => ({
+    ...tree,
+    nodes: transformNodes(transformFunc)(nodeIds)(tree.nodes),
   });
 
 /**

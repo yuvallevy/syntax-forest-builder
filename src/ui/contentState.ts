@@ -1,7 +1,9 @@
 import {
-  Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree, TreeAndNodeId, PlotCoordsOffset
+  Id, IdMap, StringSlice, Sentence, UnpositionedPlot, UnpositionedTree, TreeAndNodeId, PlotCoordsOffset, isTerminal
 } from '../core/types';
-import { deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree } from '../mantle/manipulation';
+import {
+  deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
+} from '../mantle/manipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../mantle/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
 import { omitKey } from '../core/objTransforms';
@@ -15,6 +17,7 @@ export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
   | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
+  | { type: 'setTriangle', plotId: Id, nodes: TreeAndNodeId[], triangle: boolean }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
   | { type: 'addTree', plotId: Id, newTreeId: Id, offset: PlotCoordsOffset }
   | { type: 'removeTree', plotId: Id, treeId: Id }
@@ -65,6 +68,19 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         old: state.plots[action.plotId].trees[action.node.treeId],
         new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.node.nodeId)(
           state.plots[action.plotId].trees[action.node.treeId]),
+      };
+    }
+    case 'setTriangle': {
+      const treeId = action.nodes[0].treeId;  // TODO: Use all trees
+      const nodeIds = action.nodes
+        .filter(treeAndNodeId => treeAndNodeId.treeId === treeId).map(treeAndNodeId => treeAndNodeId.nodeId);
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId,
+        old: state.plots[action.plotId].trees[treeId],
+        new: transformNodesInTree(node => isTerminal(node) ? { ...node, triangle: action.triangle } : node)(nodeIds)(
+          state.plots[action.plotId].trees[treeId]),
       };
     }
     case 'setSentence': {

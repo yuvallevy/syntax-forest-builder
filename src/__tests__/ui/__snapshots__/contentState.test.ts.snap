@@ -236,3 +236,47 @@ exports[`content state > sets the label of a node 1`] = `
   },
 }
 `;
+
+exports[`content state > sets whether a terminal node connects to its slice with a triangle 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+            "b": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                5,
+                10,
+              ],
+              "triangle": true,
+            },
+          },
+          "offset": {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+      },
+    },
+  },
+}
+`;

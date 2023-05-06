@@ -1,5 +1,5 @@
 import {
-  Id, isBranching, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot
+  Id, isBranching, isTerminal, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot
 } from '../core/types';
 import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './contentState';
@@ -17,6 +17,7 @@ export type UiAction =
   | { type: 'setEditedNodeLabel', newLabel: NodeLabel }
   | { type: 'addNodeBySelection', newNodeId: Id }
   | { type: 'deleteSelectedNodes' }
+  | { type: 'toggleTriangle' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
   | { type: 'addTree', newTreeId: Id, offset: PlotCoordsOffset }
   | { type: 'removeTree', treeId: Id }
@@ -156,6 +157,22 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
         selection: { nodes: [] },
       };
+    }
+    case 'toggleTriangle': {
+      if (!('nodes' in state.selection)) return state;
+      const currentlyTriangle = state.selection.nodes.every(({ treeId, nodeId }) => {
+        const node = activePlot.trees[treeId].nodes[nodeId];
+        return isTerminal(node) ? node.triangle : false;
+      });
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'setTriangle',
+          plotId: state.activePlotId,
+          nodes: state.selection.nodes,
+          triangle: !currentlyTriangle,
+        }),
+      }
     }
     case 'setSentence': {
       if (!selectedTreeId) return state;

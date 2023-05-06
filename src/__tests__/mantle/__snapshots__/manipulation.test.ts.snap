@@ -100,6 +100,56 @@ exports[`tree manipulation > changes the label of a node 1`] = `
 }
 `;
 
+exports[`tree manipulation > changes trianglehood of two nodes at the same time 1`] = `
+{
+  "branch1": {
+    "children": [
+      "term1",
+    ],
+    "label": "NP",
+    "offset": {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+  },
+  "term1": {
+    "label": "N",
+    "offset": {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": [
+      0,
+      4,
+    ],
+    "triangle": true,
+  },
+  "term2": {
+    "label": "VP",
+    "offset": {
+      "dTreeX": 0,
+      "dTreeY": 0,
+    },
+    "slice": [
+      5,
+      11,
+    ],
+    "triangle": true,
+  },
+  "top": {
+    "children": [
+      "branch1",
+      "term2",
+    ],
+    "label": "S",
+    "offset": {
+      "dTreeX": 0,
+      "dTreeY": 5,
+    },
+  },
+}
+`;
+
 exports[`tree manipulation > deletes a branching node down the tree 1`] = `
 {
   "term1": {

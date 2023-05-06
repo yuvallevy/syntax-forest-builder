@@ -38,6 +38,7 @@ const App = () => {
   const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
+  const toggleTriangle = () => dispatch({ type: 'toggleTriangle' });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
@@ -151,6 +152,7 @@ const App = () => {
     { title: 'Add', action: addNode },
     { title: 'Delete', action: deleteNode },
     { title: 'Edit', action: startEditing },
+    { title: 'Triangle', action: toggleTriangle },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS>
