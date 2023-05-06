@@ -168,7 +168,7 @@ const App = () => {
     { title: 'Redo', action: redo },
     { title: 'Add', action: addNode },
     { title: 'Delete', action: deleteNode },
-    { title: 'Edit', action: startEditing },
+    { title: 'Edit', action: startEditing, toggleState: editingNode ? 'on' : 'off' },
     { title: 'Triangle', action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
