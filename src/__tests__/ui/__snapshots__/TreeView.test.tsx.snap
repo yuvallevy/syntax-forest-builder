@@ -8,16 +8,27 @@ exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
       id="tree-tree1"
       style="transform: translate(50px, -32px);"
     >
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="53.625"
-        y="-80"
       >
-        S
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="36.125"
+          y="-98.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="53.625"
+          y="-80"
+        >
+          S
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="53.625"
@@ -32,16 +43,27 @@ exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
         y1="-80"
         y2="-80"
       />
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="18"
-        y="-60"
       >
-        NP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="0.5"
+          y="-78.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="18"
+          y="-60"
+        >
+          NP
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="18"
@@ -49,26 +71,48 @@ exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
         y1="-60"
         y2="-22"
       />
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="18"
-        y="-2"
       >
-        N
-      </text>
-      <text
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="0.5"
+          y="-20.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="18"
+          y="-2"
+        >
+          N
+        </text>
+      </g>
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="89.25"
-        y="-60"
       >
-        VP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="71.75"
+          y="-78.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="89.25"
+          y="-60"
+        >
+          VP
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="89.25"
@@ -83,26 +127,48 @@ exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
         y1="-60"
         y2="-50"
       />
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="57"
-        y="-2"
       >
-        V
-      </text>
-      <text
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="39.5"
+          y="-20.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="57"
+          y="-2"
+        >
+          V
+        </text>
+      </g>
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="121.5"
-        y="-30"
       >
-        AdvP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="104"
+          y="-48.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="121.5"
+          y="-30"
+        >
+          AdvP
+        </text>
+      </g>
       <path
         d="M121.5 -30 L72 -2  L104 -2 Z"
         fill="none"
@@ -120,16 +186,27 @@ exports[`tree rendering > renders a tree with position-assigned nodes where some
       id="tree-tree1"
       style="transform: translate(50px, -32px);"
     >
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="53.625"
-        y="-80"
       >
-        S
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="36.125"
+          y="-98.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="53.625"
+          y="-80"
+        >
+          S
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="53.625"
@@ -144,16 +221,27 @@ exports[`tree rendering > renders a tree with position-assigned nodes where some
         y1="-80"
         y2="-80"
       />
-      <text
+      <g
         class="TreeView-node TreeView-node-selected"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="18"
-        y="-60"
       >
-        NP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="0.5"
+          y="-78.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="18"
+          y="-60"
+        >
+          NP
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="18"
@@ -161,26 +249,48 @@ exports[`tree rendering > renders a tree with position-assigned nodes where some
         y1="-60"
         y2="-22"
       />
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="18"
-        y="-2"
       >
-        N
-      </text>
-      <text
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="0.5"
+          y="-20.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="18"
+          y="-2"
+        >
+          N
+        </text>
+      </g>
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="89.25"
-        y="-60"
       >
-        VP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="71.75"
+          y="-78.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="89.25"
+          y="-60"
+        >
+          VP
+        </text>
+      </g>
       <line
         stroke="#000"
         x1="89.25"
@@ -195,26 +305,48 @@ exports[`tree rendering > renders a tree with position-assigned nodes where some
         y1="-60"
         y2="-50"
       />
-      <text
+      <g
         class="TreeView-node"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="57"
-        y="-2"
       >
-        V
-      </text>
-      <text
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="39.5"
+          y="-20.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="57"
+          y="-2"
+        >
+          V
+        </text>
+      </g>
+      <g
         class="TreeView-node TreeView-node-selected"
-        dominant-baseline="text-after-edge"
-        fill="#000"
-        text-anchor="middle"
-        x="121.5"
-        y="-30"
       >
-        AdvP
-      </text>
+        <rect
+          height="20"
+          rx="3"
+          ry="3"
+          width="35"
+          x="104"
+          y="-48.5"
+        />
+        <text
+          dominant-baseline="text-after-edge"
+          fill="#000"
+          text-anchor="middle"
+          x="121.5"
+          y="-30"
+        >
+          AdvP
+        </text>
+      </g>
       <path
         d="M121.5 -30 L72 -2  L104 -2 Z"
         fill="none"
