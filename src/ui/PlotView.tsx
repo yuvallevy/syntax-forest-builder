@@ -6,9 +6,9 @@ import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import ClientCoords, { ClientRect } from './ClientCoords';
 import './PlotView.scss';
-import { filterPositionedNodesInTree, isNodeInRect } from '../mantle/positionedEntityHelpers';
-import { clientCoordsToPlotCoords } from './coordConversions';
-import { NodeSelectionMode } from './NodeSelectionMode';
+import { filterPositionedNodesInTree } from '../mantle/positionedEntityHelpers';
+import { clientCoordsToPlotCoords } from './coords';
+import { isNodeInRect, NodeSelectionMode } from './selection';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_SELECTION_BOX_DIMENSION = 8;  // to leave some wiggle room for the mouse to move while clicking

@@ -4,7 +4,7 @@ import {
   Id, IdMap, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
 } from '../core/types';
 import './TreeView.scss';
-import { NodeSelectionMode } from './NodeSelectionMode';
+import { NodeSelectionMode } from './selection';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;

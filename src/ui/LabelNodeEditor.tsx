@@ -1,7 +1,7 @@
 import { Id, PositionedTree } from '../core/types';
-import { calculateNodePositionOnPlot, filterPositionedNodesInTreeById } from '../mantle/positionedEntityHelpers';
+import { filterPositionedNodesInTreeById } from '../mantle/positionedEntityHelpers';
 import ClientCoords from './ClientCoords';
-import { plotCoordsToClientCoords } from './coordConversions';
+import { calculateNodeCenterOnPlot, plotCoordsToClientCoords } from './coords';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
 
@@ -26,6 +26,16 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   onInput,
   onBlur,
   onKeyDown,
+// }) => <TextInput
+//   className="LabelNodeEditorInput"
+//   value={value}
+//   autoFocus
+//   size="xs"
+//   sx={{ left: baseCoords.clientX, top: baseCoords.clientY }}
+//   onInput={e => onInput(e.currentTarget.value)}
+//   // onBlur={onBlur}
+//   onKeyDown={onKeyDown}
+// />;
 }) => <input
   type="text"
   className="LabelNodeEditorInput"
@@ -44,7 +54,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   onKeyDown,
 }) => {
   const editedNodeData = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
-  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodePositionOnPlot(tree)(editedNodeData));
+  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeData));
   const [inputValue, setInputValue] = useState<string>(editedNodeData.label);
 
   return <LabelNodeEditorInput

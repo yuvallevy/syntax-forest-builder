@@ -10,7 +10,7 @@ import PlotView from './ui/PlotView';
 import strWidth from './ui/strWidth';
 import { generateNodeId, generateTreeId } from './ui/generateId';
 import { SelectionInPlot } from './ui/editNodes';
-import { applySelection, NodeSelectionMode } from './ui/NodeSelectionMode';
+import { applySelection, NodeSelectionMode } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { allTopLevelInPlot } from './mantle/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
