@@ -1,0 +1,195 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`node creation triggers > generates node creation triggers for a tree with all slices assigned 1`] = `
+[
+  {
+    "bottomRight": {
+      "treeX": 34,
+      "treeY": -80,
+    },
+    "childIds": [
+      "b",
+    ],
+    "childPositions": [
+      {
+        "treeX": 18,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 18,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 2,
+      "treeY": -128,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 105.25,
+      "treeY": -80,
+    },
+    "childIds": [
+      "d",
+    ],
+    "childPositions": [
+      {
+        "treeX": 89.25,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 89.25,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 73.25,
+      "treeY": -128,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 69.625,
+      "treeY": -80,
+    },
+    "childIds": [
+      "b",
+      "d",
+    ],
+    "childPositions": [
+      {
+        "treeX": 18,
+        "treeY": -60,
+      },
+      {
+        "treeX": 89.25,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 53.625,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 37.625,
+      "treeY": -128,
+    },
+  },
+]
+`;
+
+exports[`node creation triggers > generates node creation triggers for a tree with unassigned slices 1`] = `
+[
+  {
+    "bottomRight": {
+      "treeX": 34,
+      "treeY": -80,
+    },
+    "childIds": [
+      "b",
+    ],
+    "childPositions": [
+      {
+        "treeX": 18,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 18,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 2,
+      "treeY": -128,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 73,
+      "treeY": -80,
+    },
+    "childIds": [
+      "d",
+    ],
+    "childPositions": [
+      {
+        "treeX": 57,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 57,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 41,
+      "treeY": -128,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 53.5,
+      "treeY": -80,
+    },
+    "childIds": [
+      "b",
+      "d",
+    ],
+    "childPositions": [
+      {
+        "treeX": 18,
+        "treeY": -60,
+      },
+      {
+        "treeX": 57,
+        "treeY": -60,
+      },
+    ],
+    "origin": {
+      "treeX": 37.5,
+      "treeY": -100,
+    },
+    "topLeft": {
+      "treeX": 21.5,
+      "treeY": -128,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 108,
+      "treeY": 0,
+    },
+    "origin": {
+      "treeX": 92,
+      "treeY": -20,
+    },
+    "slice": [
+      11,
+      15,
+    ],
+    "topLeft": {
+      "treeX": 76,
+      "treeY": -48,
+    },
+  },
+  {
+    "bottomRight": {
+      "treeX": 153.5,
+      "treeY": 0,
+    },
+    "origin": {
+      "treeX": 137.5,
+      "treeY": -20,
+    },
+    "slice": [
+      16,
+      24,
+    ],
+    "topLeft": {
+      "treeX": 121.5,
+      "treeY": -48,
+    },
+  },
+]
+`;

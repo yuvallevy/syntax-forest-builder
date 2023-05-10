@@ -42,3 +42,6 @@ export const omitKeys = <K extends string, V>(record: Record<K, V>, keysToOmit: 
 export const isEmpty = (objOrArray: any): boolean => (objOrArray instanceof Array ? objOrArray : Object.keys(objOrArray)).length === 0;
 
 export const flatten = <T>(array: T[][]) => array.reduce((accum, nextArray) => [...accum, ...nextArray], []);
+
+export const windowed = <T>(array: T[], windowSize: number) => array.reduce((accum, _, index): T[][] =>
+  index + windowSize > array.length ? accum : [...accum, array.slice(index, index + windowSize)], [] as T[][]);

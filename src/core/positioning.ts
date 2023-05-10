@@ -9,30 +9,34 @@ const DEFAULT_TERMINAL_NODE_Y = -2;
 const DEFAULT_TRIANGLE_NODE_Y = -20;
 const DEFAULT_NODE_LEVEL_DIFF = -40;
 
-type StrWidthFunc = (str: string) => number;
+export type StrWidthFunc = (str: string) => number;
 
 const average = (values: number[]) => values.reduce((accum, cur) => accum + cur, 0) / values.length;
 
-const sliceOffsetAndWidth = (strWidthFunc: StrWidthFunc) => (sentence: Sentence) => (slice: StringSlice) => {
+export const sliceOffsetAndWidth = (strWidthFunc: StrWidthFunc) => (sentence: Sentence) => (slice: StringSlice) => {
   const [sliceStart, sliceEnd] = slice;
   const widthBeforeSlice = strWidthFunc(sentence.slice(0, sliceStart));
   const sliceWidth = strWidthFunc(sentence.slice(sliceStart, sliceEnd));
   return [widthBeforeSlice, sliceWidth];
 };
 
+export const determineNaturalParentNodePosition = (childNodePositions: PositionInTree[]): PositionInTree => ({
+  // Branching nodes are positioned as follows:
+  // X - average of all X positions of its direct descendants (regardless of any descendants further down the tree)
+  // Y - a certain distance above the topmost child node
+  treeX: average(childNodePositions.map(({ treeX }) => treeX)),
+  treeY: Math.min(...childNodePositions.map(({ treeY }) => treeY)) + DEFAULT_NODE_LEVEL_DIFF,
+});
+
 const determineBranchingNodePosition =
   (alreadyPositionedNodes: IdMap<PositionedNode>) =>
   (node: UnpositionedBranchingNode): { position: PositionInTree, triangle: undefined } => {
-    // Branching nodes are positioned as follows:
-    // X - average of all X positions of its direct descendants (regardless of any descendants further down the tree)
-    // Y - a certain distance above the topmost child node
     const positionedChildNodes = filterEntries(alreadyPositionedNodes, ([nodeId, _]) => node.children.includes(nodeId));
-    const childXs = mapValues(positionedChildNodes, node => node.position.treeX);
-    const childYs = mapValues(positionedChildNodes, node => node.position.treeY);
+    const naturalPosition = determineNaturalParentNodePosition(mapValues(positionedChildNodes, node => node.position));
     return {
       position: {
-        treeX: average(childXs) + node.offset.dTreeX,
-        treeY: Math.min(...childYs) + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
+        treeX: naturalPosition.treeX + node.offset.dTreeX,
+        treeY: naturalPosition.treeY + node.offset.dTreeY,
       },
       triangle: undefined,
     };
