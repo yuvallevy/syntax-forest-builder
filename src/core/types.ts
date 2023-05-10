@@ -97,6 +97,7 @@ export type PositionedBranchingNode = NodeCommon & WithPositionInTree & {
 };
 
 export type PositionedTerminalNode = NodeCommon & WithPositionInTree & {
+  slice: StringSlice;
   triangle?: {
     treeX1: TreeX;
     treeX2: TreeX;
