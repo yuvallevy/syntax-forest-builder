@@ -9,6 +9,30 @@ exports[`tree rendering > renders a tree with position-assigned nodes 1`] = `
       style="transform: translate(50px, -32px);"
     >
       <g
+        class="NodeCreationTriggerClickZone"
+      >
+        <rect
+          class="NodeCreationTriggerClickZone-area"
+          height="48"
+          width="32"
+          x="37.625"
+          y="-148"
+        />
+        <circle
+          class="NodeCreationTriggerClickZone-indicator"
+          cx="53.625"
+          cy="-120"
+          r="8"
+        />
+        <line
+          class="NodeCreationTriggerClickZone-indicator"
+          x1="53.625"
+          x2="53.625"
+          y1="-120"
+          y2="-100"
+        />
+      </g>
+      <g
         class="TreeView-node"
       >
         <rect
@@ -186,6 +210,30 @@ exports[`tree rendering > renders a tree with position-assigned nodes where some
       id="tree-tree1"
       style="transform: translate(50px, -32px);"
     >
+      <g
+        class="NodeCreationTriggerClickZone"
+      >
+        <rect
+          class="NodeCreationTriggerClickZone-area"
+          height="48"
+          width="32"
+          x="37.625"
+          y="-148"
+        />
+        <circle
+          class="NodeCreationTriggerClickZone-indicator"
+          cx="53.625"
+          cy="-120"
+          r="8"
+        />
+        <line
+          class="NodeCreationTriggerClickZone-indicator"
+          x1="53.625"
+          x2="53.625"
+          y1="-120"
+          y2="-100"
+        />
+      </g>
       <g
         class="TreeView-node"
       >

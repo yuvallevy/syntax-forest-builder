@@ -5,6 +5,8 @@ import {
 } from '../core/types';
 import './TreeView.scss';
 import { NodeSelectionMode } from './selection';
+import { NodeCreationTrigger, getNodeCreationTriggersForTree } from './nodeCreationTriggers';
+import strWidth from './strWidth';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -14,11 +16,17 @@ const NODE_AREA_HEIGHT = 20;
 const NODE_AREA_RELATIVE_X = -(NODE_AREA_WIDTH / 2);
 const NODE_AREA_RELATIVE_Y = -18.5;
 
+interface NodeCreationTriggerClickZoneProps {
+  trigger: NodeCreationTrigger;
+  onClick?: () => void;
+}
+
 interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
   selectedNodeIds: Id[];
   onSingleNodeSelect?: (nodeId: Id, mode: NodeSelectionMode) => void;
+  onNodeCreationTriggerClick?: (trigger: NodeCreationTrigger) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
@@ -75,8 +83,49 @@ const renderNode = (
   'children' in node && renderChildNodeConnections(node, allNodes),
 ];
 
-const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect }) =>
+const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({ trigger, onClick }) =>
+  <g
+    className="NodeCreationTriggerClickZone"
+    onClick={onClick}
+  >
+    <rect
+      className="NodeCreationTriggerClickZone-area"
+      x={trigger.topLeft.treeX}
+      y={trigger.topLeft.treeY}
+      width={trigger.bottomRight.treeX - trigger.topLeft.treeX}
+      height={trigger.bottomRight.treeY - trigger.topLeft.treeY}
+    />
+    <circle
+      className="NodeCreationTriggerClickZone-indicator"
+      cx={trigger.origin.treeX}
+      cy={trigger.origin.treeY}
+      r={8}
+    />
+    {'childIds' in trigger
+      ? trigger.childPositions.map(childPosition => <line
+        key={`${childPosition.treeX},${childPosition.treeY}`}
+        className="NodeCreationTriggerClickZone-indicator"
+        x1={trigger.origin.treeX}
+        y1={trigger.origin.treeY}
+        x2={childPosition.treeX}
+        y2={childPosition.treeY - NODE_LEVEL_SPACING}
+      />)
+      : <line
+        className="NodeCreationTriggerClickZone-indicator"
+        x1={trigger.origin.treeX}
+        y1={trigger.origin.treeY}
+        x2={trigger.origin.treeX}
+        y2={0}
+      />}
+  </g>;
+
+const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect, onNodeCreationTriggerClick }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
+    {getNodeCreationTriggersForTree(strWidth)(tree).map(trigger => <NodeCreationTriggerClickZone
+      trigger={trigger}
+      key={'childIds' in trigger ? trigger.childIds.join() : trigger.slice.join()}
+      onClick={() => onNodeCreationTriggerClick && onNodeCreationTriggerClick(trigger)}
+    />)}
     {mapEntries(tree.nodes, ([nodeId, node]) => renderNode(nodeId, node, tree.nodes, selectedNodeIds, onSingleNodeSelect))}
   </g>;
 

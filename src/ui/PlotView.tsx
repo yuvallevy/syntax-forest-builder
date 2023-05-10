@@ -9,6 +9,7 @@ import './PlotView.scss';
 import { filterPositionedNodesInTree } from '../mantle/positionedEntityHelpers';
 import { clientCoordsToPlotCoords } from './coords';
 import { isNodeInRect, NodeSelectionMode } from './selection';
+import { NodeCreationTrigger } from './nodeCreationTriggers';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_SELECTION_BOX_DIMENSION = 8;  // to leave some wiggle room for the mouse to move while clicking
@@ -25,6 +26,7 @@ interface PlotViewProps {
   onClick: (event: React.MouseEvent<SVGElement>) => void;
   onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
+  onNodeCreationTriggerClick: (treeId: Id, trigger: NodeCreationTrigger) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
   onSentenceKeyDown: (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => void;
   onNodeEditorBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -38,6 +40,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   onClick,
   onNodesSelect,
   onSliceSelect,
+  onNodeCreationTriggerClick,
   onSentenceChange,
   onSentenceKeyDown,
   onNodeEditorBlur,
@@ -115,6 +118,7 @@ const PlotView: React.FC<PlotViewProps> = ({
           tree={tree}
           selectedNodeIds={selectedNodeIds}
           onSingleNodeSelect={(nodeId, mode) => onNodesSelect([{ treeId, nodeId }], mode)}
+          onNodeCreationTriggerClick={trigger => onNodeCreationTriggerClick(treeId, trigger)}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView-selection-box"

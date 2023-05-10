@@ -19,6 +19,23 @@
   animation: marching-ants .75s linear infinite;
 }
 
+.NodeCreationTriggerClickZone-area {
+  cursor: pointer;
+  stroke: none;
+  fill: transparent;
+}
+
+.NodeCreationTriggerClickZone-indicator {
+  stroke: #999;
+  fill: none;
+  pointer-events: none;
+  display: none;
+}
+
+.NodeCreationTriggerClickZone:hover .NodeCreationTriggerClickZone-indicator {
+  display: unset;
+}
+
 @keyframes marching-ants {
   0% {
     stroke-dashoffset: 0;

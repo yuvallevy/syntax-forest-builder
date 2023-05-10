@@ -16,6 +16,8 @@ export type UiAction =
   | { type: 'stopEditing' }
   | { type: 'setEditedNodeLabel', newLabel: NodeLabel }
   | { type: 'addNodeBySelection', newNodeId: Id }
+  | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetChildIds: Id[] }
+  | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetSlice: StringSlice }
   | { type: 'deleteSelectedNodes' }
   | { type: 'toggleTriangle' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
@@ -141,6 +143,26 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           treeId: selectedTreeId,
           newNodeId: action.newNodeId,
           newNode: newNodeFromSelection(state.selection, activePlot.trees[selectedTreeId].sentence),
+        }),
+        selection: { nodes: [newNodeIndicator] },
+        editingNode: newNodeIndicator,
+      };
+    }
+    case 'addNodeByTarget': {
+      const newNodeIndicator = { treeId: action.treeId, nodeId: action.newNodeId };
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'insertNode',
+          plotId: state.activePlotId,
+          treeId: action.treeId,
+          newNodeId: action.newNodeId,
+          newNode: { label: '', ...(
+            'targetChildIds' in action
+              ? { targetChildIds: action.targetChildIds }
+              : { targetSlice: action.targetSlice }
+            )
+          },
         }),
         selection: { nodes: [newNodeIndicator] },
         editingNode: newNodeIndicator,

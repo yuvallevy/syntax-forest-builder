@@ -16,6 +16,7 @@ import { allTopLevelInPlot } from './mantle/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
 import { initialUiState, uiReducer } from './ui/uiState';
 import Toolbox, { ToolboxItem } from './ui/Toolbox';
+import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -75,6 +76,19 @@ const App = () => {
     nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
   });
   const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
+
+  const handleNodeCreationTriggerClick = (treeId: Id, trigger: NodeCreationTrigger) => {
+    dispatch({
+      type: 'addNodeByTarget',
+      treeId,
+      newNodeId: generateNodeId(),
+      ...(
+        'childIds' in trigger
+          ? { targetChildIds: trigger.childIds }
+          : { targetSlice: trigger.slice }
+      ),
+    });
+  };
 
   const handleSentenceChange = (_: Id, newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
     type: 'setSentence',
@@ -180,6 +194,7 @@ const App = () => {
       onClick={handlePlotClick}
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}
+      onNodeCreationTriggerClick={handleNodeCreationTriggerClick}
       onSentenceChange={handleSentenceChange}
       onSentenceKeyDown={handleSentenceKeyDown}
       onNodeEditorBlur={handleNodeEditorBlur}
