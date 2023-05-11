@@ -32,6 +32,7 @@ const App = () => {
   const { selection, activePlotId, editingNode } = state;
 
   const nothingSelected = 'nodes' in selection && selection.nodes.length === 0;
+  const noNodesSelected = !('nodes' in selection) || selection.nodes.length === 0;
   const selectedNodes = 'nodes' in selection ? selection.nodes : [];
 
   const activePlot: UnpositionedPlot =
@@ -195,9 +196,9 @@ const App = () => {
   const toolboxItems: ToolboxItem[] = [
     { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !canUndo(state) },
     { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state) },
-    { title: 'Add', icon: IconPlus, action: addNode },
-    { title: 'Delete', icon: IconTrash, action: deleteNode },
-    { title: 'Edit', icon: IconPencil, action: startEditing, toggleState: editingNode ? 'on' : 'off' },
+    { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected },
+    { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected },
+    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, toggleState: editingNode ? 'on' : 'off' },
     { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
