@@ -20,7 +20,7 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
     p="xs"
     sx={{ position: 'fixed', left: '1rem', top: '1rem' }}
   >
-    <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
+    <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
       {items.map(item =>
         <ActionIcon
           key={item.title}
