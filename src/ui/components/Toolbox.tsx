@@ -1,5 +1,4 @@
 import { ActionIcon, Paper, SimpleGrid, Tooltip, useMantineTheme } from '@mantine/core';
-import { primaryColor } from '../../theme';
 import { TablerIconsProps } from '@tabler/icons-react';
 
 export type ToolboxItem = {
@@ -30,7 +29,7 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
             size="lg"
             variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
             disabled={item.disabled}
-            color={primaryColor}
+            color={theme.primaryColor}
             sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
             onClick={item.action}
           >
