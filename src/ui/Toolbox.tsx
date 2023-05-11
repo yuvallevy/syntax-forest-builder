@@ -1,4 +1,4 @@
-import { ActionIcon, Paper, SimpleGrid } from '@mantine/core';
+import { ActionIcon, Paper, SimpleGrid, Tooltip } from '@mantine/core';
 import { primaryColor } from '../theme';
 import { TablerIconsProps } from '@tabler/icons-react';
 
@@ -22,18 +22,20 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
   >
     <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
       {items.map(item =>
-        <ActionIcon
-          key={item.title}
-          size="lg"
-          variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
-          disabled={item.disabled}
-          color={primaryColor}
-          onClick={item.action}
-        >
-          {item.icon
-            ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
-            : item.title.slice(0, 2)}
-        </ActionIcon>
+        <Tooltip label={item.title} openDelay={400}>
+          <ActionIcon
+            key={item.title}
+            size="lg"
+            variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
+            disabled={item.disabled}
+            color={primaryColor}
+            onClick={item.action}
+          >
+            {item.icon
+              ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
+              : item.title.slice(0, 2)}
+          </ActionIcon>
+        </Tooltip>
       )}
     </SimpleGrid>
   </Paper>;
