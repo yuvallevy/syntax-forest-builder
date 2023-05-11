@@ -18,6 +18,9 @@ import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
 import { initialUiState, uiReducer } from './ui/uiState';
 import Toolbox, { ToolboxItem } from './ui/Toolbox';
 import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
+import {
+  IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle
+} from '@tabler/icons-react';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -179,12 +182,12 @@ const App = () => {
   };
 
   const toolboxItems: ToolboxItem[] = [
-    { title: 'Undo', action: undo },
-    { title: 'Redo', action: redo },
-    { title: 'Add', action: addNode },
-    { title: 'Delete', action: deleteNode },
-    { title: 'Edit', action: startEditing, toggleState: editingNode ? 'on' : 'off' },
-    { title: 'Triangle', action: toggleTriangle, ...getTriangleButtonState() },
+    { title: 'Undo', icon: IconArrowBackUp, action: undo },
+    { title: 'Redo', icon: IconArrowForwardUp, action: redo },
+    { title: 'Add', icon: IconPlus, action: addNode },
+    { title: 'Delete', icon: IconTrash, action: deleteNode },
+    { title: 'Edit', icon: IconPencil, action: startEditing, toggleState: editingNode ? 'on' : 'off' },
+    { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
