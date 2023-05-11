@@ -1,6 +1,7 @@
-import { union } from '../core/objTransforms';
-import { PlotCoords, PlotRect, PositionedNode, PositionedTree, TreeAndNodeId } from '../core/types';
-import { calculateNodeCenterOnPlot } from './coords';
+import { union } from '../util/objTransforms';
+import { TreeAndNodeId } from '../content/types';
+import { calculateNodeCenterOnPlot, PlotRect } from './coords';
+import { PlotCoords, PositionedNode, PositionedTree } from '../content/positioned/types';
 
 export type NodeSelectionMode = 'SET' | 'ADD';
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getNodeCreationTriggersForTree } from '../../ui/nodeCreationTriggers';
-import { PositionedTree } from '../../core/types';
 import mockStrWidth from '../__mocks__/mockStrWidth';
+import { PositionedTree } from '../../content/positioned/types';
 
 describe('node creation triggers', () => {
   const treeWithNoUnassignedSlices: PositionedTree = {

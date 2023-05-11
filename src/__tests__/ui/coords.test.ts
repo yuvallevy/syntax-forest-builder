@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateNodeCenterOnPlot } from '../../ui/coords';
-import { PlotCoords, PositionedNode, PositionedTree } from '../../core/types';
+import { PlotCoords } from '../../content/types';
+import { PositionedNode, PositionedTree } from '../../content/positioned/types';
 
 describe('node coordinate functions', () => {
   const tree: PositionedTree = {

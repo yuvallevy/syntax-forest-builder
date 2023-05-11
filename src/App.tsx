@@ -2,27 +2,30 @@ import { useMemo, useReducer } from 'react';
 import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
-import { applyNodePositionsToPlot } from './core/positioning';
+import { applyNodePositionsToPlot } from './content/positioned/positioning';
 import {
-  Id, StringSlice, PositionedPlot, Sentence, UnpositionedPlot, TreeAndNodeId, NodeLabel, PlotCoordsOffset, isBranching,
-  isTerminal, UnpositionedTerminalNode
-} from './core/types';
-import PlotView from './ui/PlotView';
+  Id, StringSlice, Sentence, TreeAndNodeId, NodeLabel
+} from './content/types';
+import PlotView from './ui/components/PlotView';
 import strWidth from './ui/strWidth';
-import { generateNodeId, generateTreeId } from './ui/generateId';
-import { SelectionInPlot } from './ui/editNodes';
+import { generateNodeId, generateTreeId } from './ui/content/generateId';
+import { SelectionInPlot } from './ui/content/editNodes';
 import { applySelection, NodeSelectionMode } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { allTopLevelInPlot } from './mantle/plotManipulation';
-import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
+import { allTopLevelInPlot } from './content/unpositioned/plotManipulation';
+import { getNodeIdsAssignedToSlice } from './content/unpositioned/manipulation';
 import { canRedo, canUndo, initialUiState, uiReducer } from './ui/uiState';
-import Toolbox, { ToolboxItem } from './ui/Toolbox';
+import Toolbox, { ToolboxItem } from './ui/components/Toolbox';
 import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle
 } from '@tabler/icons-react';
-import AboutButton from './ui/meta/AboutButton';
-import { isEmpty } from './core/objTransforms';
+import AboutButton from './ui/components/meta/AboutButton';
+import { isEmpty } from './util/objTransforms';
+import { PositionedPlot } from './content/positioned/types';
+import {
+  isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTerminalNode
+} from './content/unpositioned/types';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);

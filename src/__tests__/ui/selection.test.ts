@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { PlotRect, PositionedNode, PositionedTree } from '../../core/types';
+import { PlotRect } from '../../content/types';
 import { isNodeInRect } from '../../ui/selection';
+import { PositionedNode, PositionedTree } from '../../content/positioned/types';
 
 describe('node selection', () => {
   const tree: PositionedTree = {

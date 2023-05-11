@@ -1,13 +1,14 @@
 import {
-  Id, isBranching, isTerminal, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot
-} from '../core/types';
-import * as UndoRedoHistory from '../mantle/UndoRedoHistory';
-import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './editNodes';
-import { contentReducer, initialContentState, UndoableContentState } from './contentState';
-import { getNodeIdsAssignedToSlice } from '../mantle/manipulation';
-import { getParentNodeIdsInPlot } from '../mantle/plotManipulation';
-import { sortNodesByXCoord } from '../core/positioning';
+  Id, NodeLabel, Sentence, StringSlice, TreeAndNodeId
+} from '../content/types';
+import * as UndoRedoHistory from '../util/UndoRedoHistory';
+import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './content/editNodes';
+import { contentReducer, initialContentState, UndoableContentState } from './content/contentState';
+import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
+import { getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
+import { sortNodesByXCoord } from '../content/positioned/positioning';
 import strWidth from './strWidth';
+import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 
 export type UiAction =
   | { type: 'setSelection', newSelection: SelectionInPlot }

@@ -1,9 +1,12 @@
-import { Id, PositionedTree, PositionInTree, Sentence, StringSlice } from '../core/types';
+import { Id, Sentence, StringSlice } from '../content/types';
 import {
   getTopLevelPositionedNodes, isSliceUnassigned, sortPositionedNodesByXCoord
-} from '../mantle/positionedEntityHelpers';
-import { windowed } from '../core/objTransforms';
-import { determineNaturalParentNodePosition, sliceOffsetAndWidth, StrWidthFunc } from '../core/positioning';
+} from '../content/positioned/positionedEntityHelpers';
+import { windowed } from '../util/objTransforms';
+import {
+  determineNaturalParentNodePosition, sliceOffsetAndWidth, StrWidthFunc
+} from '../content/positioned/positioning';
+import { PositionedTree, PositionInTree } from '../content/positioned/types';
 
 const MAX_TRIGGER_WIDTH = 32;
 const MAX_TRIGGER_PADDING_TOP = 28;
