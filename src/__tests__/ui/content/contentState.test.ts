@@ -13,7 +13,15 @@ describe('content state', () => {
             },
             offset: { dPlotX: 0, dPlotY: 0 },
             sentence: 'tree state',
-          }
+          },
+          'zz': {
+            nodes: {
+              'x': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 5], triangle: false },
+              'y': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [6, 10], triangle: false },
+            },
+            offset: { dPlotX: 60, dPlotY: 0 },
+            sentence: 'nodes rock',
+          },
         }
       }
     },
@@ -33,6 +41,10 @@ describe('content state', () => {
     [
       'deletes a node from a tree',
       { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }] }
+    ],
+    [
+      'deletes two nodes from two different trees',
+      { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
     ],
     [
       'sets the label of a node',

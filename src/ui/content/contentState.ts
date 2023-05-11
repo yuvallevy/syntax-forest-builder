@@ -2,8 +2,9 @@ import {
   Id, IdMap, StringSlice, Sentence, NodeIndicatorInPlot
 } from '../../content/types';
 import {
-  deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
+  InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
 } from '../../content/unpositioned/manipulation';
+import { deleteNodesInPlot } from '../../content/unpositioned/plotManipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../../util/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
 import { omitKey } from '../../util/objTransforms';
@@ -32,6 +33,7 @@ export type ContentAction =
  * and each action by the user is translated into a state change so that undo/redo can work smoothly.
  */
 type ContentChange = (
+  | { type: 'setPlot', plotId: Id, old: UnpositionedPlot, new: UnpositionedPlot }
   | { type: 'setTree', plotId: Id, treeId: Id, old: UnpositionedTree, new: UnpositionedTree }
   | { type: 'addTree', plotId: Id, newTreeId: Id, newTree: UnpositionedTree }
   | { type: 'removeTree', plotId: Id, treeId: Id, removedTree: UnpositionedTree }
@@ -54,13 +56,11 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
       };
     }
     case 'deleteNodes': {
-      const treeId = action.nodeIndicators[0].treeId;  // TODO: Use all trees
       return {
-        type: 'setTree',
+        type: 'setPlot',
         plotId: action.plotId,
-        treeId: treeId,
-        old: state.plots[action.plotId].trees[treeId],
-        new: deleteNodesInTree(action.nodeIndicators.map(({ nodeId }) => nodeId))(state.plots[action.plotId].trees[treeId]),
+        old: state.plots[action.plotId],
+        new: deleteNodesInPlot(action.nodeIndicators)(state.plots[action.plotId]),
       };
     }
     case 'setNodeLabel': {
@@ -119,6 +119,15 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
 
 const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> = action => state => {
   switch (action.type) {
+    case 'setPlot': {
+      return {
+        ...state,
+        plots: {
+          ...state.plots,
+          [action.plotId]: action.new,
+        },
+      };
+    }
     case 'setTree': {
       return {
         ...state,
@@ -168,6 +177,13 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
 
 const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action => {
   switch (action.type) {
+    case 'setPlot': {
+      return {
+        ...action,
+        old: action.new,
+        new: action.old,
+      };
+    }
     case 'setTree': {
       return {
         ...action,

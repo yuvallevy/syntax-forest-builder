@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getParentNodeIdsInPlot } from '../../../content/unpositioned/plotManipulation';
+import { deleteNodesInPlot, getParentNodeIdsInPlot } from '../../../content/unpositioned/plotManipulation';
 import { UnpositionedPlot } from '../../../content/unpositioned/types';
 
 describe('plot manipulation', () => {
@@ -54,5 +54,31 @@ describe('plot manipulation', () => {
     'of which one is a top-level node', () => {
     expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 's2' }, { treeId: 'alex', nodeId: 'n2' }])(plot))
       .toStrictEqual([{ treeId: 'alex', nodeId: 'np2a' }]);
+  });
+
+  it('deletes nodes across multiple trees on one plot', () => {
+    expect(deleteNodesInPlot(
+      [{ treeId: 'cleo', nodeId: 's1' }, { treeId: 'cleo', nodeId: 'np1' }, { treeId: 'alex', nodeId: 'vp2' }])(plot).trees)
+      .toStrictEqual({
+        'cleo': {
+          sentence: 'Cleo laughed.',
+          nodes: {
+            'n1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
+            'vp1': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 12], triangle: false },
+          },
+          offset: { dPlotX: 0, dPlotY: 0 },
+        },
+        'alex': {
+          sentence: 'Alex baked cookies.',
+          nodes: {
+            's2': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['np2a'] },
+            'np2a': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['n2'] },
+            'n2': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
+            'v2': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10], triangle: false },
+            'np2b': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [11, 18], triangle: false },
+          },
+          offset: { dPlotX: 0, dPlotY: 0 },
+        },
+      });
   });
 });

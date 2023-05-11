@@ -78,6 +78,92 @@ exports[`content state > deletes a node from a tree 1`] = `
           },
           "sentence": "tree state",
         },
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`content state > deletes two nodes from two different trees 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+        "zz": {
+          "nodes": {
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
       },
     },
   },
@@ -133,6 +219,39 @@ exports[`content state > inserts a node into a tree 1`] = `
           },
           "sentence": "tree state",
         },
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
       },
     },
   },
@@ -177,6 +296,39 @@ exports[`content state > reacts to a change in the sentence 1`] = `
           },
           "sentence": "tee state",
         },
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
       },
     },
   },
@@ -187,7 +339,41 @@ exports[`content state > removes a tree from a plot 1`] = `
 {
   "plots": {
     "plot": {
-      "trees": {},
+      "trees": {
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
+      },
     },
   },
 }
@@ -230,6 +416,39 @@ exports[`content state > sets the label of a node 1`] = `
             "dPlotY": 0,
           },
           "sentence": "tree state",
+        },
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
         },
       },
     },
@@ -274,6 +493,39 @@ exports[`content state > sets whether a terminal node connects to its slice with
             "dPlotY": 0,
           },
           "sentence": "tree state",
+        },
+        "zz": {
+          "nodes": {
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
         },
       },
     },

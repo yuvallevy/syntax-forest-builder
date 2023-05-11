@@ -138,7 +138,7 @@ export const transformAllNodesInTree =
   });
 
 /**
- * Deletes the node with the given ID from the given tree.
+ * Deletes the node with the given IDs from the given tree.
  */
 export const deleteNodesInTree =
   (nodeIds: Id[]) =>

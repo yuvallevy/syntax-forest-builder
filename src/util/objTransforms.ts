@@ -4,6 +4,12 @@ export const transformValues = <K extends string, V, R>(record: Record<K, V>, va
     [key]: valueTransform(value),
   }), {} as Record<K, R>);
 
+export const transformValuesByEntry = <K extends string, V, R>(record: Record<K, V>, entryTransform: (entry: [K, V]) => R): Record<K, R> =>
+  (Object.entries(record) as [K, V][]).reduce((transformedRecord, entry) => ({
+    ...transformedRecord,
+    [entry[0]]: entryTransform(entry),
+  }), {} as Record<K, R>);
+
 export const mapValues = <K extends string, V, R>(record: Record<K, V>, valueTransform: (value: V) => R): R[] =>
   (Object.values(record) as V[]).map(valueTransform);
 
