@@ -1,5 +1,6 @@
 import { useMemo, useReducer } from 'react';
 import { MantineProvider } from '@mantine/core';
+import theme from './theme';
 import './App.scss';
 import { applyNodePositionsToPlot } from './core/positioning';
 import {
@@ -186,7 +187,7 @@ const App = () => {
     { title: 'Triangle', action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
-  return <MantineProvider withGlobalStyles withNormalizeCSS>
+  return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView
       plot={positionedPlot}
       selectedNodes={selectedNodes}

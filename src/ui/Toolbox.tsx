@@ -1,4 +1,5 @@
 import { ActionIcon, Paper, SimpleGrid } from '@mantine/core';
+import { primaryColor } from '../theme';
 
 export type ToolboxItem = {
   title: string;
@@ -23,8 +24,9 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
         <ActionIcon
           key={item.title}
           size="lg"
-          variant={item.toggleState === 'on' ? 'filled' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
+          variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
           disabled={item.disabled}
+          color={primaryColor}
           onClick={item.action}
         >
           {item.title.slice(0, 2)}
