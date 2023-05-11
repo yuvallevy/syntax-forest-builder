@@ -9,8 +9,7 @@ import {
 import PlotView from './ui/components/PlotView';
 import strWidth from './ui/strWidth';
 import { generateNodeId, generateTreeId } from './ui/content/generateId';
-import { SelectionInPlot } from './ui/content/editNodes';
-import { applySelection, NodeSelectionMode } from './ui/selection';
+import { applySelection, isNodeSelection, isSliceSelection, NodeSelectionMode, SelectionInPlot } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { allTopLevelInPlot } from './content/unpositioned/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './content/unpositioned/manipulation';
@@ -31,9 +30,9 @@ const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
   const { selection, activePlotId, editingNode } = state;
 
-  const nothingSelected = 'nodes' in selection && selection.nodes.length === 0;
-  const noNodesSelected = !('nodes' in selection) || selection.nodes.length === 0;
-  const selectedNodes = 'nodes' in selection ? selection.nodes : [];
+  const nothingSelected = isNodeSelection(selection) && selection.nodes.length === 0;
+  const noNodesSelected = !isNodeSelection(selection) || selection.nodes.length === 0;
+  const selectedNodes = isNodeSelection(selection) ? selection.nodes : [];
 
   const activePlot: UnpositionedPlot =
     useMemo(() => state.contentState.current.plots[activePlotId], [state.contentState, activePlotId]);
@@ -83,7 +82,7 @@ const App = () => {
   };
 
   const handleNodesSelect = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
-    nodes: applySelection(mode, nodes, 'nodes' in selection ? selection.nodes : undefined),
+    nodes: applySelection(mode, nodes, selectedNodes),
   });
   const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
@@ -115,7 +114,7 @@ const App = () => {
   const handleSentenceKeyDown = (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowUp') {
       event.currentTarget.blur();
-      if ('slice' in selection &&
+      if (isSliceSelection(selection) &&
         getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId]).length === 0) {
         addNode();
       } else {

@@ -1,7 +1,14 @@
 import { union } from '../util/objTransforms';
-import { TreeAndNodeId } from '../content/types';
+import { Id, StringSlice, TreeAndNodeId } from '../content/types';
 import { calculateNodeCenterOnPlot, PlotRect } from './coords';
 import { PlotCoords, PositionedNode, PositionedTree } from '../content/positioned/types';
+
+export type NodeSelectionInPlot = { nodes: TreeAndNodeId[] };
+export type SliceSelectionInPlot = { treeId: Id, slice: StringSlice };
+export type SelectionInPlot = NodeSelectionInPlot | SliceSelectionInPlot;
+
+export const isNodeSelection = (selection: SelectionInPlot): selection is NodeSelectionInPlot => 'nodes' in selection;
+export const isSliceSelection = (selection: SelectionInPlot): selection is SliceSelectionInPlot => 'slice' in selection;
 
 export type NodeSelectionMode = 'SET' | 'ADD';
 

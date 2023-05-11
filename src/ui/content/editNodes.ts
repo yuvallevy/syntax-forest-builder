@@ -1,12 +1,7 @@
-import {
-  Id, StringSlice, Sentence, TreeAndNodeId
-} from '../../content/types';
+import { StringSlice, Sentence } from '../../content/types';
 import { InsertedNode, transformAllNodesInTree } from '../../content/unpositioned/manipulation';
 import { isTerminal, UnpositionedNode, UnpositionedTree } from '../../content/unpositioned/types';
-
-export type NodeSelectionInPlot = { nodes: TreeAndNodeId[] };
-export type SliceSelectionInPlot = { treeId: Id, slice: StringSlice };
-export type SelectionInPlot = NodeSelectionInPlot | SliceSelectionInPlot;
+import { isSliceSelection, SelectionInPlot } from '../selection';
 
 const isWordChar = (char: string) => /['A-Za-z\u00c0-\u1fff]/.test(char);
 
@@ -30,7 +25,7 @@ const getWordRange = (sentence: Sentence, position: number): [start: number, end
  */
 export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sentence): InsertedNode => {
   // A slice of the sentence is selected
-  if ('slice' in selection) {
+  if (isSliceSelection(selection)) {
     const [sliceStart, sliceEnd] = selection.slice;
     const selectedSlice = sliceStart !== sliceEnd
       ? selection.slice

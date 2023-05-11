@@ -2,11 +2,12 @@ import {
   Id, NodeLabel, Sentence, StringSlice, TreeAndNodeId
 } from '../content/types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
-import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './content/editNodes';
+import { newNodeFromSelection } from './content/editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './content/contentState';
 import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
 import { getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
 import { sortNodesByXCoord } from '../content/positioned/positioning';
+import { isNodeSelection, isSliceSelection, NodeSelectionInPlot, SelectionInPlot } from './selection';
 import strWidth from './strWidth';
 import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 
@@ -46,7 +47,7 @@ export const canUndo = (state: UiState) => UndoRedoHistory.canUndo(state.content
 export const canRedo = (state: UiState) => UndoRedoHistory.canRedo(state.contentState);
 
 const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot) => {
-  if ('slice' in selection) {
+  if (isSliceSelection(selection)) {
     return {
       nodes: getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
         .map(nodeId => ({ treeId: selection.treeId, nodeId }))
@@ -61,7 +62,7 @@ const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInP
 export const uiReducer = (state: UiState, action: UiAction): UiState => {
   const activePlot = state.contentState.current.plots[state.activePlotId];
   const selectedTreeId =
-    'treeId' in state.selection ? state.selection.treeId
+    isSliceSelection(state.selection) ? state.selection.treeId
       : state.selection.nodes.length > 0 ? state.selection.nodes[0].treeId
       : undefined;
   switch (action.type) {
@@ -81,8 +82,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
     }
     case 'selectChildNode': {
       if (
-        !('nodes' in state.selection) ||  // no nodes selected
-        ('nodes' in state.selection && state.selection.nodes.length > 1) ||  // multiple nodes selected
+        !isNodeSelection(state.selection) ||  // no nodes selected
+        (state.selection.nodes.length > 1) ||  // multiple nodes selected
         !selectedTreeId  // could not figure out tree ID for some other reason
       ) return state;
       const selectedNode = activePlot.trees[selectedTreeId].nodes[state.selection.nodes[0].nodeId];
@@ -113,7 +114,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       };
     }
     case 'startEditing': {
-      if (!('nodes' in state.selection) || state.selection.nodes.length !== 1) return state;
+      if (!isNodeSelection(state.selection) || state.selection.nodes.length !== 1) return state;
       return {
         ...state,
         editingNode: state.selection.nodes[0],
@@ -174,7 +175,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       };
     }
     case 'deleteSelectedNodes': {
-      if (!('nodes' in state.selection)) return state;
+      if (!isNodeSelection(state.selection)) return state;
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
@@ -186,7 +187,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       };
     }
     case 'toggleTriangle': {
-      if (!('nodes' in state.selection)) return state;
+      if (!isNodeSelection(state.selection)) return state;
       const currentlyTriangle = state.selection.nodes.every(({ treeId, nodeId }) => {
         const node = activePlot.trees[treeId].nodes[nodeId];
         return isTerminal(node) ? node.triangle : false;
