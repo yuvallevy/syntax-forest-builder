@@ -21,6 +21,7 @@ import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle
 } from '@tabler/icons-react';
+import AboutButton from './ui/meta/AboutButton';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -205,6 +206,7 @@ const App = () => {
       onNodeEditorKeyDown={handleNodeEditorKeyDown}
     />
     <Toolbox items={toolboxItems} />
+    <AboutButton />
   </MantineProvider>;
 }
 
