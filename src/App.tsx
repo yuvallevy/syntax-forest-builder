@@ -22,6 +22,7 @@ import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle
 } from '@tabler/icons-react';
 import AboutButton from './ui/meta/AboutButton';
+import { isEmpty } from './core/objTransforms';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -93,6 +94,12 @@ const App = () => {
           : { targetSlice: trigger.slice }
       ),
     });
+  };
+
+  const handleSentenceBlur = (treeId: Id, event: React.FocusEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value.trim() === '' && isEmpty(activePlot.trees[treeId].nodes)) {
+      removeAndDeselectTree(treeId);
+    }
   };
 
   const handleSentenceChange = (_: Id, newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
@@ -200,6 +207,7 @@ const App = () => {
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}
       onNodeCreationTriggerClick={handleNodeCreationTriggerClick}
+      onSentenceBlur={handleSentenceBlur}
       onSentenceChange={handleSentenceChange}
       onSentenceKeyDown={handleSentenceKeyDown}
       onNodeEditorBlur={handleNodeEditorBlur}

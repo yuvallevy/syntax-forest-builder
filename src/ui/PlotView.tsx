@@ -27,6 +27,7 @@ interface PlotViewProps {
   onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onNodeCreationTriggerClick: (treeId: Id, trigger: NodeCreationTrigger) => void;
+  onSentenceBlur: (treeId: Id, event: React.FocusEvent<HTMLInputElement>) => void;
   onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
   onSentenceKeyDown: (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => void;
   onNodeEditorBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -41,6 +42,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   onNodesSelect,
   onSliceSelect,
   onNodeCreationTriggerClick,
+  onSentenceBlur,
   onSentenceChange,
   onSentenceKeyDown,
   onNodeEditorBlur,
@@ -133,6 +135,7 @@ const PlotView: React.FC<PlotViewProps> = ({
         key={`sentence-${treeId}`}
         tree={tree}
         treeId={treeId}
+        onBlur={event => onSentenceBlur(treeId, event)}
         onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
         onSelect={slice => onSliceSelect(treeId, slice)}
         onKeyDown={event => onSentenceKeyDown(treeId, event)}
