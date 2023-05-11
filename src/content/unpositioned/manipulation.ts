@@ -5,6 +5,7 @@ import {
 import {
   isBranching, isTerminal, UnpositionedBranchingNode, UnpositionedNode, UnpositionedStrandedNode, UnpositionedTree
 } from './types';
+import slicesOverlap from '../slicesOverlap';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
 
@@ -17,9 +18,6 @@ type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: StringSlice; };
 export type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 
 const isIn = (nodes: IdMap<UnpositionedNode>) => (nodeId: Id) => nodes.hasOwnProperty(nodeId);
-
-export const slicesOverlap = ([start1, end1]: StringSlice, [start2, end2]: StringSlice) =>
-  !(end1 < start1 || end2 < start2 || end1 <= start2 || end2 <= start1)
 
 const descendantIds = (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedBranchingNode): Id[] => {
   const directChildren = node.children.map(childId => nodes[childId]);

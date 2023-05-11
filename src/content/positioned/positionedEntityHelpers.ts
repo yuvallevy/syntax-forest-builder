@@ -1,6 +1,6 @@
 import { associateWith, filterEntries, isEmpty, mapValues } from '../../util/objTransforms';
 import { Id, IdMap, StringSlice } from '../types';
-import { slicesOverlap } from '../unpositioned/manipulation';
+import slicesOverlap from '../slicesOverlap';
 import { PositionedNode, PositionedTree } from './types';
 
 /**
