@@ -1,7 +1,6 @@
 import { Id } from '../../content/types';
 import { filterPositionedNodesInTreeById } from '../../content/positioned/positionedEntityHelpers';
-import ClientCoords from '../ClientCoords';
-import { calculateNodeCenterOnPlot, plotCoordsToClientCoords } from '../coords';
+import { calculateNodeCenterOnPlot, ClientCoords, plotCoordsToClientCoords } from '../coords';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
 import { PositionedTree } from '../../content/positioned/types';

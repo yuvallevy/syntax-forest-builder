@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PlotRect } from '../../content/types';
+import { PlotRect } from '../../ui/coords';
 import { isNodeInRect } from '../../ui/selection';
 import { PositionedNode, PositionedTree } from '../../content/positioned/types';
 
