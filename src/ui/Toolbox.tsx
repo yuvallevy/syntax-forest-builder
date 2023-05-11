@@ -1,4 +1,4 @@
-import { ActionIcon, Paper, SimpleGrid, Tooltip } from '@mantine/core';
+import { ActionIcon, Paper, SimpleGrid, Tooltip, useMantineTheme } from '@mantine/core';
 import { primaryColor } from '../theme';
 import { TablerIconsProps } from '@tabler/icons-react';
 
@@ -14,8 +14,10 @@ interface ToolboxProps {
   items: ToolboxItem[];
 }
 
-const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
-  <Paper
+const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
+  const theme = useMantineTheme();
+
+  return <Paper
     shadow="sm"
     p="xs"
     sx={{ position: 'fixed', left: '1rem', top: '1rem' }}
@@ -29,6 +31,7 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
             variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
             disabled={item.disabled}
             color={primaryColor}
+            sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
             onClick={item.action}
           >
             {item.icon
@@ -39,5 +42,6 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) =>
       )}
     </SimpleGrid>
   </Paper>;
+};
 
 export default Toolbox;
