@@ -15,7 +15,7 @@ import { applySelection, NodeSelectionMode } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { allTopLevelInPlot } from './mantle/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './mantle/manipulation';
-import { initialUiState, uiReducer } from './ui/uiState';
+import { canRedo, canUndo, initialUiState, uiReducer } from './ui/uiState';
 import Toolbox, { ToolboxItem } from './ui/Toolbox';
 import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
 import {
@@ -183,8 +183,8 @@ const App = () => {
   };
 
   const toolboxItems: ToolboxItem[] = [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo },
+    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !canUndo(state) },
+    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state) },
     { title: 'Add', icon: IconPlus, action: addNode },
     { title: 'Delete', icon: IconTrash, action: deleteNode },
     { title: 'Edit', icon: IconPencil, action: startEditing, toggleState: editingNode ? 'on' : 'off' },

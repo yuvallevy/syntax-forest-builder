@@ -1,6 +1,7 @@
 import {
   Id, isBranching, isTerminal, NodeLabel, PlotCoordsOffset, Sentence, StringSlice, TreeAndNodeId, UnpositionedPlot
 } from '../core/types';
+import * as UndoRedoHistory from '../mantle/UndoRedoHistory';
 import { newNodeFromSelection, NodeSelectionInPlot, SelectionInPlot } from './editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './contentState';
 import { getNodeIdsAssignedToSlice } from '../mantle/manipulation';
@@ -39,6 +40,9 @@ export const initialUiState: UiState = {
   contentState: initialContentState,
   selection: { nodes: [] },
 };
+
+export const canUndo = (state: UiState) => UndoRedoHistory.canUndo(state.contentState);
+export const canRedo = (state: UiState) => UndoRedoHistory.canRedo(state.contentState);
 
 const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot) => {
   if ('slice' in selection) {

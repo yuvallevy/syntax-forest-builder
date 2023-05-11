@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import UndoRedoHistory, { applyToHistory, redo, undo } from '../../mantle/UndoRedoHistory';
+import UndoRedoHistory, { applyToHistory, canRedo, canUndo, redo, undo } from '../../mantle/UndoRedoHistory';
 import { applyAction, reverseAction, TestAction, TestState } from './testActionAndState';
 
 describe('undo/redo history', () => {
@@ -49,6 +49,22 @@ describe('undo/redo history', () => {
     const resultAfterFirst = applyToHistory(applyAction)(action1)(initialUndoRedoHistory);
     const resultAfterSecond = applyToHistory(applyAction)(action2)(resultAfterFirst);
     expect(resultAfterSecond).toStrictEqual(undoRedoHistoryAfterTwoActions);
+  });
+
+  it('allows undo when there is something left to undo', () => {
+    expect(canUndo(undoRedoHistoryAfterUndoOnce)).toBe(true);
+  });
+
+  it('disallows undo when there is nothing left to undo', () => {
+    expect(canUndo(undoRedoHistoryAfterUndoTwice)).toBe(false);
+  });
+
+  it('allows redo when there is something left to redo', () => {
+    expect(canRedo(undoRedoHistoryAfterUndoOnce)).toBe(true);
+  });
+
+  it('disallows redo when there is nothing left to redo', () => {
+    expect(canRedo(undoRedoHistoryAfterTwoActions)).toBe(false);
   });
 
   it('undoes one action', () => {
