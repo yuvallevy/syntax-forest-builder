@@ -36,7 +36,7 @@ export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sente
     };
   }
   // One or more nodes are selected
-  const selectedNodeIds = selection.nodes.map(({ nodeId }) => nodeId);
+  const selectedNodeIds = selection.nodeIndicators.map(({ nodeId }) => nodeId);
   return {
     targetChildIds: selectedNodeIds,
     label: '',

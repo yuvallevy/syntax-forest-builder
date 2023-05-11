@@ -1,5 +1,5 @@
 import {
-  Id, IdMap, StringSlice, Sentence, TreeAndNodeId
+  Id, IdMap, StringSlice, Sentence, NodeIndicatorInPlot
 } from '../../content/types';
 import {
   deleteNodesInTree, InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
@@ -18,9 +18,9 @@ import {
  */
 export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
-  | { type: 'deleteNodes', plotId: Id, nodes: TreeAndNodeId[] }
-  | { type: 'setNodeLabel', plotId: Id, node: TreeAndNodeId, newLabel: string }
-  | { type: 'setTriangle', plotId: Id, nodes: TreeAndNodeId[], triangle: boolean }
+  | { type: 'deleteNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'setNodeLabel', plotId: Id, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
+  | { type: 'setTriangle', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
   | { type: 'addTree', plotId: Id, newTreeId: Id, offset: PlotCoordsOffset }
   | { type: 'removeTree', plotId: Id, treeId: Id }
@@ -54,29 +54,29 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
       };
     }
     case 'deleteNodes': {
-      const treeId = action.nodes[0].treeId;  // TODO: Use all trees
+      const treeId = action.nodeIndicators[0].treeId;  // TODO: Use all trees
       return {
         type: 'setTree',
         plotId: action.plotId,
         treeId: treeId,
         old: state.plots[action.plotId].trees[treeId],
-        new: deleteNodesInTree(action.nodes.map(({ nodeId }) => nodeId))(state.plots[action.plotId].trees[treeId]),
+        new: deleteNodesInTree(action.nodeIndicators.map(({ nodeId }) => nodeId))(state.plots[action.plotId].trees[treeId]),
       };
     }
     case 'setNodeLabel': {
       return {
         type: 'setTree',
         plotId: action.plotId,
-        treeId: action.node.treeId,
-        old: state.plots[action.plotId].trees[action.node.treeId],
-        new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.node.nodeId)(
-          state.plots[action.plotId].trees[action.node.treeId]),
+        treeId: action.nodeIndicator.treeId,
+        old: state.plots[action.plotId].trees[action.nodeIndicator.treeId],
+        new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.nodeIndicator.nodeId)(
+          state.plots[action.plotId].trees[action.nodeIndicator.treeId]),
       };
     }
     case 'setTriangle': {
-      const treeId = action.nodes[0].treeId;  // TODO: Use all trees
-      const nodeIds = action.nodes
-        .filter(treeAndNodeId => treeAndNodeId.treeId === treeId).map(treeAndNodeId => treeAndNodeId.nodeId);
+      const treeId = action.nodeIndicators[0].treeId;  // TODO: Use all trees
+      const nodeIds = action.nodeIndicators
+        .filter(nodeIndicator => nodeIndicator.treeId === treeId).map(nodeIndicator => nodeIndicator.nodeId);
       return {
         type: 'setTree',
         plotId: action.plotId,

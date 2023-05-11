@@ -6,7 +6,7 @@ import { UnpositionedTree } from '../../../content/unpositioned/types';
 describe('high-level tree editing routines', () => {
   describe('defining new nodes', () => {
     it('defines a new branching node', () => {
-      expect(newNodeFromSelection({ nodes: [{ treeId: 'tree', nodeId: 'a' }, { treeId: 'tree', nodeId: 'b' }] }, ''))
+      expect(newNodeFromSelection({ nodeIndicators: [{ treeId: 'tree', nodeId: 'a' }, { treeId: 'tree', nodeId: 'b' }] }, ''))
         .toMatchObject({ targetChildIds: ['a', 'b'] });
     });
 

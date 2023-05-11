@@ -4,7 +4,7 @@ import theme from './theme';
 import './App.scss';
 import { applyNodePositionsToPlot } from './content/positioned/positioning';
 import {
-  Id, StringSlice, Sentence, TreeAndNodeId, NodeLabel
+  Id, StringSlice, Sentence, NodeIndicatorInPlot, NodeLabel
 } from './content/types';
 import PlotView from './ui/components/PlotView';
 import strWidth from './ui/strWidth';
@@ -28,17 +28,17 @@ import {
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
-  const { selection, activePlotId, editingNode } = state;
+  const { selection, activePlotId, editedNodeIndicator } = state;
 
-  const nothingSelected = isNodeSelection(selection) && selection.nodes.length === 0;
-  const noNodesSelected = !isNodeSelection(selection) || selection.nodes.length === 0;
-  const selectedNodes = isNodeSelection(selection) ? selection.nodes : [];
+  const nothingSelected = isNodeSelection(selection) && selection.nodeIndicators.length === 0;
+  const noNodesSelected = !isNodeSelection(selection) || selection.nodeIndicators.length === 0;
+  const selectedNodeIndicators = isNodeSelection(selection) ? selection.nodeIndicators : [];
 
   const activePlot: UnpositionedPlot =
     useMemo(() => state.contentState.current.plots[activePlotId], [state.contentState, activePlotId]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
-  const selectedNodeData = selectedNodes.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);
+  const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
@@ -70,19 +70,19 @@ const App = () => {
 
   const removeAndDeselectTree = (treeId: Id) => {
     dispatch({ type: 'removeTree', treeId });
-    setSelection({ nodes: [] });
+    setSelection({ nodeIndicators: [] });
   };
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
       addTreeAndFocus({ dPlotX: event.clientX, dPlotY: event.clientY });
     } else {
-      setSelection({ nodes: [] });
+      setSelection({ nodeIndicators: [] });
     }
   };
 
-  const handleNodesSelect = (nodes: TreeAndNodeId[], mode: NodeSelectionMode = 'SET') => setSelection({
-    nodes: applySelection(mode, nodes, selectedNodes),
+  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = 'SET') => setSelection({
+    nodeIndicators: applySelection(mode, nodeIndicators, selectedNodeIndicators),
   });
   const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
@@ -131,10 +131,10 @@ const App = () => {
   };
 
   const handleNodeEditorKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!editingNode) return;
+    if (!editedNodeIndicator) return;
     if (event.key === 'ArrowUp') {
       setEditedNodeLabel(event.currentTarget.value);
-      if (allTopLevelInPlot([editingNode])(activePlot)) {
+      if (allTopLevelInPlot([editedNodeIndicator])(activePlot)) {
         addNode();
       } else {
         selectParentNodes();
@@ -148,7 +148,7 @@ const App = () => {
   };
 
   useHotkeys(['ArrowUp'], () => {
-    if (selectedNodes.length > 0 && allTopLevelInPlot(selectedNodes)(activePlot)) {
+    if (selectedNodeIndicators.length > 0 && allTopLevelInPlot(selectedNodeIndicators)(activePlot)) {
       addNode();
     } else {
       selectParentNodes();
@@ -160,12 +160,12 @@ const App = () => {
   useHotkeys(['ArrowRight'], selectRightChildNode);
 
   useHotkeys(['ArrowDown'], () => {
-    if (selectedNodes.length !== 1) return;
-    const selectedNode = activePlot.trees[selectedNodes[0].treeId].nodes[selectedNodes[0].nodeId];
-    if (isBranching(selectedNode)) {
+    if (selectedNodeIndicators.length !== 1) return;
+    const selectedNodeObject = activePlot.trees[selectedNodeIndicators[0].treeId].nodes[selectedNodeIndicators[0].nodeId];
+    if (isBranching(selectedNodeObject)) {
       selectCenterChildNode();
-    } else if (isTerminal(selectedNode)) {
-      selectSliceAtDomLevel(selectedNodes[0].treeId, selectedNode.slice);
+    } else if (isTerminal(selectedNodeObject)) {
+      selectSliceAtDomLevel(selectedNodeIndicators[0].treeId, selectedNodeObject.slice);
     }
   });
 
@@ -179,11 +179,11 @@ const App = () => {
 
   const getTriangleButtonState = (): { toggleState: 'on' | 'off' | 'indeterminate'; disabled?: boolean } => {
     // No nodes selected, or some non-terminal nodes selected:
-    if (selectedNodes.length === 0 || !(selectedNodeData.every(isTerminal)))
+    if (selectedNodeIndicators.length === 0 || !(selectedNodeObjects.every(isTerminal)))
       return { disabled: true, toggleState: 'off' };
 
     // At this point we know that there are selected nodes and that they are all terminal
-    const selectedTerminalNodes = selectedNodeData as UnpositionedTerminalNode[];
+    const selectedTerminalNodes = selectedNodeObjects as UnpositionedTerminalNode[];
     // Only triangle nodes selected:
     if (selectedTerminalNodes.every(node => node.triangle)) return { toggleState: 'on' };
     // Some triangle nodes and some non-triangle nodes selected:
@@ -197,15 +197,16 @@ const App = () => {
     { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state) },
     { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected },
     { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected },
-    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, toggleState: editingNode ? 'on' : 'off' },
+    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected,
+      toggleState: editedNodeIndicator ? 'on' : 'off' },
     { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView
       plot={positionedPlot}
-      selectedNodes={selectedNodes}
-      editing={editingNode}
+      selectedNodeIndicators={selectedNodeIndicators}
+      editedNodeIndicator={editedNodeIndicator}
       onClick={handlePlotClick}
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}

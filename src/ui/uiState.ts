@@ -1,5 +1,5 @@
 import {
-  Id, NodeLabel, Sentence, StringSlice, TreeAndNodeId
+  Id, NodeLabel, Sentence, StringSlice, NodeIndicatorInPlot
 } from '../content/types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
 import { newNodeFromSelection } from './content/editNodes';
@@ -34,28 +34,28 @@ export type UiState = {
   contentState: UndoableContentState;
   activePlotId: Id;
   selection: SelectionInPlot;
-  editingNode?: TreeAndNodeId;
+  editedNodeIndicator?: NodeIndicatorInPlot;
 };
 
 export const initialUiState: UiState = {
   activePlotId: 'plot',
   contentState: initialContentState,
-  selection: { nodes: [] },
+  selection: { nodeIndicators: [] },
 };
 
 export const canUndo = (state: UiState) => UndoRedoHistory.canUndo(state.contentState);
 export const canRedo = (state: UiState) => UndoRedoHistory.canRedo(state.contentState);
 
-const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot) => {
+const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot): NodeSelectionInPlot => {
   if (isSliceSelection(selection)) {
     return {
-      nodes: getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
+      nodeIndicators: getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
         .map(nodeId => ({ treeId: selection.treeId, nodeId }))
     };
   } else {
-    if (selection.nodes.length === 0) return selection;
-    const parentNodes = getParentNodeIdsInPlot(selection.nodes)(activePlot);
-    return { nodes: parentNodes };
+    if (selection.nodeIndicators.length === 0) return selection;
+    const parentNodes = getParentNodeIdsInPlot(selection.nodeIndicators)(activePlot);
+    return { nodeIndicators: parentNodes };
   }
 };
 
@@ -63,7 +63,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
   const activePlot = state.contentState.current.plots[state.activePlotId];
   const selectedTreeId =
     isSliceSelection(state.selection) ? state.selection.treeId
-      : state.selection.nodes.length > 0 ? state.selection.nodes[0].treeId
+      : state.selection.nodeIndicators.length > 0 ? state.selection.nodeIndicators[0].treeId
       : undefined;
   switch (action.type) {
     case 'setSelection': {
@@ -77,31 +77,32 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       return {
         ...state,
         selection: parentSelection,
-        editingNode: state.editingNode ? parentSelection.nodes[0] : undefined,
+        editedNodeIndicator: state.editedNodeIndicator ? parentSelection.nodeIndicators[0] : undefined,
       };
     }
     case 'selectChildNode': {
       if (
         !isNodeSelection(state.selection) ||  // no nodes selected
-        (state.selection.nodes.length > 1) ||  // multiple nodes selected
+        (state.selection.nodeIndicators.length > 1) ||  // multiple nodes selected
         !selectedTreeId  // could not figure out tree ID for some other reason
       ) return state;
-      const selectedNode = activePlot.trees[selectedTreeId].nodes[state.selection.nodes[0].nodeId];
-      if (!isBranching(selectedNode)) return state;
+      const selectedNodeObject = activePlot.trees[selectedTreeId].nodes[state.selection.nodeIndicators[0].nodeId];
+      if (!isBranching(selectedNodeObject)) return state;
 
-      const childNodesSortedByX = sortNodesByXCoord(strWidth)(activePlot.trees[selectedTreeId])(selectedNode.children);
+      const childNodesSortedByX =
+        sortNodesByXCoord(strWidth)(activePlot.trees[selectedTreeId])(selectedNodeObject.children);
 
       const childSelection: NodeSelectionInPlot | undefined =
-        action.side === 'center' && selectedNode.children.length === 1 ?
-          { nodes: [{ treeId: selectedTreeId, nodeId: selectedNode.children[0] }] } :
-        action.side === 'center' && selectedNode.children.length >= 3 ?
-          { nodes: [{ treeId: selectedTreeId, nodeId: childNodesSortedByX[1] }] } :
-        action.side !== 'center' && selectedNode.children.length >= 2 ?
+        action.side === 'center' && selectedNodeObject.children.length === 1 ?
+          { nodeIndicators: [{ treeId: selectedTreeId, nodeId: selectedNodeObject.children[0] }] } :
+        action.side === 'center' && selectedNodeObject.children.length >= 3 ?
+          { nodeIndicators: [{ treeId: selectedTreeId, nodeId: childNodesSortedByX[1] }] } :
+        action.side !== 'center' && selectedNodeObject.children.length >= 2 ?
           {
-            nodes: [
+            nodeIndicators: [
               {
                 treeId: selectedTreeId,
-                nodeId: childNodesSortedByX[action.side === 'left' ? 0 : (selectedNode.children.length - 1)]
+                nodeId: childNodesSortedByX[action.side === 'left' ? 0 : (selectedNodeObject.children.length - 1)]
               }
             ]
           } : undefined;
@@ -110,30 +111,30 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       return {
         ...state,
         selection: childSelection,
-        editingNode: state.editingNode ? childSelection.nodes[0] : undefined,
+        editedNodeIndicator: state.editedNodeIndicator ? childSelection.nodeIndicators[0] : undefined,
       };
     }
     case 'startEditing': {
-      if (!isNodeSelection(state.selection) || state.selection.nodes.length !== 1) return state;
+      if (!isNodeSelection(state.selection) || state.selection.nodeIndicators.length !== 1) return state;
       return {
         ...state,
-        editingNode: state.selection.nodes[0],
+        editedNodeIndicator: state.selection.nodeIndicators[0],
       };
     }
     case 'stopEditing': {
       return {
         ...state,
-        editingNode: undefined,
+        editedNodeIndicator: undefined,
       };
     }
     case 'setEditedNodeLabel': {
-      if (!state.editingNode) return state;
+      if (!state.editedNodeIndicator) return state;
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'setNodeLabel',
           plotId: state.activePlotId,
-          node: state.editingNode,
+          nodeIndicator: state.editedNodeIndicator,
           newLabel: action.newLabel,
         }),
       };
@@ -150,8 +151,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           newNodeId: action.newNodeId,
           newNode: newNodeFromSelection(state.selection, activePlot.trees[selectedTreeId].sentence),
         }),
-        selection: { nodes: [newNodeIndicator] },
-        editingNode: newNodeIndicator,
+        selection: { nodeIndicators: [newNodeIndicator] },
+        editedNodeIndicator: newNodeIndicator,
       };
     }
     case 'addNodeByTarget': {
@@ -170,8 +171,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
             )
           },
         }),
-        selection: { nodes: [newNodeIndicator] },
-        editingNode: newNodeIndicator,
+        selection: { nodeIndicators: [newNodeIndicator] },
+        editedNodeIndicator: newNodeIndicator,
       };
     }
     case 'deleteSelectedNodes': {
@@ -181,14 +182,14 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         contentState: contentReducer(state.contentState, {
           type: 'deleteNodes',
           plotId: state.activePlotId,
-          nodes: state.selection.nodes,
+          nodeIndicators: state.selection.nodeIndicators,
         }),
-        selection: { nodes: [] },
+        selection: { nodeIndicators: [] },
       };
     }
     case 'toggleTriangle': {
       if (!isNodeSelection(state.selection)) return state;
-      const currentlyTriangle = state.selection.nodes.every(({ treeId, nodeId }) => {
+      const currentlyTriangle = state.selection.nodeIndicators.every(({ treeId, nodeId }) => {
         const node = activePlot.trees[treeId].nodes[nodeId];
         return isTerminal(node) ? node.triangle : false;
       });
@@ -197,7 +198,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         contentState: contentReducer(state.contentState, {
           type: 'setTriangle',
           plotId: state.activePlotId,
-          nodes: state.selection.nodes,
+          nodeIndicators: state.selection.nodeIndicators,
           triangle: !currentlyTriangle,
         }),
       }

@@ -1,20 +1,21 @@
 import { union } from '../util/objTransforms';
-import { Id, StringSlice, TreeAndNodeId } from '../content/types';
+import { Id, StringSlice, NodeIndicatorInPlot } from '../content/types';
 import { calculateNodeCenterOnPlot, PlotRect } from './coords';
 import { PlotCoords, PositionedNode, PositionedTree } from '../content/positioned/types';
 
-export type NodeSelectionInPlot = { nodes: TreeAndNodeId[] };
+export type NodeSelectionInPlot = { nodeIndicators: NodeIndicatorInPlot[] };
 export type SliceSelectionInPlot = { treeId: Id, slice: StringSlice };
 export type SelectionInPlot = NodeSelectionInPlot | SliceSelectionInPlot;
 
-export const isNodeSelection = (selection: SelectionInPlot): selection is NodeSelectionInPlot => 'nodes' in selection;
+export const isNodeSelection = (selection: SelectionInPlot): selection is NodeSelectionInPlot => 'nodeIndicators' in selection;
 export const isSliceSelection = (selection: SelectionInPlot): selection is SliceSelectionInPlot => 'slice' in selection;
 
 export type NodeSelectionMode = 'SET' | 'ADD';
 
-export const applySelection = (mode: NodeSelectionMode, newIds: TreeAndNodeId[], existingIds?: TreeAndNodeId[]) =>
-  mode === 'ADD' ? union(existingIds || [], newIds)
-    : newIds;
+export const applySelection = (
+  mode: NodeSelectionMode, newNodeIndicators: NodeIndicatorInPlot[], existingNodeIndicators?: NodeIndicatorInPlot[]) =>
+  mode === 'ADD' ? union(existingNodeIndicators || [], newNodeIndicators)
+    : newNodeIndicators;
 
 /**
  * Returns whether the given point is inside the given rectangle.

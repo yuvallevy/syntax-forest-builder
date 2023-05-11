@@ -53,9 +53,9 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   onBlur,
   onKeyDown,
 }) => {
-  const editedNodeData = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
-  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeData));
-  const [inputValue, setInputValue] = useState<string>(editedNodeData.label);
+  const editedNodeObject = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
+  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeObject));
+  const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 
   return <LabelNodeEditorInput
     key={`editable-node-${nodeId}`}

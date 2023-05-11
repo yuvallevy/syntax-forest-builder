@@ -9,7 +9,7 @@ export type StringSlice = [SliceStart, SliceEndExclusive];
 
 export type IdMap<T> = Record<Id, T>;
 
-export type TreeAndNodeId = {
+export type NodeIndicatorInPlot = {
   treeId: Id;
   nodeId: Id;
 };

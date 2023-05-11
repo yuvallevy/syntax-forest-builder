@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { filterEntries, isEmpty, mapEntries, transformValues } from '../../util/objTransforms';
-import { Id, StringSlice, Sentence, TreeAndNodeId } from '../../content/types';
+import { Id, StringSlice, Sentence, NodeIndicatorInPlot } from '../../content/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
@@ -16,10 +16,10 @@ const MINIMUM_SELECTION_BOX_DIMENSION = 8;  // to leave some wiggle room for the
 
 interface PlotViewProps {
   plot: PositionedPlot;
-  selectedNodes: TreeAndNodeId[];
-  editing: TreeAndNodeId | undefined;
+  selectedNodeIndicators: NodeIndicatorInPlot[];
+  editedNodeIndicator: NodeIndicatorInPlot | undefined;
   onClick: (event: React.MouseEvent<SVGElement>) => void;
-  onNodesSelect: (nodes: TreeAndNodeId[], mode: NodeSelectionMode) => void;
+  onNodesSelect: (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
   onNodeCreationTriggerClick: (treeId: Id, trigger: NodeCreationTrigger) => void;
   onSentenceBlur: (treeId: Id, event: React.FocusEvent<HTMLInputElement>) => void;
@@ -31,8 +31,8 @@ interface PlotViewProps {
 
 const PlotView: React.FC<PlotViewProps> = ({
   plot,
-  selectedNodes,
-  editing,
+  selectedNodeIndicators,
+  editedNodeIndicator,
   onClick,
   onNodesSelect,
   onSliceSelect,
@@ -46,7 +46,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   const [selectionBoxStart, setSelectionBoxStart] = useState<ClientCoords | undefined>();
   const [selectionBoxEnd, setSelectionBoxEnd] = useState<ClientCoords | undefined>();
 
-  const selectedNodeIds = selectedNodes.map(({ nodeId }) => nodeId);
+  const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
 
   const selectionBoxTopLeft: ClientCoords | undefined = selectionBoxStart && selectionBoxEnd ? {
     clientX: Math.min(selectionBoxStart.clientX, selectionBoxEnd.clientX),
@@ -89,7 +89,7 @@ const PlotView: React.FC<PlotViewProps> = ({
       const newSelectedNodes = Object.entries(newSelectedNodeIdsByTree)
         .reduce(
           (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
-          [] as TreeAndNodeId[]);
+          [] as NodeIndicatorInPlot[]);
       onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
     } else if (selectionBoxStart) {
       onClick(event);
@@ -135,10 +135,10 @@ const PlotView: React.FC<PlotViewProps> = ({
         onSelect={slice => onSliceSelect(treeId, slice)}
         onKeyDown={event => onSentenceKeyDown(treeId, event)}
       />)}
-    {editing && <LabelNodeEditor
-      key={`editable-nodes-${editing.nodeId}`}
-      tree={plot.trees[editing.treeId]}
-      nodeId={editing.nodeId}
+    {editedNodeIndicator && <LabelNodeEditor
+      key={`editable-nodes-${editedNodeIndicator.nodeId}`}
+      tree={plot.trees[editedNodeIndicator.treeId]}
+      nodeId={editedNodeIndicator.nodeId}
       onBlur={onNodeEditorBlur}
       onKeyDown={onNodeEditorKeyDown}
     />}
