@@ -22,6 +22,7 @@ export type UiAction =
   | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetChildIds: Id[] }
   | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetSlice: StringSlice }
   | { type: 'deleteSelectedNodes' }
+  | { type: 'moveSelectedNodes', dx: number, dy: number }
   | { type: 'toggleTriangle' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
   | { type: 'addTree', newTreeId: Id, offset: PlotCoordsOffset }
@@ -186,6 +187,19 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
         selection: { nodeIndicators: [] },
       };
+    }
+    case 'moveSelectedNodes': {
+      if (!isNodeSelection(state.selection)) return state;
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'moveNodes',
+          plotId: state.activePlotId,
+          nodeIndicators: state.selection.nodeIndicators,
+          dx: action.dx,
+          dy: action.dy,
+        }),
+      }
     }
     case 'toggleTriangle': {
       if (!isNodeSelection(state.selection)) return state;

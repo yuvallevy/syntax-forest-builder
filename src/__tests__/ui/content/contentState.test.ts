@@ -47,6 +47,10 @@ describe('content state', () => {
       { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
     ],
     [
+      'moves a node in a tree',
+      { type: 'moveNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'a' }], dx: 1, dy: -4 }
+    ],
+    [
       'sets the label of a node',
       { type: 'setNodeLabel', plotId: 'plot', nodeIndicator: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
     ],

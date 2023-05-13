@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { deleteNodesInPlot, getParentNodeIdsInPlot } from '../../../content/unpositioned/plotManipulation';
+import {
+  deleteNodesInPlot, getParentNodeIdsInPlot, transformNodesInPlot
+} from '../../../content/unpositioned/plotManipulation';
 import { UnpositionedPlot } from '../../../content/unpositioned/types';
 
 describe('plot manipulation', () => {
@@ -54,6 +56,12 @@ describe('plot manipulation', () => {
     'of which one is a top-level node', () => {
     expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 's2' }, { treeId: 'alex', nodeId: 'n2' }])(plot))
       .toStrictEqual([{ treeId: 'alex', nodeId: 'np2a' }]);
+  });
+
+  it('transforms nodes across multiple trees on one plot', () => {
+    expect(transformNodesInPlot(
+      node => ({ ...node, offset: { dTreeX: node.offset.dTreeX, dTreeY: node.offset.dTreeY - 4 } })
+    )([{ treeId: 'cleo', nodeId: 'np1' }, { treeId: 'alex', nodeId: 's2' }])(plot).trees).toMatchSnapshot();
   });
 
   it('deletes nodes across multiple trees on one plot', () => {

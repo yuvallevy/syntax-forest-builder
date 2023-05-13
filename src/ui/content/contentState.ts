@@ -4,7 +4,7 @@ import {
 import {
   InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
 } from '../../content/unpositioned/manipulation';
-import { deleteNodesInPlot } from '../../content/unpositioned/plotManipulation';
+import { deleteNodesInPlot, transformNodesInPlot } from '../../content/unpositioned/plotManipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../../util/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
 import { omitKey } from '../../util/objTransforms';
@@ -20,6 +20,7 @@ import {
 export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'moveNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], dx: number, dy: number }
   | { type: 'setNodeLabel', plotId: Id, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
   | { type: 'setTriangle', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
@@ -62,6 +63,17 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         old: state.plots[action.plotId],
         new: deleteNodesInPlot(action.nodeIndicators)(state.plots[action.plotId]),
       };
+    }
+    case 'moveNodes': {
+      return {
+        type: 'setPlot',
+        plotId: action.plotId,
+        old: state.plots[action.plotId],
+        new: transformNodesInPlot(node => ({
+          ...node,
+          offset: { dTreeX: node.offset.dTreeX + action.dx, dTreeY: node.offset.dTreeY + action.dy }
+        }))(action.nodeIndicators)(state.plots[action.plotId]),
+      }
     }
     case 'setNodeLabel': {
       return {

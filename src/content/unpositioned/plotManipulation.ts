@@ -1,6 +1,6 @@
 import { Id, NodeIndicatorInPlot } from '../types';
 import { flatten, mapEntries, transformValuesByEntry } from '../../util/objTransforms';
-import { deleteNodesInTree, getParentNodeIdsInTree } from './manipulation';
+import { deleteNodesInTree, getParentNodeIdsInTree, NodeTransformFunc, transformNodesInTree } from './manipulation';
 import { UnpositionedPlot } from './types';
 
 /**
@@ -32,7 +32,23 @@ export const allTopLevelInPlot =
     getParentNodeIdsInPlot(nodeIndicators)(plot).length === 0;
 
 /**
- * Deletes the node with the given IDs from the given tree.
+ * Transforms the nodes with the given indicators using the given transform function
+ * at any point in any tree in the given plot.
+ */
+export const transformNodesInPlot =
+  (transformFunc: NodeTransformFunc) =>
+  (nodeIndicators: NodeIndicatorInPlot[]) =>
+  (plot: UnpositionedPlot): UnpositionedPlot => ({
+    ...plot,
+    trees: {
+      ...plot.trees,
+      ...(transformValuesByEntry(groupNodeIdsByTree(nodeIndicators),
+        ([treeId, nodeIds]) => transformNodesInTree(transformFunc)(nodeIds)(plot.trees[treeId]))),
+    },
+  });
+
+/**
+ * Deletes the nodes with the given indicators from the given plot.
  */
 export const deleteNodesInPlot =
   (nodeIndicators: NodeIndicatorInPlot[]) =>
