@@ -19,6 +19,14 @@
   animation: marching-ants .75s linear infinite;
 }
 
+.TreeView-node-ghost {
+  fill: none;
+  stroke: #444;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
 .NodeCreationTriggerClickZone-area {
   cursor: pointer;
   stroke: none;

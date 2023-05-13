@@ -6,6 +6,7 @@ import {
 import './TreeView.scss';
 import { NodeSelectionMode } from '../selection';
 import { NodeCreationTrigger, getNodeCreationTriggersForTree } from '../nodeCreationTriggers';
+import { ClientCoordsOffset } from '../coords';
 import strWidth from '../strWidth';
 import {
   PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
@@ -28,6 +29,8 @@ interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
   selectedNodeIds: Id[];
+  nodeDragOffset?: ClientCoordsOffset;
+  onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
   onSingleNodeSelect?: (nodeId: Id, mode: NodeSelectionMode) => void;
   onNodeCreationTriggerClick?: (trigger: NodeCreationTrigger) => void;
 }
@@ -57,12 +60,17 @@ const renderNode = (
   node: PositionedNode,
   allNodes: IdMap<PositionedNode>,
   selectedNodeIds: Id[],
-  onSelect?: (id: Id, mode: NodeSelectionMode) => void
+  nodeDragOffset?: ClientCoordsOffset,
+  onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
+  onSelect?: (id: Id, mode: NodeSelectionMode) => void,
 ): React.ReactNode[] => [
   <g
     key={nodeId}
     className={'TreeView-node' + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
-    onMouseDown={event => onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET')}
+    onMouseDown={event => {
+      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
+      onMouseDown && onMouseDown(event);
+    }}
   >
     <rect
       x={node.position.treeX + NODE_AREA_RELATIVE_X}
@@ -82,6 +90,16 @@ const renderNode = (
       {node.label}
     </text>
   </g>,
+  nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
+    key={`${nodeId}-ghost`}
+    className="TreeView-node-ghost"
+    x={node.position.treeX + NODE_AREA_RELATIVE_X + nodeDragOffset.dClientX}
+    y={node.position.treeY + NODE_AREA_RELATIVE_Y + nodeDragOffset.dClientY}
+    width={NODE_AREA_WIDTH}
+    height={NODE_AREA_HEIGHT}
+    rx={3}
+    ry={3}
+  />,
   'triangle' in node && renderTriangleConnection(nodeId, node),
   'children' in node && renderChildNodeConnections(node, allNodes),
 ];
@@ -122,14 +140,23 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
       />}
   </g>;
 
-const TreeView: React.FC<TreeViewProps> = ({ treeId, tree, selectedNodeIds, onSingleNodeSelect, onNodeCreationTriggerClick }) =>
+const TreeView: React.FC<TreeViewProps> = ({
+  treeId,
+  tree,
+  selectedNodeIds,
+  nodeDragOffset,
+  onNodeMouseDown,
+  onSingleNodeSelect,
+  onNodeCreationTriggerClick,
+}) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
     {getNodeCreationTriggersForTree(strWidth)(tree).map(trigger => <NodeCreationTriggerClickZone
       trigger={trigger}
       key={'childIds' in trigger ? trigger.childIds.join() : trigger.slice.join()}
       onClick={() => onNodeCreationTriggerClick && onNodeCreationTriggerClick(trigger)}
     />)}
-    {mapEntries(tree.nodes, ([nodeId, node]) => renderNode(nodeId, node, tree.nodes, selectedNodeIds, onSingleNodeSelect))}
+    {mapEntries(tree.nodes, ([nodeId, node]) =>
+      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, onSingleNodeSelect))}
   </g>;
 
 export default TreeView;

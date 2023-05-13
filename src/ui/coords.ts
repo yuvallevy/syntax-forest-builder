@@ -2,11 +2,18 @@ import { PlotCoords, PositionedNode, PositionedTree } from '../content/positione
 
 type ClientX = number;
 type ClientY = number;
+type DClientX = number;
+type DClientY = number;
 
 export type ClientCoords = {
   clientX: ClientX;
   clientY: ClientY;
 };
+
+export type ClientCoordsOffset = {
+  dClientX: DClientX;
+  dClientY: DClientY;
+}
 
 export type ClientRect = {
   topLeft: ClientCoords;

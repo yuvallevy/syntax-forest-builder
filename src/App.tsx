@@ -50,6 +50,7 @@ const App = () => {
   const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
+  const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
   const toggleTriangle = () => dispatch({ type: 'toggleTriangle' });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
@@ -210,6 +211,7 @@ const App = () => {
       onClick={handlePlotClick}
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}
+      onNodeMove={moveNodes}
       onNodeCreationTriggerClick={handleNodeCreationTriggerClick}
       onSentenceBlur={handleSentenceBlur}
       onSentenceChange={handleSentenceChange}
