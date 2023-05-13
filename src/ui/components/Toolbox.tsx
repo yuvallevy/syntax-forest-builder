@@ -23,9 +23,8 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
   >
     <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
       {items.map(item =>
-        <Tooltip label={item.title} openDelay={400}>
+        <Tooltip key={item.title} label={item.title} openDelay={400}>
           <ActionIcon
-            key={item.title}
             size="lg"
             variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
             disabled={item.disabled}
