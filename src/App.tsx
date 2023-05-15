@@ -20,6 +20,7 @@ import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle
 } from '@tabler/icons-react';
 import AboutButton from './ui/components/meta/AboutButton';
+import PlotSelector from './ui/components/PlotSelector';
 import { isEmpty } from './util/objTransforms';
 import { PositionedPlot } from './content/positioned/types';
 import {
@@ -221,6 +222,7 @@ const App = () => {
     />
     <Toolbox items={toolboxItems} />
     <AboutButton />
+    <PlotSelector />
   </MantineProvider>;
 }
 
