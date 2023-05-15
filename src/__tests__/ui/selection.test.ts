@@ -1,10 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { PlotRect } from '../../ui/coords';
-import { isNodeInRect } from '../../ui/selection';
+import { isNodeInRect, pruneSelection } from '../../ui/selection';
 import { PositionedNode, PositionedTree } from '../../content/positioned/types';
+import { UnpositionedPlot } from '../../content/unpositioned/types';
 
 describe('node selection', () => {
-  const tree: PositionedTree = {
+  const unpositionedPlot: UnpositionedPlot = {
+    trees: {
+      'aa': {
+        sentence: 'Noun verbed.',
+        nodes: {
+          'np': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4] },
+          'vp': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10] },
+        },
+        offset: { dPlotX: 0, dPlotY: 0 },
+      },
+    },
+  };
+
+  const positionedTree: PositionedTree = {
     sentence: 'Noun verbs very adverbly.',
     nodes: {
       'a': { label: 'S', position: { treeX: 53.625, treeY: -80 }, children: ['b'] },
@@ -46,7 +60,19 @@ describe('node selection', () => {
     ],
   ];
 
+  it('deselects nonexistent trees', () => {
+    expect(pruneSelection({ treeId: 'aa', slice: [0, 4] }, unpositionedPlot))
+      .toStrictEqual({ treeId: 'aa', slice: [0, 4] });
+    expect(pruneSelection({ treeId: 'zz', slice: [0, 4] }, unpositionedPlot))
+      .toStrictEqual({ nodeIndicators: [] });
+  });
+
+  it('deselects nonexistent nodes', () => {
+    expect(pruneSelection({ nodeIndicators: [{ treeId: 'aa', nodeId: 's' }, { treeId: 'aa', nodeId: 'vp' }] },
+      unpositionedPlot)).toStrictEqual({ nodeIndicators: [{ treeId: 'aa', nodeId: 'vp' }] });
+  });
+
   it.each(nodesAndRects)('returns whether a node is in a rectangle %#', (node, rect, expectedResult) => {
-    expect(isNodeInRect(rect)(tree)(node)).toBe(expectedResult);
+    expect(isNodeInRect(rect)(positionedTree)(node)).toBe(expectedResult);
   });
 });

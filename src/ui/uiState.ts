@@ -7,7 +7,7 @@ import { contentReducer, initialContentState, UndoableContentState } from './con
 import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
 import { getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
 import { sortNodesByXCoord } from '../content/positioned/positioning';
-import { isNodeSelection, isSliceSelection, NodeSelectionInPlot, SelectionInPlot } from './selection';
+import { isNodeSelection, isSliceSelection, NodeSelectionInPlot, pruneSelection, SelectionInPlot } from './selection';
 import strWidth from './strWidth';
 import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 
@@ -251,10 +251,13 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
       };
     }
-    default: {
+    case 'undo':
+    case 'redo': {
+      const newContentState = contentReducer(state.contentState, action);
       return {
         ...state,
-        contentState: contentReducer(state.contentState, action)
+        contentState: newContentState,
+        selection: pruneSelection(state.selection, newContentState.current.plots[state.activePlotId]),
       };
     }
   }
