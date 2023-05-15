@@ -116,12 +116,15 @@ const PlotView: React.FC<PlotViewProps> = ({
     }
   };
 
+  const plotViewCursor = mouseInteractionMode === 'draggingNodes' && dragOffset ? 'move' : 'crosshair';
+
   return <>
     {isEmpty(plot.trees) && <div className="PlotView-placeholder">Click anywhere and type a sentence...</div>}
     <svg
       className="PlotView-svg"
       width="100%"
       height="100%"
+      style={{ cursor: plotViewCursor }}
       onMouseDown={handlePlotMouseDown}
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
