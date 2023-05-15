@@ -77,7 +77,7 @@ const PlotView: React.FC<PlotViewProps> = ({
     if (event.buttons === PRIMARY_MOUSE_BUTTON && dragStartCoords) {
       const xDistToDragStart = Math.abs(dragStartCoords?.clientX - event.clientX);
       const yDistToDragStart = Math.abs(dragStartCoords?.clientY - event.clientY);
-      if (xDistToDragStart > MINIMUM_DRAG_DISTANCE || yDistToDragStart > MINIMUM_DRAG_DISTANCE) {
+      if (dragEndCoords || xDistToDragStart > MINIMUM_DRAG_DISTANCE || yDistToDragStart > MINIMUM_DRAG_DISTANCE) {
         setDragEndCoords({ clientX: event.clientX, clientY: event.clientY });
       }
     }
