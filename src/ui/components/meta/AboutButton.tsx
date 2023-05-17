@@ -15,7 +15,7 @@ const AboutButton = () => {
     </Button>
     <Modal opened={opened} onClose={close} title="NPBloom" centered size="lg">
       <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
-        using an intuitive, in-browser WYSIWYG interface.</p>
+        using an in-browser point-and-click interface.</p>
       <p>
         See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main/HISTORY.md">
           GitHub
