@@ -34,6 +34,7 @@ const AboutButton = () => {
           Tabler
         </Anchor>.<br />
       </p>
+      {import.meta.env.VITE_BUILD_TIMESTAMP && <p><small>Last built {import.meta.env.VITE_BUILD_TIMESTAMP}</small></p>}
     </Modal>
   </>;
 };
