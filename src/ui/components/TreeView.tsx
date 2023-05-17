@@ -66,7 +66,8 @@ const renderNode = (
 ): React.ReactNode[] => [
   <g
     key={nodeId}
-    className={'TreeView-node' + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
+    className={'TreeView-node' + (node.label ? '' : ' TreeView-node-empty-label')
+      + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
     onMouseDown={event => {
       onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
       onMouseDown && onMouseDown(event);
@@ -87,7 +88,7 @@ const renderNode = (
       textAnchor="middle"
       dominantBaseline="text-after-edge"
     >
-      {node.label}
+      {node.label || '?'}
     </text>
   </g>,
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect

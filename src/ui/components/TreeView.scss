@@ -11,6 +11,10 @@
   fill: #eee;
 }
 
+.TreeView-node-empty-label text {
+  fill: #888;
+}
+
 .TreeView-node-selected rect {
   fill: #fafafa;
   stroke: #444;
