@@ -16,11 +16,9 @@ const AboutButton = () => {
     <Modal opened={opened} onClose={close} title="NPBloom" centered size="lg">
       <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
         using an in-browser point-and-click interface.</p>
-      <p>
-        See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main/HISTORY.md">
-          GitHub
-        </Anchor> for full release notes.
-      </p>
+      <p>To begin, click anywhere and start typing a sentence.
+        Click above the words to add nodes, and click above the nodes to add parent nodes,
+        working your way up the tree.</p>
       <p>
         NPBloom is written in <Anchor href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">
           TypeScript
@@ -32,9 +30,11 @@ const AboutButton = () => {
           Mantine
         </Anchor> and <Anchor href="https://tabler-icons.io/" target="_blank" rel="noopener noreferrer">
           Tabler
-        </Anchor>.<br />
+        </Anchor>. See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main" target="_blank" rel="noopener noreferrer">
+          GitHub
+        </Anchor> for full source code.
       </p>
-      {import.meta.env.VITE_BUILD_TIMESTAMP && <p><small>Last built {import.meta.env.VITE_BUILD_TIMESTAMP}</small></p>}
+      {import.meta.env.VITE_BUILD_TIMESTAMP && <p><small>Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</small></p>}
     </Modal>
   </>;
 };
