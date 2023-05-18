@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { IdMap } from '../../../content/types';
 import {
-  filterPositionedNodesInTree, filterPositionedNodesInTreeById, getTopLevelPositionedNodes, sortPositionedNodesByXCoord
+  filterPositionedNodesInTree, filterPositionedNodesInTreeById, getTopLevelPositionedNodes, isTopLevel,
+  sortPositionedNodesByXCoord
 } from '../../../content/positioned/positionedEntityHelpers';
 import { PositionedNode, PositionedTree } from '../../../content/positioned/types';
 
@@ -59,6 +60,10 @@ describe('positioned tree/node functions', () => {
       'a': tree.nodes['a'],
       'e': tree.nodes['e'],
     });
+  });
+
+  it('returns whether a given node is a top-level node', () => {
+    expect(['b', 'c', 'd', 'e', 'f'].map(isTopLevel(tree.nodes))).toStrictEqual([true, false, true, false, false]);
   });
 
   it('returns top-level nodes', () => {

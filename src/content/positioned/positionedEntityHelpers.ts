@@ -20,13 +20,16 @@ export const filterPositionedNodesInTreeById =
     filterEntries(tree.nodes, ([nodeId, _]) => nodeIds.includes(nodeId));
 
 /**
+ * Returns whether the node with the given ID is a top-level node in the given node ID map.
+ */
+export const isTopLevel = (nodes: IdMap<PositionedNode>) => (nodeId: Id) =>
+  isEmpty(filterEntries(nodes, ([_, node]) => 'children' in node && node.children.includes(nodeId)));
+
+/**
  * Returns an ID map consisting of the top-level nodes in the given tree.
  */
-export const getTopLevelPositionedNodes = (tree: PositionedTree): IdMap<PositionedNode> => {
-  const isTopLevelInTree = (nodeId: Id) =>
-    isEmpty(filterPositionedNodesInTree(node => 'children' in node && node.children.includes(nodeId))(tree));
-  return filterEntries(tree.nodes, ([nodeId, _]) => isTopLevelInTree(nodeId));
-};
+export const getTopLevelPositionedNodes = (tree: PositionedTree): IdMap<PositionedNode> =>
+  filterEntries(tree.nodes, ([nodeId, _]) => isTopLevel(tree.nodes)(nodeId));
 
 /**
  * Receives an array of node IDs in the given tree and returns them sorted by X-coordinate.

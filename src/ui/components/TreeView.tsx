@@ -11,6 +11,7 @@ import strWidth from '../strWidth';
 import {
   PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
 } from '../../content/positioned/types';
+import { isTopLevel } from '../../content/positioned/positionedEntityHelpers';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -43,7 +44,7 @@ const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdM
       x1={node.position.treeX}
       y1={node.position.treeY}
       x2={allNodes[childId].position.treeX}
-      y2={allNodes[childId].position.treeY - NODE_LEVEL_SPACING}
+      y2={allNodes[childId].position.treeY - (allNodes[childId].label ? NODE_LEVEL_SPACING : 0)}
     />
   );
 
@@ -81,7 +82,7 @@ const renderNode = (
       rx={3}
       ry={3}
     />
-    <text
+    {(isTopLevel(allNodes)(nodeId) || node.label) && <text
       x={node.position.treeX}
       y={node.position.treeY}
       fill="#000"
@@ -89,7 +90,7 @@ const renderNode = (
       dominantBaseline="text-after-edge"
     >
       {node.label || '?'}
-    </text>
+    </text>}
   </g>,
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
     key={`${nodeId}-ghost`}
