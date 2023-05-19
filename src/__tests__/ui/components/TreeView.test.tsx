@@ -18,6 +18,19 @@ describe('tree rendering', () => {
     width: 104,
   };
 
+  const treeWithUnlabeledNode: PositionedTree = {
+    nodes: {
+      'a': { label: 'CP', children: ['c', 'd'], position: { treeX: 37.375, treeY: -100 } },
+      'b': { label: 'C\'', children: ['d', 'e'], position: { treeX: 59.25, treeY: -60 } },
+      'c': { label: '', slice: [0, 3], position: { treeX: 15.5, treeY: -2 } },
+      'd': { label: 'C', slice: [4, 7], position: { treeX: 47.5, treeY: -2 } },
+      'e': { label: 'IP', slice: [8, 10], triangle: { treeX1: 64, treeX2: 78 }, position: { treeX: 71, treeY: -20 } },
+    },
+    sentence: 'Who was IP?',
+    position: { plotX: 283, plotY: 238 },
+    width: 86,
+  };
+
   it('renders a tree with position-assigned nodes', () => {
     expect(render(
       <svg>  {/** Render inside an SVG tag to prevent "unrecognized tag" errors in console */}
@@ -30,6 +43,14 @@ describe('tree rendering', () => {
     expect(render(
       <svg>
         <TreeView treeId="tree1" tree={tree} selectedNodeIds={['b', 'f']} />
+      </svg>
+    ).asFragment()).toMatchSnapshot();
+  });
+
+  it('renders dominated unlabeled nodes without text or gap', () => {
+    expect(render(
+      <svg>
+        <TreeView treeId="tree1" tree={treeWithUnlabeledNode} selectedNodeIds={[]} />
       </svg>
     ).asFragment()).toMatchSnapshot();
   });
