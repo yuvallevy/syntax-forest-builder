@@ -63,7 +63,7 @@ describe('positioned tree/node functions', () => {
   });
 
   it('returns whether a given node is a top-level node', () => {
-    expect(['b', 'c', 'd', 'e', 'f'].map(isTopLevel(tree.nodes))).toStrictEqual([true, false, true, false, false]);
+    expect(['a', 'b', 'c', 'd', 'e', 'f'].map(isTopLevel(tree.nodes))).toStrictEqual([true, false, false, true, false, false]);
   });
 
   it('returns top-level nodes', () => {
