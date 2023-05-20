@@ -33,6 +33,7 @@ interface TreeViewProps {
   nodeDragOffset?: ClientCoordsOffset;
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
   onSingleNodeSelect?: (nodeId: Id, mode: NodeSelectionMode) => void;
+  onNodeEditStart?: () => void;
   onNodeCreationTriggerClick?: (trigger: NodeCreationTrigger) => void;
 }
 
@@ -64,6 +65,7 @@ const renderNode = (
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
   onSelect?: (id: Id, mode: NodeSelectionMode) => void,
+  onEditStart?: () => void,
 ): React.ReactNode[] => [
   <g
     key={nodeId}
@@ -73,6 +75,7 @@ const renderNode = (
       onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
       onMouseDown && onMouseDown(event);
     }}
+    onDoubleClick={onEditStart}
   >
     <rect
       x={node.position.treeX + NODE_AREA_RELATIVE_X}
@@ -149,6 +152,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   nodeDragOffset,
   onNodeMouseDown,
   onSingleNodeSelect,
+  onNodeEditStart,
   onNodeCreationTriggerClick,
 }) =>
   <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
@@ -158,7 +162,8 @@ const TreeView: React.FC<TreeViewProps> = ({
       onClick={() => onNodeCreationTriggerClick && onNodeCreationTriggerClick(trigger)}
     />)}
     {mapEntries(tree.nodes, ([nodeId, node]) =>
-      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, onSingleNodeSelect))}
+      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, onSingleNodeSelect,
+        onNodeEditStart))}
   </g>;
 
 export default TreeView;

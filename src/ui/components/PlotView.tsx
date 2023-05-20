@@ -21,6 +21,7 @@ interface PlotViewProps {
   onClick: (event: React.MouseEvent<SVGElement>) => void;
   onNodesSelect: (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode) => void;
   onSliceSelect: (treeId: Id, slice: StringSlice) => void;
+  onNodeEditStart: () => void;
   onNodeMove: (dx: number, dy: number) => void;
   onNodeCreationTriggerClick: (treeId: Id, trigger: NodeCreationTrigger) => void;
   onSentenceBlur: (treeId: Id, event: React.FocusEvent<HTMLInputElement>) => void;
@@ -37,6 +38,7 @@ const PlotView: React.FC<PlotViewProps> = ({
   onClick,
   onNodesSelect,
   onSliceSelect,
+  onNodeEditStart,
   onNodeMove,
   onNodeCreationTriggerClick,
   onSentenceBlur,
@@ -138,6 +140,7 @@ const PlotView: React.FC<PlotViewProps> = ({
           nodeDragOffset={mouseInteractionMode === 'draggingNodes' ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}
           onSingleNodeSelect={(nodeId, mode) => onNodesSelect([{ treeId, nodeId }], mode)}
+          onNodeEditStart={onNodeEditStart}
           onNodeCreationTriggerClick={trigger => onNodeCreationTriggerClick(treeId, trigger)}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect

@@ -212,6 +212,7 @@ const App = () => {
       onClick={handlePlotClick}
       onNodesSelect={handleNodesSelect}
       onSliceSelect={handleSliceSelect}
+      onNodeEditStart={startEditing}
       onNodeMove={moveNodes}
       onNodeCreationTriggerClick={handleNodeCreationTriggerClick}
       onSentenceBlur={handleSentenceBlur}
