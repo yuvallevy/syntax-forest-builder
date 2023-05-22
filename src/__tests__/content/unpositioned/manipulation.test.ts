@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  deleteNodesInTree,
-  getNodeIdsAssignedToSlice,
-  getParentNodeIdsInTree,
-  insertNodeIntoTree,
-  transformAllNodesInTree,
-  transformNodeInTree,
-  transformNodesInTree,
+  adoptNodesInTree, deleteNodesInTree, disownNodesInTree, getNodeIdsAssignedToSlice, getParentNodeIdsInTree,
+  insertNodeIntoTree, transformAllNodesInTree, transformNodeInTree, transformNodesInTree,
 } from '../../../content/unpositioned/manipulation';
 import { UnpositionedTree } from '../../../content/unpositioned/types';
 
@@ -38,6 +33,46 @@ describe('tree manipulation', () => {
       'term1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
       'term2': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 11], triangle: false },
     },
+  };
+
+  const treeWithStrandedNode: UnpositionedTree = {
+    sentence: 'Noun verbed it.',
+    nodes: {
+      'top': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['branch1', 'stranded'] },
+      'branch1': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['term1'] },
+      'term1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
+      'stranded': { label: 'VP', offset: { dTreeX: 2, dTreeY: -10 }, formerSlice: [5, 14], formerlyTriangle: true },
+      'term2': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 11], triangle: false },
+      'term3': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [12, 14], triangle: false },
+    },
+    offset: { dPlotX: 0, dPlotY: 0 },
+  };
+
+  const treeWithNodeMissingBranches: UnpositionedTree = {
+    sentence: 'Noun verbed and verbed.',
+    nodes: {
+      'top': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['branch1', 'branch2'] },
+      'branch1': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['term1'] },
+      'term1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
+      'branch2': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['term2'], triangle: true },
+      'term2': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 11], triangle: true },
+      'term3': { label: 'Conj', offset: { dTreeX: 0, dTreeY: 0 }, slice: [12, 15], triangle: false },
+      'term4': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [16, 22], triangle: true },
+    },
+    offset: { dPlotX: 0, dPlotY: 0 },
+  };
+
+  const treeWithTerminalBecomingBranching: UnpositionedTree = {
+    sentence: 'Noun verbed adverbly.',
+    nodes: {
+      'top': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['branch1', 'shapeshifter'] },
+      'branch1': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['term1'] },
+      'term1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
+      'shapeshifter': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 20], triangle: true },
+      'term2': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 11], triangle: false },
+      'term3': { label: 'AdvP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [12, 20], triangle: true },
+    },
+    offset: { dPlotX: 0, dPlotY: 0 },
   };
 
   const changeLabel = transformNodeInTree(node => ({ ...node, label: 'test' }));
@@ -130,6 +165,74 @@ describe('tree manipulation', () => {
   it('changes trianglehood of two nodes at the same time', () => {
     expect(transformNodesInTree(node => ({ ...node, triangle: true }))(['term1', 'term2'])(tree).nodes)
       .toMatchSnapshot();
+  });
+
+  it('assigns an existing node as a child of an already branching node', () => {
+    expect(adoptNodesInTree('branch2', ['term3'])(treeWithNodeMissingBranches).nodes['branch2'])
+      .toMatchObject({ children: ['term2', 'term3'] });
+  });
+
+  it('assigns an existing node as a child of a previously terminal node', () => {
+    expect(adoptNodesInTree('shapeshifter', ['term2'])(treeWithTerminalBecomingBranching).nodes['shapeshifter'])
+      .toMatchObject({ children: ['term2'] });
+  });
+
+  it('assigns an existing node as a child of a previously stranded node', () => {
+    expect(adoptNodesInTree('stranded', ['term2'])(treeWithStrandedNode).nodes['stranded'])
+      .toMatchObject({ children: ['term2'] });
+  });
+
+  it('assigns two existing nodes as children of an already branching node', () => {
+    expect(adoptNodesInTree('branch2', ['term3', 'term4'])(treeWithNodeMissingBranches).nodes['branch2'])
+      .toMatchObject({ children: ['term2', 'term3', 'term4'] });
+  });
+
+  it('assigns two existing nodes as children of a previously terminal node', () => {
+    expect(adoptNodesInTree('shapeshifter', ['term2', 'term3'])(treeWithTerminalBecomingBranching).nodes['shapeshifter'])
+      .toMatchObject({ children: ['term2', 'term3'] });
+  });
+
+  it('assigns two existing nodes as children of a previously stranded node', () => {
+    expect(adoptNodesInTree('stranded', ['term2', 'term3'])(treeWithStrandedNode).nodes['stranded'])
+      .toMatchObject({ children: ['term2', 'term3'] });
+  });
+
+  it('resets position offset to zero when a stranded node adopts children', () => {
+    expect(adoptNodesInTree('stranded', ['term2'])(treeWithStrandedNode).nodes['stranded'].offset)
+      .toStrictEqual({ dTreeX: 0, dTreeY: 0 });
+  });
+
+  it('keeps a branching node branching when one of multiple children is disowned', () => {
+    expect(disownNodesInTree('top', ['branch1'])(tree).nodes['top']).toMatchObject({ children: ['term2'] });
+  });
+
+  it('makes a branching node stranded when its only child is disowned', () => {
+    expect(disownNodesInTree('branch1', ['term1'])(tree).nodes['branch1']).toMatchObject({
+      formerDescendants: {
+        'term1': tree.nodes['term1'],
+      },
+    });
+  });
+
+  it('makes a branching node stranded when all of its children are disowned', () => {
+    expect(disownNodesInTree('top', ['branch1', 'term2'])(tree).nodes['top']).toMatchObject({
+      formerDescendants: {
+        'term1': tree.nodes['term1'],
+        'term2': tree.nodes['term2'],
+        'branch1': tree.nodes['branch1'],
+      },
+    });
+  });
+
+  it('removes the connection between a parent and child when another node adopts the child', () => {
+    expect(adoptNodesInTree('branch1', ['term2'])(tree).nodes).toMatchObject({
+      'top': { children: ['branch1'] },
+      'branch1': { children: ['term1', 'term2'] },
+    });
+  });
+
+  it('does not allow a node to adopt itself', () => {
+    expect(adoptNodesInTree('top', ['top'])(tree)).toBe(tree);
   });
 
   it('changes all nodes in the tree', () => {

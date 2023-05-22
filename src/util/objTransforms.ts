@@ -28,8 +28,8 @@ export const filterEntries = <K extends string, V>(record: Record<K, V>, predica
 export const associateWith = <T extends string, V>(array: T[], transform: (element: T) => V) =>
   array.reduce((accum, element) => ({ ...accum, [element]: transform(element) }), {} as Record<T, V>)
 
-export const without = <T>(array: T[], elementToRemove: T): T[] =>
-  array.reduce((accum, element) => element === elementToRemove ? accum : [...accum, element], [] as T[]);
+export const without = <T>(array: T[], elementsToRemove: T[]): T[] =>
+  array.reduce((accum, element) => elementsToRemove.includes(element) ? accum : [...accum, element], [] as T[]);
 
 export const union = <T>(array1: T[], array2: T[]): T[] =>
   array2.reduce((accum, element) => array1.includes(element) ? accum : [...accum, element], array1);

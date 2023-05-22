@@ -1,4 +1,6 @@
-import { associateWith, filterEntries, flatten, isEmpty, omitKeys, transformValues } from '../../util/objTransforms';
+import {
+  associateWith, filterEntries, flatten, isEmpty, omitKeys, transformValues, without
+} from '../../util/objTransforms';
 import {
   Id, IdMap, NodeCommon, StringSlice
 } from '../types';
@@ -146,6 +148,40 @@ export const deleteNodesInTree =
     ...tree,
     nodes: deleteNodes(nodeIds)(tree.nodes),
   });
+
+export const adoptNodesInTree =
+  (adoptingNodeId: Id, adoptedNodeIds: Id[]) =>
+  (tree: UnpositionedTree): UnpositionedTree =>
+    adoptedNodeIds.includes(adoptingNodeId)
+      ? tree  // can't adopt yourself
+      : transformNodeInTree(node => ({
+        label: node.label,
+        offset: { dTreeX: 0, dTreeY: 0 },
+        children: [...(isBranching(node) ? node.children : []), ...adoptedNodeIds],
+      }))(adoptingNodeId)(transformAllNodesInTree(node => {
+        if (!isBranching(node)) return node;
+        const childrenAfterDisowning = without(node.children, adoptedNodeIds);
+        if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
+        return {
+          ...node,
+          children: childrenAfterDisowning,
+        };
+      })(tree));
+
+export const disownNodesInTree =
+  (disowningNodeId: Id, disownedNodeIds: Id[]) =>
+  (tree: UnpositionedTree): UnpositionedTree =>
+    disownedNodeIds.includes(disowningNodeId)
+      ? tree  // can't disown yourself
+      : transformNodeInTree(node => {
+        if (!isBranching(node)) return node;
+        const childrenAfterDisowning = without(node.children, disownedNodeIds);
+        if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
+        return {
+          ...node,
+          children: childrenAfterDisowning,
+        };
+      })(disowningNodeId)(tree);
 
 export const getParentNodeIdsInTree =
   (nodeIds: Id[]) =>
