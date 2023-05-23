@@ -149,6 +149,16 @@ export const deleteNodesInTree =
     nodes: deleteNodes(nodeIds)(tree.nodes),
   });
 
+const unassignAsChildren = (nodeIds: Id[]) => (tree: UnpositionedTree) => (node: UnpositionedNode) => {
+  if (!isBranching(node)) return node;
+  const childrenAfterDisowning = without(node.children, nodeIds);
+  if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
+  return {
+    ...node,
+    children: childrenAfterDisowning,
+  };
+}
+
 export const adoptNodesInTree =
   (adoptingNodeId: Id, adoptedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
@@ -158,30 +168,14 @@ export const adoptNodesInTree =
         label: node.label,
         offset: { dTreeX: 0, dTreeY: 0 },
         children: [...(isBranching(node) ? node.children : []), ...adoptedNodeIds],
-      }))(adoptingNodeId)(transformAllNodesInTree(node => {
-        if (!isBranching(node)) return node;
-        const childrenAfterDisowning = without(node.children, adoptedNodeIds);
-        if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
-        return {
-          ...node,
-          children: childrenAfterDisowning,
-        };
-      })(tree));
+      }))(adoptingNodeId)(transformAllNodesInTree(unassignAsChildren(adoptedNodeIds)(tree))(tree));
 
 export const disownNodesInTree =
   (disowningNodeId: Id, disownedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
     disownedNodeIds.includes(disowningNodeId)
       ? tree  // can't disown yourself
-      : transformNodeInTree(node => {
-        if (!isBranching(node)) return node;
-        const childrenAfterDisowning = without(node.children, disownedNodeIds);
-        if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
-        return {
-          ...node,
-          children: childrenAfterDisowning,
-        };
-      })(disowningNodeId)(tree);
+      : transformNodeInTree(unassignAsChildren(disownedNodeIds)(tree))(disowningNodeId)(tree);
 
 export const getParentNodeIdsInTree =
   (nodeIds: Id[]) =>
