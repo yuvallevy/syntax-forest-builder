@@ -38,6 +38,14 @@ const toStrandedNode = (oldNodes: IdMap<UnpositionedNode>) => (node: Unpositione
   formerlyTriangle: isTerminal(node) ? node.triangle : undefined,
 });
 
+const unassignAsChildren = (nodeIds: Id[]) => (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedNode) => {
+  if (!isBranching(node)) return node;
+  const filteredChildren = without(node.children, nodeIds);
+  if (node.children.length === filteredChildren.length) return node;
+  if (isEmpty(filteredChildren)) return toStrandedNode(nodes)(node);
+  return { ...node, children: filteredChildren };
+};
+
 const insertNode =
   (insertedNode: InsertedNode) =>
   (nodeId: Id) =>
@@ -85,13 +93,7 @@ const deleteNodes =
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> => {
     if (isEmpty(nodeIds) || isEmpty(nodes)) return nodes;
     const filteredNodes = omitKeys(nodes, nodeIds);
-    return transformValues(filteredNodes, node => {
-      if (!isBranching(node)) return node;
-      const filteredChildren = node.children.filter(childId => !nodeIds.includes(childId));
-      if (node.children.length === filteredChildren.length) return node;
-      if (isEmpty(filteredChildren)) return toStrandedNode(nodes)(node);
-      return { ...node, children: filteredChildren };
-    });
+    return transformValues(filteredNodes, node => unassignAsChildren(nodeIds)(nodes)(node));
   };
 
 /**
@@ -149,16 +151,6 @@ export const deleteNodesInTree =
     nodes: deleteNodes(nodeIds)(tree.nodes),
   });
 
-const unassignAsChildren = (nodeIds: Id[]) => (tree: UnpositionedTree) => (node: UnpositionedNode) => {
-  if (!isBranching(node)) return node;
-  const childrenAfterDisowning = without(node.children, nodeIds);
-  if (isEmpty(childrenAfterDisowning)) return toStrandedNode(tree.nodes)(node);
-  return {
-    ...node,
-    children: childrenAfterDisowning,
-  };
-}
-
 export const adoptNodesInTree =
   (adoptingNodeId: Id, adoptedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
@@ -168,14 +160,14 @@ export const adoptNodesInTree =
         label: node.label,
         offset: { dTreeX: 0, dTreeY: 0 },
         children: [...(isBranching(node) ? node.children : []), ...adoptedNodeIds],
-      }))(adoptingNodeId)(transformAllNodesInTree(unassignAsChildren(adoptedNodeIds)(tree))(tree));
+      }))(adoptingNodeId)(transformAllNodesInTree(unassignAsChildren(adoptedNodeIds)(tree.nodes))(tree));
 
 export const disownNodesInTree =
   (disowningNodeId: Id, disownedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
     disownedNodeIds.includes(disowningNodeId)
       ? tree  // can't disown yourself
-      : transformNodeInTree(unassignAsChildren(disownedNodeIds)(tree))(disowningNodeId)(tree);
+      : transformNodeInTree(unassignAsChildren(disownedNodeIds)(tree.nodes))(disowningNodeId)(tree);
 
 export const getParentNodeIdsInTree =
   (nodeIds: Id[]) =>
