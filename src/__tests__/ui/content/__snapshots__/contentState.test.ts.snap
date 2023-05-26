@@ -80,6 +80,16 @@ exports[`content state > deletes a node from a tree 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -145,6 +155,29 @@ exports[`content state > deletes two nodes from two different trees 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "formerDescendants": {
+                "x": {
+                  "label": "N",
+                  "offset": {
+                    "dTreeX": 0,
+                    "dTreeY": 0,
+                  },
+                  "slice": [
+                    0,
+                    5,
+                  ],
+                  "triangle": false,
+                },
+              },
+              "formerSlice": undefined,
+              "formerlyTriangle": undefined,
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "y": {
               "label": "V",
               "offset": {
@@ -221,6 +254,16 @@ exports[`content state > inserts a node into a tree 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -298,6 +341,16 @@ exports[`content state > moves a node in a tree 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -375,6 +428,116 @@ exports[`content state > reacts to a change in the sentence 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
+            "x": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                5,
+              ],
+              "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`content state > removes a connection between two nodes 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+            "b": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                5,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+        "zz": {
+          "nodes": {
+            "w": {
+              "formerDescendants": {
+                "x": {
+                  "label": "N",
+                  "offset": {
+                    "dTreeX": 0,
+                    "dTreeY": 0,
+                  },
+                  "slice": [
+                    0,
+                    5,
+                  ],
+                  "triangle": false,
+                },
+              },
+              "formerSlice": undefined,
+              "formerlyTriangle": undefined,
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -419,6 +582,16 @@ exports[`content state > removes a tree from a plot 1`] = `
       "trees": {
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -430,6 +603,91 @@ exports[`content state > removes a tree from a plot 1`] = `
                 5,
               ],
               "triangle": false,
+            },
+            "y": {
+              "label": "V",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                6,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 60,
+            "dPlotY": 0,
+          },
+          "sentence": "nodes rock",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`content state > sets a node as a child of another 1`] = `
+{
+  "plots": {
+    "plot": {
+      "trees": {
+        "aa": {
+          "nodes": {
+            "a": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                0,
+                4,
+              ],
+              "triangle": false,
+            },
+            "b": {
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+              "slice": [
+                5,
+                10,
+              ],
+              "triangle": false,
+            },
+          },
+          "offset": {
+            "dPlotX": 0,
+            "dPlotY": 0,
+          },
+          "sentence": "tree state",
+        },
+        "zz": {
+          "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
+            "x": {
+              "children": [
+                "y",
+              ],
+              "label": "N",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
             },
             "y": {
               "label": "V",
@@ -496,6 +754,16 @@ exports[`content state > sets the label of a node 1`] = `
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {
@@ -573,6 +841,16 @@ exports[`content state > sets whether a terminal node connects to its slice with
         },
         "zz": {
           "nodes": {
+            "w": {
+              "children": [
+                "x",
+              ],
+              "label": "NP",
+              "offset": {
+                "dTreeX": 0,
+                "dTreeY": 0,
+              },
+            },
             "x": {
               "label": "N",
               "offset": {

@@ -16,6 +16,7 @@ describe('content state', () => {
           },
           'zz': {
             nodes: {
+              'w': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['x'] },
               'x': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 5], triangle: false },
               'y': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [6, 10], triangle: false },
             },
@@ -45,6 +46,14 @@ describe('content state', () => {
     [
       'deletes two nodes from two different trees',
       { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
+    ],
+    [
+      'sets a node as a child of another',
+      { type: 'adoptNodes', plotId: 'plot', treeId: 'zz', adoptingNodeId: 'x', adoptedNodeIds: ['y'] }
+    ],
+    [
+      'removes a connection between two nodes',
+      { type: 'disownNodes', plotId: 'plot', treeId: 'zz', disowningNodeId: 'w', disownedNodeIds: ['x'] }
     ],
     [
       'moves a node in a tree',

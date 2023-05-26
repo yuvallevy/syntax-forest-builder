@@ -2,6 +2,7 @@ import {
   Id, IdMap, StringSlice, Sentence, NodeIndicatorInPlot
 } from '../../content/types';
 import {
+  adoptNodesInTree, disownNodesInTree,
   InsertedNode, insertNodeIntoTree, transformNodeInTree, transformNodesInTree
 } from '../../content/unpositioned/manipulation';
 import { deleteNodesInPlot, transformNodesInPlot } from '../../content/unpositioned/plotManipulation';
@@ -20,6 +21,8 @@ import {
 export type ContentAction =
   | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'adoptNodes', plotId: Id, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
+  | { type: 'disownNodes', plotId: Id, treeId: Id, disowningNodeId: Id, disownedNodeIds: Id[] }
   | { type: 'moveNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], dx: number, dy: number }
   | { type: 'setNodeLabel', plotId: Id, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
   | { type: 'setTriangle', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
@@ -62,6 +65,26 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotId: action.plotId,
         old: state.plots[action.plotId],
         new: deleteNodesInPlot(action.nodeIndicators)(state.plots[action.plotId]),
+      };
+    }
+    case 'adoptNodes': {
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: adoptNodesInTree(action.adoptingNodeId, action.adoptedNodeIds)(
+          state.plots[action.plotId].trees[action.treeId]),
+      };
+    }
+    case 'disownNodes': {
+      return {
+        type: 'setTree',
+        plotId: action.plotId,
+        treeId: action.treeId,
+        old: state.plots[action.plotId].trees[action.treeId],
+        new: disownNodesInTree(action.disowningNodeId, action.disownedNodeIds)(
+          state.plots[action.plotId].trees[action.treeId]),
       };
     }
     case 'moveNodes': {
