@@ -151,6 +151,11 @@ export const deleteNodesInTree =
     nodes: deleteNodes(nodeIds)(tree.nodes),
   });
 
+/**
+ * Creates parent-child relationships between the given parent node and child nodes.
+ * If any of the nodes to be adopted is already a child of another node, that relationship is severed first.
+ * If any node ends up without children after the change, it becomes stranded.
+ */
 export const adoptNodesInTree =
   (adoptingNodeId: Id, adoptedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
@@ -162,6 +167,10 @@ export const adoptNodesInTree =
         children: [...(isBranching(node) ? node.children : []), ...adoptedNodeIds],
       }))(adoptingNodeId)(transformAllNodesInTree(unassignAsChildren(adoptedNodeIds)(tree.nodes))(tree));
 
+/**
+ * Cuts parent-child relationships between the given parent node and child nodes.
+ * If any node ends up without children after the change, it becomes stranded.
+ */
 export const disownNodesInTree =
   (disowningNodeId: Id, disownedNodeIds: Id[]) =>
   (tree: UnpositionedTree): UnpositionedTree =>
