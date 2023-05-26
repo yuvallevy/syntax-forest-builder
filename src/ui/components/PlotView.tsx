@@ -100,7 +100,7 @@ const PlotView: React.FC<PlotViewProps> = ({
         .reduce(
           (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
           [] as NodeIndicatorInPlot[]);
-      onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
+      onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'add' : 'set');
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       onNodeMove(dragOffset.dClientX, dragOffset.dClientY);
     } else if (dragStartCoords && event.currentTarget === event.target) {

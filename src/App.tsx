@@ -29,7 +29,7 @@ import {
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
-  const { selection, activePlotId, editedNodeIndicator } = state;
+  const { selection, activePlotId, editedNodeIndicator, selectionAction } = state;
 
   const nothingSelected = isNodeSelection(selection) && selection.nodeIndicators.length === 0;
   const noNodesSelected = !isNodeSelection(selection) || selection.nodeIndicators.length === 0;
@@ -53,6 +53,14 @@ const App = () => {
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
   const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
   const toggleTriangle = () => dispatch({ type: 'toggleTriangle' });
+  const toggleAdoptMode = () =>
+    dispatch({ type: 'setSelectionAction', selectionAction: selectionAction === 'adopt' ? 'select' : 'adopt' });
+  const toggleDisownMode = () =>
+    dispatch({ type: 'setSelectionAction', selectionAction: selectionAction === 'disown' ? 'select' : 'disown' });
+  const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'adoptNodesBySelection', adoptedNodeIndicators });
+  const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
@@ -83,9 +91,10 @@ const App = () => {
     }
   };
 
-  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = 'SET') => setSelection({
-    nodeIndicators: applySelection(mode, nodeIndicators, selectedNodeIndicators),
-  });
+  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = 'set') =>
+    selectionAction === 'adopt' ? adoptNodes(nodeIndicators)
+      : selectionAction === 'disown' ? disownNodes(nodeIndicators)
+      : setSelection({ nodeIndicators: applySelection(mode, nodeIndicators, selectedNodeIndicators) });
   const handleSliceSelect = (treeId: Id, slice: StringSlice) => setSelection({ treeId, slice });
 
   const handleNodeCreationTriggerClick = (treeId: Id, trigger: NodeCreationTrigger) => {
@@ -202,6 +211,10 @@ const App = () => {
     { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected,
       toggleState: editedNodeIndicator ? 'on' : 'off' },
     { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
+    { title: 'Adopt', action: toggleAdoptMode, disabled: noNodesSelected,
+      toggleState: selectionAction === 'adopt' ? 'on' : 'off' },
+    { title: 'Disown', action: toggleDisownMode, disabled: noNodesSelected,
+      toggleState: selectionAction === 'disown' ? 'on' : 'off' },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>

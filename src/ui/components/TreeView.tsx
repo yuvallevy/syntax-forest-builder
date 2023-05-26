@@ -72,7 +72,7 @@ const renderNode = (
     className={'TreeView-node' + (node.label ? '' : ' TreeView-node-empty-label')
       + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
     onMouseDown={event => {
-      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'ADD' : 'SET');
+      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'add' : 'set');
       onMouseDown && onMouseDown(event);
     }}
     onDoubleClick={onEditStart}

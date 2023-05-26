@@ -11,11 +11,12 @@ export type SelectionInPlot = NodeSelectionInPlot | SliceSelectionInPlot;
 export const isNodeSelection = (selection: SelectionInPlot): selection is NodeSelectionInPlot => 'nodeIndicators' in selection;
 export const isSliceSelection = (selection: SelectionInPlot): selection is SliceSelectionInPlot => 'slice' in selection;
 
-export type NodeSelectionMode = 'SET' | 'ADD';
+export type NodeSelectionAction = 'select' | 'adopt' | 'disown';
+export type NodeSelectionMode = 'set' | 'add';
 
 export const applySelection = (
   mode: NodeSelectionMode, newNodeIndicators: NodeIndicatorInPlot[], existingNodeIndicators?: NodeIndicatorInPlot[]) =>
-  mode === 'ADD' ? union(existingNodeIndicators || [], newNodeIndicators)
+  mode === 'add' ? union(existingNodeIndicators || [], newNodeIndicators)
     : newNodeIndicators;
 
 /**

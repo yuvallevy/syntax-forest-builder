@@ -7,7 +7,9 @@ import { contentReducer, initialContentState, UndoableContentState } from './con
 import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
 import { getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
 import { sortNodesByXCoord } from '../content/positioned/positioning';
-import { isNodeSelection, isSliceSelection, NodeSelectionInPlot, pruneSelection, SelectionInPlot } from './selection';
+import {
+  isNodeSelection, isSliceSelection, NodeSelectionAction, NodeSelectionInPlot, pruneSelection, SelectionInPlot
+} from './selection';
 import strWidth from './strWidth';
 import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 
@@ -18,10 +20,13 @@ export type UiAction =
   | { type: 'startEditing' }
   | { type: 'stopEditing' }
   | { type: 'setEditedNodeLabel', newLabel: NodeLabel }
+  | { type: 'setSelectionAction', selectionAction: NodeSelectionAction }
   | { type: 'addNodeBySelection', newNodeId: Id }
   | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetChildIds: Id[] }
   | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetSlice: StringSlice }
   | { type: 'deleteSelectedNodes' }
+  | { type: 'adoptNodesBySelection', adoptedNodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'disownNodesBySelection', disownedNodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'moveSelectedNodes', dx: number, dy: number }
   | { type: 'toggleTriangle' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
@@ -35,6 +40,7 @@ export type UiState = {
   contentState: UndoableContentState;
   activePlotId: Id;
   selection: SelectionInPlot;
+  selectionAction: NodeSelectionAction;
   editedNodeIndicator?: NodeIndicatorInPlot;
 };
 
@@ -42,6 +48,7 @@ export const initialUiState: UiState = {
   activePlotId: 'plot',
   contentState: initialContentState,
   selection: { nodeIndicators: [] },
+  selectionAction: 'select',
 };
 
 export const canUndo = (state: UiState) => UndoRedoHistory.canUndo(state.contentState);
@@ -120,6 +127,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       return {
         ...state,
         editedNodeIndicator: state.selection.nodeIndicators[0],
+        selectionAction: 'select',
       };
     }
     case 'stopEditing': {
@@ -140,6 +148,9 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
       };
     }
+    case 'setSelectionAction': {
+      return { ...state, selectionAction: action.selectionAction };
+    }
     case 'addNodeBySelection': {
       if (!selectedTreeId) return state;
       const newNodeIndicator = { treeId: selectedTreeId, nodeId: action.newNodeId };
@@ -153,6 +164,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           newNode: newNodeFromSelection(state.selection, activePlot.trees[selectedTreeId].sentence),
         }),
         selection: { nodeIndicators: [newNodeIndicator] },
+        selectionAction: 'select',
         editedNodeIndicator: newNodeIndicator,
       };
     }
@@ -173,6 +185,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           },
         }),
         selection: { nodeIndicators: [newNodeIndicator] },
+        selectionAction: 'select',
         editedNodeIndicator: newNodeIndicator,
       };
     }
@@ -186,6 +199,45 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           nodeIndicators: state.selection.nodeIndicators,
         }),
         selection: { nodeIndicators: [] },
+        selectionAction: 'select',
+      };
+    }
+    case 'adoptNodesBySelection': {
+      if (
+        !isNodeSelection(state.selection) ||  // no nodes selected
+        (state.selection.nodeIndicators.length > 1) ||  // multiple nodes selected
+        !selectedTreeId  // could not figure out tree ID for some other reason
+      ) return state;
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'adoptNodes',
+          plotId: state.activePlotId,
+          treeId: selectedTreeId,
+          adoptingNodeId: state.selection.nodeIndicators[0].nodeId,
+          adoptedNodeIds: action.adoptedNodeIndicators
+            .filter(({ treeId }) => treeId === selectedTreeId).map(({ nodeId }) => nodeId),
+        }),
+        selectionAction: 'select',
+      };
+    }
+    case 'disownNodesBySelection': {
+      if (
+        !isNodeSelection(state.selection) ||  // no nodes selected
+        (state.selection.nodeIndicators.length > 1) ||  // multiple nodes selected
+        !selectedTreeId  // could not figure out tree ID for some other reason
+      ) return state;
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'disownNodes',
+          plotId: state.activePlotId,
+          treeId: selectedTreeId,
+          disowningNodeId: state.selection.nodeIndicators[0].nodeId,
+          disownedNodeIds: action.disownedNodeIndicators
+            .filter(({ treeId }) => treeId === selectedTreeId).map(({ nodeId }) => nodeId),
+        }),
+        selectionAction: 'select',
       };
     }
     case 'moveSelectedNodes': {
@@ -239,6 +291,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           newTreeId: action.newTreeId,
           offset: action.offset,
         }),
+        selectionAction: 'select',
       };
     }
     case 'removeTree': {
@@ -249,6 +302,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           plotId: state.activePlotId,
           treeId: action.treeId,
         }),
+        selectionAction: 'select',
       };
     }
     case 'undo':
