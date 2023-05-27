@@ -26,6 +26,7 @@ import { PositionedPlot } from './content/positioned/types';
 import {
   isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTerminalNode
 } from './content/unpositioned/types';
+import { IconAdoptNode, IconDisownNode } from './ui/components/icons';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -211,9 +212,9 @@ const App = () => {
     { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected,
       toggleState: editedNodeIndicator ? 'on' : 'off' },
     { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
-    { title: 'Adopt', action: toggleAdoptMode, disabled: noNodesSelected,
+    { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
       toggleState: selectionAction === 'adopt' ? 'on' : 'off' },
-    { title: 'Disown', action: toggleDisownMode, disabled: noNodesSelected,
+    { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
       toggleState: selectionAction === 'disown' ? 'on' : 'off' },
   ];
 
