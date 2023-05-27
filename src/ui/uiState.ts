@@ -78,6 +78,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       return {
         ...state,
         selection: action.newSelection,
+        selectionAction: 'select',
       };
     }
     case 'selectParentNodes': {
