@@ -53,7 +53,10 @@ const App = () => {
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
   const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
-  const toggleTriangle = () => dispatch({ type: 'toggleTriangle' });
+  const toggleTriangle = (wasEditing: boolean) => {
+    dispatch({ type: 'toggleTriangle' });
+    wasEditing && setTimeout(startEditing, 50);  // Hack to restore focus to edited node when clicking the triangle button.
+  };
   const toggleAdoptMode = () =>
     dispatch({ type: 'setSelectionAction', selectionAction: selectionAction === 'adopt' ? 'select' : 'adopt' });
   const toggleDisownMode = () =>
@@ -211,7 +214,11 @@ const App = () => {
     { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected },
     { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected,
       toggleState: editedNodeIndicator ? 'on' : 'off' },
-    { title: 'Triangle', icon: IconTriangle, action: toggleTriangle, ...getTriangleButtonState() },
+    { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),
+      action: (_, focusEvent) =>
+        // Terrible hack to figure out if the user was in the middle of editing a node when they clicked the button
+        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput')
+    },
     { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
       toggleState: selectionAction === 'adopt' ? 'on' : 'off' },
     { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
