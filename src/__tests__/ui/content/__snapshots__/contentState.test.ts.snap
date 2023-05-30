@@ -22,8 +22,8 @@ exports[`content state > adds a tree to a plot 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -86,15 +86,15 @@ exports[`content state > deletes a node from a tree 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -160,8 +160,8 @@ exports[`content state > deletes two nodes from two different trees 1`] = `
                 "x": {
                   "label": "N",
                   "offset": {
-                    "dTreeX": 0,
-                    "dTreeY": 0,
+                    "dTreeX": 1,
+                    "dTreeY": 8,
                   },
                   "slice": [
                     0,
@@ -174,8 +174,8 @@ exports[`content state > deletes two nodes from two different trees 1`] = `
               "formerlyTriangle": undefined,
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "y": {
@@ -225,8 +225,8 @@ exports[`content state > inserts a node into a tree 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -260,15 +260,15 @@ exports[`content state > inserts a node into a tree 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -323,8 +323,8 @@ exports[`content state > moves a node in a tree 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -347,15 +347,15 @@ exports[`content state > moves a node in a tree 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -410,8 +410,8 @@ exports[`content state > reacts to a change in the sentence 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 4,
@@ -434,15 +434,15 @@ exports[`content state > reacts to a change in the sentence 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -497,8 +497,8 @@ exports[`content state > removes a connection between two nodes 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -520,8 +520,8 @@ exports[`content state > removes a connection between two nodes 1`] = `
                 "x": {
                   "label": "N",
                   "offset": {
-                    "dTreeX": 0,
-                    "dTreeY": 0,
+                    "dTreeX": 1,
+                    "dTreeY": 8,
                   },
                   "slice": [
                     0,
@@ -534,15 +534,15 @@ exports[`content state > removes a connection between two nodes 1`] = `
               "formerlyTriangle": undefined,
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -588,15 +588,15 @@ exports[`content state > removes a tree from a plot 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -651,8 +651,8 @@ exports[`content state > sets a node as a child of another 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -675,8 +675,8 @@ exports[`content state > sets a node as a child of another 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
@@ -736,8 +736,8 @@ exports[`content state > sets the label of a node 1`] = `
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -760,15 +760,15 @@ exports[`content state > sets the label of a node 1`] = `
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,
@@ -823,8 +823,8 @@ exports[`content state > sets whether a terminal node connects to its slice with
             "b": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 10,
               },
               "slice": [
                 5,
@@ -847,15 +847,15 @@ exports[`content state > sets whether a terminal node connects to its slice with
               ],
               "label": "NP",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": -1,
+                "dTreeY": 5,
               },
             },
             "x": {
               "label": "N",
               "offset": {
-                "dTreeX": 0,
-                "dTreeY": 0,
+                "dTreeX": 1,
+                "dTreeY": 8,
               },
               "slice": [
                 0,

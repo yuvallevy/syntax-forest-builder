@@ -9,15 +9,15 @@ describe('content state', () => {
           'aa': {
             nodes: {
               'a': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-              'b': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10], triangle: false },
+              'b': { label: 'N', offset: { dTreeX: 1, dTreeY: 10 }, slice: [5, 10], triangle: false },
             },
             offset: { dPlotX: 0, dPlotY: 0 },
             sentence: 'tree state',
           },
           'zz': {
             nodes: {
-              'w': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['x'] },
-              'x': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 5], triangle: false },
+              'w': { label: 'NP', offset: { dTreeX: -1, dTreeY: 5 }, children: ['x'] },
+              'x': { label: 'N', offset: { dTreeX: 1, dTreeY: 8 }, slice: [0, 5], triangle: false },
               'y': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [6, 10], triangle: false },
             },
             offset: { dPlotX: 60, dPlotY: 0 },
