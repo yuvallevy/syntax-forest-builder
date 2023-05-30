@@ -24,6 +24,7 @@ export type ContentAction =
   | { type: 'adoptNodes', plotId: Id, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
   | { type: 'disownNodes', plotId: Id, treeId: Id, disowningNodeId: Id, disownedNodeIds: Id[] }
   | { type: 'moveNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], dx: number, dy: number }
+  | { type: 'resetNodePositions', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'setNodeLabel', plotId: Id, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
   | { type: 'setTriangle', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
   | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
@@ -97,6 +98,15 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
           offset: { dTreeX: node.offset.dTreeX + action.dx, dTreeY: node.offset.dTreeY + action.dy }
         }))(action.nodeIndicators)(state.plots[action.plotId]),
       }
+    }
+    case 'resetNodePositions': {
+      return {
+        type: 'setPlot',
+        plotId: action.plotId,
+        old: state.plots[action.plotId],
+        new: transformNodesInPlot(node => ({ ...node, offset: { dTreeX: 0, dTreeY: 0 } }))(action.nodeIndicators)(
+          state.plots[action.plotId]),
+      };
     }
     case 'setNodeLabel': {
       return {

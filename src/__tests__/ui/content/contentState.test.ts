@@ -60,6 +60,10 @@ describe('content state', () => {
       { type: 'moveNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'a' }], dx: 1, dy: -4 }
     ],
     [
+      'resets the positions of two nodes in two different trees',
+      { type: 'resetNodePositions', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'w' }] }
+    ],
+    [
       'sets the label of a node',
       { type: 'setNodeLabel', plotId: 'plot', nodeIndicator: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
     ],
