@@ -26,7 +26,7 @@ import { PositionedPlot } from './content/positioned/types';
 import {
   isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTerminalNode
 } from './content/unpositioned/types';
-import { IconAdoptNode, IconDisownNode } from './ui/components/icons';
+import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/components/icons';
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
@@ -53,6 +53,7 @@ const App = () => {
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
   const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
   const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
+  const resetNodePositions = () => dispatch({ type: 'resetSelectedNodePositions' });
   const toggleTriangle = (wasEditing: boolean) => {
     dispatch({ type: 'toggleTriangle' });
     wasEditing && setTimeout(startEditing, 50);  // Hack to restore focus to edited node when clicking the triangle button.
@@ -223,6 +224,7 @@ const App = () => {
       toggleState: selectionAction === 'adopt' ? 'on' : 'off' },
     { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
       toggleState: selectionAction === 'disown' ? 'on' : 'off' },
+    { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>

@@ -28,6 +28,7 @@ export type UiAction =
   | { type: 'adoptNodesBySelection', adoptedNodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'disownNodesBySelection', disownedNodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'moveSelectedNodes', dx: number, dy: number }
+  | { type: 'resetSelectedNodePositions' }
   | { type: 'toggleTriangle' }
   | { type: 'setSentence', newSentence: Sentence, oldSelectedSlice: StringSlice, treeId?: Id }
   | { type: 'addTree', newTreeId: Id, offset: PlotCoordsOffset }
@@ -253,6 +254,17 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           dy: action.dy,
         }),
       }
+    }
+    case 'resetSelectedNodePositions': {
+      if (!isNodeSelection(state.selection)) return state;
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, {
+          type: 'resetNodePositions',
+          plotId: state.activePlotId,
+          nodeIndicators: state.selection.nodeIndicators,
+        }),
+      };
     }
     case 'toggleTriangle': {
       if (!isNodeSelection(state.selection)) return state;
