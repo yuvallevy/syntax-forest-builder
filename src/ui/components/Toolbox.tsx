@@ -1,6 +1,7 @@
 import { ActionIcon, Paper, SimpleGrid, Tooltip, useMantineTheme } from '@mantine/core';
 import { TablerIconsProps } from '@tabler/icons-react';
 import { useRef } from 'react';
+import './Toolbox.scss';
 
 export type ToolboxItem = {
   title: string;
@@ -24,6 +25,7 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
     p="xs"
     sx={{ position: 'fixed', left: '1rem', top: '1rem' }}
   >
+    <div className="Toolbox-title">Tools</div>
     <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
       {items.map(item =>
         <Tooltip key={item.title} label={item.title} openDelay={400}>
