@@ -28,20 +28,22 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
     <div className="Toolbox-title">Tools</div>
     <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
       {items.map(item =>
-        <Tooltip key={item.title} label={item.title} openDelay={400}>
-          <ActionIcon
-            size="lg"
-            variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
-            disabled={item.disabled}
-            color={theme.primaryColor}
-            sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
-            onFocus={e => { lastFocusEvent.current = e; }}
-            onClick={clickEvent => item.action(clickEvent, lastFocusEvent.current)}
-          >
-            {item.icon
-              ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
-              : item.title.slice(0, 2)}
-          </ActionIcon>
+        <Tooltip key={item.title} label={item.title} openDelay={400} withArrow offset={0}>
+          <div>{/* Hack to keep tooltips enabled on disabled buttons */}
+            <ActionIcon
+              size="lg"
+              variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
+              disabled={item.disabled}
+              color={theme.primaryColor}
+              sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
+              onFocus={e => { lastFocusEvent.current = e; }}
+              onClick={clickEvent => item.action(clickEvent, lastFocusEvent.current)}
+            >
+              {item.icon
+                ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
+                : item.title.slice(0, 2)}
+            </ActionIcon>
+          </div>
         </Tooltip>
       )}
     </SimpleGrid>
