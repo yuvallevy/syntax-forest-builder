@@ -11,7 +11,7 @@ const AboutButton = () => {
       sx={{ position: 'fixed', right: '1rem', top: '1rem' }}
       onClick={open}
     >
-      0.3-preview4
+      0.3-preview5
     </Button>
     <Modal opened={opened} onClose={close} title="NPBloom" centered size="lg">
       <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
