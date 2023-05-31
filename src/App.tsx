@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
@@ -21,6 +21,8 @@ import {
 } from '@tabler/icons-react';
 import AboutButton from './ui/components/meta/AboutButton';
 import PlotSelector from './ui/components/PlotSelector';
+import BeginnersGuide from './ui/components/meta/BeginnersGuide';
+import PlotPlaceholder from './ui/components/meta/PlotPlaceholder';
 import { isEmpty } from './util/objTransforms';
 import { PositionedPlot } from './content/positioned/types';
 import {
@@ -31,6 +33,8 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/compo
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
   const { selection, activePlotId, editedNodeIndicator, selectionAction } = state;
+
+  const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
   const nothingSelected = isNodeSelection(selection) && selection.nodeIndicators.length === 0;
   const noNodesSelected = !isNodeSelection(selection) || selection.nodeIndicators.length === 0;
@@ -247,6 +251,12 @@ const App = () => {
     <Toolbox items={toolboxItems} />
     <AboutButton />
     <PlotSelector />
+    {beginnersGuideActive ? <BeginnersGuide
+      plotState={activePlot}
+      onComplete={() => setBeginnersGuideActive(false)}
+    /> : isEmpty(activePlot.trees) && <PlotPlaceholder
+      onDemoRequest={() => setBeginnersGuideActive(true)}
+    />}
   </MantineProvider>;
 }
 

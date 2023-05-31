@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { filterEntries, isEmpty, mapEntries, transformValues } from '../../util/objTransforms';
+import { filterEntries, mapEntries, transformValues } from '../../util/objTransforms';
 import { Id, StringSlice, Sentence, NodeIndicatorInPlot } from '../../content/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -121,7 +121,6 @@ const PlotView: React.FC<PlotViewProps> = ({
   const plotViewCursor = mouseInteractionMode === 'draggingNodes' && dragOffset ? 'move' : 'crosshair';
 
   return <>
-    {isEmpty(plot.trees) && <div className="PlotView-placeholder">Click anywhere and type a sentence...</div>}
     <svg
       className="PlotView-svg"
       width="100%"
