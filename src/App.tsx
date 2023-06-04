@@ -142,6 +142,12 @@ const App = () => {
       }
     } else if ((event.key === 'Backspace' || event.key === 'Delete') && event.currentTarget.value === '') {
       removeAndDeselectTree(treeId);
+    } else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      undo();
+    } else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      redo();
     }
   };
 
