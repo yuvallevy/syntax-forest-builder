@@ -219,22 +219,30 @@ const App = () => {
   };
 
   const toolboxItems: ToolboxItem[] = [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !canUndo(state) },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state) },
-    { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected },
-    { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected },
-    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected,
-      toggleState: editedNodeIndicator ? 'on' : 'off' },
+    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !canUndo(state), hotkey: 'Ctrl-Z',
+      description: 'Undo the last action.' },
+    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state), hotkey: 'Ctrl-Y',
+      description: 'Redo the last undone action.' },
+    { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected, hotkey: 'Up',
+      description: 'Add a new parent node for the selected text or nodes.' },
+    { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected, hotkey: 'Backspace',
+      description: 'Delete the selected nodes.' },
+    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
+      toggleState: editedNodeIndicator ? 'on' : 'off', description: 'Edit the selected node.' },
     { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),
       action: (_, focusEvent) =>
         // Terrible hack to figure out if the user was in the middle of editing a node when they clicked the button
-        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput')
+        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
+      description: 'Toggle triangle connectors for the selected terminal nodes.'
     },
     { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
-      toggleState: selectionAction === 'adopt' ? 'on' : 'off' },
+      toggleState: selectionAction === 'adopt' ? 'on' : 'off',
+      description: 'Adopt one or more nodes as children of the selected node.' },
     { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
-      toggleState: selectionAction === 'disown' ? 'on' : 'off' },
-    { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected },
+      toggleState: selectionAction === 'disown' ? 'on' : 'off',
+      description: 'Disown one or more children of the selected node.' },
+    { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
+      description: 'Relocate the selected nodes to their original positions.' },
   ];
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>

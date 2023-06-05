@@ -1,3 +1,17 @@
+.Toolbox-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 1rem;
+  display: flex;
+  gap: 1em;
+  align-items: flex-start;
+}
+
+.Toolbox-body {
+  flex-shrink: 0;
+}
+
 .Toolbox-title {
   text-align: center;
   font-size: small;
@@ -5,4 +19,12 @@
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   user-select: none;
+}
+
+.Toolbox-tool-info {
+  font-size: 14px;
+}
+
+.Toolbox-tool-title {
+  font-weight: bold;
 }

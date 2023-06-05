@@ -1,7 +1,9 @@
-import { ActionIcon, Paper, SimpleGrid, Tooltip, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import { TablerIconsProps } from '@tabler/icons-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import './Toolbox.scss';
+import substituteOsAwareHotkey from './substituteOsAwareHotkey';
+import { useOs } from '@mantine/hooks';
 
 export type ToolboxItem = {
   title: string;
@@ -9,6 +11,8 @@ export type ToolboxItem = {
   action: (event: React.UIEvent, focusEvent?: React.FocusEvent) => void;
   disabled?: boolean;
   toggleState?: 'on' | 'off' | 'indeterminate';
+  hotkey?: string;
+  description: string;
 };
 
 interface ToolboxProps {
@@ -16,20 +20,27 @@ interface ToolboxProps {
 }
 
 const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
+  const os = useOs();
+
+  const [hoveredItem, setHoveredItem] = useState<ToolboxItem>();
+
   const lastFocusEvent = useRef<React.FocusEvent>();
 
   const theme = useMantineTheme();
 
-  return <Paper
-    shadow="sm"
-    p="xs"
-    sx={{ position: 'fixed', left: '1rem', top: '1rem' }}
-  >
-    <div className="Toolbox-title">Tools</div>
-    <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
-      {items.map(item =>
-        <Tooltip key={item.title} label={item.title} openDelay={400} withArrow offset={0}>
-          <div>{/* Hack to keep tooltips enabled on disabled buttons */}
+  return <div className="Toolbox-container">
+    <Paper
+      shadow="sm"
+      p="xs"
+      className="Toolbox-body"
+    >
+      <div className="Toolbox-title">Tools</div>
+      <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
+        {items.map(item =>
+          <div
+            onMouseEnter={() => setHoveredItem(item)}
+            onMouseLeave={() => setHoveredItem(undefined)}
+          >
             <ActionIcon
               size="lg"
               variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
@@ -44,10 +55,21 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
                 : item.title.slice(0, 2)}
             </ActionIcon>
           </div>
-        </Tooltip>
-      )}
-    </SimpleGrid>
-  </Paper>;
+        )}
+      </SimpleGrid>
+    </Paper>
+    {hoveredItem && <Paper
+      shadow="sm"
+      p="sm"
+      className="Toolbox-tool-info"
+    >
+      <div className="Toolbox-tool-title">
+        {hoveredItem.title}
+        {hoveredItem.hotkey && ` (${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
+      </div>
+      <div>{hoveredItem.description}</div>
+    </Paper>}
+  </div>;
 };
 
 export default Toolbox;
