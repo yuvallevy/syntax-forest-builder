@@ -6,6 +6,7 @@ import { filterEntries, flatten, isEmpty, mapValues, without } from '../../../ut
 import {
   IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant, IconWritingSign
 } from '@tabler/icons-react';
+import generateSentence from './generateSentence';
 
 interface BeginnersGuideProps {
   plotState: UnpositionedPlot;
@@ -28,7 +29,7 @@ const steps = [
   {
     icon: IconPlant,
     title: "Plant your first tree",
-    body: "Click anywhere on the board and enter a sentence, like \"Taylor loves figs\"."
+    body: `Click anywhere on the board and enter a sentence, like "${generateSentence()}".`
   },
   {
     icon: IconPencilPlus,
@@ -70,7 +71,7 @@ const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ plotState, onComplete }
   useEffect(() => {
     const tree = isEmpty(plotState.trees) ? undefined : Object.values(plotState.trees)[0];
     if (!tree) return;
-    if (currentStepIndex === 0 && tree.sentence.length >= 10) setCurrentStepIndex(1);
+    if (currentStepIndex === 0 && tree.sentence.length >= 15) setCurrentStepIndex(1);
     else if (currentStepIndex === 1 && !isEmpty(tree.nodes) && Object.values(tree.nodes)[0].label.length > 0) setCurrentStepIndex(2);
     else if (currentStepIndex === 2 && Object.values(tree.nodes).length >= 2) setCurrentStepIndex(3);
     else if (currentStepIndex === 3 && !isEmpty(filterEntries(tree.nodes,

@@ -51,3 +51,5 @@ export const flatten = <T>(array: T[][]) => array.reduce((accum, nextArray) => [
 
 export const windowed = <T>(array: T[], windowSize: number) => array.reduce((accum, _, index): T[][] =>
   index + windowSize > array.length ? accum : [...accum, array.slice(index, index + windowSize)], [] as T[][]);
+
+export const pickRandom = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];
