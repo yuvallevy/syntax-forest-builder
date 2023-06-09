@@ -170,8 +170,6 @@ exports[`content state > deletes two nodes from two different trees 1`] = `
                   "triangle": false,
                 },
               },
-              "formerSlice": undefined,
-              "formerlyTriangle": undefined,
               "label": "NP",
               "offset": {
                 "dTreeX": -1,
@@ -530,8 +528,6 @@ exports[`content state > removes a connection between two nodes 1`] = `
                   "triangle": false,
                 },
               },
-              "formerSlice": undefined,
-              "formerlyTriangle": undefined,
               "label": "NP",
               "offset": {
                 "dTreeX": -1,

@@ -33,11 +33,19 @@ export type UnpositionedTerminalNode = NodeCommon & WithOffsetInTree & {
   triangle: boolean;
 };
 
-export type UnpositionedStrandedNode = NodeCommon & WithOffsetInTree & {
-  formerDescendants?: IdMap<UnpositionedNode>;
-  formerSlice?: StringSlice;
-  formerlyTriangle?: boolean;
+export type UnpositionedFormerlyBranchingNode = NodeCommon & WithOffsetInTree & {
+  formerDescendants: IdMap<UnpositionedNode>;
 };
+
+export type UnpositionedFormerlyTerminalNode = NodeCommon & WithOffsetInTree & {
+  formerSlice: StringSlice;
+  formerlyTriangle: boolean;
+};
+
+export type UnpositionedPlainStrandedNode = NodeCommon & WithOffsetInTree;
+
+export type UnpositionedStrandedNode = UnpositionedFormerlyBranchingNode | UnpositionedFormerlyTerminalNode |
+  UnpositionedPlainStrandedNode;
 
 export type UnpositionedNode = UnpositionedBranchingNode | UnpositionedTerminalNode | UnpositionedStrandedNode;
 
@@ -46,3 +54,9 @@ export const isBranching = (node: UnpositionedNode): node is UnpositionedBranchi
 
 export const isTerminal = (node: UnpositionedNode): node is UnpositionedTerminalNode =>
   'slice' in node;
+
+export const isFormerlyBranching = (node: UnpositionedNode): node is UnpositionedFormerlyBranchingNode =>
+  'formerDescendants' in node;
+
+export const isFormerlyTerminal = (node: UnpositionedNode): node is UnpositionedFormerlyTerminalNode =>
+  'formerSlice' in node;

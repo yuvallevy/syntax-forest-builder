@@ -282,8 +282,6 @@ exports[`tree manipulation > deletes two nodes with ancestor-descendant relation
         "triangle": false,
       },
     },
-    "formerSlice": undefined,
-    "formerlyTriangle": undefined,
     "label": "NP",
     "offset": {
       "dTreeX": 0,
@@ -349,8 +347,6 @@ exports[`tree manipulation > deletes two nodes with no ancestor-descendant relat
         "triangle": false,
       },
     },
-    "formerSlice": undefined,
-    "formerlyTriangle": undefined,
     "label": "NP",
     "offset": {
       "dTreeX": 0,
@@ -791,8 +787,6 @@ exports[`tree manipulation > makes a branching node stranded when its children a
         "triangle": false,
       },
     },
-    "formerSlice": undefined,
-    "formerlyTriangle": undefined,
     "label": "S",
     "offset": {
       "dTreeX": 0,

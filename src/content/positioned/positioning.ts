@@ -5,8 +5,8 @@ import {
 } from '../types';
 import { PositionedNode, PositionedPlot, PositionedTree, PositionInTree } from './types';
 import {
-  isBranching, isTerminal, UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot, UnpositionedStrandedNode,
-  UnpositionedTerminalNode, UnpositionedTree
+  isBranching, isFormerlyBranching, isFormerlyTerminal, isTerminal, UnpositionedBranchingNode, UnpositionedNode,
+  UnpositionedPlot, UnpositionedStrandedNode, UnpositionedTerminalNode, UnpositionedTree
 } from '../unpositioned/types';
 
 const DEFAULT_TERMINAL_NODE_Y = -2;
@@ -71,13 +71,13 @@ const determineStrandedNodePosition =
   (sentence: Sentence) =>
   (node: UnpositionedStrandedNode): { position: PositionInTree, triangle: undefined } => {
     let position: PositionInTree;
-    if (node.formerSlice) {  // Node was formerly terminal - determine its position based on its slice
+    if (isFormerlyTerminal(node)) {  // Node was terminal - determine its position based on its slice
       const [widthBeforeSlice, sliceWidth] = sliceOffsetAndWidth(strWidthFunc)(sentence)(node.formerSlice);
       position = {
         treeX: widthBeforeSlice + (sliceWidth / 2) + node.offset.dTreeX,
         treeY: (node.formerlyTriangle ? DEFAULT_TRIANGLE_NODE_Y : DEFAULT_TERMINAL_NODE_Y) + node.offset.dTreeY,
       };
-    } else if (node.formerDescendants) {  // Node was formerly branching - determine its position based on past children
+    } else if (isFormerlyBranching(node)) {  // Node was branching - determine its position based on past children
       const positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc);
       const childXs = mapValues(positionedChildNodes, node => node.position.treeX);
       const childYs = mapValues(positionedChildNodes, node => node.position.treeY);

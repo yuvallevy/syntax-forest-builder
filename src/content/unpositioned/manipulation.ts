@@ -30,13 +30,17 @@ const descendantIds = (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedBra
 const descendantsOf = (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedBranchingNode): IdMap<UnpositionedNode> =>
   associateWith(descendantIds(nodes)(node), childId => nodes[childId]);
 
-const toStrandedNode = (oldNodes: IdMap<UnpositionedNode>) => (node: UnpositionedNode): UnpositionedStrandedNode => ({
-  label: node.label,
-  offset: node.offset,
-  formerDescendants: isBranching(node) ? descendantsOf(oldNodes)(node) : undefined,
-  formerSlice: isTerminal(node) ? node.slice : undefined,
-  formerlyTriangle: isTerminal(node) ? node.triangle : undefined,
-});
+const toStrandedNode = (oldNodes: IdMap<UnpositionedNode>) => (node: UnpositionedNode): UnpositionedStrandedNode =>
+  isBranching(node) ? ({
+    label: node.label,
+    offset: node.offset,
+    formerDescendants: descendantsOf(oldNodes)(node),
+  }) : isTerminal(node) ? ({
+    label: node.label,
+    offset: node.offset,
+    formerSlice: node.slice,
+    formerlyTriangle: node.triangle,
+  }) : node;
 
 const unassignAsChildren = (nodeIds: Id[]) => (nodes: IdMap<UnpositionedNode>) => (node: UnpositionedNode) => {
   if (!isBranching(node)) return node;
