@@ -14,6 +14,7 @@ const EXTRA_SENTENCE_WIDTH = 4;
 interface SentenceViewProps {
   tree: PositionedTree;
   treeId: Id;
+  className?: string;
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onChange: (newSentence: Sentence, oldSelectedSlice: StringSlice) => void;
   onSelect: (slice: StringSlice) => void;
@@ -25,7 +26,15 @@ const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
     ? [element.selectionStart, element.selectionEnd]
     : null;
 
-const SentenceView: React.FC<SentenceViewProps> = ({ tree, treeId, onBlur, onChange, onSelect, onKeyDown }) => {
+const SentenceView: React.FC<SentenceViewProps> = ({
+  tree,
+  treeId,
+  className,
+  onBlur,
+  onChange,
+  onSelect,
+  onKeyDown,
+}) => {
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
@@ -34,7 +43,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({ tree, treeId, onBlur, onCha
     type="text"
     id={treeId}
     value={tree.sentence}
-    className="SentenceView-input"
+    className={'SentenceView-input' + (className ? ` ${className}` : '')}
     style={{
       left: tree.position.plotX,
       top: tree.position.plotY,

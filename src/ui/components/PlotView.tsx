@@ -155,6 +155,7 @@ const PlotView: React.FC<PlotViewProps> = ({
         key={`sentence-${treeId}`}
         tree={tree}
         treeId={treeId}
+        className={selectionBoxTopLeft && selectionBoxBottomRight ? 'box-selecting' : undefined}
         onBlur={event => onSentenceBlur(treeId, event)}
         onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
         onSelect={slice => onSliceSelect(treeId, slice)}

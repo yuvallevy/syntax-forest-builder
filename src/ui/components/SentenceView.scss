@@ -10,4 +10,8 @@
   &:focus {
     outline: unset;
   }
+
+  &.box-selecting {
+    z-index: -100;
+  }
 }
