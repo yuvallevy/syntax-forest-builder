@@ -69,8 +69,8 @@ const renderNode = (
 ): React.ReactNode[] => [
   <g
     key={nodeId}
-    className={'TreeView-node' + (node.label ? '' : ' TreeView-node-empty-label')
-      + (selectedNodeIds.includes(nodeId) ? ' TreeView-node-selected' : '')}
+    className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
+      + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')}
     onMouseDown={event => {
       onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'add' : 'set');
       onMouseDown && onMouseDown(event);
@@ -97,7 +97,7 @@ const renderNode = (
   </g>,
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
     key={`${nodeId}-ghost`}
-    className="TreeView-node-ghost"
+    className="TreeView--node--ghost"
     x={node.position.treeX + NODE_AREA_RELATIVE_X + nodeDragOffset.dClientX}
     y={node.position.treeY + NODE_AREA_RELATIVE_Y + nodeDragOffset.dClientY}
     width={NODE_AREA_WIDTH}
@@ -115,14 +115,14 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
     onClick={onClick}
   >
     <rect
-      className="NodeCreationTriggerClickZone-area"
+      className="NodeCreationTriggerClickZone--area"
       x={trigger.topLeft.treeX}
       y={trigger.topLeft.treeY}
       width={trigger.bottomRight.treeX - trigger.topLeft.treeX}
       height={trigger.bottomRight.treeY - trigger.topLeft.treeY}
     />
     <circle
-      className="NodeCreationTriggerClickZone-indicator"
+      className="NodeCreationTriggerClickZone--indicator"
       cx={trigger.origin.treeX}
       cy={trigger.origin.treeY}
       r={8}
@@ -130,14 +130,14 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
     {'childIds' in trigger
       ? trigger.childPositions.map(childPosition => <line
         key={`${childPosition.treeX},${childPosition.treeY}`}
-        className="NodeCreationTriggerClickZone-indicator"
+        className="NodeCreationTriggerClickZone--indicator"
         x1={trigger.origin.treeX}
         y1={trigger.origin.treeY}
         x2={childPosition.treeX}
         y2={childPosition.treeY - NODE_LEVEL_SPACING}
       />)
       : <line
-        className="NodeCreationTriggerClickZone-indicator"
+        className="NodeCreationTriggerClickZone--indicator"
         x1={trigger.origin.treeX}
         y1={trigger.origin.treeY}
         x2={trigger.origin.treeX}

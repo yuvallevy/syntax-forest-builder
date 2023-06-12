@@ -43,7 +43,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     type="text"
     id={treeId}
     value={tree.sentence}
-    className={'SentenceView-input' + (className ? ` ${className}` : '')}
+    className={'SentenceView--input' + (className ? ` ${className}` : '')}
     style={{
       left: tree.position.plotX,
       top: tree.position.plotY,

@@ -1,6 +1,6 @@
 $plotViewFontFamily: 'Times New Roman', Times, serif;
 
-.PlotView-svg {
+.PlotView--svg {
   position: relative;
   font-size: 16px;
   font-family: $plotViewFontFamily;
@@ -13,7 +13,7 @@ $plotViewFontFamily: 'Times New Roman', Times, serif;
   font-family: $plotViewFontFamily;
 }
 
-.PlotView-selection-box {
+.PlotView--selection-box {
   fill: none;
   stroke: gray;
   stroke-width: 1px;

@@ -122,7 +122,7 @@ const PlotView: React.FC<PlotViewProps> = ({
 
   return <>
     <svg
-      className="PlotView-svg"
+      className="PlotView--svg"
       width="100%"
       height="100%"
       style={{ cursor: plotViewCursor }}
@@ -143,7 +143,7 @@ const PlotView: React.FC<PlotViewProps> = ({
           onNodeCreationTriggerClick={trigger => onNodeCreationTriggerClick(treeId, trigger)}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
-        className="PlotView-selection-box"
+        className="PlotView--selection-box"
         x={selectionBoxTopLeft.clientX}
         y={selectionBoxTopLeft.clientY}
         width={selectionBoxBottomRight.clientX - selectionBoxTopLeft.clientX}

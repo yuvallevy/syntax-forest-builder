@@ -1,4 +1,4 @@
-.PlotPlaceholder-container {
+.PlotPlaceholder--container {
   position: fixed;
   left: 0;
   top: 0;
@@ -10,7 +10,7 @@
   align-items: center;
 }
 
-.PlotPlaceholder-alert {
+.PlotPlaceholder--alert {
   pointer-events: all;
   z-index: 110;
 }

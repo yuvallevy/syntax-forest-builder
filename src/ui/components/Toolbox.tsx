@@ -28,13 +28,13 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
 
   const theme = useMantineTheme();
 
-  return <div className="Toolbox-container">
+  return <div className="Toolbox--container">
     <Paper
       shadow="sm"
       p="xs"
-      className="Toolbox-body"
+      className="Toolbox--body"
     >
-      <div className="Toolbox-title">Tools</div>
+      <div className="Toolbox--title">Tools</div>
       <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
         {items.map(item =>
           <div
@@ -61,9 +61,9 @@ const Toolbox: React.FC<ToolboxProps> = ({ items }) => {
     {hoveredItem && <Paper
       shadow="sm"
       p="sm"
-      className="Toolbox-tool-info"
+      className="Toolbox--tool-info"
     >
-      <div className="Toolbox-tool-title">
+      <div className="Toolbox--tool-title">
         {hoveredItem.title}
         {hoveredItem.hotkey && ` (${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
       </div>

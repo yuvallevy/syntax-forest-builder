@@ -6,8 +6,8 @@ interface PlotPlaceholderProps {
 }
 
 const PlotPlaceholder: React.FC<PlotPlaceholderProps> = ({ onDemoRequest }) =>
-  <div className="PlotPlaceholder-container">
-    <Alert className="PlotPlaceholder-alert" color="gray" title="Welcome to NPBloom!">
+  <div className="PlotPlaceholder--container">
+    <Alert className="PlotPlaceholder--alert" color="gray" title="Welcome to NPBloom!">
       To start, click anywhere and type a sentence,
       or <Anchor onClick={onDemoRequest}>try the demo</Anchor> first.
     </Alert>

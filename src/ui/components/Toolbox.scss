@@ -1,4 +1,4 @@
-.Toolbox-container {
+.Toolbox--container {
   position: fixed;
   left: 0;
   top: 0;
@@ -8,11 +8,11 @@
   align-items: flex-start;
 }
 
-.Toolbox-body {
+.Toolbox--body {
   flex-shrink: 0;
 }
 
-.Toolbox-title {
+.Toolbox--title {
   text-align: center;
   font-size: small;
   opacity: 0.667;
@@ -21,10 +21,10 @@
   user-select: none;
 }
 
-.Toolbox-tool-info {
+.Toolbox--tool-info {
   font-size: 14px;
 }
 
-.Toolbox-tool-title {
+.Toolbox--tool-title {
   font-weight: bold;
 }

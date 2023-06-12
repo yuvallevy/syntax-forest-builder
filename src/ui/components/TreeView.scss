@@ -1,21 +1,21 @@
-.TreeView-node {
+.TreeView--node {
   cursor: pointer;
 }
 
-.TreeView-node rect {
+.TreeView--node rect {
   fill: transparent;
   stroke: none;
 }
 
-.TreeView-node:hover rect {
+.TreeView--node:hover rect {
   fill: #eee;
 }
 
-.TreeView-node-empty-label text {
+.TreeView--node--empty-label text {
   fill: #888;
 }
 
-.TreeView-node-selected rect {
+.TreeView--node--selected rect {
   fill: #fafafa;
   stroke: #444;
   stroke-dasharray: 4 4;
@@ -23,7 +23,7 @@
   animation: marching-ants .75s linear infinite;
 }
 
-.TreeView-node-ghost {
+.TreeView--node--ghost {
   fill: none;
   stroke: #444;
   stroke-dasharray: 4 4;
@@ -31,20 +31,20 @@
   opacity: 0.6;
 }
 
-.NodeCreationTriggerClickZone-area {
+.NodeCreationTriggerClickZone--area {
   cursor: pointer;
   stroke: none;
   fill: transparent;
 }
 
-.NodeCreationTriggerClickZone-indicator {
+.NodeCreationTriggerClickZone--indicator {
   stroke: #999;
   fill: none;
   pointer-events: none;
   display: none;
 }
 
-.NodeCreationTriggerClickZone:hover .NodeCreationTriggerClickZone-indicator {
+.NodeCreationTriggerClickZone:hover .NodeCreationTriggerClickZone--indicator {
   display: unset;
 }
 
