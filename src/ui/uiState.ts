@@ -1,5 +1,5 @@
 import {
-  Id, NodeLabel, Sentence, StringSlice, NodeIndicatorInPlot
+  Id, NodeLabel, Sentence, StringSlice, NodeIndicatorInPlot, PlotIndex
 } from '../content/types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
 import { newNodeFromSelection } from './content/editNodes';
@@ -39,14 +39,14 @@ export type UiAction =
 
 export type UiState = {
   contentState: UndoableContentState;
-  activePlotId: Id;
+  activePlotIndex: PlotIndex;
   selection: SelectionInPlot;
   selectionAction: NodeSelectionAction;
   editedNodeIndicator?: NodeIndicatorInPlot;
 };
 
 export const initialUiState: UiState = {
-  activePlotId: 'plot',
+  activePlotIndex: 0,
   contentState: initialContentState,
   selection: { nodeIndicators: [] },
   selectionAction: 'select',
@@ -69,7 +69,7 @@ const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInP
 };
 
 export const uiReducer = (state: UiState, action: UiAction): UiState => {
-  const activePlot = state.contentState.current.plots[state.activePlotId];
+  const activePlot = state.contentState.current.plots[state.activePlotIndex];
   const selectedTreeId =
     isSliceSelection(state.selection) ? state.selection.treeId
       : state.selection.nodeIndicators.length > 0 ? state.selection.nodeIndicators[0].treeId
@@ -144,7 +144,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'setNodeLabel',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           nodeIndicator: state.editedNodeIndicator,
           newLabel: action.newLabel,
         }),
@@ -160,7 +160,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'insertNode',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: selectedTreeId,
           newNodeId: action.newNodeId,
           newNode: newNodeFromSelection(state.selection, activePlot.trees[selectedTreeId].sentence),
@@ -176,7 +176,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'insertNode',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: action.treeId,
           newNodeId: action.newNodeId,
           newNode: { label: '', ...(
@@ -197,7 +197,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'deleteNodes',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           nodeIndicators: state.selection.nodeIndicators,
         }),
         selection: { nodeIndicators: [] },
@@ -214,7 +214,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'adoptNodes',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: selectedTreeId,
           adoptingNodeId: state.selection.nodeIndicators[0].nodeId,
           adoptedNodeIds: action.adoptedNodeIndicators
@@ -233,7 +233,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'disownNodes',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: selectedTreeId,
           disowningNodeId: state.selection.nodeIndicators[0].nodeId,
           disownedNodeIds: action.disownedNodeIndicators
@@ -248,7 +248,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'moveNodes',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           nodeIndicators: state.selection.nodeIndicators,
           dx: action.dx,
           dy: action.dy,
@@ -261,7 +261,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'resetNodePositions',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           nodeIndicators: state.selection.nodeIndicators,
         }),
       };
@@ -276,7 +276,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'setTriangle',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           nodeIndicators: state.selection.nodeIndicators,
           triangle: !currentlyTriangle,
         }),
@@ -288,7 +288,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'setSentence',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: action.treeId || selectedTreeId,
           newSentence: action.newSentence,
           oldSelectedSlice: action.oldSelectedSlice,
@@ -300,7 +300,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'addTree',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           newTreeId: action.newTreeId,
           offset: action.offset,
         }),
@@ -312,7 +312,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         ...state,
         contentState: contentReducer(state.contentState, {
           type: 'removeTree',
-          plotId: state.activePlotId,
+          plotIndex: state.activePlotIndex,
           treeId: action.treeId,
         }),
         selectionAction: 'select',
@@ -324,7 +324,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       return {
         ...state,
         contentState: newContentState,
-        selection: pruneSelection(state.selection, newContentState.current.plots[state.activePlotId]),
+        selection: pruneSelection(state.selection, newContentState.current.plots[state.activePlotIndex]),
       };
     }
   }

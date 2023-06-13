@@ -3,8 +3,8 @@ import { ContentAction, ContentState, contentReducer, UndoableContentState } fro
 
 describe('content state', () => {
   const initialState: ContentState = {
-    plots: {
-      'plot': {
+    plots: [
+      {
         trees: {
           'aa': {
             nodes: {
@@ -25,7 +25,7 @@ describe('content state', () => {
           },
         }
       }
-    },
+    ],
   };
 
   const undoableInitialState: UndoableContentState = {
@@ -37,51 +37,51 @@ describe('content state', () => {
   const testCases: [string, ContentAction][] = [
     [
       'inserts a node into a tree',
-      { type: 'insertNode', plotId: 'plot', treeId: 'aa', newNodeId: 'c', newNode: { label: 'NP', targetChildIds: ['a', 'b'] } }
+      { type: 'insertNode', plotIndex: 0, treeId: 'aa', newNodeId: 'c', newNode: { label: 'NP', targetChildIds: ['a', 'b'] } }
     ],
     [
       'deletes a node from a tree',
-      { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }] }
+      { type: 'deleteNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }] }
     ],
     [
       'deletes two nodes from two different trees',
-      { type: 'deleteNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
+      { type: 'deleteNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
     ],
     [
       'sets a node as a child of another',
-      { type: 'adoptNodes', plotId: 'plot', treeId: 'zz', adoptingNodeId: 'x', adoptedNodeIds: ['y'] }
+      { type: 'adoptNodes', plotIndex: 0, treeId: 'zz', adoptingNodeId: 'x', adoptedNodeIds: ['y'] }
     ],
     [
       'removes a connection between two nodes',
-      { type: 'disownNodes', plotId: 'plot', treeId: 'zz', disowningNodeId: 'w', disownedNodeIds: ['x'] }
+      { type: 'disownNodes', plotIndex: 0, treeId: 'zz', disowningNodeId: 'w', disownedNodeIds: ['x'] }
     ],
     [
       'moves a node in a tree',
-      { type: 'moveNodes', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'a' }], dx: 1, dy: -4 }
+      { type: 'moveNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'a' }], dx: 1, dy: -4 }
     ],
     [
       'resets the positions of two nodes in two different trees',
-      { type: 'resetNodePositions', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'w' }] }
+      { type: 'resetNodePositions', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'w' }] }
     ],
     [
       'sets the label of a node',
-      { type: 'setNodeLabel', plotId: 'plot', nodeIndicator: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
+      { type: 'setNodeLabel', plotIndex: 0, nodeIndicator: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
     ],
     [
       'sets whether a terminal node connects to its slice with a triangle',
-      { type: 'setTriangle', plotId: 'plot', nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }], triangle: true }
+      { type: 'setTriangle', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }], triangle: true }
     ],
     [
       'reacts to a change in the sentence',
-      { type: 'setSentence', plotId: 'plot', treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
+      { type: 'setSentence', plotIndex: 0, treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
     ],
     [
       'adds a tree to a plot',
-      { type: 'addTree', plotId: 'plot', newTreeId: 'zz', offset: { dPlotX: 105, dPlotY: 88 } }
+      { type: 'addTree', plotIndex: 0, newTreeId: 'zz', offset: { dPlotX: 105, dPlotY: 88 } }
     ],
     [
       'removes a tree from a plot',
-      { type: 'removeTree', plotId: 'plot', treeId: 'aa' }
+      { type: 'removeTree', plotIndex: 0, treeId: 'aa' }
     ],
   ];
 

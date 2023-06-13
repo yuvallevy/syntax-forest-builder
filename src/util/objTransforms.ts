@@ -53,3 +53,12 @@ export const windowed = <T>(array: T[], windowSize: number) => array.reduce((acc
   index + windowSize > array.length ? accum : [...accum, array.slice(index, index + windowSize)], [] as T[][]);
 
 export const pickRandom = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];
+
+export const insertAt = <T>(array: T[], index: number, newElement: T): T[] =>
+  [...array.slice(0, index), newElement, ...array.slice(index)];
+
+export const changeAt = <T>(array: T[], index: number, newElement: T): T[] =>
+  [...array.slice(0, index), newElement, ...array.slice(index + 1)];
+
+export const removeAt = <T>(array: T[], index: number): T[] =>
+  [...array.slice(0, index), ...array.slice(index + 1)];

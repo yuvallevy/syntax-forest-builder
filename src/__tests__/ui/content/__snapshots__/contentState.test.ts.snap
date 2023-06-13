@@ -2,8 +2,8 @@
 
 exports[`content state > adds a tree to a plot 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -48,14 +48,14 @@ exports[`content state > adds a tree to a plot 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > deletes a node from a tree 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -123,14 +123,14 @@ exports[`content state > deletes a node from a tree 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > deletes two nodes from two different trees 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -197,14 +197,14 @@ exports[`content state > deletes two nodes from two different trees 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > inserts a node into a tree 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -295,14 +295,14 @@ exports[`content state > inserts a node into a tree 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > moves a node in a tree 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -382,14 +382,14 @@ exports[`content state > moves a node in a tree 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > reacts to a change in the sentence 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -469,14 +469,14 @@ exports[`content state > reacts to a change in the sentence 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > removes a connection between two nodes 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -567,14 +567,14 @@ exports[`content state > removes a connection between two nodes 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > removes a tree from a plot 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "zz": {
           "nodes": {
@@ -621,14 +621,14 @@ exports[`content state > removes a tree from a plot 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > resets the positions of two nodes in two different trees 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -708,14 +708,14 @@ exports[`content state > resets the positions of two nodes in two different tree
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > sets a node as a child of another 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -793,14 +793,14 @@ exports[`content state > sets a node as a child of another 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > sets the label of a node 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -880,14 +880,14 @@ exports[`content state > sets the label of a node 1`] = `
         },
       },
     },
-  },
+  ],
 }
 `;
 
 exports[`content state > sets whether a terminal node connects to its slice with a triangle 1`] = `
 {
-  "plots": {
-    "plot": {
+  "plots": [
+    {
       "trees": {
         "aa": {
           "nodes": {
@@ -967,6 +967,6 @@ exports[`content state > sets whether a terminal node connects to its slice with
         },
       },
     },
-  },
+  ],
 }
 `;

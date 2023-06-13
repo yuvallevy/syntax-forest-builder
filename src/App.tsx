@@ -32,7 +32,7 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/compo
 
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
-  const { selection, activePlotId, editedNodeIndicator, selectionAction } = state;
+  const { selection, activePlotIndex, editedNodeIndicator, selectionAction } = state;
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
@@ -41,7 +41,7 @@ const App = () => {
   const selectedNodeIndicators = isNodeSelection(selection) ? selection.nodeIndicators : [];
 
   const activePlot: UnpositionedPlot =
-    useMemo(() => state.contentState.current.plots[activePlotId], [state.contentState, activePlotId]);
+    useMemo(() => state.contentState.current.plots[activePlotIndex], [state.contentState, activePlotIndex]);
   const positionedPlot: PositionedPlot = useMemo(() => applyNodePositionsToPlot(strWidth)(activePlot), [activePlot]);
 
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);

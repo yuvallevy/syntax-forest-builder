@@ -1,4 +1,5 @@
 export type Id = string;
+export type PlotIndex = number;
 export type Sentence = string;
 export type NodeLabel = string;
 

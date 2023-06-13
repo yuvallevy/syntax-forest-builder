@@ -1,5 +1,5 @@
 import {
-  Id, IdMap, StringSlice, Sentence, NodeIndicatorInPlot
+  Id, StringSlice, Sentence, NodeIndicatorInPlot, PlotIndex
 } from '../../content/types';
 import {
   adoptNodesInTree, disownNodesInTree,
@@ -8,7 +8,7 @@ import {
 import { deleteNodesInPlot, transformNodesInPlot } from '../../content/unpositioned/plotManipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../../util/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
-import { omitKey } from '../../util/objTransforms';
+import { changeAt, omitKey } from '../../util/objTransforms';
 import {
   isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTree
 } from '../../content/unpositioned/types';
@@ -19,17 +19,17 @@ import {
  * which is subsequently applied in a reversible fashion.
  */
 export type ContentAction =
-  | { type: 'insertNode', plotId: Id, treeId: Id, newNodeId: Id, newNode: InsertedNode }
-  | { type: 'deleteNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
-  | { type: 'adoptNodes', plotId: Id, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
-  | { type: 'disownNodes', plotId: Id, treeId: Id, disowningNodeId: Id, disownedNodeIds: Id[] }
-  | { type: 'moveNodes', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], dx: number, dy: number }
-  | { type: 'resetNodePositions', plotId: Id, nodeIndicators: NodeIndicatorInPlot[] }
-  | { type: 'setNodeLabel', plotId: Id, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
-  | { type: 'setTriangle', plotId: Id, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
-  | { type: 'setSentence', plotId: Id, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
-  | { type: 'addTree', plotId: Id, newTreeId: Id, offset: PlotCoordsOffset }
-  | { type: 'removeTree', plotId: Id, treeId: Id }
+  | { type: 'insertNode', plotIndex: PlotIndex, treeId: Id, newNodeId: Id, newNode: InsertedNode }
+  | { type: 'deleteNodes', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'adoptNodes', plotIndex: PlotIndex, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
+  | { type: 'disownNodes', plotIndex: PlotIndex, treeId: Id, disowningNodeId: Id, disownedNodeIds: Id[] }
+  | { type: 'moveNodes', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[], dx: number, dy: number }
+  | { type: 'resetNodePositions', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[] }
+  | { type: 'setNodeLabel', plotIndex: PlotIndex, nodeIndicator: NodeIndicatorInPlot, newLabel: string }
+  | { type: 'setTriangle', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[], triangle: boolean }
+  | { type: 'setSentence', plotIndex: PlotIndex, treeId: Id, newSentence: Sentence, oldSelectedSlice: StringSlice }
+  | { type: 'addTree', plotIndex: PlotIndex, newTreeId: Id, offset: PlotCoordsOffset }
+  | { type: 'removeTree', plotIndex: PlotIndex, treeId: Id }
 ;
 
 /**
@@ -38,10 +38,10 @@ export type ContentAction =
  * and each action by the user is translated into a state change so that undo/redo can work smoothly.
  */
 type ContentChange = (
-  | { type: 'setPlot', plotId: Id, old: UnpositionedPlot, new: UnpositionedPlot }
-  | { type: 'setTree', plotId: Id, treeId: Id, old: UnpositionedTree, new: UnpositionedTree }
-  | { type: 'addTree', plotId: Id, newTreeId: Id, newTree: UnpositionedTree }
-  | { type: 'removeTree', plotId: Id, treeId: Id, removedTree: UnpositionedTree }
+  | { type: 'setPlot', plotIndex: PlotIndex, old: UnpositionedPlot, new: UnpositionedPlot }
+  | { type: 'setTree', plotIndex: PlotIndex, treeId: Id, old: UnpositionedTree, new: UnpositionedTree }
+  | { type: 'addTree', plotIndex: PlotIndex, newTreeId: Id, newTree: UnpositionedTree }
+  | { type: 'removeTree', plotIndex: PlotIndex, treeId: Id, removedTree: UnpositionedTree }
 );
 
 type UndoableContentChange = UndoableActionCommon & ContentChange;
@@ -54,68 +54,68 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
     case 'insertNode': {
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
-        new: insertNodeIntoTree(action.newNode)(action.newNodeId)(state.plots[action.plotId].trees[action.treeId]),
+        old: state.plots[action.plotIndex].trees[action.treeId],
+        new: insertNodeIntoTree(action.newNode)(action.newNodeId)(state.plots[action.plotIndex].trees[action.treeId]),
       };
     }
     case 'deleteNodes': {
       return {
         type: 'setPlot',
-        plotId: action.plotId,
-        old: state.plots[action.plotId],
-        new: deleteNodesInPlot(action.nodeIndicators)(state.plots[action.plotId]),
+        plotIndex: action.plotIndex,
+        old: state.plots[action.plotIndex],
+        new: deleteNodesInPlot(action.nodeIndicators)(state.plots[action.plotIndex]),
       };
     }
     case 'adoptNodes': {
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
+        old: state.plots[action.plotIndex].trees[action.treeId],
         new: adoptNodesInTree(action.adoptingNodeId, action.adoptedNodeIds)(
-          state.plots[action.plotId].trees[action.treeId]),
+          state.plots[action.plotIndex].trees[action.treeId]),
       };
     }
     case 'disownNodes': {
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
+        old: state.plots[action.plotIndex].trees[action.treeId],
         new: disownNodesInTree(action.disowningNodeId, action.disownedNodeIds)(
-          state.plots[action.plotId].trees[action.treeId]),
+          state.plots[action.plotIndex].trees[action.treeId]),
       };
     }
     case 'moveNodes': {
       return {
         type: 'setPlot',
-        plotId: action.plotId,
-        old: state.plots[action.plotId],
+        plotIndex: action.plotIndex,
+        old: state.plots[action.plotIndex],
         new: transformNodesInPlot(node => ({
           ...node,
           offset: { dTreeX: node.offset.dTreeX + action.dx, dTreeY: node.offset.dTreeY + action.dy }
-        }))(action.nodeIndicators)(state.plots[action.plotId]),
+        }))(action.nodeIndicators)(state.plots[action.plotIndex]),
       }
     }
     case 'resetNodePositions': {
       return {
         type: 'setPlot',
-        plotId: action.plotId,
-        old: state.plots[action.plotId],
+        plotIndex: action.plotIndex,
+        old: state.plots[action.plotIndex],
         new: transformNodesInPlot(node => ({ ...node, offset: { dTreeX: 0, dTreeY: 0 } }))(action.nodeIndicators)(
-          state.plots[action.plotId]),
+          state.plots[action.plotIndex]),
       };
     }
     case 'setNodeLabel': {
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.nodeIndicator.treeId,
-        old: state.plots[action.plotId].trees[action.nodeIndicator.treeId],
+        old: state.plots[action.plotIndex].trees[action.nodeIndicator.treeId],
         new: transformNodeInTree(node => ({ ...node, label: action.newLabel }))(action.nodeIndicator.nodeId)(
-          state.plots[action.plotId].trees[action.nodeIndicator.treeId]),
+          state.plots[action.plotIndex].trees[action.nodeIndicator.treeId]),
       };
     }
     case 'setTriangle': {
@@ -124,27 +124,27 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         .filter(nodeIndicator => nodeIndicator.treeId === treeId).map(nodeIndicator => nodeIndicator.nodeId);
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId,
-        old: state.plots[action.plotId].trees[treeId],
+        old: state.plots[action.plotIndex].trees[treeId],
         new: transformNodesInTree(node => isTerminal(node) ? { ...node, triangle: action.triangle } : node)(nodeIds)(
-          state.plots[action.plotId].trees[treeId]),
+          state.plots[action.plotIndex].trees[treeId]),
       };
     }
     case 'setSentence': {
       return {
         type: 'setTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotId].trees[action.treeId],
+        old: state.plots[action.plotIndex].trees[action.treeId],
         new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
-          state.plots[action.plotId].trees[action.treeId]),
+          state.plots[action.plotIndex].trees[action.treeId]),
       };
     }
     case 'addTree': {
       return {
         type: 'addTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         newTreeId: action.newTreeId,
         newTree: {
           nodes: {},
@@ -156,7 +156,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
     case 'removeTree': {
       return {
         ...action,
-        removedTree: state.plots[action.plotId].trees[action.treeId],
+        removedTree: state.plots[action.plotIndex].trees[action.treeId],
       };
     }
   }
@@ -167,52 +167,40 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
     case 'setPlot': {
       return {
         ...state,
-        plots: {
-          ...state.plots,
-          [action.plotId]: action.new,
-        },
+        plots: changeAt(state.plots, action.plotIndex, action.new),
       };
     }
     case 'setTree': {
       return {
         ...state,
-        plots: {
-          ...state.plots,
-          [action.plotId]: {
-            ...state.plots[action.plotId],
-            trees: {
-              ...state.plots[action.plotId].trees,
-              [action.treeId]: action.new,
-            },
+        plots: changeAt(state.plots, action.plotIndex, {
+          ...state.plots[action.plotIndex],
+          trees: {
+            ...state.plots[action.plotIndex].trees,
+            [action.treeId]: action.new,
           },
-        },
+        }),
       };
     }
     case 'addTree': {
       return {
         ...state,
-        plots: {
-          ...state.plots,
-          [action.plotId]: {
-            ...state.plots[action.plotId],
-            trees: {
-              ...state.plots[action.plotId].trees,
-              [action.newTreeId]: action.newTree,
-            },
+        plots: changeAt(state.plots, action.plotIndex, {
+          ...state.plots[action.plotIndex],
+          trees: {
+            ...state.plots[action.plotIndex].trees,
+            [action.newTreeId]: action.newTree,
           },
-        },
+        }),
       };
     }
     case 'removeTree': {
       return {
         ...state,
-        plots: {
-          ...state.plots,
-          [action.plotId]: {
-            ...state.plots[action.plotId],
-            trees: omitKey(state.plots[action.plotId].trees, action.treeId)
-          },
-        },
+        plots: changeAt(state.plots, action.plotIndex, {
+          ...state.plots[action.plotIndex],
+          trees: omitKey(state.plots[action.plotIndex].trees, action.treeId)
+        }),
       };
     }
     default:
@@ -240,7 +228,7 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
       return {
         ...action,
         type: 'removeTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         treeId: action.newTreeId,
         removedTree: action.newTree,
       };
@@ -249,7 +237,7 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
       return {
         ...action,
         type: 'addTree',
-        plotId: action.plotId,
+        plotIndex: action.plotIndex,
         newTreeId: action.treeId,
         newTree: action.removedTree,
       };
@@ -260,17 +248,17 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
 };
 
 export type ContentState = {
-  plots: IdMap<UnpositionedPlot>;
+  plots: UnpositionedPlot[];
 };
 
 export type UndoableContentState = UndoRedoHistory<UndoableContentChange, ContentState>;
 
 const initialState: ContentState = {
-  plots: {
-    'plot': {
+  plots: [
+    {
       trees: {},
     },
-  },
+  ],
 };
 
 export const initialContentState: UndoableContentState = {
