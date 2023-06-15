@@ -340,10 +340,13 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
     case 'undo':
     case 'redo': {
       const newContentState = contentReducer(state.contentState, action);
+      const newActivePlotIndex = state.activePlotIndex < newContentState.current.plots.length ? state.activePlotIndex
+        : newContentState.current.plots.length - 1;
       return {
         ...state,
         contentState: newContentState,
-        selection: pruneSelection(state.selection, newContentState.current.plots[state.activePlotIndex]),
+        activePlotIndex: newActivePlotIndex,
+        selection: pruneSelection(state.selection, newContentState.current.plots[newActivePlotIndex]),
       };
     }
   }
