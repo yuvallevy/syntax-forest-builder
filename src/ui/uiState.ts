@@ -14,6 +14,7 @@ import strWidth from './strWidth';
 import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 
 export type UiAction =
+  | { type: 'setActivePlotIndex', newPlotIndex: PlotIndex }
   | { type: 'setSelection', newSelection: SelectionInPlot }
   | { type: 'selectParentNodes' }
   | { type: 'selectChildNode', side: 'left' | 'right' | 'center' }
@@ -75,6 +76,14 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       : state.selection.nodeIndicators.length > 0 ? state.selection.nodeIndicators[0].treeId
       : undefined;
   switch (action.type) {
+    case 'setActivePlotIndex':
+      return {
+        ...state,
+        activePlotIndex: action.newPlotIndex,
+        selection: { nodeIndicators: [] },
+        selectionAction: 'select',
+        editedNodeIndicator: undefined,
+      }
     case 'setSelection': {
       return {
         ...state,

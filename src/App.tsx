@@ -4,7 +4,7 @@ import theme from './theme';
 import './App.scss';
 import { applyNodePositionsToPlot } from './content/positioned/positioning';
 import {
-  Id, StringSlice, Sentence, NodeIndicatorInPlot, NodeLabel
+  Id, StringSlice, Sentence, NodeIndicatorInPlot, NodeLabel, PlotIndex
 } from './content/types';
 import PlotView from './ui/components/PlotView';
 import strWidth from './ui/strWidth';
@@ -46,6 +46,7 @@ const App = () => {
 
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);
 
+  const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch({ type: 'setActivePlotIndex', newPlotIndex });
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
   const selectLeftChildNode = () => dispatch({ type: 'selectChildNode', side: 'left' });
@@ -264,7 +265,11 @@ const App = () => {
     />
     <Toolbox items={toolboxItems} />
     <AboutButton />
-    <PlotSelector />
+    <PlotSelector
+      plots={state.contentState.current.plots}
+      activePlotIndex={activePlotIndex}
+      onPlotSelect={setActivePlotIndex}
+    />
     {beginnersGuideActive ? <BeginnersGuide
       plotState={activePlot}
       onComplete={() => setBeginnersGuideActive(false)}
