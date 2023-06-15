@@ -47,6 +47,7 @@ const App = () => {
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) => activePlot.trees[treeId].nodes[nodeId]);
 
   const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch({ type: 'setActivePlotIndex', newPlotIndex });
+  const addPlot = () => dispatch({ type: 'addPlot' });
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
   const selectLeftChildNode = () => dispatch({ type: 'selectChildNode', side: 'left' });
@@ -269,6 +270,7 @@ const App = () => {
       plots={state.contentState.current.plots}
       activePlotIndex={activePlotIndex}
       onPlotSelect={setActivePlotIndex}
+      onPlotAdd={addPlot}
     />
     {beginnersGuideActive ? <BeginnersGuide
       plotState={activePlot}

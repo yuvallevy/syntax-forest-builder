@@ -8,7 +8,7 @@ import {
 import { deleteNodesInPlot, transformNodesInPlot } from '../../content/unpositioned/plotManipulation';
 import UndoRedoHistory, { ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon } from '../../util/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
-import { changeAt, omitKey } from '../../util/objTransforms';
+import { changeAt, insertAt, omitKey, removeAt } from '../../util/objTransforms';
 import {
   isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTree
 } from '../../content/unpositioned/types';
@@ -19,6 +19,7 @@ import {
  * which is subsequently applied in a reversible fashion.
  */
 export type ContentAction =
+  | { type: 'addPlot' }
   | { type: 'insertNode', plotIndex: PlotIndex, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'adoptNodes', plotIndex: PlotIndex, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
@@ -39,6 +40,8 @@ export type ContentAction =
  */
 type ContentChange = (
   | { type: 'setPlot', plotIndex: PlotIndex, old: UnpositionedPlot, new: UnpositionedPlot }
+  | { type: 'addPlot', newPlotIndex: PlotIndex, newPlot: UnpositionedPlot }
+  | { type: 'removePlot', plotIndex: PlotIndex, removedPlot: UnpositionedPlot }
   | { type: 'setTree', plotIndex: PlotIndex, treeId: Id, old: UnpositionedTree, new: UnpositionedTree }
   | { type: 'addTree', plotIndex: PlotIndex, newTreeId: Id, newTree: UnpositionedTree }
   | { type: 'removeTree', plotIndex: PlotIndex, treeId: Id, removedTree: UnpositionedTree }
@@ -51,6 +54,13 @@ type UndoableContentChange = UndoableActionCommon & ContentChange;
  */
 const makeUndoable = (state: ContentState) => (action: ContentAction): ContentChange => {
   switch (action.type) {
+    case 'addPlot': {
+      return {
+        type: 'addPlot',
+        newPlotIndex: state.plots.length,
+        newPlot: { trees: {} },
+      };
+    }
     case 'insertNode': {
       return {
         type: 'setTree',
@@ -170,6 +180,18 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
         plots: changeAt(state.plots, action.plotIndex, action.new),
       };
     }
+    case 'addPlot': {
+      return {
+        ...state,
+        plots: insertAt(state.plots, action.newPlotIndex, action.newPlot),
+      };
+    }
+    case 'removePlot': {
+      return {
+        ...state,
+        plots: removeAt(state.plots, action.plotIndex),
+      }
+    }
     case 'setTree': {
       return {
         ...state,
@@ -216,6 +238,22 @@ const reverseUndoableAction: ReverseActionFunc<UndoableContentChange> = action =
         old: action.new,
         new: action.old,
       };
+    }
+    case 'addPlot': {
+      return {
+        ...action,
+        type: 'removePlot',
+        plotIndex: action.newPlotIndex,
+        removedPlot: action.newPlot || { trees: {} },
+      };
+    }
+    case 'removePlot': {
+      return {
+        ...action,
+        type: 'addPlot',
+        newPlotIndex: action.plotIndex,
+        newPlot: action.removedPlot,
+      }
     }
     case 'setTree': {
       return {

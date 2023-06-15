@@ -15,6 +15,7 @@ import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../
 
 export type UiAction =
   | { type: 'setActivePlotIndex', newPlotIndex: PlotIndex }
+  | { type: 'addPlot' }
   | { type: 'setSelection', newSelection: SelectionInPlot }
   | { type: 'selectParentNodes' }
   | { type: 'selectChildNode', side: 'left' | 'right' | 'center' }
@@ -83,7 +84,16 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         selection: { nodeIndicators: [] },
         selectionAction: 'select',
         editedNodeIndicator: undefined,
-      }
+      };
+    case 'addPlot':
+      return {
+        ...state,
+        contentState: contentReducer(state.contentState, { type: 'addPlot' }),
+        activePlotIndex: state.contentState.current.plots.length,
+        selection: { nodeIndicators: [] },
+        selectionAction: 'select',
+        editedNodeIndicator: undefined,
+      };
     case 'setSelection': {
       return {
         ...state,
