@@ -33,6 +33,7 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/compo
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
   const { selection, activePlotIndex, editedNodeIndicator, selectionAction } = state;
+  console.log('***', state.contentState.current.plots.length, activePlotIndex);
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
@@ -48,6 +49,7 @@ const App = () => {
 
   const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch({ type: 'setActivePlotIndex', newPlotIndex });
   const addPlot = () => dispatch({ type: 'addPlot' });
+  const deletePlot = (plotIndex: PlotIndex) => dispatch({ type: 'deletePlot', plotIndex });
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
   const selectLeftChildNode = () => dispatch({ type: 'selectChildNode', side: 'left' });
@@ -271,6 +273,7 @@ const App = () => {
       activePlotIndex={activePlotIndex}
       onPlotSelect={setActivePlotIndex}
       onPlotAdd={addPlot}
+      onPlotDelete={deletePlot}
     />
     {beginnersGuideActive ? <BeginnersGuide
       plotState={activePlot}
