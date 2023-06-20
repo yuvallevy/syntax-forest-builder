@@ -16,6 +16,7 @@ import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../
 export type UiAction =
   | { type: 'setActivePlotIndex', newPlotIndex: PlotIndex }
   | { type: 'addPlot' }
+  | { type: 'deletePlot', plotIndex: PlotIndex }
   | { type: 'setSelection', newSelection: SelectionInPlot }
   | { type: 'selectParentNodes' }
   | { type: 'selectChildNode', side: 'left' | 'right' | 'center' }
@@ -94,6 +95,19 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         selectionAction: 'select',
         editedNodeIndicator: undefined,
       };
+    case 'deletePlot': {
+      const newContentState = contentReducer(state.contentState, action);
+      const newActivePlotIndex = state.activePlotIndex < newContentState.current.plots.length ? state.activePlotIndex
+        : newContentState.current.plots.length - 1;
+      return {
+        ...state,
+        contentState: newContentState,
+        activePlotIndex: newActivePlotIndex,  // TODO: Why does this refuse to change?
+        selection: { nodeIndicators: [] },
+        selectionAction: 'select',
+        editedNodeIndicator: undefined,
+      };
+    }
     case 'setSelection': {
       return {
         ...state,
