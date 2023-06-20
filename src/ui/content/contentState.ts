@@ -20,6 +20,7 @@ import {
  */
 export type ContentAction =
   | { type: 'addPlot' }
+  | { type: 'deletePlot', plotIndex: PlotIndex }
   | { type: 'insertNode', plotIndex: PlotIndex, treeId: Id, newNodeId: Id, newNode: InsertedNode }
   | { type: 'deleteNodes', plotIndex: PlotIndex, nodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'adoptNodes', plotIndex: PlotIndex, treeId: Id, adoptingNodeId: Id, adoptedNodeIds: Id[] }
@@ -60,6 +61,13 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         newPlotIndex: state.plots.length,
         newPlot: { trees: {} },
       };
+    }
+    case 'deletePlot': {
+      return {
+        type: 'removePlot',
+        plotIndex: action.plotIndex,
+        removedPlot: state.plots[action.plotIndex],
+      }
     }
     case 'insertNode': {
       return {
