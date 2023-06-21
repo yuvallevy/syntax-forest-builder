@@ -1,8 +1,9 @@
-import { Menu, Paper, Tabs, Tooltip } from '@mantine/core';
+import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';
 import { UnpositionedPlot } from '../../content/unpositioned/types';
 import { isEmpty } from '../../util/objTransforms';
 import { PlotIndex } from '../../content/types';
+import './PlotSelector.scss';
 
 interface PlotSelectorProps {
   plots: UnpositionedPlot[];
@@ -19,13 +20,20 @@ const PlotSelector: React.FC<PlotSelectorProps> = ({ plots, activePlotIndex, onP
         {plots.map((plot, index) => {
           const IconComponent =
             isEmpty(plot.trees) ? IconFile : Object.keys(plot.trees).length === 1 ? IconTree : IconTrees;
-          return <Tabs.Tab
-            key={index}
-            value={index.toString()}
-            icon={<IconComponent size="0.8rem" />}
-            rightSection={index === activePlotIndex && <Menu shadow="md" withArrow>
+          return <div className="PlotSelector--tab-container">
+            <Tabs.Tab
+              key={index}
+              value={index.toString()}
+              icon={<IconComponent size="0.8rem" />}
+              className={index === activePlotIndex ? 'PlotSelector--tab-button--selected' : ''}
+            >
+              Plot {index + 1}
+            </Tabs.Tab>
+            {index === activePlotIndex && <Menu shadow="md" withArrow>
               <Menu.Target>
-                <IconDotsVertical size={14} />
+                <ActionIcon size="sm" className="PlotSelector--tab-right-button">
+                  <IconDotsVertical size={14} />
+                </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => onPlotDelete(index)}>
@@ -33,9 +41,7 @@ const PlotSelector: React.FC<PlotSelectorProps> = ({ plots, activePlotIndex, onP
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>}
-          >
-            Plot {index + 1}
-          </Tabs.Tab>;
+          </div>;
         })}
         <Tooltip label="New plot">
           <Tabs.Tab

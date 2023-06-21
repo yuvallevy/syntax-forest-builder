@@ -1,0 +1,17 @@
+.PlotSelector--tab-container {
+  position: relative;
+}
+
+.PlotSelector--tab-button--selected {
+  padding-right: 2.75em;
+}
+
+.PlotSelector--tab-right-button {
+  position: absolute;
+  right: 0.5em;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  z-index: 100;
+}
