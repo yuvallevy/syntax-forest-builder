@@ -182,14 +182,18 @@ export const disownNodesInTree =
       ? tree  // can't disown yourself
       : transformNodeInTree(unassignAsChildren(disownedNodeIds)(tree.nodes))(disowningNodeId)(tree);
 
+export const filterNodeIdsByNode =
+  (tree: UnpositionedTree) =>
+  (predicate: (node: UnpositionedNode) => boolean): Id[] =>
+    Object.keys(filterEntries(tree.nodes, ([_, node]) => predicate(node)));
+
 export const getParentNodeIdsInTree =
   (nodeIds: Id[]) =>
   (tree: UnpositionedTree): Id[] =>
-    Object.keys(filterEntries(tree.nodes, ([_, node]) =>
-      isBranching(node) && nodeIds.some(selectedNodeId => node.children.includes(selectedNodeId))));
+    filterNodeIdsByNode(tree)(node =>
+      isBranching(node) && nodeIds.some(selectedNodeId => node.children.includes(selectedNodeId)));
 
 export const getNodeIdsAssignedToSlice =
   (slice: StringSlice) =>
   (tree: UnpositionedTree): Id[] =>
-    Object.keys(filterEntries(tree.nodes, ([_, node]) =>
-      isTerminal(node) && slicesOverlap(slice, node.slice)));
+    filterNodeIdsByNode(tree)(node => isTerminal(node) && slicesOverlap(slice, node.slice));
