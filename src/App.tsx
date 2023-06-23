@@ -33,7 +33,6 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/compo
 const App = () => {
   const [state, dispatch] = useReducer(uiReducer, initialUiState);
   const { selection, activePlotIndex, editedNodeIndicator, selectionAction } = state;
-  console.log('***', state.contentState.current.plots.length, activePlotIndex);
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
