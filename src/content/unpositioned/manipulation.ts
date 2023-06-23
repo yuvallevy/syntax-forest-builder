@@ -196,4 +196,9 @@ export const getParentNodeIdsInTree =
 export const getNodeIdsAssignedToSlice =
   (slice: StringSlice) =>
   (tree: UnpositionedTree): Id[] =>
-    filterNodeIdsByNode(tree)(node => isTerminal(node) && slicesOverlap(slice, node.slice));
+    // If the slice is of length 0 (as in a zero-length selection),
+    slice[0] === slice[1]
+      // check whether it is within the node slice or at either of its boundaries
+      ? filterNodeIdsByNode(tree)(node => isTerminal(node) && node.slice[0] <= slice[0] && slice[0] <= node.slice[1])
+      // otherwise use a simple overlap check where adjacent slices are not counted as overlapping
+      : filterNodeIdsByNode(tree)(node => isTerminal(node) && slicesOverlap(slice, node.slice));
