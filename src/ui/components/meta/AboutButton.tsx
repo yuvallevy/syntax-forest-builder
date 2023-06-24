@@ -1,5 +1,6 @@
 import { Anchor, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import Logo from './npbloom-logo.svg';
 
 const AboutButton = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -13,7 +14,10 @@ const AboutButton = () => {
     >
       0.4
     </Button>
-    <Modal opened={opened} onClose={close} title="NPBloom" centered size="lg">
+    <Modal opened={opened} onClose={close} title="About" centered size="lg">
+      <div style={{ textAlign: 'center' }}>
+        <img src={Logo} height={120} alt="NPBloom logo" />
+      </div>
       <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
         using an in-browser point-and-click interface.</p>
       <p>To begin, click anywhere and start typing a sentence.
@@ -30,6 +34,8 @@ const AboutButton = () => {
           Mantine
         </Anchor> and <Anchor href="https://tabler-icons.io/" target="_blank" rel="noopener noreferrer">
           Tabler
+        </Anchor>. Logo by <Anchor href="https://hadarorenart.wixsite.com/hrodesign" target="_blank">
+          hro-arts
         </Anchor>. See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main" target="_blank" rel="noopener noreferrer">
           GitHub
         </Anchor> for full source code.
