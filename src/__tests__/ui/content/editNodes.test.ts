@@ -24,7 +24,7 @@ describe('high-level tree editing routines', () => {
         'finds that the word in "%s" intersecting position %d is in range %p',
         (sentence, position, expectedSlice) => {
           expect(newNodeFromSelection({ treeId: 'test', slice: [position, position] }, sentence))
-            .toMatchObject({ targetSlice: expectedSlice });
+            .toMatchObject({ targetSlice: expectedSlice, triangle: false });
         });
     });
   });

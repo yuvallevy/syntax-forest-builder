@@ -117,7 +117,7 @@ const App = () => {
       ...(
         'childIds' in trigger
           ? { targetChildIds: trigger.childIds }
-          : { targetSlice: trigger.slice }
+          : { targetSlice: trigger.slice, triangle: false }
       ),
     });
   };

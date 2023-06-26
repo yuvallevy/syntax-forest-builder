@@ -117,6 +117,15 @@ describe('tree manipulation', () => {
     expect(insertNodeIntoTree({
       label: 'V',
       targetSlice: [5, 11],
+      triangle: false,
+    })('new')(treeWithoutTopLevelTerminalNode)).toMatchSnapshot();
+  });
+
+  it('inserts a top-level terminal node with a triangle', () => {
+    expect(insertNodeIntoTree({
+      label: 'VP',
+      targetSlice: [5, 11],
+      triangle: true,
     })('new')(treeWithoutTopLevelTerminalNode)).toMatchSnapshot();
   });
 

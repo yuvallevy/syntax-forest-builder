@@ -736,6 +736,62 @@ exports[`tree manipulation > inserts a top-level terminal node 1`] = `
 }
 `;
 
+exports[`tree manipulation > inserts a top-level terminal node with a triangle 1`] = `
+{
+  "nodes": {
+    "branch1": {
+      "children": [
+        "term1",
+      ],
+      "label": "NP",
+      "offset": {
+        "dTreeX": 0,
+        "dTreeY": 0,
+      },
+    },
+    "new": {
+      "label": "VP",
+      "offset": {
+        "dTreeX": 0,
+        "dTreeY": 0,
+      },
+      "slice": [
+        5,
+        11,
+      ],
+      "triangle": true,
+    },
+    "term1": {
+      "label": "N",
+      "offset": {
+        "dTreeX": 0,
+        "dTreeY": 0,
+      },
+      "slice": [
+        0,
+        4,
+      ],
+      "triangle": false,
+    },
+    "top": {
+      "children": [
+        "branch1",
+      ],
+      "label": "S",
+      "offset": {
+        "dTreeX": 0,
+        "dTreeY": 5,
+      },
+    },
+  },
+  "offset": {
+    "dPlotX": 0,
+    "dPlotY": 0,
+  },
+  "sentence": "Noun verbed.",
+}
+`;
+
 exports[`tree manipulation > makes a branching node stranded when its children are gone 1`] = `
 {
   "term1": {

@@ -26,7 +26,7 @@ export type UiAction =
   | { type: 'setSelectionAction', selectionAction: NodeSelectionAction }
   | { type: 'addNodeBySelection', newNodeId: Id }
   | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetChildIds: Id[] }
-  | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetSlice: StringSlice }
+  | { type: 'addNodeByTarget', treeId: Id, newNodeId: Id, targetSlice: StringSlice, triangle: boolean }
   | { type: 'deleteSelectedNodes' }
   | { type: 'adoptNodesBySelection', adoptedNodeIndicators: NodeIndicatorInPlot[] }
   | { type: 'disownNodesBySelection', disownedNodeIndicators: NodeIndicatorInPlot[] }
@@ -215,7 +215,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           newNode: { label: '', ...(
             'targetChildIds' in action
               ? { targetChildIds: action.targetChildIds }
-              : { targetSlice: action.targetSlice }
+              : { targetSlice: action.targetSlice, triangle: action.triangle }
             )
           },
         }),

@@ -15,7 +15,7 @@ type InsertedNodeCommon = NodeCommon & { targetParentId?: Id; }
 
 type InsertedBranchingNode = InsertedNodeCommon & { targetChildIds: Id[]; };
 
-type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: StringSlice; };
+type InsertedTerminalNode = InsertedNodeCommon & { targetSlice: StringSlice; triangle: boolean; };
 
 export type InsertedNode = InsertedBranchingNode | InsertedTerminalNode;
 
@@ -71,7 +71,7 @@ const insertNode =
           label: insertedNode.label,
           offset: { dTreeX: 0, dTreeY: 0 },
           slice: insertedNode.targetSlice,
-          triangle: false,
+          triangle: insertedNode.triangle,
         },
       };
     return insertedNode.targetParentId
