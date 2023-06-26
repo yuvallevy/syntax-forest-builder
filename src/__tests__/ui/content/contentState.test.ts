@@ -23,8 +23,20 @@ describe('content state', () => {
             offset: { dPlotX: 60, dPlotY: 0 },
             sentence: 'nodes rock',
           },
-        }
-      }
+        },
+      },
+      {
+        trees: {
+          'aa': {
+            nodes: {
+              'a': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 6], triangle: false },
+              'b': { label: 'VP', offset: { dTreeX: 1, dTreeY: 10 }, slice: [7, 13], triangle: true },
+            },
+            offset: { dPlotX: 20, dPlotY: 10 },
+            sentence: 'syntax is fun',
+          },
+        },
+      },
     ],
   };
 
@@ -35,6 +47,14 @@ describe('content state', () => {
   };
 
   const testCases: [string, ContentAction][] = [
+    [
+      'adds a plot',
+      { type: 'addPlot' }
+    ],
+    [
+      'deletes a plot',
+      { type: 'deletePlot', plotIndex: 0 }
+    ],
     [
       'inserts a node into a tree',
       { type: 'insertNode', plotIndex: 0, treeId: 'aa', newNodeId: 'c', newNode: { label: 'NP', targetChildIds: ['a', 'b'] } }
