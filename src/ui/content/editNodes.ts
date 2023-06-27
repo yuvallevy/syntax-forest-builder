@@ -26,13 +26,14 @@ const getWordRange = (sentence: Sentence, position: number): [start: number, end
 export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sentence): InsertedNode => {
   // A slice of the sentence is selected
   if (isSliceSelection(selection)) {
-    const [sliceStart, sliceEnd] = selection.slice;
-    const selectedSlice = sliceStart !== sliceEnd
+    const [rawSliceStart, rawSliceEnd] = selection.slice;
+    const sliceAfterSpread = rawSliceStart !== rawSliceEnd
       ? selection.slice
-      : getWordRange(sentence, sliceStart);
+      : getWordRange(sentence, rawSliceStart);
+    const [sliceStartAfterSpread, sliceEndAfterSpread] = sliceAfterSpread;
     return {
-      targetSlice: selectedSlice,
-      triangle: sentence.slice(selectedSlice[0], selectedSlice[1]).includes(' '),
+      targetSlice: sliceAfterSpread,
+      triangle: sentence.slice(sliceStartAfterSpread, sliceEndAfterSpread).includes(' '),
       label: '',
     };
   }
