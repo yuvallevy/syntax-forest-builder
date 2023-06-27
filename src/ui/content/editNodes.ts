@@ -32,7 +32,7 @@ export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sente
       : getWordRange(sentence, sliceStart);
     return {
       targetSlice: selectedSlice,
-      triangle: false,
+      triangle: sentence.slice(selectedSlice[0], selectedSlice[1]).includes(' '),
       label: '',
     };
   }
