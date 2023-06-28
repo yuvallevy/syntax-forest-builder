@@ -1,9 +1,12 @@
-import { Id } from '../../content/types';
+import { Id, NodeLabel } from '../../content/types';
 import { filterPositionedNodesInTreeById } from '../../content/positioned/positionedEntityHelpers';
 import { calculateNodeCenterOnPlot, ClientCoords, plotCoordsToClientCoords } from '../coords';
 import { useState } from 'react';
-import './LabelNodeEditor.scss';
 import { PositionedTree } from '../../content/positioned/types';
+import { allTopLevelInPlot } from '../../content/unpositioned/plotManipulation';
+import './LabelNodeEditor.scss';
+import { generateNodeId } from '../content/generateId';
+import useUiState from '../useUiState';
 
 interface LabelNodeEditorInputProps {
   value: string;
@@ -16,8 +19,6 @@ interface LabelNodeEditorInputProps {
 interface LabelNodeEditorProps {
   tree: PositionedTree;
   nodeId: Id;
-  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
@@ -26,16 +27,6 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   onInput,
   onBlur,
   onKeyDown,
-// }) => <TextInput
-//   className="LabelNodeEditorInput"
-//   value={value}
-//   autoFocus
-//   size="xs"
-//   sx={{ left: baseCoords.clientX, top: baseCoords.clientY }}
-//   onInput={e => onInput(e.currentTarget.value)}
-//   // onBlur={onBlur}
-//   onKeyDown={onKeyDown}
-// />;
 }) => <input
   type="text"
   className="LabelNodeEditorInput"
@@ -50,20 +41,49 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
 const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   tree,
   nodeId,
-  onBlur,
-  onKeyDown,
 }) => {
+  const { state, dispatch } = useUiState();
+
   const editedNodeObject = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
   const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeObject));
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
+
+  const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
+
+  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
+  const stopEditing = () => dispatch({ type: 'stopEditing' });
+  const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
+  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
+
+  const handleNodeEditorBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    setEditedNodeLabel(event.currentTarget.value);
+    stopEditing();
+  };
+
+  const handleNodeEditorKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!state.editedNodeIndicator) return;
+    if (event.key === 'ArrowUp') {
+      setEditedNodeLabel(event.currentTarget.value);
+      if (allTopLevelInPlot([state.editedNodeIndicator])(unpositionedPlot)) {
+        addNode();
+      } else {
+        selectParentNodes();
+      }
+    } else if (event.key === 'Enter') {
+      setEditedNodeLabel(event.currentTarget.value);
+      stopEditing();
+    } else if (event.key === 'Escape') {
+      stopEditing();
+    }
+  };
 
   return <LabelNodeEditorInput
     key={`editable-node-${nodeId}`}
     value={inputValue}
     baseCoords={nodePositionOnPlot}
     onInput={setInputValue}
-    onBlur={onBlur}
-    onKeyDown={onKeyDown}
+    onBlur={handleNodeEditorBlur}
+    onKeyDown={handleNodeEditorKeyDown}
   />;
 };
 

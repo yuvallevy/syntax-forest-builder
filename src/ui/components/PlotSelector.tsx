@@ -1,28 +1,28 @@
 import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';
-import { UnpositionedPlot } from '../../content/unpositioned/types';
 import { isEmpty } from '../../util/objTransforms';
 import { PlotIndex } from '../../content/types';
 import './PlotSelector.scss';
+import useUiState from '../useUiState';
 
-interface PlotSelectorProps {
-  plots: UnpositionedPlot[];
-  activePlotIndex: PlotIndex;
-  onPlotSelect: (newIndex: PlotIndex) => void;
-  onPlotAdd: () => void;
-  onPlotDelete: (plotIndex: PlotIndex) => void;
-}
+const PlotSelector: React.FC = () => {
+  const { state, dispatch } = useUiState();
 
-const PlotSelector: React.FC<PlotSelectorProps> = ({ plots, activePlotIndex, onPlotSelect, onPlotAdd, onPlotDelete }) => {
+  const plots = state.contentState.current.plots;
+  const activePlotIndex = state.activePlotIndex;
+
+  const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch({ type: 'setActivePlotIndex', newPlotIndex });
+  const addPlot = () => dispatch({ type: 'addPlot' });
+  const deletePlot = (plotIndex: PlotIndex) => dispatch({ type: 'deletePlot', plotIndex });
+
   return <Paper sx={{ position: 'fixed', left: 0, right: 0, bottom: 0 }}>
-    <Tabs value={activePlotIndex.toString()} onTabChange={newValue => onPlotSelect(Number(newValue))} inverted>
+    <Tabs value={activePlotIndex.toString()} onTabChange={newValue => setActivePlotIndex(Number(newValue))} inverted>
       <Tabs.List>
         {plots.map((plot, index) => {
           const IconComponent =
             isEmpty(plot.trees) ? IconFile : Object.keys(plot.trees).length === 1 ? IconTree : IconTrees;
-          return <div className="PlotSelector--tab-container">
+          return <div className="PlotSelector--tab-container" key={index}>
             <Tabs.Tab
-              key={index}
               value={index.toString()}
               icon={<IconComponent size="0.8rem" />}
               className={index === activePlotIndex ? 'PlotSelector--tab-button--selected' : ''}
@@ -36,7 +36,7 @@ const PlotSelector: React.FC<PlotSelectorProps> = ({ plots, activePlotIndex, onP
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => onPlotDelete(index)}>
+                <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => deletePlot(index)}>
                   Delete this plot
                 </Menu.Item>
               </Menu.Dropdown>
@@ -46,7 +46,7 @@ const PlotSelector: React.FC<PlotSelectorProps> = ({ plots, activePlotIndex, onP
         <Tooltip label="New plot">
           <Tabs.Tab
             value="newPlot"
-            onClick={onPlotAdd}
+            onClick={addPlot}
             icon={<IconFilePlus size="0.8rem" />}
           />
         </Tooltip>

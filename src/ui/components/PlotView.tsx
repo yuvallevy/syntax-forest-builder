@@ -1,57 +1,47 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { filterEntries, mapEntries, transformValues } from '../../util/objTransforms';
-import { Id, StringSlice, Sentence, NodeIndicatorInPlot } from '../../content/types';
+import { NodeIndicatorInPlot } from '../../content/types';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import { ClientCoords, ClientCoordsOffset, clientRectToPlotRect } from '../coords';
 import { filterPositionedNodesInTree } from '../../content/positioned/positionedEntityHelpers';
-import { isNodeInRect, NodeSelectionMode } from '../selection';
-import { NodeCreationTrigger } from '../nodeCreationTriggers';
-import { PositionedPlot } from '../../content/positioned/types';
+import {
+  applySelection, isNodeInRect, isNodeSelection, NodeSelectionMode, SelectionInPlot
+} from '../selection';
 import './PlotView.scss';
+import { PositionedPlot } from '../../content/positioned/types';
+import { applyNodePositionsToPlot } from '../../content/positioned/positioning';
+import strWidth from '../strWidth';
+import useUiState from '../useUiState';
+import { PlotCoordsOffset } from '../../content/unpositioned/types';
+import { generateTreeId } from '../content/generateId';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
 
-interface PlotViewProps {
-  plot: PositionedPlot;
-  selectedNodeIndicators: NodeIndicatorInPlot[];
-  editedNodeIndicator: NodeIndicatorInPlot | undefined;
-  onClick: (event: React.MouseEvent<SVGElement>) => void;
-  onNodesSelect: (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode) => void;
-  onSliceSelect: (treeId: Id, slice: StringSlice) => void;
-  onNodeEditStart: () => void;
-  onNodeMove: (dx: number, dy: number) => void;
-  onNodeCreationTriggerClick: (treeId: Id, trigger: NodeCreationTrigger) => void;
-  onSentenceBlur: (treeId: Id, event: React.FocusEvent<HTMLInputElement>) => void;
-  onSentenceChange: (treeId: Id, newSentence: Sentence, oldSelection: StringSlice) => void;
-  onSentenceKeyDown: (treeId: Id, event: React.KeyboardEvent<HTMLInputElement>) => void;
-  onNodeEditorBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onNodeEditorKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-}
+const PlotView: React.FC = () => {
+  const { state, dispatch } = useUiState();
 
-const PlotView: React.FC<PlotViewProps> = ({
-  plot,
-  selectedNodeIndicators,
-  editedNodeIndicator,
-  onClick,
-  onNodesSelect,
-  onSliceSelect,
-  onNodeEditStart,
-  onNodeMove,
-  onNodeCreationTriggerClick,
-  onSentenceBlur,
-  onSentenceChange,
-  onSentenceKeyDown,
-  onNodeEditorBlur,
-  onNodeEditorKeyDown,
-}) => {
+  const nothingSelected = isNodeSelection(state.selection) && state.selection.nodeIndicators.length === 0;
+  const selectedNodeIndicators = isNodeSelection(state.selection) ? state.selection.nodeIndicators : [];
+  const { editedNodeIndicator } = state;
+
+  const plot: PositionedPlot = useMemo(() => {
+    const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
+    return applyNodePositionsToPlot(strWidth)(unpositionedPlot);
+  }, [state.contentState, state.activePlotIndex]);
+
+  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
+  const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
+  const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'adoptNodesBySelection', adoptedNodeIndicators });
+  const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
+
   const [dragStartCoords, setDragStartCoords] = useState<ClientCoords | undefined>();
   const [dragEndCoords, setDragEndCoords] = useState<ClientCoords | undefined>();
   const [mouseInteractionMode, setMouseInteractionMode] = useState<'idle' | 'selecting' | 'draggingNodes'>('idle');
-
-  const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
 
   const selectionBoxTopLeft: ClientCoords | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? {
     clientX: Math.min(dragStartCoords.clientX, dragEndCoords.clientX),
@@ -67,6 +57,26 @@ const PlotView: React.FC<PlotViewProps> = ({
     dClientX: dragEndCoords.clientX - dragStartCoords.clientX,
     dClientY: dragEndCoords.clientY - dragStartCoords.clientY,
   } : undefined;
+
+  const addTreeAndFocus = (position: PlotCoordsOffset) => {
+    const newTreeId = generateTreeId();
+    dispatch({ type: 'addTree', newTreeId, offset: position });
+    setTimeout(() =>
+      (document.querySelector(`input#${newTreeId}`) as (HTMLInputElement | null))?.focus(), 50);
+  };
+
+  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = 'set') =>
+    state.selectionAction === 'adopt' ? adoptNodes(nodeIndicators)
+      : state.selectionAction === 'disown' ? disownNodes(nodeIndicators)
+      : setSelection({ nodeIndicators: applySelection(mode, nodeIndicators, selectedNodeIndicators) });
+
+  const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
+    if (nothingSelected) {
+      addTreeAndFocus({ dPlotX: event.clientX, dPlotY: event.clientY });
+    } else {
+      setSelection({ nodeIndicators: [] });
+    }
+  };
 
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.currentTarget === event.target) {  // Only start a selection box from an empty area
@@ -100,11 +110,11 @@ const PlotView: React.FC<PlotViewProps> = ({
         .reduce(
           (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
           [] as NodeIndicatorInPlot[]);
-      onNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'add' : 'set');
+      handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'add' : 'set');
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
-      onNodeMove(dragOffset.dClientX, dragOffset.dClientY);
+      moveNodes(dragOffset.dClientX, dragOffset.dClientY);
     } else if (dragStartCoords && event.currentTarget === event.target) {
-      onClick(event);
+      handlePlotClick(event);
     }
     setDragStartCoords(undefined);
     setDragEndCoords(undefined);
@@ -135,12 +145,8 @@ const PlotView: React.FC<PlotViewProps> = ({
           key={`tree-${treeId}`}
           treeId={treeId}
           tree={tree}
-          selectedNodeIds={selectedNodeIds}
           nodeDragOffset={mouseInteractionMode === 'draggingNodes' ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}
-          onSingleNodeSelect={(nodeId, mode) => onNodesSelect([{ treeId, nodeId }], mode)}
-          onNodeEditStart={onNodeEditStart}
-          onNodeCreationTriggerClick={trigger => onNodeCreationTriggerClick(treeId, trigger)}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView--selection-box"
@@ -156,17 +162,11 @@ const PlotView: React.FC<PlotViewProps> = ({
         tree={tree}
         treeId={treeId}
         className={selectionBoxTopLeft && selectionBoxBottomRight ? 'box-selecting' : undefined}
-        onBlur={event => onSentenceBlur(treeId, event)}
-        onChange={(newSentence, oldSelection) => onSentenceChange(treeId, newSentence, oldSelection)}
-        onSelect={slice => onSliceSelect(treeId, slice)}
-        onKeyDown={event => onSentenceKeyDown(treeId, event)}
       />)}
     {editedNodeIndicator && <LabelNodeEditor
       key={`editable-nodes-${editedNodeIndicator.nodeId}`}
       tree={plot.trees[editedNodeIndicator.treeId]}
       nodeId={editedNodeIndicator.nodeId}
-      onBlur={onNodeEditorBlur}
-      onKeyDown={onNodeEditorKeyDown}
     />}
   </>;
 };

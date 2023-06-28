@@ -1,7 +1,12 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { StringSlice, Sentence, Id } from '../../content/types';
 import { PositionedTree } from '../../content/positioned/types';
 import './SentenceView.scss';
+import { isEmpty } from '../../util/objTransforms';
+import { isSliceSelection, SelectionInPlot } from '../selection';
+import { getNodeIdsAssignedToSlice } from '../../content/unpositioned/manipulation';
+import { generateNodeId } from '../content/generateId';
+import useUiState from '../useUiState';
 
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
 const EMPTY_SENTENCE_WIDTH = 120;
@@ -15,10 +20,6 @@ interface SentenceViewProps {
   tree: PositionedTree;
   treeId: Id;
   className?: string;
-  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onChange: (newSentence: Sentence, oldSelectedSlice: StringSlice) => void;
-  onSelect: (slice: StringSlice) => void;
-  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
@@ -30,11 +31,56 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   tree,
   treeId,
   className,
-  onBlur,
-  onChange,
-  onSelect,
-  onKeyDown,
 }) => {
+  const { state, dispatch } = useUiState();
+
+  const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
+
+  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
+  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
+  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
+  const undo = () => dispatch({ type: 'undo' });
+  const redo = () => dispatch({ type: 'redo' });
+
+  const handleSliceSelect = (slice: StringSlice) => setSelection({ treeId, slice });
+
+  const removeAndDeselectTree = (treeId: Id) => {
+    dispatch({ type: 'removeTree', treeId });
+    setSelection({ nodeIndicators: [] });
+  };
+
+  const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value.trim() === '' && isEmpty(unpositionedPlot.trees[treeId].nodes)) {
+      removeAndDeselectTree(treeId);
+    }
+  };
+
+  const handleSentenceChange = (newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
+    type: 'setSentence',
+    newSentence,
+    oldSelectedSlice,
+  });
+
+  const handleSentenceKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowUp') {
+      event.currentTarget.blur();
+      if (isSliceSelection(state.selection) &&
+        getNodeIdsAssignedToSlice(state.selection.slice)(unpositionedPlot.trees[state.selection.treeId]).length === 0) {
+        addNode();
+      } else {
+        selectParentNodes();
+      }
+    } else if ((event.key === 'Backspace' || event.key === 'Delete') && event.currentTarget.value === '') {
+      removeAndDeselectTree(treeId);
+    } else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      undo();
+    } else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      redo();
+    }
+  };
+
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
@@ -50,15 +96,15 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       width: tree.sentence.length === 0 ? EMPTY_SENTENCE_WIDTH : tree.width + EXTRA_SENTENCE_WIDTH,
     }}
     placeholder="Type a sentence..."
-    onBlur={onBlur}
-    onInput={e => onChange(e.currentTarget.value,
+    onBlur={handleSentenceBlur}
+    onInput={e => handleSentenceChange(e.currentTarget.value,
       oldSelection.current || [e.currentTarget.value.length, e.currentTarget.value.length])}
     onSelect={e => {
       const slice = getSelectionSlice(e.currentTarget);
-      if (slice) onSelect(slice);
+      if (slice) handleSliceSelect(slice);
       oldSelection.current = getSelectionSlice(e.currentTarget);
     }}
-    onKeyDown={onKeyDown}
+    onKeyDown={handleSentenceKeyDown}
   />;
 };
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { mapEntries } from '../../util/objTransforms';
 import {
-  Id, IdMap
+  Id, IdMap, NodeIndicatorInPlot
 } from '../../content/types';
 import './TreeView.scss';
-import { NodeSelectionMode } from '../selection';
+import { applySelection, isNodeSelection, NodeSelectionMode, SelectionInPlot } from '../selection';
 import { NodeCreationTrigger, getNodeCreationTriggersForTree } from '../nodeCreationTriggers';
 import { ClientCoordsOffset } from '../coords';
 import strWidth from '../strWidth';
@@ -12,6 +12,8 @@ import {
   PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
 } from '../../content/positioned/types';
 import { isTopLevel } from '../../content/positioned/positionedEntityHelpers';
+import { generateNodeId } from '../content/generateId';
+import useUiState from '../useUiState';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -29,12 +31,8 @@ interface NodeCreationTriggerClickZoneProps {
 interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
-  selectedNodeIds: Id[];
   nodeDragOffset?: ClientCoordsOffset;
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
-  onSingleNodeSelect?: (nodeId: Id, mode: NodeSelectionMode) => void;
-  onNodeEditStart?: () => void;
-  onNodeCreationTriggerClick?: (trigger: NodeCreationTrigger) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
@@ -148,22 +146,50 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
 const TreeView: React.FC<TreeViewProps> = ({
   treeId,
   tree,
-  selectedNodeIds,
   nodeDragOffset,
   onNodeMouseDown,
-  onSingleNodeSelect,
-  onNodeEditStart,
-  onNodeCreationTriggerClick,
-}) =>
-  <g id={`tree-${treeId}`} style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
+}) => {
+  const { state, dispatch } = useUiState();
+
+  const selectedNodeIndicators = isNodeSelection(state.selection) ? state.selection.nodeIndicators : [];
+  const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
+
+  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
+  const startEditing = () => dispatch({ type: 'startEditing' });
+  const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'adoptNodesBySelection', adoptedNodeIndicators });
+  const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
+    dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
+
+  const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = 'set') =>
+    state.selectionAction === 'adopt' ? adoptNodes([{ treeId, nodeId }])
+      : state.selectionAction === 'disown' ? disownNodes([{ treeId, nodeId }])
+      : setSelection({ nodeIndicators: applySelection(mode, [{ treeId, nodeId }], selectedNodeIndicators) });
+
+  const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
+    dispatch({
+      type: 'addNodeByTarget',
+      treeId,
+      newNodeId: generateNodeId(),
+      ...(
+        'childIds' in trigger
+          ? { targetChildIds: trigger.childIds }
+          : { targetSlice: trigger.slice, triangle: false }
+      ),
+    });
+  };
+
+  return <g id={`tree-${treeId}`}
+            style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
     {getNodeCreationTriggersForTree(strWidth)(tree).map(trigger => <NodeCreationTriggerClickZone
       trigger={trigger}
       key={'childIds' in trigger ? trigger.childIds.join() : trigger.slice.join()}
-      onClick={() => onNodeCreationTriggerClick && onNodeCreationTriggerClick(trigger)}
+      onClick={() => handleNodeCreationTriggerClick(trigger)}
     />)}
     {mapEntries(tree.nodes, ([nodeId, node]) =>
-      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, onSingleNodeSelect,
-        onNodeEditStart))}
+      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
+        startEditing))}
   </g>;
+};
 
 export default TreeView;

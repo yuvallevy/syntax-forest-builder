@@ -7,9 +7,9 @@ import {
   IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant, IconWritingSign
 } from '@tabler/icons-react';
 import generateSentence from './generateSentence';
+import useUiState from '../../useUiState';
 
 interface BeginnersGuideProps {
-  plotState: UnpositionedPlot;
   onComplete: () => void;
 }
 
@@ -64,8 +64,12 @@ const steps = [
   },
 ];
 
-const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ plotState, onComplete }) => {
+const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
+  const { state } = useUiState();
+
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+
+  const plotState = state.contentState.current.plots[state.activePlotIndex];
   const previousPlotState = useRef<UnpositionedPlot>();
 
   useEffect(() => {
