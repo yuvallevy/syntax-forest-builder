@@ -1,11 +1,9 @@
-import { useMemo, useReducer, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
 import { applyNodePositionsToPlot } from './content/positioned/positioning';
-import {
-  Id, StringSlice, Sentence, NodeIndicatorInPlot, NodeLabel, PlotIndex
-} from './content/types';
+import { Id, NodeIndicatorInPlot, NodeLabel, PlotIndex, Sentence, StringSlice } from './content/types';
 import PlotView from './ui/components/PlotView';
 import strWidth from './ui/strWidth';
 import { generateNodeId, generateTreeId } from './ui/content/generateId';
@@ -13,7 +11,7 @@ import { applySelection, isNodeSelection, isSliceSelection, NodeSelectionMode, S
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { allTopLevelInPlot } from './content/unpositioned/plotManipulation';
 import { getNodeIdsAssignedToSlice } from './content/unpositioned/manipulation';
-import { canRedo, canUndo, initialUiState, uiReducer } from './ui/uiState';
+import { canRedo, canUndo } from './ui/uiState';
 import Toolbox, { ToolboxItem } from './ui/components/Toolbox';
 import { NodeCreationTrigger } from './ui/nodeCreationTriggers';
 import {
@@ -29,9 +27,10 @@ import {
   isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot, UnpositionedTerminalNode
 } from './content/unpositioned/types';
 import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './ui/components/icons';
+import useUiState from './ui/useUiState';
 
 const App = () => {
-  const [state, dispatch] = useReducer(uiReducer, initialUiState);
+  const { state, dispatch } = useUiState();
   const { selection, activePlotIndex, editedNodeIndicator, selectionAction } = state;
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
