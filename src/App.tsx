@@ -75,6 +75,13 @@ const App = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
+  useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
+    if (isNodeSelection(state.selection) && state.selection.nodeIndicators.length === 1) {
+      startEditing();  // For some reason the key press passes right through to the newly-created input.
+                       // This seems unreliable. TODO: test cross-browser and on different computers
+    }
+  });
+
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView />
     <Toolbox />
