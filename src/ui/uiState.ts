@@ -96,13 +96,15 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         editedNodeIndicator: undefined,
       };
     case 'deletePlot': {
-      const newContentState = contentReducer(state.contentState, action);
+      const isLastRemainingPlot = state.contentState.current.plots.length === 1;
+      const newContentState = contentReducer(state.contentState,
+        isLastRemainingPlot ? { ...action, type: 'resetPlot' } : action);
       const newActivePlotIndex = state.activePlotIndex < newContentState.current.plots.length ? state.activePlotIndex
         : newContentState.current.plots.length - 1;
       return {
         ...state,
         contentState: newContentState,
-        activePlotIndex: newActivePlotIndex,  // TODO: Why does this refuse to change?
+        activePlotIndex: newActivePlotIndex,
         selection: { nodeIndicators: [] },
         selectionAction: 'select',
         editedNodeIndicator: undefined,
