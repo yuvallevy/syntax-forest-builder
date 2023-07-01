@@ -1,6 +1,8 @@
 import { Id, NodeIndicatorInPlot } from '../types';
 import { flatten, mapEntries, transformValuesByEntry } from '../../util/objTransforms';
-import { deleteNodesInTree, getParentNodeIdsInTree, NodeTransformFunc, transformNodesInTree } from './manipulation';
+import {
+  deleteNodesInTree, getChildNodeIdsInTree, getParentNodeIdsInTree, NodeTransformFunc, transformNodesInTree
+} from './manipulation';
 import { UnpositionedPlot } from './types';
 
 /**
@@ -21,6 +23,17 @@ export const getParentNodeIdsInPlot =
     flatten(mapEntries(
       groupNodeIdsByTree(nodeIndicators),
       ([treeId, nodeIds]) => getParentNodeIdsInTree(nodeIds)(plot.trees[treeId]).map(nodeId => ({ treeId, nodeId })),
+    ));
+
+/**
+ * Returns a list of tree and node IDs referring to the children of the given nodes.
+ */
+export const getChildNodeIdsInPlot =
+  (nodeIndicators: NodeIndicatorInPlot[]) =>
+  (plot: UnpositionedPlot): NodeIndicatorInPlot[] =>
+    flatten(mapEntries(
+      groupNodeIdsByTree(nodeIndicators),
+      ([treeId, nodeIds]) => getChildNodeIdsInTree(nodeIds)(plot.trees[treeId]).map(nodeId => ({ treeId, nodeId })),
     ));
 
 /**

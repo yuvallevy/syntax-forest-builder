@@ -193,6 +193,14 @@ export const getParentNodeIdsInTree =
     filterNodeIdsByNode(tree)(node =>
       isBranching(node) && nodeIds.some(selectedNodeId => node.children.includes(selectedNodeId)));
 
+export const getChildNodeIdsInTree =
+  (nodeIds: Id[]) =>
+  (tree: UnpositionedTree): Id[] =>
+    flatten(nodeIds.map(nodeId => {
+      const node = tree.nodes[nodeId];
+      return isBranching(node) ? node.children : [];
+    }));
+
 export const getNodeIdsAssignedToSlice =
   (slice: StringSlice) =>
   (tree: UnpositionedTree): Id[] =>

@@ -5,7 +5,7 @@ import * as UndoRedoHistory from '../util/UndoRedoHistory';
 import { newNodeFromSelection } from './content/editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './content/contentState';
 import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
-import { getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
+import { getChildNodeIdsInPlot, getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
 import { sortNodesByXCoord } from '../content/positioned/positioning';
 import {
   isNodeSelection, isSliceSelection, NodeSelectionAction, NodeSelectionInPlot, pruneSelection, SelectionInPlot
@@ -235,7 +235,12 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           plotIndex: state.activePlotIndex,
           nodeIndicators: state.selection.nodeIndicators,
         }),
-        selection: { nodeIndicators: [] },
+        selection: {
+          nodeIndicators: state.selection.nodeIndicators.length === 1
+            ? getChildNodeIdsInPlot(state.selection.nodeIndicators)(activePlot)
+            : []  // TODO: Make this also work when multiple nodes are selected
+                  // (need to handle the case where two selected nodes are parent and child - potentially tricky)
+        },
         selectionAction: 'select',
       };
     }
