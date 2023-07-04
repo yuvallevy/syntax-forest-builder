@@ -12,6 +12,7 @@ import {
 } from './selection';
 import strWidth from './strWidth';
 import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
+import { without } from '../util/objTransforms';
 
 export type UiAction =
   | { type: 'setActivePlotIndex', newPlotIndex: PlotIndex }
@@ -236,10 +237,12 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           nodeIndicators: state.selection.nodeIndicators,
         }),
         selection: {
-          nodeIndicators: state.selection.nodeIndicators.length === 1
-            ? getChildNodeIdsInPlot(state.selection.nodeIndicators)(activePlot)
-            : []  // TODO: Make this also work when multiple nodes are selected
-                  // (need to handle the case where two selected nodes are parent and child - potentially tricky)
+          nodeIndicators: without(
+            getChildNodeIdsInPlot(state.selection.nodeIndicators)(activePlot),
+            // Currently selected nodes are about to be deleted, so they should not be selected after deletion
+            // (this can happen when two deleted nodes are parent and child)
+            state.selection.nodeIndicators,
+          ),
         },
         selectionAction: 'select',
       };

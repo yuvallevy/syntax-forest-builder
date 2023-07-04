@@ -28,8 +28,20 @@ export const filterEntries = <K extends string, V>(record: Record<K, V>, predica
 export const associateWith = <T extends string, V>(array: T[], transform: (element: T) => V) =>
   array.reduce((accum, element) => ({ ...accum, [element]: transform(element) }), {} as Record<T, V>)
 
-export const without = <T>(array: T[], elementsToRemove: T[]): T[] =>
+const deepEqual = <T>(obj1: T, obj2: T) => JSON.stringify(obj1) === JSON.stringify(obj2);  // TODO: Find a better way
+
+const deepIncludes = <T>(array: T[], element: T) => !!array.find(currentElement => deepEqual(currentElement, element));
+
+const deepWithout = <T>(array: T[], elementsToRemove: T[]) =>
+  array.reduce((accum, element) => deepIncludes(elementsToRemove, element) ? accum : [...accum, element], [] as T[]);
+
+const shallowWithout = <T>(array: T[], elementsToRemove: T[]): T[] =>
   array.reduce((accum, element) => elementsToRemove.includes(element) ? accum : [...accum, element], [] as T[]);
+
+export const without = <T>(array: T[], elementsToRemove: T[]): T[] =>
+  typeof elementsToRemove[0] === 'object'
+    ? deepWithout(array, elementsToRemove)
+    : shallowWithout(array, elementsToRemove);
 
 export const union = <T>(array1: T[], array2: T[]): T[] =>
   array2.reduce((accum, element) => array1.includes(element) ? accum : [...accum, element], array1);
