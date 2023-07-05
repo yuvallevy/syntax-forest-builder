@@ -50,30 +50,31 @@ const unassignAsChildren = (nodeIds: Id[]) => (nodes: IdMap<UnpositionedNode>) =
   return { ...node, children: filteredChildren };
 };
 
+const setNodeById =
+  (nodes: IdMap<UnpositionedNode>, nodeId: Id, newNode: UnpositionedNode) => ({ ...nodes, [nodeId]: newNode });
+
 const insertNode =
   (insertedNode: InsertedNode) =>
   (nodeId: Id) =>
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> => {
     const nodeMapWithNewNode = 'targetChildIds' in insertedNode
-      ? {
-        ...transformValues(nodes, node => isBranching(node)
+      ? setNodeById(
+        transformValues(nodes, node => isBranching(node)
           ? { ...node, children: node.children.filter(childId => !insertedNode.targetChildIds.includes(childId)) }
           : node),
-        [nodeId]: {
+        nodeId,
+        {
           label: insertedNode.label,
           offset: { dTreeX: 0, dTreeY: 0 },
           children: insertedNode.targetChildIds,
         },
-      }
-      : {
-        ...nodes,
-        [nodeId]: {
-          label: insertedNode.label,
-          offset: { dTreeX: 0, dTreeY: 0 },
-          slice: insertedNode.targetSlice,
-          triangle: insertedNode.triangle,
-        },
-      };
+      )
+      : setNodeById(nodes, nodeId, {
+        label: insertedNode.label,
+        offset: { dTreeX: 0, dTreeY: 0 },
+        slice: insertedNode.targetSlice,
+        triangle: insertedNode.triangle,
+      });
     return insertedNode.targetParentId
       ? transformNodes(node =>
         isBranching(node) ? { ...node, children: [...node.children, nodeId] } : node)(
@@ -87,7 +88,7 @@ const transformNodes =
   (nodes: IdMap<UnpositionedNode>): IdMap<UnpositionedNode> =>
     nodeIds.reduce((transformedNodes, nodeId) =>
       isIn(nodes)(nodeId)
-        ? { ...transformedNodes, [nodeId]: transformFunc(nodes[nodeId]) }
+        ? setNodeById(transformedNodes, nodeId, transformFunc(nodes[nodeId]))
         : transformedNodes,
       nodes
     );
