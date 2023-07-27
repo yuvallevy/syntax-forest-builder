@@ -7,7 +7,7 @@ import {
 import {
   isBranching, isTerminal, UnpositionedBranchingNode, UnpositionedNode, UnpositionedStrandedNode, UnpositionedTree
 } from './types';
-import slicesOverlap from '../slicesOverlap';
+import { slicesOverlap } from 'npbloom-core';
 
 export type NodeTransformFunc = (oldNode: UnpositionedNode) => UnpositionedNode;
 

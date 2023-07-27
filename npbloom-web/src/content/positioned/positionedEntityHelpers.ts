@@ -1,6 +1,6 @@
 import { associateWith, filterEntries, isEmpty, mapValues } from '../../util/objTransforms';
 import { Id, IdMap, StringSlice } from '../types';
-import slicesOverlap from '../slicesOverlap';
+import { slicesOverlap } from 'npbloom-core';
 import { PositionedNode, PositionedTree } from './types';
 
 /**

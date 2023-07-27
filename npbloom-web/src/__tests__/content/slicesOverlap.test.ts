@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import slicesOverlap from '../../content/slicesOverlap';
+import { slicesOverlap } from 'npbloom-core';
 import { StringSlice } from '../../content/types';
 
 describe('slice overlap checks', () => {
