@@ -1,94 +1,98 @@
 import { describe, expect, it } from 'vitest';
-import { applyNodePositionsToTree, sortNodesByXCoord } from '../../../content/positioned/positioning';
+import {
+  applyNodePositionsToTree, CoordsInTree, idMap, objFromIdMap, PlotCoordsOffset, PositionedTerminalNode, set,
+  sortNodesByXCoord, StringSlice, TreeCoordsOffset, TreeXRange, UnpositionedBranchingNode,
+  UnpositionedFormerlyBranchingNode, UnpositionedTerminalNode, UnpositionedTree
+} from 'npbloom-core';
 import mockStrWidth from '../../__mocks__/mockStrWidth';
-import { PositionedTerminalNode } from '../../../content/positioned/types';
-import { UnpositionedTree } from '../../../content/unpositioned/types';
-
-const zeroOffset = { offset: { dTreeX: 0, dTreeY: 0 } };
 
 describe('Node positioning', () => {
-  const treeWithTerminalNodes: UnpositionedTree = {
-    sentence: 'Noun verbs.',
-    offset: { dPlotX: 0, dPlotY: 0 },
-    nodes: {
-      'a': { label: 'N', ...zeroOffset, slice: [0, 4], triangle: false },
-      'b': { label: 'V', offset: { dTreeX: 5, dTreeY: 0 }, slice: [5, 10], triangle: false },
-    },
-  };
+  const treeWithTerminalNodes = new UnpositionedTree(
+    'Noun verbs.',
+    idMap({
+      'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+      'b': new UnpositionedTerminalNode('V', new TreeCoordsOffset(5, 0), new StringSlice(5, 10)),
+    }),
+    new PlotCoordsOffset(0, 0),
+  );
 
-  const treeWithTriangleNodes: UnpositionedTree = {
-    sentence: 'Noun verb phrases.',
-    offset: { dPlotX: 0, dPlotY: 0 },
-    nodes: {
-      'a': { label: 'N', offset: { dTreeX: 0, dTreeY: -10 }, slice: [0, 4], triangle: false },
-      'b': { label: 'VP', ...zeroOffset, slice: [5, 17], triangle: true },
-    },
-  };
+  const treeWithTriangleNodes = new UnpositionedTree(
+    'Noun verb phrases.',
+    idMap({
+      'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, -10), new StringSlice(0, 4)),
+      'b': new UnpositionedTerminalNode('VP', new TreeCoordsOffset(0, 0), new StringSlice(5, 17), true),
+    }),
+    new PlotCoordsOffset(0, 0),
+  );
 
-  const treeWithStrandedNodes: UnpositionedTree = {
-    sentence: 'Noun verbs.',
-    offset: { dPlotX: 0, dPlotY: 0 },
-    nodes: {
-      'c': { label: 'S', ...zeroOffset, formerDescendants: treeWithTerminalNodes.nodes },
-    },
-  };
+  const treeWithStrandedNodes = new UnpositionedTree(
+    'Noun verbs.',
+    idMap({
+      'c': new UnpositionedFormerlyBranchingNode('S', new TreeCoordsOffset(0, 0), treeWithTerminalNodes.nodes),
+    }),
+    new PlotCoordsOffset(0, 0),
+  );
 
-  const treeWithBranchingNodes: UnpositionedTree = {
-    ...treeWithTerminalNodes,
-    nodes: {
-      ...treeWithTerminalNodes.nodes,
-      'c': { label: 'S', ...zeroOffset, children: ['a', 'b'] },
-    },
-  };
+  const treeWithBranchingNodes = new UnpositionedTree(
+    'Noun verbs.',
+    idMap({
+      'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+      'b': new UnpositionedTerminalNode('V', new TreeCoordsOffset(5, 0), new StringSlice(5, 10)),
+      'c': new UnpositionedBranchingNode('S', new TreeCoordsOffset(0, 0), set(['a', 'b'])),
+    }),
+    new PlotCoordsOffset(0, 0),
+  );
 
-  const treeWithBranchingAndTriangleNodes: UnpositionedTree = {
-    ...treeWithTriangleNodes,
-    nodes: {
-      ...treeWithTriangleNodes.nodes,
-      'c': { label: 'S', ...zeroOffset, children: ['a', 'b'] },
-    },
-  };
+  const treeWithBranchingAndTriangleNodes = new UnpositionedTree(
+    'Noun verb phrases.',
+    idMap({
+      'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, -10), new StringSlice(0, 4)),
+      'b': new UnpositionedTerminalNode('VP', new TreeCoordsOffset(0, 0), new StringSlice(5, 17), true),
+      'c': new UnpositionedBranchingNode('S', new TreeCoordsOffset(0, 0), set(['a', 'b'])),
+    }),
+    new PlotCoordsOffset(0, 0),
+  );
 
   it('positions terminal nodes', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithTerminalNodes);
-    expect(result.nodes['a'].position).toStrictEqual({ treeX: 18, treeY: -2 });
-    expect(result.nodes['b'].position).toStrictEqual({ treeX: 62, treeY: -2 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithTerminalNodes);
+    expect(objFromIdMap(result.nodes)['a'].position).toStrictEqual(new CoordsInTree(18, -2));
+    expect(objFromIdMap(result.nodes)['b'].position).toStrictEqual(new CoordsInTree(62, -2));
   });
 
   it('positions terminal nodes with triangles', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithTriangleNodes);
-    expect(result.nodes['a'].position).toStrictEqual({ treeX: 18, treeY: -12 });
-    expect(result.nodes['b'].position).toStrictEqual({ treeX: 79.5, treeY: -20 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithTriangleNodes);
+    expect(objFromIdMap(result.nodes)['a'].position).toStrictEqual(new CoordsInTree(18, -12));
+    expect(objFromIdMap(result.nodes)['b'].position).toStrictEqual(new CoordsInTree(79.5, -20));
   });
 
   it('positions stranded nodes', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithStrandedNodes);
-    expect(result.nodes['c'].position).toStrictEqual({ treeX: 40, treeY: -42 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithStrandedNodes);
+    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(40, -42));
   });
 
   it('positions branching nodes', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithBranchingNodes);
-    expect(result.nodes['c'].position).toStrictEqual({ treeX: 40, treeY: -42 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithBranchingNodes);
+    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(40, -42));
   });
 
   it('positions branching and triangle nodes', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithBranchingAndTriangleNodes);
-    expect(result.nodes['c'].position).toStrictEqual({ treeX: 48.75, treeY: -60 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithBranchingAndTriangleNodes);
+    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(48.75, -60));
   });
 
   it('positions triangle vertices', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithTriangleNodes);
-    const triangleNode = result.nodes['b'] as PositionedTerminalNode;
-    expect(triangleNode.triangle).toStrictEqual({ treeX1: 40, treeX2: 119 });
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithTriangleNodes);
+    const triangleNode = objFromIdMap(result.nodes)['b'] as PositionedTerminalNode;
+    expect(triangleNode.triangle).toStrictEqual(new TreeXRange(40, 119));
   });
 
   it('sorts node IDs by X coordinate, given a tree', () => {
-    expect(sortNodesByXCoord(mockStrWidth)(treeWithBranchingNodes)(['b', 'a'])).toStrictEqual(['a', 'b']);
-    expect(sortNodesByXCoord(mockStrWidth)(treeWithBranchingNodes)(['a', 'c'])).toStrictEqual(['a', 'c']);
+    expect(sortNodesByXCoord(mockStrWidth, treeWithBranchingNodes, set(['b', 'a']))).toStrictEqual(['a', 'b']);
+    expect(sortNodesByXCoord(mockStrWidth, treeWithBranchingNodes, set(['a', 'c']))).toStrictEqual(['a', 'c']);
   });
 
   it('measures tree width', () => {
-    const result = applyNodePositionsToTree(mockStrWidth)(treeWithBranchingAndTriangleNodes);
+    const result = applyNodePositionsToTree(mockStrWidth, treeWithBranchingAndTriangleNodes);
     expect(result.width).toBe(123);
   });
 });

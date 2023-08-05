@@ -1,92 +1,81 @@
 import { describe, expect, it } from 'vitest';
 import {
-  deleteNodesInPlot, getParentNodeIdsInPlot, transformNodesInPlot
-} from '../../../content/unpositioned/plotManipulation';
-import { UnpositionedPlot } from '../../../content/unpositioned/types';
+  deleteNodesInPlot, getParentNodeIdsInPlot, idMap, jsTreeMapRepr, NodeIndicatorInPlot, PlotCoordsOffset, set,
+  StringSlice, transformNodesInPlot, TreeCoordsOffset, UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot,
+  UnpositionedTerminalNode, UnpositionedTree
+} from 'npbloom-core';
 
 describe('plot manipulation', () => {
-  const plot: UnpositionedPlot = {
-    trees: {
-      'cleo': {
-        sentence: 'Cleo laughed.',
-        nodes: {
-          's1': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['np1', 'vp1'] },
-          'np1': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['n1'] },
-          'n1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-          'vp1': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 12], triangle: false },
-        },
-        offset: { dPlotX: 0, dPlotY: 0 },
-      },
-      'alex': {
-        sentence: 'Alex baked cookies.',
-        nodes: {
-          's2': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['np2a', 'vp2'] },
-          'np2a': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['n2'] },
-          'n2': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-          'vp2': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['v2', 'np2b'] },
-          'v2': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10], triangle: false },
-          'np2b': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [11, 18], triangle: false },
-        },
-        offset: { dPlotX: 0, dPlotY: 0 },
-      },
-    },
+  const plot = new UnpositionedPlot(
+    idMap({
+      'cleo': new UnpositionedTree(
+        'Cleo laughed.',
+        idMap({
+          's1': new UnpositionedBranchingNode('S', new TreeCoordsOffset(0, 5), set(['np1', 'vp1'])),
+          'np1': new UnpositionedBranchingNode('NP', new TreeCoordsOffset(0, 0), set(['n1'])),
+          'n1': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+          'vp1': new UnpositionedTerminalNode('VP', new TreeCoordsOffset(0, 0), new StringSlice(5, 12)),
+        }),
+        new PlotCoordsOffset(0, 0),
+      ),
+      'alex': new UnpositionedTree(
+        'Alex baked cookies.',
+        idMap({
+          's2': new UnpositionedBranchingNode('S', new TreeCoordsOffset(0, 5), set(['np2a', 'vp2'])),
+          'np2a': new UnpositionedBranchingNode('NP', new TreeCoordsOffset(0, 0), set(['n2'])),
+          'n2': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+          'vp2': new UnpositionedBranchingNode('VP', new TreeCoordsOffset(0, 0), set(['v2', 'np2b'])),
+          'v2': new UnpositionedTerminalNode('V', new TreeCoordsOffset(0, 0), new StringSlice(5, 10)),
+          'np2b': new UnpositionedTerminalNode('NP', new TreeCoordsOffset(0, 0), new StringSlice(11, 18)),
+        }),
+        new PlotCoordsOffset(0, 0),
+      ),
+    }),
+  );
+
+  const changeOffset4PxUp = (node: UnpositionedNode): UnpositionedNode => {
+    if (node instanceof UnpositionedTerminalNode) return new UnpositionedTerminalNode(
+      node.label, new TreeCoordsOffset(node.offset.dTreeX, node.offset.dTreeY - 4), node.slice, node.triangle);
+    if (node instanceof UnpositionedBranchingNode) return new UnpositionedBranchingNode(
+      node.label, new TreeCoordsOffset(node.offset.dTreeX, node.offset.dTreeY - 4), node.children);
+    throw Error("not part of test scope")
   };
 
   it('retrieves the tree ID and parent node ID of a single node', () => {
-    expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 'vp2' }])(plot))
-      .toStrictEqual([{ treeId: 'alex', nodeId: 's2' }]);
+    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'vp2')]), plot))
+      .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2')]));
   });
 
   it('retrieves the tree ID and parent node ID of two sibling nodes', () => {
-    expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 'np2a' }, { treeId: 'alex', nodeId: 'vp2' }])(plot))
-      .toStrictEqual([{ treeId: 'alex', nodeId: 's2' }]);
+    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'vp2')]), plot))
+      .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2')]));
   });
 
   it('retrieve the tree ID and parent node IDs of two non-sibling nodes on the same tree', () => {
-    expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 'np2a' }, { treeId: 'alex', nodeId: 'n2' }])(plot))
-      .toStrictEqual([{ treeId: 'alex', nodeId: 's2' }, { treeId: 'alex', nodeId: 'np2a' }]);
+    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'n2')]), plot))
+      .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2'), new NodeIndicatorInPlot('alex', 'np2a')]));
   });
 
   it('retrieves no parent node IDs for a top-level node', () => {
-    expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 's2' }])(plot))
-      .toStrictEqual([]);
+    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 's2')]), plot))
+      .toStrictEqual(set([]));
   });
 
   it('retrieves only one tree ID and parent node ID for two non-sibling nodes on the same tree, ' +
     'of which one is a top-level node', () => {
-    expect(getParentNodeIdsInPlot([{ treeId: 'alex', nodeId: 's2' }, { treeId: 'alex', nodeId: 'n2' }])(plot))
-      .toStrictEqual([{ treeId: 'alex', nodeId: 'np2a' }]);
+    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 's2'), new NodeIndicatorInPlot('alex', 'n2')]), plot))
+      .toStrictEqual(set([new NodeIndicatorInPlot('alex', 'np2a')]));
   });
 
   it('transforms nodes across multiple trees on one plot', () => {
-    expect(transformNodesInPlot(
-      node => ({ ...node, offset: { dTreeX: node.offset.dTreeX, dTreeY: node.offset.dTreeY - 4 } })
-    )([{ treeId: 'cleo', nodeId: 'np1' }, { treeId: 'alex', nodeId: 's2' }])(plot).trees).toMatchSnapshot();
+    expect(jsTreeMapRepr(transformNodesInPlot(
+      changeOffset4PxUp, set([new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 's2')]), plot
+    ).trees)).toMatchSnapshot();
   });
 
   it('deletes nodes across multiple trees on one plot', () => {
-    expect(deleteNodesInPlot(
-      [{ treeId: 'cleo', nodeId: 's1' }, { treeId: 'cleo', nodeId: 'np1' }, { treeId: 'alex', nodeId: 'vp2' }])(plot).trees)
-      .toStrictEqual({
-        'cleo': {
-          sentence: 'Cleo laughed.',
-          nodes: {
-            'n1': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-            'vp1': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 12], triangle: false },
-          },
-          offset: { dPlotX: 0, dPlotY: 0 },
-        },
-        'alex': {
-          sentence: 'Alex baked cookies.',
-          nodes: {
-            's2': { label: 'S', offset: { dTreeX: 0, dTreeY: 5 }, children: ['np2a'] },
-            'np2a': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, children: ['n2'] },
-            'n2': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-            'v2': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10], triangle: false },
-            'np2b': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [11, 18], triangle: false },
-          },
-          offset: { dPlotX: 0, dPlotY: 0 },
-        },
-      });
+    expect(jsTreeMapRepr(deleteNodesInPlot(
+      set([new NodeIndicatorInPlot('cleo', 's1'), new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 'vp2')]), plot
+    ).trees)).toMatchSnapshot();
   });
 });

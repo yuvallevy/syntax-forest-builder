@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { slicesOverlap } from 'npbloom-core';
-import { StringSlice } from '../../content/types';
+import { slicesOverlap, StringSlice } from 'npbloom-core';
 
 describe('slice overlap checks', () => {
   it.each([
@@ -14,6 +13,8 @@ describe('slice overlap checks', () => {
     [[19, 23], [16, 25], true],
     [[19, 23], [16, 23], true],
     [[16, 23], [19, 23], true],
-  ] as [StringSlice, StringSlice, boolean][])('returns whether %s and %s overlap',
-    (slice1, slice2, expected) => expect(slicesOverlap(slice1, slice2)).toBe(expected));
+  ] as [[number, number], [number, number], boolean][])('returns whether %s and %s overlap',
+    (slice1, slice2, expected) => expect(
+      slicesOverlap(new StringSlice(slice1[0], slice1[1]), new StringSlice(slice2[0], slice2[1]))
+    ).toBe(expected));
 });
