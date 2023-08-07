@@ -3,7 +3,6 @@ import { filterPositionedNodesInTreeById } from '../../content/positioned/positi
 import { calculateNodeCenterOnPlot, ClientCoords, plotCoordsToClientCoords } from '../coords';
 import { useState } from 'react';
 import { PositionedTree } from '../../content/positioned/types';
-import { allTopLevelInPlot } from '../../content/unpositioned/plotManipulation';
 import './LabelNodeEditor.scss';
 import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
@@ -64,7 +63,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     if (!state.editedNodeIndicator) return;
     if (event.key === 'ArrowUp') {
       setEditedNodeLabel(event.currentTarget.value);
-      if (allTopLevelInPlot([state.editedNodeIndicator])(unpositionedPlot)) {
+      if (unpositionedPlot.allTopLevel([state.editedNodeIndicator])) {
         addNode();
       } else {
         selectParentNodes();

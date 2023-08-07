@@ -1,7 +1,7 @@
 import { Sentence } from '../../types';
 import {
-  InsertedBranchingNode, InsertedNode, InsertedTerminalNode, set, StringSlice, transformAllNodesInTree,
-  UnpositionedNode, UnpositionedTerminalNode, UnpositionedTree
+  InsertedBranchingNode, InsertedNode, InsertedTerminalNode, set, StringSlice, UnpositionedNode,
+  UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 import { isSliceSelection, SelectionInPlot } from '../selection';
 
@@ -101,6 +101,7 @@ const shiftNodeSliceAfterChange =
  */
 export const handleLocalSentenceChange =
   (newSentence: Sentence, oldSelection: StringSlice) =>
-  (tree: UnpositionedTree): UnpositionedTree => transformAllNodesInTree(
-    shiftNodeSliceAfterChange(oldSelection, newSentence.length - tree.sentence.length),
-    new UnpositionedTree(newSentence, tree.nodes, tree.offset));
+  (tree: UnpositionedTree): UnpositionedTree =>
+    new UnpositionedTree(newSentence, tree.nodes, tree.offset).transformAllNodes(
+      shiftNodeSliceAfterChange(oldSelection, newSentence.length - tree.sentence.length),
+    );

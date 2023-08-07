@@ -7,7 +7,6 @@ import PlotView from './ui/components/PlotView';
 import { generateNodeId } from './ui/content/generateId';
 import { isNodeSelection } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { allTopLevelInPlot } from './content/unpositioned/plotManipulation';
 import Toolbox from './ui/components/Toolbox';
 import AboutButton from './ui/components/meta/AboutButton';
 import PlotSelector from './ui/components/PlotSelector';
@@ -46,7 +45,7 @@ const App = () => {
   };
 
   useHotkeys(['ArrowUp'], () => {
-    if (selectedNodeIndicators.length > 0 && allTopLevelInPlot(selectedNodeIndicators)(activePlot)) {
+    if (selectedNodeIndicators.length > 0 && activePlot.allTopLevel(selectedNodeIndicators)) {
       addNode();
     } else {
       selectParentNodes();

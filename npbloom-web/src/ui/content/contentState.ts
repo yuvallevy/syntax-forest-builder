@@ -1,7 +1,6 @@
 import {
-  adoptNodesInTree, deleteNodesInPlot, disownNodesInTree, idMap, InsertedNode, insertNodeIntoTree, NodeIndicatorInPlot,
-  PlotCoordsOffset, set, StringSlice, transformNodeInTree, transformNodesInPlot, transformNodesInTree, TreeCoordsOffset,
-  UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
+  idMap, InsertedNode, NodeIndicatorInPlot, PlotCoordsOffset, set, StringSlice, TreeCoordsOffset, UnpositionedPlot,
+  UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 import UndoRedoHistory, {
   ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon
@@ -81,7 +80,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotIndex: action.plotIndex,
         treeId: action.treeId,
         old: state.plots[action.plotIndex].tree(action.treeId),
-        new: insertNodeIntoTree(action.newNode, action.newNodeId, state.plots[action.plotIndex].tree(action.treeId)),
+        new: state.plots[action.plotIndex].tree(action.treeId).insertNode(action.newNode, action.newNodeId),
       };
     }
     case 'deleteNodes': {
@@ -89,7 +88,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setPlot',
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
-        new: deleteNodesInPlot(set(action.nodeIndicators), state.plots[action.plotIndex]),
+        new: state.plots[action.plotIndex].deleteNodes(set(action.nodeIndicators)),
       };
     }
     case 'adoptNodes': {
@@ -97,9 +96,9 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotIndex].trees[action.treeId],
-        new: adoptNodesInTree(action.adoptingNodeId, set(action.adoptedNodeIds),
-          state.plots[action.plotIndex].tree(action.treeId)),
+        old: state.plots[action.plotIndex].tree(action.treeId),
+        new: state.plots[action.plotIndex].tree(action.treeId).adoptNodes(
+          action.adoptingNodeId, set(action.adoptedNodeIds)),
       };
     }
     case 'disownNodes': {
@@ -107,9 +106,9 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotIndex].trees[action.treeId],
-        new: disownNodesInTree(action.disowningNodeId, set(action.disownedNodeIds),
-          state.plots[action.plotIndex].tree(action.treeId)),
+        old: state.plots[action.plotIndex].tree(action.treeId),
+        new: state.plots[action.plotIndex].tree(action.treeId).disownNodes(
+          action.disowningNodeId, set(action.disownedNodeIds),),
       };
     }
     case 'moveNodes': {
@@ -117,10 +116,9 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setPlot',
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
-        new: transformNodesInPlot(
+        new: state.plots[action.plotIndex].transformNodes(
           node => node.changeOffset(new TreeCoordsOffset(action.dx, action.dy)),
           set(action.nodeIndicators),
-          state.plots[action.plotIndex]
         ),
       }
     }
@@ -129,10 +127,9 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setPlot',
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
-        new: transformNodesInPlot(
+        new: state.plots[action.plotIndex].transformNodes(
           node => node.withOffset(TreeCoordsOffset.Companion.ZERO),
           set(action.nodeIndicators),
-          state.plots[action.plotIndex]
         ),
       };
     }
@@ -141,11 +138,10 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId: action.nodeIndicator.treeId,
-        old: state.plots[action.plotIndex].trees[action.nodeIndicator.treeId],
-        new: transformNodeInTree(
-          node => node.withLabel(action.newLabel),
+        old: state.plots[action.plotIndex].tree(action.nodeIndicator.treeId),
+        new: state.plots[action.plotIndex].tree(action.nodeIndicator.treeId).transformNode(
           action.nodeIndicator.nodeId,
-          state.plots[action.plotIndex].tree(action.nodeIndicator.treeId)
+          node => node.withLabel(action.newLabel),
         ),
       };
     }
@@ -157,13 +153,14 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId,
-        old: state.plots[action.plotIndex].trees[treeId],
-        new: transformNodesInTree(node =>
+        old: state.plots[action.plotIndex].tree(treeId),
+        new: state.plots[action.plotIndex].tree(treeId).transformNodes(
+          set(nodeIds),
+          node =>
             node instanceof UnpositionedTerminalNode
               ? new UnpositionedTerminalNode(node.label, node.offset, node.slice, action.triangle)
               : node,
-          set(nodeIds),
-          state.plots[action.plotIndex].tree(treeId)),
+        ),
       };
     }
     case 'setSentence': {

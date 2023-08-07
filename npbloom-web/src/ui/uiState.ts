@@ -1,6 +1,6 @@
 import {
-  arrayFromSet, getChildNodeIdsInPlot, getNodeIdsAssignedToSlice, getParentNodeIdsInPlot, isBranching, isTerminal,
-  NodeIndicatorInPlot, PlotCoordsOffset, sortNodesByXCoord, StringSlice, UnpositionedPlot
+  arrayFromSet, isBranching, isTerminal, NodeIndicatorInPlot, PlotCoordsOffset, sortNodesByXCoord, StringSlice,
+  UnpositionedPlot
 } from 'npbloom-core';
 import { Id, NodeLabel, PlotIndex, Sentence } from '../types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
@@ -60,12 +60,12 @@ export const canRedo = (state: UiState) => UndoRedoHistory.canRedo(state.content
 const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot): NodeSelectionInPlot => {
   if (isSliceSelection(selection)) {
     return {
-      nodeIndicators: arrayFromSet<Id>(getNodeIdsAssignedToSlice(selection.slice, activePlot.trees[selection.treeId]))
+      nodeIndicators: arrayFromSet<Id>(activePlot.tree(selection.treeId).getNodeIdsAssignedToSlice(selection.slice))
         .map(nodeId => new NodeIndicatorInPlot(selection.treeId, nodeId))
     };
   } else {
     if (selection.nodeIndicators.length === 0) return selection;
-    const parentNodes = getParentNodeIdsInPlot(selection.nodeIndicators, activePlot);
+    const parentNodes = activePlot.getParentNodeIds(selection.nodeIndicators);
     return { nodeIndicators: parentNodes };
   }
 };
@@ -237,7 +237,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
         selection: {
           nodeIndicators: without(
-            getChildNodeIdsInPlot(state.selection.nodeIndicators, activePlot),
+            activePlot.getChildNodeIds(state.selection.nodeIndicators),
             // Currently selected nodes are about to be deleted, so they should not be selected after deletion
             // (this can happen when two deleted nodes are parent and child)
             state.selection.nodeIndicators,

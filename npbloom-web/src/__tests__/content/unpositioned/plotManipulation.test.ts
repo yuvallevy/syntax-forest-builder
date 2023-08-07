@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  deleteNodesInPlot, getParentNodeIdsInPlot, idMap, jsTreeMapRepr, NodeIndicatorInPlot, PlotCoordsOffset, set,
-  StringSlice, transformNodesInPlot, TreeCoordsOffset, UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot,
-  UnpositionedTerminalNode, UnpositionedTree
+  idMap, jsTreeMapRepr, NodeIndicatorInPlot, PlotCoordsOffset, set, StringSlice, TreeCoordsOffset,
+  UnpositionedBranchingNode, UnpositionedNode, UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 
 describe('plot manipulation', () => {
@@ -42,40 +41,40 @@ describe('plot manipulation', () => {
   };
 
   it('retrieves the tree ID and parent node ID of a single node', () => {
-    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'vp2')]), plot))
+    expect(plot.getParentNodeIds(set([new NodeIndicatorInPlot('alex', 'vp2')])))
       .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2')]));
   });
 
   it('retrieves the tree ID and parent node ID of two sibling nodes', () => {
-    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'vp2')]), plot))
+    expect(plot.getParentNodeIds(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'vp2')])))
       .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2')]));
   });
 
   it('retrieve the tree ID and parent node IDs of two non-sibling nodes on the same tree', () => {
-    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'n2')]), plot))
+    expect(plot.getParentNodeIds(set([new NodeIndicatorInPlot('alex', 'np2a'), new NodeIndicatorInPlot('alex', 'n2')])))
       .toStrictEqual(set([new NodeIndicatorInPlot('alex', 's2'), new NodeIndicatorInPlot('alex', 'np2a')]));
   });
 
   it('retrieves no parent node IDs for a top-level node', () => {
-    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 's2')]), plot))
+    expect(plot.getParentNodeIds(set([new NodeIndicatorInPlot('alex', 's2')])))
       .toStrictEqual(set([]));
   });
 
   it('retrieves only one tree ID and parent node ID for two non-sibling nodes on the same tree, ' +
     'of which one is a top-level node', () => {
-    expect(getParentNodeIdsInPlot(set([new NodeIndicatorInPlot('alex', 's2'), new NodeIndicatorInPlot('alex', 'n2')]), plot))
+    expect(plot.getParentNodeIds(set([new NodeIndicatorInPlot('alex', 's2'), new NodeIndicatorInPlot('alex', 'n2')])))
       .toStrictEqual(set([new NodeIndicatorInPlot('alex', 'np2a')]));
   });
 
   it('transforms nodes across multiple trees on one plot', () => {
-    expect(jsTreeMapRepr(transformNodesInPlot(
-      changeOffset4PxUp, set([new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 's2')]), plot
+    expect(jsTreeMapRepr(plot.transformNodes(
+      changeOffset4PxUp, set([new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 's2')])
     ).trees)).toMatchSnapshot();
   });
 
   it('deletes nodes across multiple trees on one plot', () => {
-    expect(jsTreeMapRepr(deleteNodesInPlot(
-      set([new NodeIndicatorInPlot('cleo', 's1'), new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 'vp2')]), plot
+    expect(jsTreeMapRepr(plot.deleteNodes(
+      set([new NodeIndicatorInPlot('cleo', 's1'), new NodeIndicatorInPlot('cleo', 'np1'), new NodeIndicatorInPlot('alex', 'vp2')])
     ).trees)).toMatchSnapshot();
   });
 });
