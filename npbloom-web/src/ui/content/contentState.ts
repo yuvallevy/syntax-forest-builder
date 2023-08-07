@@ -1,8 +1,7 @@
 import {
   adoptNodesInTree, deleteNodesInPlot, disownNodesInTree, idMap, InsertedNode, insertNodeIntoTree, NodeIndicatorInPlot,
   PlotCoordsOffset, set, StringSlice, transformNodeInTree, transformNodesInPlot, transformNodesInTree, TreeCoordsOffset,
-  UnpositionedBranchingNode, UnpositionedFormerlyBranchingNode, UnpositionedFormerlyTerminalNode,
-  UnpositionedPlainStrandedNode, UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
+  UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 import UndoRedoHistory, {
   ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon
@@ -118,14 +117,11 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setPlot',
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
-        new: transformNodesInPlot(node => {
-          const newOffset = new TreeCoordsOffset(node.offset.dTreeX + action.dx, node.offset.dTreeY + action.dy);
-          return node instanceof UnpositionedBranchingNode ? new UnpositionedBranchingNode(node.label, newOffset, node.children)
-            : node instanceof UnpositionedTerminalNode ? new UnpositionedTerminalNode(node.label, newOffset, node.slice, node.triangle)
-            : node instanceof UnpositionedFormerlyBranchingNode ? new UnpositionedFormerlyBranchingNode(node.label, newOffset, node.formerDescendants)
-            : node instanceof UnpositionedFormerlyTerminalNode ? new UnpositionedFormerlyTerminalNode(node.label, newOffset, node.formerSlice, node.formerlyTriangle)
-            : new UnpositionedPlainStrandedNode(node.label, newOffset);
-        }, set(action.nodeIndicators), state.plots[action.plotIndex]),
+        new: transformNodesInPlot(
+          node => node.changeOffset(new TreeCoordsOffset(action.dx, action.dy)),
+          set(action.nodeIndicators),
+          state.plots[action.plotIndex]
+        ),
       }
     }
     case 'resetNodePositions': {
@@ -133,14 +129,11 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setPlot',
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
-        new: transformNodesInPlot(node => {
-          const newOffset = new TreeCoordsOffset(0, 0);
-          return node instanceof UnpositionedBranchingNode ? new UnpositionedBranchingNode(node.label, newOffset, node.children)
-            : node instanceof UnpositionedTerminalNode ? new UnpositionedTerminalNode(node.label, newOffset, node.slice, node.triangle)
-            : node instanceof UnpositionedFormerlyBranchingNode ? new UnpositionedFormerlyBranchingNode(node.label, newOffset, node.formerDescendants)
-            : node instanceof UnpositionedFormerlyTerminalNode ? new UnpositionedFormerlyTerminalNode(node.label, newOffset, node.formerSlice, node.formerlyTriangle)
-            : new UnpositionedPlainStrandedNode(node.label, newOffset);
-        }, set(action.nodeIndicators), state.plots[action.plotIndex]),
+        new: transformNodesInPlot(
+          node => node.withOffset(TreeCoordsOffset.Companion.ZERO),
+          set(action.nodeIndicators),
+          state.plots[action.plotIndex]
+        ),
       };
     }
     case 'setNodeLabel': {
@@ -149,13 +142,11 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotIndex: action.plotIndex,
         treeId: action.nodeIndicator.treeId,
         old: state.plots[action.plotIndex].trees[action.nodeIndicator.treeId],
-        new: transformNodeInTree(node => {
-          return node instanceof UnpositionedBranchingNode ? new UnpositionedBranchingNode(action.newLabel, node.offset, node.children)
-            : node instanceof UnpositionedTerminalNode ? new UnpositionedTerminalNode(action.newLabel, node.offset, node.slice, node.triangle)
-            : node instanceof UnpositionedFormerlyBranchingNode ? new UnpositionedFormerlyBranchingNode(action.newLabel, node.offset, node.formerDescendants)
-            : node instanceof UnpositionedFormerlyTerminalNode ? new UnpositionedFormerlyTerminalNode(action.newLabel, node.offset, node.formerSlice, node.formerlyTriangle)
-            : new UnpositionedPlainStrandedNode(action.newLabel, node.offset);
-        }, action.nodeIndicator.nodeId, objFromIdMap(state.plots[action.plotIndex].trees)[action.nodeIndicator.treeId]),
+        new: transformNodeInTree(
+          node => node.withLabel(action.newLabel),
+          action.nodeIndicator.nodeId,
+          state.plots[action.plotIndex].tree(action.nodeIndicator.treeId)
+        ),
       };
     }
     case 'setTriangle': {
@@ -325,4 +316,4 @@ export const initialContentState: UndoableContentState = {
 export const contentReducer = (state: UndoableContentState, action: ContentAction | { type: 'undo' } | { type: 'redo' }): UndoableContentState =>
   action.type === 'undo' ? undo(applyUndoableAction)(reverseUndoableAction)(state)
     : action.type === 'redo' ? redo(applyUndoableAction)(state)
-    : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);
+      : applyToHistory(applyUndoableAction)({ ...makeUndoable(state.current)(action), timestamp: new Date() })(state);

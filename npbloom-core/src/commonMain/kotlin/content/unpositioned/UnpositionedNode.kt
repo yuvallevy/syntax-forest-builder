@@ -5,7 +5,9 @@ package content.unpositioned
 import content.*
 
 @JsExport
-sealed interface UnpositionedNode : NodeCommon, WithOffsetInTree
+sealed interface UnpositionedNode : NodeCommon, WithOffsetInTree {
+    fun withLabel(newLabel: NodeLabel): UnpositionedNode
+}
 
 @JsExport
 data class UnpositionedBranchingNode(
@@ -16,6 +18,10 @@ data class UnpositionedBranchingNode(
     @JsName("new")
     constructor(label: NodeLabel, offset: TreeCoordsOffset, children: Array<Id>) :
             this(label, offset, children.toSet())
+
+    override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
+
+    override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
 }
 
 @JsExport
@@ -24,7 +30,11 @@ data class UnpositionedTerminalNode(
     override val offset: TreeCoordsOffset,
     val slice: StringSlice,
     val triangle: Boolean = false,
-) : UnpositionedNode
+) : UnpositionedNode {
+    override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
+
+    override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
+}
 
 @JsExport
 sealed interface UnpositionedStrandedNode : UnpositionedNode
@@ -33,7 +43,11 @@ sealed interface UnpositionedStrandedNode : UnpositionedNode
 data class UnpositionedPlainStrandedNode(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
-) : UnpositionedStrandedNode
+) : UnpositionedStrandedNode {
+    override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
+
+    override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
+}
 
 @JsExport
 data class UnpositionedFormerlyTerminalNode(
@@ -41,14 +55,22 @@ data class UnpositionedFormerlyTerminalNode(
     override val offset: TreeCoordsOffset,
     val formerSlice: StringSlice,
     val formerlyTriangle: Boolean,
-) : UnpositionedStrandedNode
+) : UnpositionedStrandedNode {
+    override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
+
+    override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
+}
 
 @JsExport
 data class UnpositionedFormerlyBranchingNode(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     val formerDescendants: IdMap<UnpositionedNode>,
-) : UnpositionedStrandedNode
+) : UnpositionedStrandedNode {
+    override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
+
+    override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
+}
 
 @JsExport
 fun isBranching(node: UnpositionedNode) = node is UnpositionedBranchingNode
