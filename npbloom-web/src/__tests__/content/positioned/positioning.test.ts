@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  applyNodePositionsToTree, CoordsInTree, idMap, objFromIdMap, PlotCoordsOffset, PositionedTerminalNode, set,
-  sortNodesByXCoord, StringSlice, TreeCoordsOffset, TreeXRange, UnpositionedBranchingNode,
-  UnpositionedFormerlyBranchingNode, UnpositionedTerminalNode, UnpositionedTree
+  applyNodePositionsToTree, CoordsInTree, idMap, PlotCoordsOffset, PositionedTerminalNode, set, sortNodesByXCoord,
+  StringSlice, TreeCoordsOffset, TreeXRange, UnpositionedBranchingNode, UnpositionedFormerlyBranchingNode,
+  UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 import mockStrWidth from '../../__mocks__/mockStrWidth';
 
@@ -55,34 +55,34 @@ describe('Node positioning', () => {
 
   it('positions terminal nodes', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithTerminalNodes);
-    expect(objFromIdMap(result.nodes)['a'].position).toStrictEqual(new CoordsInTree(18, -2));
-    expect(objFromIdMap(result.nodes)['b'].position).toStrictEqual(new CoordsInTree(62, -2));
+    expect(result.node('a').position).toStrictEqual(new CoordsInTree(18, -2));
+    expect(result.node('b').position).toStrictEqual(new CoordsInTree(62, -2));
   });
 
   it('positions terminal nodes with triangles', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithTriangleNodes);
-    expect(objFromIdMap(result.nodes)['a'].position).toStrictEqual(new CoordsInTree(18, -12));
-    expect(objFromIdMap(result.nodes)['b'].position).toStrictEqual(new CoordsInTree(79.5, -20));
+    expect(result.node('a').position).toStrictEqual(new CoordsInTree(18, -12));
+    expect(result.node('b').position).toStrictEqual(new CoordsInTree(79.5, -20));
   });
 
   it('positions stranded nodes', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithStrandedNodes);
-    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(40, -42));
+    expect(result.node('c').position).toStrictEqual(new CoordsInTree(40, -42));
   });
 
   it('positions branching nodes', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithBranchingNodes);
-    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(40, -42));
+    expect(result.node('c').position).toStrictEqual(new CoordsInTree(40, -42));
   });
 
   it('positions branching and triangle nodes', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithBranchingAndTriangleNodes);
-    expect(objFromIdMap(result.nodes)['c'].position).toStrictEqual(new CoordsInTree(48.75, -60));
+    expect(result.node('c').position).toStrictEqual(new CoordsInTree(48.75, -60));
   });
 
   it('positions triangle vertices', () => {
     const result = applyNodePositionsToTree(mockStrWidth, treeWithTriangleNodes);
-    const triangleNode = objFromIdMap(result.nodes)['b'] as PositionedTerminalNode;
+    const triangleNode = result.node('b') as PositionedTerminalNode;
     expect(triangleNode.triangle).toStrictEqual(new TreeXRange(40, 119));
   });
 

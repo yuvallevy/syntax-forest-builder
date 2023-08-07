@@ -1,14 +1,14 @@
 import {
   adoptNodesInTree, deleteNodesInPlot, disownNodesInTree, idMap, InsertedNode, insertNodeIntoTree, NodeIndicatorInPlot,
-  objFromIdMap, PlotCoordsOffset, set, StringSlice, transformNodeInTree, transformNodesInPlot, transformNodesInTree,
-  TreeCoordsOffset, UnpositionedBranchingNode, UnpositionedFormerlyBranchingNode, UnpositionedFormerlyTerminalNode,
+  PlotCoordsOffset, set, StringSlice, transformNodeInTree, transformNodesInPlot, transformNodesInTree, TreeCoordsOffset,
+  UnpositionedBranchingNode, UnpositionedFormerlyBranchingNode, UnpositionedFormerlyTerminalNode,
   UnpositionedPlainStrandedNode, UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
 } from 'npbloom-core';
 import UndoRedoHistory, {
   ApplyActionFunc, applyToHistory, redo, ReverseActionFunc, undo, UndoableActionCommon
 } from '../../util/UndoRedoHistory';
 import { handleLocalSentenceChange } from './editNodes';
-import { changeAt, insertAt, omitKey, removeAt } from '../../util/objTransforms';
+import { changeAt, insertAt, removeAt } from '../../util/objTransforms';
 import { Id, PlotIndex, Sentence } from '../../types';
 
 /**
@@ -81,8 +81,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: objFromIdMap(state.plots[action.plotIndex].trees)[action.treeId],
-        new: insertNodeIntoTree(action.newNode, action.newNodeId, objFromIdMap(state.plots[action.plotIndex].trees)[action.treeId]),
+        old: state.plots[action.plotIndex].tree(action.treeId),
+        new: insertNodeIntoTree(action.newNode, action.newNodeId, state.plots[action.plotIndex].tree(action.treeId)),
       };
     }
     case 'deleteNodes': {
@@ -100,7 +100,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         treeId: action.treeId,
         old: state.plots[action.plotIndex].trees[action.treeId],
         new: adoptNodesInTree(action.adoptingNodeId, set(action.adoptedNodeIds),
-          objFromIdMap(state.plots[action.plotIndex].trees)[action.treeId]),
+          state.plots[action.plotIndex].tree(action.treeId)),
       };
     }
     case 'disownNodes': {
@@ -110,7 +110,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         treeId: action.treeId,
         old: state.plots[action.plotIndex].trees[action.treeId],
         new: disownNodesInTree(action.disowningNodeId, set(action.disownedNodeIds),
-          objFromIdMap(state.plots[action.plotIndex].trees)[action.treeId]),
+          state.plots[action.plotIndex].tree(action.treeId)),
       };
     }
     case 'moveNodes': {
@@ -172,7 +172,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
               ? new UnpositionedTerminalNode(node.label, node.offset, node.slice, action.triangle)
               : node,
           set(nodeIds),
-          objFromIdMap(state.plots[action.plotIndex].trees)[treeId]),
+          state.plots[action.plotIndex].tree(treeId)),
       };
     }
     case 'setSentence': {
@@ -182,7 +182,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         treeId: action.treeId,
         old: state.plots[action.plotIndex].trees[action.treeId],
         new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
-          objFromIdMap(state.plots[action.plotIndex].trees)[action.treeId]),
+          state.plots[action.plotIndex].tree(action.treeId)),
       };
     }
     case 'addTree': {
@@ -224,7 +224,7 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
     }
     case 'setTree': {
       const currentPlot = state.plots[action.plotIndex];
-      const newPlot = new UnpositionedPlot(idMap({ ...objFromIdMap(currentPlot.trees), [action.treeId]: action.new }));
+      const newPlot = currentPlot.setTree(action.treeId, action.new);
       return {
         ...state,
         plots: changeAt(state.plots, action.plotIndex, newPlot),
@@ -232,10 +232,7 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
     }
     case 'addTree': {
       const currentPlot = state.plots[action.plotIndex];
-      const newPlot = new UnpositionedPlot(idMap({
-        ...objFromIdMap(currentPlot.trees),
-        [action.newTreeId]: action.newTree
-      }));
+      const newPlot = currentPlot.setTree(action.newTreeId, action.newTree);
       return {
         ...state,
         plots: changeAt(state.plots, action.plotIndex, newPlot),
@@ -243,7 +240,7 @@ const applyUndoableAction: ApplyActionFunc<UndoableContentChange, ContentState> 
     }
     case 'removeTree': {
       const currentPlot = state.plots[action.plotIndex];
-      const newPlot = new UnpositionedPlot(idMap(omitKey(objFromIdMap(currentPlot.trees), action.treeId)));
+      const newPlot = currentPlot.removeTree(action.treeId);
       return {
         ...state,
         plots: changeAt(state.plots, action.plotIndex, newPlot),

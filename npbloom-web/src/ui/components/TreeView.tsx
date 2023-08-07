@@ -1,7 +1,6 @@
 import React from 'react';
-import { mapEntries } from '../../util/objTransforms';
 import {
-  objFromIdMap, arrayFromSet, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, isTopLevel
+  arrayFromSet, idMapGet, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, isTopLevel
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
@@ -36,7 +35,7 @@ const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdM
   arrayFromSet(node.children).map(childId => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const childNode: PositionedNode = objFromIdMap(allNodes)[childId];
+    const childNode: PositionedNode = idMapGet(allNodes, childId);
     return <line
         key={`to-${childId}`}
         stroke="#000"
@@ -187,7 +186,7 @@ const TreeView: React.FC<TreeViewProps> = ({
       key={'childIds' in trigger ? trigger.childIds.join() : `${trigger.slice.start},${trigger.slice.endExclusive}`}
       onClick={() => handleNodeCreationTriggerClick(trigger)}
     />)}
-    {mapEntries(objFromIdMap<PositionedNode>(tree.nodes), ([nodeId, node]: [Id, PositionedNode]) =>
+    {tree.mapNodes((nodeId, node) =>
       renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}
   </g>;

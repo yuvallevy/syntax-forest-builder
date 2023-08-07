@@ -1,7 +1,7 @@
 import { union } from '../util/objTransforms';
 import { Id } from '../types';
 import {
-  CoordsInPlot, NodeIndicatorInPlot, objFromIdMap, PositionedNode, PositionedTree, StringSlice, UnpositionedPlot
+  CoordsInPlot, NodeIndicatorInPlot, PositionedNode, PositionedTree, StringSlice, UnpositionedPlot
 } from 'npbloom-core';
 import { calculateNodeCenterOnPlot, PlotRect } from './coords';
 
@@ -24,7 +24,7 @@ export const applySelection = (
  * Returns whether the node indicated by the given indicator exists in the given plot.
  */
 const indicatorTargetExistsInPlot = (plot: UnpositionedPlot) => (nodeIndicator: NodeIndicatorInPlot) =>
-  !!objFromIdMap(plot.trees)[nodeIndicator.treeId] && !!objFromIdMap(objFromIdMap(plot.trees)[nodeIndicator.treeId].nodes)[nodeIndicator.nodeId];
+  plot.contains(nodeIndicator.treeId) && plot.tree(nodeIndicator.treeId).contains(nodeIndicator.nodeId);
 
 /**
  * Returns a copy of the given node selection including only nodes matching the given predicate.
@@ -40,7 +40,7 @@ const filterNodesInSelection = (
  */
 export const pruneSelection = (selection: SelectionInPlot, plot: UnpositionedPlot): SelectionInPlot =>
   isSliceSelection(selection)
-    ? (objFromIdMap(plot.trees)[selection.treeId] ? selection : { nodeIndicators: [] })
+    ? (plot.contains(selection.treeId) ? selection : { nodeIndicators: [] })
     : filterNodesInSelection(selection, indicatorTargetExistsInPlot(plot));
 
 /**

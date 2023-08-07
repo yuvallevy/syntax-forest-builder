@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   CoordsInPlot, CoordsInTree, filterPositionedNodesInTree, filterPositionedNodesInTreeById, getTopLevelPositionedNodes,
-  idMap, isTopLevel, objFromIdMap, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, set,
-  sortPositionedNodesByXCoord, StringSlice, TreeXRange
+  idMap, idMapGet, idMapKeys, isTopLevel, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
+  PositionedTree, set, sortPositionedNodesByXCoord, StringSlice, TreeXRange
 } from 'npbloom-core';
 import { IdMap } from '../../../types';
 
@@ -56,10 +56,10 @@ describe('positioned tree/node functions', () => {
   });
 
   it('filters nodes by IDs', () => {
-    expect(objFromIdMap(filterPositionedNodesInTreeById(set(['a', 'e']), tree))).toStrictEqual({
-      'a': new PositionedBranchingNode('S', new CoordsInTree(53.625, -80), set(['b'])),
-      'e': new PositionedTerminalNode('V', new CoordsInTree(57, -2), new StringSlice(5, 10)),
-    });
+    const filteredNodes = filterPositionedNodesInTreeById(set(['a', 'e']), tree);
+    expect(idMapKeys(filteredNodes)).toStrictEqual(set(['a', 'e']));
+    expect(idMapGet(filteredNodes, 'a')).toStrictEqual(tree.node('a'));
+    expect(idMapGet(filteredNodes, 'e')).toStrictEqual(tree.node('e'));
   });
 
   it('returns whether a given node is a top-level node', () => {
@@ -68,10 +68,10 @@ describe('positioned tree/node functions', () => {
   });
 
   it('returns top-level nodes', () => {
-    expect(objFromIdMap(getTopLevelPositionedNodes(treeWithoutSNode))).toStrictEqual({
-      'b': new PositionedBranchingNode('NP', new CoordsInTree(18, -60), set(['c'])),
-      'd': new PositionedBranchingNode('VP', new CoordsInTree(89.25, -60), set(['e', 'f'])),
-    });
+    const topLevelPositionedNodes = getTopLevelPositionedNodes(treeWithoutSNode);
+    expect(idMapKeys(topLevelPositionedNodes)).toStrictEqual(set(['b', 'd']));
+    expect(idMapGet(topLevelPositionedNodes, 'b')).toStrictEqual(treeWithoutSNode.node('b'));
+    expect(idMapGet(topLevelPositionedNodes, 'd')).toStrictEqual(treeWithoutSNode.node('d'));
   });
 
   it('sorts nodes by X position', () => {

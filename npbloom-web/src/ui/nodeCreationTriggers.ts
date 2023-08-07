@@ -1,6 +1,6 @@
 import { Id, Sentence, StrWidthFunc } from '../types';
 import {
-  CoordsInTree, determineNaturalParentNodePosition, getTopLevelPositionedNodes, isSliceUnassigned, objFromIdMap,
+  CoordsInTree, determineNaturalParentNodePosition, getTopLevelPositionedNodes, idMapKeys, isSliceUnassigned,
   PositionedTree, set, sliceOffsetAndWidth, sortPositionedNodesByXCoord, StringSlice
 } from 'npbloom-core';
 import { windowed } from '../util/objTransforms';
@@ -34,7 +34,7 @@ const getWordSlices = (sentence: Sentence, wordRegex?: RegExp): StringSlice[] =>
 const getNodeCreationTargetsForTree = (strWidthFunc: StrWidthFunc) => (positionedTree: PositionedTree): NodeCreationTarget[] => {
   // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
   const topLevelNodes = getTopLevelPositionedNodes(positionedTree);
-  const topLevelNodeIds = sortPositionedNodesByXCoord(positionedTree, set(Object.keys(objFromIdMap(topLevelNodes))));
+  const topLevelNodeIds = sortPositionedNodesByXCoord(positionedTree, idMapKeys(topLevelNodes));
 
   // We also need one trigger above each space between two horizontally adjacent nodes
   const topLevelNodeIdPairs = windowed(topLevelNodeIds, 2);
@@ -45,9 +45,9 @@ const getNodeCreationTargetsForTree = (strWidthFunc: StrWidthFunc) => (positione
   // Find the targets for all of these triggers, i.e. where nodes can be added
   const parentNodeCreationTargets: NodeCreationTarget[] = topLevelNodeIds.map(id => [id]).concat(topLevelNodeIdPairs)
     .map(nodeIds => ({
-      position: determineNaturalParentNodePosition(set(nodeIds.map(nodeId => objFromIdMap(positionedTree.nodes)[nodeId].position))),
+      position: determineNaturalParentNodePosition(set(nodeIds.map(nodeId => positionedTree.node(nodeId).position))),
       childIds: nodeIds,
-      childPositions: nodeIds.map(nodeId => objFromIdMap(positionedTree.nodes)[nodeId].position),
+      childPositions: nodeIds.map(nodeId => positionedTree.node(nodeId).position),
     }));
   const terminalNodeCreationTargets: NodeCreationTarget[] = unassignedSlices.map(slice => {
     const [widthBeforeSlice, sliceWidth] = sliceOffsetAndWidth(strWidthFunc, positionedTree.sentence, slice);

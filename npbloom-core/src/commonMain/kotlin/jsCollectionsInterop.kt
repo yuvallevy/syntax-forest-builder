@@ -19,7 +19,7 @@ fun <T> idMap(elements: dynamic): IdMap<T> {
 }
 
 @JsExport
-fun <T> objFromIdMap(elements: IdMap<T>): dynamic {
-    val arrayOfArrays = elements.entries.map { arrayOf(it.key, it.value) }.toTypedArray()
-    return js("Object.fromEntries")(arrayOfArrays)
-}
+fun <T> idMapGet(elements: IdMap<T>, id: Id) = elements[id]
+
+@JsExport
+fun idMapKeys(elements: IdMap<*>) = elements.keys.toSet()

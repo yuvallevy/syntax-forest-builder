@@ -1,6 +1,6 @@
 import {
   arrayFromSet, getChildNodeIdsInPlot, getNodeIdsAssignedToSlice, getParentNodeIdsInPlot, isBranching, isTerminal,
-  NodeIndicatorInPlot, objFromIdMap, PlotCoordsOffset, sortNodesByXCoord, StringSlice, UnpositionedPlot
+  NodeIndicatorInPlot, PlotCoordsOffset, sortNodesByXCoord, StringSlice, UnpositionedPlot
 } from 'npbloom-core';
 import { Id, NodeLabel, PlotIndex, Sentence } from '../types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
@@ -130,7 +130,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         (state.selection.nodeIndicators.length > 1) ||  // multiple nodes selected
         !selectedTreeId  // could not figure out tree ID for some other reason
       ) return state;
-      const selectedNodeObject = objFromIdMap(activePlot.trees[selectedTreeId].nodes)[state.selection.nodeIndicators[0].nodeId];
+      const selectedNodeObject = activePlot.tree(selectedTreeId).node(state.selection.nodeIndicators[0].nodeId);
       if (!isBranching(selectedNodeObject)) return state;
 
       const selectedNodeChildren = arrayFromSet<Id>(selectedNodeObject.children);
