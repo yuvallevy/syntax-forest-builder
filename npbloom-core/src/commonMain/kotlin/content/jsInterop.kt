@@ -67,3 +67,9 @@ fun jsTreeRepr(tree: UnpositionedTree): dynamic =
 @JsExport
 fun jsTreeMapRepr(idMap: IdMap<UnpositionedTree>): dynamic =
     js("Object.fromEntries")(idMap.map { (treeId, tree) -> arrayOf(treeId, jsTreeRepr(tree)) }.toTypedArray())
+
+@JsExport
+fun jsPlotRepr(plot: UnpositionedPlot): dynamic =
+    js("Object.fromEntries")(arrayOf(
+        arrayOf("trees", jsTreeMapRepr(plot.trees)),
+    ))

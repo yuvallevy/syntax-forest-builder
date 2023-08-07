@@ -4,8 +4,7 @@ import {
   idMap, isTopLevel, objFromIdMap, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, set,
   sortPositionedNodesByXCoord, StringSlice, TreeXRange
 } from 'npbloom-core';
-
-type IdMap<T> = Record<string, T>
+import { IdMap } from '../../../types';
 
 describe('positioned tree/node functions', () => {
   const tree = new PositionedTree(

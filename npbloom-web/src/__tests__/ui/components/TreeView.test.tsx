@@ -1,35 +1,38 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import TreeView from '../../../ui/components/TreeView';
-import { PositionedTree } from '../../../content/positioned/types';
+import {
+  CoordsInPlot, CoordsInTree, idMap, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, set, StringSlice,
+  TreeXRange
+} from 'npbloom-core';
 
 describe('tree rendering', () => {
-  const tree: PositionedTree = {
-    sentence: 'Noun verbs very adverbly.',
-    nodes: {
-      'a': { label: 'S', position: { treeX: 53.625, treeY: -80 }, children: ['b', 'd'] },
-      'b': { label: 'NP', position: { treeX: 18, treeY: -60 }, children: ['c'] },
-      'c': { label: 'N', position: { treeX: 18, treeY: -2 }, slice: [0, 4] },
-      'd': { label: 'VP', position: { treeX: 89.25, treeY: -60 }, children: ['e', 'f'] },
-      'e': { label: 'V', position: { treeX: 57, treeY: -2 }, slice: [5, 10] },
-      'f': { label: 'AdvP', position: { treeX: 121.5, treeY: -30 }, triangle: { treeX1: 72, treeX2: 104 }, slice: [11, 24] },
-    },
-    position: { plotX: 50, plotY: -32 },
-    width: 104,
-  };
+  const tree = new PositionedTree(
+    'Noun verbs very adverbly.',
+    idMap({
+      'a': new PositionedBranchingNode('S', new CoordsInTree(53.625, -80), set(['b', 'd'])),
+      'b': new PositionedBranchingNode('NP', new CoordsInTree(18, -60), set(['c'])),
+      'c': new PositionedTerminalNode('N', new CoordsInTree(18, -2), new StringSlice(0, 4)),
+      'd': new PositionedBranchingNode('VP', new CoordsInTree(89.25, -60), set(['e', 'f'])),
+      'e': new PositionedTerminalNode('V', new CoordsInTree(57, -2), new StringSlice(5, 10)),
+      'f': new PositionedTerminalNode('AdvP', new CoordsInTree(121.5, -30), new StringSlice(11, 24), new TreeXRange(72, 104)),
+    }),
+    new CoordsInPlot(50, -32),
+    104,
+  );
 
-  const treeWithUnlabeledNode: PositionedTree = {
-    nodes: {
-      'a': { label: 'CP', children: ['c', 'd'], position: { treeX: 37.375, treeY: -100 } },
-      'b': { label: 'C\'', children: ['d', 'e'], position: { treeX: 59.25, treeY: -60 } },
-      'c': { label: '', slice: [0, 3], position: { treeX: 15.5, treeY: -2 } },
-      'd': { label: 'C', slice: [4, 7], position: { treeX: 47.5, treeY: -2 } },
-      'e': { label: 'IP', slice: [8, 10], triangle: { treeX1: 64, treeX2: 78 }, position: { treeX: 71, treeY: -20 } },
-    },
-    sentence: 'Who was IP?',
-    position: { plotX: 283, plotY: 238 },
-    width: 86,
-  };
+  const treeWithUnlabeledNode = new PositionedTree(
+    'Who was IP?',
+    idMap({
+      'a': new PositionedBranchingNode('CP', new CoordsInTree(37.375, -100), set(['c', 'd'])),
+      'b': new PositionedBranchingNode('C\'', new CoordsInTree(59.25, -60), set(['d', 'e'])),
+      'c': new PositionedTerminalNode('', new CoordsInTree(15.5, -2), new StringSlice(0, 3)),
+      'd': new PositionedTerminalNode('C', new CoordsInTree(47.5, -2), new StringSlice(4, 7)),
+      'e': new PositionedTerminalNode('IP', new CoordsInTree(71, -20), new StringSlice(8, 10), new TreeXRange(64, 78)),
+    }),
+    new CoordsInPlot(283, 238),
+    86,
+  );
 
   it('renders a tree with position-assigned nodes', () => {
     expect(render(

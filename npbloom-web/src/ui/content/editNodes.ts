@@ -1,6 +1,8 @@
-import { StringSlice, Sentence } from '../../content/types';
-import { InsertedNode, transformAllNodesInTree } from '../../content/unpositioned/manipulation';
-import { isTerminal, UnpositionedNode, UnpositionedTree } from '../../content/unpositioned/types';
+import { Sentence } from '../../types';
+import {
+  InsertedBranchingNode, InsertedNode, InsertedTerminalNode, set, StringSlice, transformAllNodesInTree,
+  UnpositionedNode, UnpositionedTerminalNode, UnpositionedTree
+} from 'npbloom-core';
 import { isSliceSelection, SelectionInPlot } from '../selection';
 
 const isWordChar = (char: string) => /['A-Za-z\u00c0-\u1fff]/.test(char);
@@ -8,14 +10,14 @@ const isWordChar = (char: string) => /['A-Za-z\u00c0-\u1fff]/.test(char);
 /**
  * Returns the range of the word that the given position is within.
  */
-const getWordRange = (sentence: Sentence, position: number): [start: number, end: number] => {
+const getWordRange = (sentence: Sentence, position: number): StringSlice => {
   let start = position;
   while (start > 0 && isWordChar(sentence[start - 1])) start--;
 
   let end = position;
   while (end < sentence.length && isWordChar(sentence[end])) end++;
 
-  return [start, end];
+  return new StringSlice(start, end);
 };
 
 /**
@@ -26,23 +28,25 @@ const getWordRange = (sentence: Sentence, position: number): [start: number, end
 export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sentence): InsertedNode => {
   // A slice of the sentence is selected
   if (isSliceSelection(selection)) {
-    const [rawSliceStart, rawSliceEnd] = selection.slice;
+    const { start: rawSliceStart, endExclusive: rawSliceEnd } = selection.slice;
     const sliceAfterSpread = rawSliceStart !== rawSliceEnd
       ? selection.slice
       : getWordRange(sentence, rawSliceStart);
-    const [sliceStartAfterSpread, sliceEndAfterSpread] = sliceAfterSpread;
-    return {
-      targetSlice: sliceAfterSpread,
-      triangle: sentence.slice(sliceStartAfterSpread, sliceEndAfterSpread).includes(' '),
-      label: '',
-    };
+    const { start: sliceStartAfterSpread, endExclusive: sliceEndAfterSpread } = sliceAfterSpread;
+    return new InsertedTerminalNode(
+      '',
+      null,
+      sliceAfterSpread,
+      sentence.slice(sliceStartAfterSpread, sliceEndAfterSpread).includes(' '),
+    );
   }
   // One or more nodes are selected
   const selectedNodeIds = selection.nodeIndicators.map(({ nodeId }) => nodeId);
-  return {
-    targetChildIds: selectedNodeIds,
-    label: '',
-  };
+  return new InsertedBranchingNode(
+    '',
+    null,
+    set(selectedNodeIds),
+  );
 };
 
 /**
@@ -53,16 +57,16 @@ export const newNodeFromSelection = (selection: SelectionInPlot, sentence: Sente
 const shiftNodeSliceAfterChange =
   (oldSelection: StringSlice, shiftBy: number) =>
   (node: UnpositionedNode): UnpositionedNode => {
-    if (                               // If:
-      !isTerminal(node) ||             // this is not a terminal node, or
-      shiftBy === 0 ||                 // the sentence length did not change, or
-      node.slice[1] < oldSelection[0]  // the selection was entirely after the node, then
-    ) return node;                     // no change is necessary
+    if (                                             // If:
+      !(node instanceof UnpositionedTerminalNode) || // this is not a terminal node, or
+      shiftBy === 0 ||                               // the sentence length did not change, or
+      node.slice.endExclusive < oldSelection.start   // the selection was entirely after the node, then
+    ) return node;                                   // no change is necessary
 
-    const [oldNodeSliceStart, oldNodeSliceEnd] = node.slice;
-    const newNodeSlice: StringSlice = [oldNodeSliceStart, oldNodeSliceEnd];
-    if (oldSelection[0] === oldSelection[1]) {  // No selection, just a cursor
-      const oldCursorPos = oldSelection[0];
+    const { start: oldNodeSliceStart, endExclusive: oldNodeSliceEnd } = node.slice;
+    const newNodeSlice: [number, number] = [oldNodeSliceStart, oldNodeSliceEnd];
+    if (oldSelection.isZeroLength) {  // No selection, just a cursor
+      const oldCursorPos = oldSelection.start;
       if (oldCursorPos === oldNodeSliceStart) {  // Cursor was at the beginning of the slice
         newNodeSlice[1] += shiftBy;
         if (shiftBy > 0) {  // If adding, move the slice forward; if removing, contract it
@@ -84,7 +88,8 @@ const shiftNodeSliceAfterChange =
     } else {  // A selection spanning at least one character was made
       console.error('Not implemented yet');
     }
-    return { ...node, slice: newNodeSlice };
+    return new UnpositionedTerminalNode(
+      node.label, node.offset, new StringSlice(newNodeSlice[0], newNodeSlice[1]), node.triangle);
   }
 
 /**
@@ -97,8 +102,5 @@ const shiftNodeSliceAfterChange =
 export const handleLocalSentenceChange =
   (newSentence: Sentence, oldSelection: StringSlice) =>
   (tree: UnpositionedTree): UnpositionedTree => transformAllNodesInTree(
-    shiftNodeSliceAfterChange(oldSelection, newSentence.length - tree.sentence.length)
-  )({
-    ...tree,
-    sentence: newSentence,
-  });
+    shiftNodeSliceAfterChange(oldSelection, newSentence.length - tree.sentence.length),
+    new UnpositionedTree(newSentence, tree.nodes, tree.offset));

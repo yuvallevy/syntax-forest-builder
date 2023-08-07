@@ -1,17 +1,14 @@
 import React from 'react';
 import { mapEntries } from '../../util/objTransforms';
 import {
-  Id, IdMap, NodeIndicatorInPlot
-} from '../../content/types';
+  objFromIdMap, arrayFromSet, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, isTopLevel
+} from 'npbloom-core';
+import { Id, IdMap } from '../../types';
 import './TreeView.scss';
 import { applySelection, isNodeSelection, NodeSelectionMode, SelectionInPlot } from '../selection';
 import { NodeCreationTrigger, getNodeCreationTriggersForTree } from '../nodeCreationTriggers';
 import { ClientCoordsOffset } from '../coords';
 import strWidth from '../strWidth';
-import {
-  PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree
-} from '../../content/positioned/types';
-import { isTopLevel } from '../../content/positioned/positionedEntityHelpers';
 import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
 
@@ -36,15 +33,19 @@ interface TreeViewProps {
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
-  node.children.map(childId =>
-    <line
-      key={`to-${childId}`}
-      stroke="#000"
-      x1={node.position.treeX}
-      y1={node.position.treeY}
-      x2={allNodes[childId].position.treeX}
-      y2={allNodes[childId].position.treeY - (allNodes[childId].label ? NODE_LEVEL_SPACING : 0)}
-    />
+  arrayFromSet(node.children).map(childId => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const childNode: PositionedNode = objFromIdMap(allNodes)[childId];
+    return <line
+        key={`to-${childId}`}
+        stroke="#000"
+        x1={node.position.treeX}
+        y1={node.position.treeY}
+        x2={childNode.position.treeX}
+        y2={childNode.position.treeY - (childNode.label ? NODE_LEVEL_SPACING : 0)}
+      />;
+    }
   );
 
 const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): React.ReactNode =>
@@ -83,7 +84,7 @@ const renderNode = (
       rx={3}
       ry={3}
     />
-    {(isTopLevel(allNodes)(nodeId) || node.label) && <text
+    {(isTopLevel(allNodes, nodeId) || node.label) && <text
       x={node.position.treeX}
       y={node.position.treeY}
       fill="#000"
@@ -103,8 +104,8 @@ const renderNode = (
     rx={3}
     ry={3}
   />,
-  'triangle' in node && renderTriangleConnection(nodeId, node),
-  'children' in node && renderChildNodeConnections(node, allNodes),
+  node instanceof PositionedTerminalNode && renderTriangleConnection(nodeId, node),
+  node instanceof PositionedBranchingNode && renderChildNodeConnections(node, allNodes),
 ];
 
 const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({ trigger, onClick }) =>
@@ -162,9 +163,9 @@ const TreeView: React.FC<TreeViewProps> = ({
     dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
 
   const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = 'set') =>
-    state.selectionAction === 'adopt' ? adoptNodes([{ treeId, nodeId }])
-      : state.selectionAction === 'disown' ? disownNodes([{ treeId, nodeId }])
-      : setSelection({ nodeIndicators: applySelection(mode, [{ treeId, nodeId }], selectedNodeIndicators) });
+    state.selectionAction === 'adopt' ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
+      : state.selectionAction === 'disown' ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
+      : setSelection({ nodeIndicators: applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators) });
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
     dispatch({
@@ -183,10 +184,10 @@ const TreeView: React.FC<TreeViewProps> = ({
             style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
     {getNodeCreationTriggersForTree(strWidth)(tree).map(trigger => <NodeCreationTriggerClickZone
       trigger={trigger}
-      key={'childIds' in trigger ? trigger.childIds.join() : trigger.slice.join()}
+      key={'childIds' in trigger ? trigger.childIds.join() : `${trigger.slice.start},${trigger.slice.endExclusive}`}
       onClick={() => handleNodeCreationTriggerClick(trigger)}
     />)}
-    {mapEntries(tree.nodes, ([nodeId, node]) =>
+    {mapEntries(objFromIdMap<PositionedNode>(tree.nodes), ([nodeId, node]: [Id, PositionedNode]) =>
       renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}
   </g>;

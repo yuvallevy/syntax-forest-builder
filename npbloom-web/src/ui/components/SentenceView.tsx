@@ -1,10 +1,9 @@
 import React, { useRef } from 'react';
-import { StringSlice, Sentence, Id } from '../../content/types';
-import { PositionedTree } from '../../content/positioned/types';
+import { Id, Sentence } from '../../types';
+import { arrayFromSet, getNodeIdsAssignedToSlice, PositionedTree, StringSlice } from 'npbloom-core';
 import './SentenceView.scss';
 import { isEmpty } from '../../util/objTransforms';
 import { isSliceSelection, SelectionInPlot } from '../selection';
-import { getNodeIdsAssignedToSlice } from '../../content/unpositioned/manipulation';
 import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
 
@@ -24,7 +23,7 @@ interface SentenceViewProps {
 
 const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
   element.selectionStart !== null && element.selectionEnd !== null
-    ? [element.selectionStart, element.selectionEnd]
+    ? new StringSlice(element.selectionStart, element.selectionEnd)
     : null;
 
 const SentenceView: React.FC<SentenceViewProps> = ({
@@ -65,7 +64,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     if (event.key === 'ArrowUp') {
       event.currentTarget.blur();
       if (isSliceSelection(state.selection) &&
-        getNodeIdsAssignedToSlice(state.selection.slice)(unpositionedPlot.trees[state.selection.treeId]).length === 0) {
+        arrayFromSet(getNodeIdsAssignedToSlice(state.selection.slice, unpositionedPlot.trees[state.selection.treeId]).length === 0)) {
         addNode();
       } else {
         selectParentNodes();
@@ -98,7 +97,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     placeholder="Type a sentence..."
     onBlur={handleSentenceBlur}
     onInput={e => handleSentenceChange(e.currentTarget.value,
-      oldSelection.current || [e.currentTarget.value.length, e.currentTarget.value.length])}
+      oldSelection.current || new StringSlice(e.currentTarget.value.length, e.currentTarget.value.length))}
     onSelect={e => {
       const slice = getSelectionSlice(e.currentTarget);
       if (slice) handleSliceSelect(slice);

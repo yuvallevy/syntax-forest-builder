@@ -1,4 +1,4 @@
-import { PlotCoords, PositionedNode, PositionedTree } from '../content/positioned/types';
+import { CoordsInPlot, PositionedNode, PositionedTree } from 'npbloom-core';
 
 type ClientX = number;
 type ClientY = number;
@@ -21,21 +21,21 @@ export type ClientRect = {
 };
 
 export type PlotRect = {
-  topLeft: PlotCoords;
-  bottomRight: PlotCoords;
+  topLeft: CoordsInPlot;
+  bottomRight: CoordsInPlot;
 };
 
 // Calculate plot coords from client coords & vice versa, when they're different (when zoom and/or pan are implemented)
 
-export const plotCoordsToClientCoords = (plotCoords: PlotCoords): ClientCoords => ({
+export const plotCoordsToClientCoords = (plotCoords: CoordsInPlot): ClientCoords => ({
   clientX: plotCoords.plotX,
   clientY: plotCoords.plotY,
 });
 
-export const clientCoordsToPlotCoords = (clientCoords: ClientCoords): PlotCoords => ({
-  plotX: clientCoords.clientX,
-  plotY: clientCoords.clientY,
-});
+export const clientCoordsToPlotCoords = (clientCoords: ClientCoords): CoordsInPlot => new CoordsInPlot(
+  clientCoords.clientX,
+  clientCoords.clientY,
+);
 
 export const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
   topLeft: clientCoordsToPlotCoords(clientRect.topLeft),
@@ -45,7 +45,7 @@ export const clientRectToPlotRect = (clientRect: ClientRect): PlotRect => ({
 /**
  * Returns the center coordinate of the given node in the given tree with respect to its containing plot.
  */
-export const calculateNodeCenterOnPlot = (tree: PositionedTree) => (node: PositionedNode): PlotCoords => ({
-  plotX: tree.position.plotX + node.position.treeX,
-  plotY: tree.position.plotY + node.position.treeY - 9,
-});
+export const calculateNodeCenterOnPlot = (tree: PositionedTree) => (node: PositionedNode): CoordsInPlot => new CoordsInPlot(
+  tree.position.plotX + node.position.treeX,
+  tree.position.plotY + node.position.treeY - 9,
+);

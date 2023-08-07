@@ -1,17 +1,15 @@
 import {
-  Id, NodeLabel, Sentence, StringSlice, NodeIndicatorInPlot, PlotIndex
-} from '../content/types';
+  arrayFromSet, getChildNodeIdsInPlot, getNodeIdsAssignedToSlice, getParentNodeIdsInPlot, isBranching, isTerminal,
+  NodeIndicatorInPlot, objFromIdMap, PlotCoordsOffset, sortNodesByXCoord, StringSlice, UnpositionedPlot
+} from 'npbloom-core';
+import { Id, NodeLabel, PlotIndex, Sentence } from '../types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
 import { newNodeFromSelection } from './content/editNodes';
 import { contentReducer, initialContentState, UndoableContentState } from './content/contentState';
-import { getNodeIdsAssignedToSlice } from '../content/unpositioned/manipulation';
-import { getChildNodeIdsInPlot, getParentNodeIdsInPlot } from '../content/unpositioned/plotManipulation';
-import { sortNodesByXCoord } from '../content/positioned/positioning';
 import {
   isNodeSelection, isSliceSelection, NodeSelectionAction, NodeSelectionInPlot, pruneSelection, SelectionInPlot
 } from './selection';
 import strWidth from './strWidth';
-import { isBranching, isTerminal, PlotCoordsOffset, UnpositionedPlot } from '../content/unpositioned/types';
 import { without } from '../util/objTransforms';
 
 export type UiAction =
@@ -39,7 +37,7 @@ export type UiAction =
   | { type: 'removeTree', treeId: Id }
   | { type: 'undo' }
   | { type: 'redo' }
-;
+  ;
 
 export type UiState = {
   contentState: UndoableContentState;
@@ -62,12 +60,12 @@ export const canRedo = (state: UiState) => UndoRedoHistory.canRedo(state.content
 const selectParentNodes = (activePlot: UnpositionedPlot, selection: SelectionInPlot): NodeSelectionInPlot => {
   if (isSliceSelection(selection)) {
     return {
-      nodeIndicators: getNodeIdsAssignedToSlice(selection.slice)(activePlot.trees[selection.treeId])
-        .map(nodeId => ({ treeId: selection.treeId, nodeId }))
+      nodeIndicators: arrayFromSet<Id>(getNodeIdsAssignedToSlice(selection.slice, activePlot.trees[selection.treeId]))
+        .map(nodeId => new NodeIndicatorInPlot(selection.treeId, nodeId))
     };
   } else {
     if (selection.nodeIndicators.length === 0) return selection;
-    const parentNodes = getParentNodeIdsInPlot(selection.nodeIndicators)(activePlot);
+    const parentNodes = getParentNodeIdsInPlot(selection.nodeIndicators, activePlot);
     return { nodeIndicators: parentNodes };
   }
 };
@@ -77,7 +75,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
   const selectedTreeId =
     isSliceSelection(state.selection) ? state.selection.treeId
       : state.selection.nodeIndicators.length > 0 ? state.selection.nodeIndicators[0].treeId
-      : undefined;
+        : undefined;
   switch (action.type) {
     case 'setActivePlotIndex':
       return {
@@ -132,24 +130,25 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         (state.selection.nodeIndicators.length > 1) ||  // multiple nodes selected
         !selectedTreeId  // could not figure out tree ID for some other reason
       ) return state;
-      const selectedNodeObject = activePlot.trees[selectedTreeId].nodes[state.selection.nodeIndicators[0].nodeId];
+      const selectedNodeObject = objFromIdMap(activePlot.trees[selectedTreeId].nodes)[state.selection.nodeIndicators[0].nodeId];
       if (!isBranching(selectedNodeObject)) return state;
 
+      const selectedNodeChildren = arrayFromSet<Id>(selectedNodeObject.children);
       const childNodesSortedByX =
-        sortNodesByXCoord(strWidth)(activePlot.trees[selectedTreeId])(selectedNodeObject.children);
+        sortNodesByXCoord(strWidth, activePlot.trees[selectedTreeId], selectedNodeChildren);
 
       const childSelection: NodeSelectionInPlot | undefined =
-        action.side === 'center' && selectedNodeObject.children.length === 1 ?
-          { nodeIndicators: [{ treeId: selectedTreeId, nodeId: selectedNodeObject.children[0] }] } :
-        action.side === 'center' && selectedNodeObject.children.length >= 3 ?
-          { nodeIndicators: [{ treeId: selectedTreeId, nodeId: childNodesSortedByX[1] }] } :
-        action.side !== 'center' && selectedNodeObject.children.length >= 2 ?
+        action.side === 'center' && selectedNodeChildren.length === 1 ?
+          { nodeIndicators: [new NodeIndicatorInPlot(selectedTreeId, selectedNodeChildren[0])] } :
+        action.side === 'center' && selectedNodeChildren.length >= 3 ?
+          { nodeIndicators: [new NodeIndicatorInPlot(selectedTreeId, childNodesSortedByX[1])] } :
+        action.side !== 'center' && selectedNodeChildren.length >= 2 ?
           {
             nodeIndicators: [
-              {
-                treeId: selectedTreeId,
-                nodeId: childNodesSortedByX[action.side === 'left' ? 0 : (selectedNodeObject.children.length - 1)]
-              }
+              new NodeIndicatorInPlot(
+                selectedTreeId,
+                childNodesSortedByX[action.side === 'left' ? 0 : (selectedNodeChildren.length - 1)]
+              )
             ]
           } : undefined;
 
@@ -191,7 +190,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
     }
     case 'addNodeBySelection': {
       if (!selectedTreeId) return state;
-      const newNodeIndicator = { treeId: selectedTreeId, nodeId: action.newNodeId };
+      const newNodeIndicator = new NodeIndicatorInPlot(selectedTreeId, action.newNodeId);
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
@@ -207,7 +206,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
       };
     }
     case 'addNodeByTarget': {
-      const newNodeIndicator = { treeId: action.treeId, nodeId: action.newNodeId };
+      const newNodeIndicator = new NodeIndicatorInPlot(action.treeId, action.newNodeId);
       return {
         ...state,
         contentState: contentReducer(state.contentState, {
@@ -238,7 +237,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
         selection: {
           nodeIndicators: without(
-            getChildNodeIdsInPlot(state.selection.nodeIndicators)(activePlot),
+            getChildNodeIdsInPlot(state.selection.nodeIndicators, activePlot),
             // Currently selected nodes are about to be deleted, so they should not be selected after deletion
             // (this can happen when two deleted nodes are parent and child)
             state.selection.nodeIndicators,

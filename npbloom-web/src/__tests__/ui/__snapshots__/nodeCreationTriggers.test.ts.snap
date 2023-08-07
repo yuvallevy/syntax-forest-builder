@@ -3,7 +3,7 @@
 exports[`node creation triggers > generates node creation triggers for a tree with all slices assigned 1`] = `
 [
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 34,
       "treeY": -80,
     },
@@ -11,22 +11,22 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "b",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 18,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 18,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 2,
       "treeY": -128,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 105.25,
       "treeY": -80,
     },
@@ -34,22 +34,22 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "d",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 89.25,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 89.25,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 73.25,
       "treeY": -128,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 69.625,
       "treeY": -80,
     },
@@ -58,20 +58,20 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "d",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 18,
         "treeY": -60,
       },
-      {
+      CoordsInTree {
         "treeX": 89.25,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 53.625,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 37.625,
       "treeY": -128,
     },
@@ -82,7 +82,7 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
 exports[`node creation triggers > generates node creation triggers for a tree with unassigned slices 1`] = `
 [
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 34,
       "treeY": -80,
     },
@@ -90,22 +90,22 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "b",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 18,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 18,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 2,
       "treeY": -128,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 73,
       "treeY": -80,
     },
@@ -113,22 +113,22 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "d",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 57,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 57,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 41,
       "treeY": -128,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 53.5,
       "treeY": -80,
     },
@@ -137,56 +137,58 @@ exports[`node creation triggers > generates node creation triggers for a tree wi
       "d",
     ],
     "childPositions": [
-      {
+      CoordsInTree {
         "treeX": 18,
         "treeY": -60,
       },
-      {
+      CoordsInTree {
         "treeX": 57,
         "treeY": -60,
       },
     ],
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 37.5,
       "treeY": -100,
     },
-    "topLeft": {
+    "topLeft": CoordsInTree {
       "treeX": 21.5,
       "treeY": -128,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 108,
       "treeY": 0,
     },
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 92,
       "treeY": -20,
     },
-    "slice": [
-      11,
-      15,
-    ],
-    "topLeft": {
+    "slice": StringSlice {
+      "endExclusive": 15,
+      "isZeroLength": false,
+      "start": 11,
+    },
+    "topLeft": CoordsInTree {
       "treeX": 76,
       "treeY": -48,
     },
   },
   {
-    "bottomRight": {
+    "bottomRight": CoordsInTree {
       "treeX": 153.5,
       "treeY": 0,
     },
-    "origin": {
+    "origin": CoordsInTree {
       "treeX": 137.5,
       "treeY": -20,
     },
-    "slice": [
-      16,
-      24,
-    ],
-    "topLeft": {
+    "slice": StringSlice {
+      "endExclusive": 24,
+      "isZeroLength": false,
+      "start": 16,
+    },
+    "topLeft": CoordsInTree {
       "treeX": 121.5,
       "treeY": -48,
     },

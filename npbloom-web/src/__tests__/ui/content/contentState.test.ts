@@ -1,42 +1,46 @@
 import { describe, expect, it } from 'vitest';
-import { ContentAction, ContentState, contentReducer, UndoableContentState } from '../../../ui/content/contentState';
+import {
+  idMap, InsertedBranchingNode, jsPlotRepr, NodeIndicatorInPlot, PlotCoordsOffset, set, StringSlice, TreeCoordsOffset,
+  UnpositionedBranchingNode, UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
+} from 'npbloom-core';
+import { ContentAction, contentReducer, ContentState, UndoableContentState } from '../../../ui/content/contentState';
 
 describe('content state', () => {
   const initialState: ContentState = {
     plots: [
-      {
-        trees: {
-          'aa': {
-            nodes: {
-              'a': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4], triangle: false },
-              'b': { label: 'N', offset: { dTreeX: 1, dTreeY: 10 }, slice: [5, 10], triangle: false },
-            },
-            offset: { dPlotX: 0, dPlotY: 0 },
-            sentence: 'tree state',
-          },
-          'zz': {
-            nodes: {
-              'w': { label: 'NP', offset: { dTreeX: -1, dTreeY: 5 }, children: ['x'] },
-              'x': { label: 'N', offset: { dTreeX: 1, dTreeY: 8 }, slice: [0, 5], triangle: false },
-              'y': { label: 'V', offset: { dTreeX: 0, dTreeY: 0 }, slice: [6, 10], triangle: false },
-            },
-            offset: { dPlotX: 60, dPlotY: 0 },
-            sentence: 'nodes rock',
-          },
-        },
-      },
-      {
-        trees: {
-          'aa': {
-            nodes: {
-              'a': { label: 'N', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 6], triangle: false },
-              'b': { label: 'VP', offset: { dTreeX: 1, dTreeY: 10 }, slice: [7, 13], triangle: true },
-            },
-            offset: { dPlotX: 20, dPlotY: 10 },
-            sentence: 'syntax is fun',
-          },
-        },
-      },
+      new UnpositionedPlot(
+        idMap({
+          'aa': new UnpositionedTree(
+            'tree state',
+            idMap({
+              'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+              'b': new UnpositionedTerminalNode('N', new TreeCoordsOffset(1, 10), new StringSlice(5, 10)),
+            }),
+            new PlotCoordsOffset(0, 0),
+          ),
+          'zz': new UnpositionedTree(
+            'nodes rock',
+            idMap({
+              'w': new UnpositionedBranchingNode('NP', new TreeCoordsOffset(-1, 5), set(['x'])),
+              'x': new UnpositionedTerminalNode('N', new TreeCoordsOffset(1, 8), new StringSlice(0, 5)),
+              'y': new UnpositionedTerminalNode('V', new TreeCoordsOffset(0, 0), new StringSlice(6, 10)),
+            }),
+            new PlotCoordsOffset(60, 0),
+          ),
+        }),
+      ),
+      new UnpositionedPlot(
+        idMap({
+          'aa': new UnpositionedTree(
+            'syntax is fun',
+            idMap({
+              'a': new UnpositionedTerminalNode('N', new TreeCoordsOffset(0, 0), new StringSlice(0, 6)),
+              'b': new UnpositionedTerminalNode('VP', new TreeCoordsOffset(1, 10), new StringSlice(7, 13), true),
+            }),
+            new PlotCoordsOffset(20, 10),
+          ),
+        }),
+      ),
     ],
   };
 
@@ -57,15 +61,25 @@ describe('content state', () => {
     ],
     [
       'inserts a node into a tree',
-      { type: 'insertNode', plotIndex: 0, treeId: 'aa', newNodeId: 'c', newNode: { label: 'NP', targetChildIds: ['a', 'b'] } }
+      {
+        type: 'insertNode',
+        plotIndex: 0,
+        treeId: 'aa',
+        newNodeId: 'c',
+        newNode: new InsertedBranchingNode('NP', null, set(['a', 'b']))
+      }
     ],
     [
       'deletes a node from a tree',
-      { type: 'deleteNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }] }
+      { type: 'deleteNodes', plotIndex: 0, nodeIndicators: [new NodeIndicatorInPlot('aa', 'b')] }
     ],
     [
       'deletes two nodes from two different trees',
-      { type: 'deleteNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'x' }] }
+      {
+        type: 'deleteNodes',
+        plotIndex: 0,
+        nodeIndicators: [new NodeIndicatorInPlot('aa', 'b'), new NodeIndicatorInPlot('zz', 'x')]
+      }
     ],
     [
       'sets a node as a child of another',
@@ -77,27 +91,37 @@ describe('content state', () => {
     ],
     [
       'moves a node in a tree',
-      { type: 'moveNodes', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'a' }], dx: 1, dy: -4 }
+      { type: 'moveNodes', plotIndex: 0, nodeIndicators: [new NodeIndicatorInPlot('aa', 'a')], dx: 1, dy: -4 }
     ],
     [
       'resets the positions of two nodes in two different trees',
-      { type: 'resetNodePositions', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }, { treeId: 'zz', nodeId: 'w' }] }
+      {
+        type: 'resetNodePositions',
+        plotIndex: 0,
+        nodeIndicators: [new NodeIndicatorInPlot('aa', 'b'), new NodeIndicatorInPlot('zz', 'w')]
+      }
     ],
     [
       'sets the label of a node',
-      { type: 'setNodeLabel', plotIndex: 0, nodeIndicator: { treeId: 'aa', nodeId: 'a' }, newLabel: 'NP' }
+      { type: 'setNodeLabel', plotIndex: 0, nodeIndicator: new NodeIndicatorInPlot('aa', 'a'), newLabel: 'NP' }
     ],
     [
       'sets whether a terminal node connects to its slice with a triangle',
-      { type: 'setTriangle', plotIndex: 0, nodeIndicators: [{ treeId: 'aa', nodeId: 'b' }], triangle: true }
+      { type: 'setTriangle', plotIndex: 0, nodeIndicators: [new NodeIndicatorInPlot('aa', 'b')], triangle: true }
     ],
     [
       'reacts to a change in the sentence',
-      { type: 'setSentence', plotIndex: 0, treeId: 'aa', newSentence: 'tee state', oldSelectedSlice: [2, 2] }
+      {
+        type: 'setSentence',
+        plotIndex: 0,
+        treeId: 'aa',
+        newSentence: 'tee state',
+        oldSelectedSlice: new StringSlice(2, 2)
+      }
     ],
     [
       'adds a tree to a plot',
-      { type: 'addTree', plotIndex: 0, newTreeId: 'zz', offset: { dPlotX: 105, dPlotY: 88 } }
+      { type: 'addTree', plotIndex: 0, newTreeId: 'zz', offset: new PlotCoordsOffset(105, 88) }
     ],
     [
       'removes a tree from a plot',
@@ -105,5 +129,7 @@ describe('content state', () => {
     ],
   ];
 
-  it.each(testCases)('%s', (_, action) => expect(contentReducer(undoableInitialState, action).current).toMatchSnapshot());
+  it.each(testCases)('%s', (_, action) => expect({
+    plots: contentReducer(undoableInitialState, action).current.plots.map(jsPlotRepr)
+  }).toMatchSnapshot());
 });

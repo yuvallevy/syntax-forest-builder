@@ -5,4 +5,4 @@ package content.unpositioned
 import content.IdMap
 
 @JsExport
-data class UnpositionedPlot(val trees: IdMap<UnpositionedTree>)
+data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap())

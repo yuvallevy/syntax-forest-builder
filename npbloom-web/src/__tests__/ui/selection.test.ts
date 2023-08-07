@@ -1,75 +1,78 @@
 import { describe, expect, it } from 'vitest';
+import {
+  CoordsInPlot, CoordsInTree, idMap, NodeIndicatorInPlot, PlotCoordsOffset, PositionedBranchingNode, PositionedNode,
+  PositionedStrandedNode, PositionedTerminalNode, PositionedTree, set, StringSlice, TreeCoordsOffset, TreeXRange,
+  UnpositionedPlot, UnpositionedTerminalNode, UnpositionedTree
+} from 'npbloom-core';
 import { PlotRect } from '../../ui/coords';
 import { isNodeInRect, pruneSelection } from '../../ui/selection';
-import { PositionedNode, PositionedTree } from '../../content/positioned/types';
-import { UnpositionedPlot } from '../../content/unpositioned/types';
 
 describe('node selection', () => {
-  const unpositionedPlot: UnpositionedPlot = {
-    trees: {
-      'aa': {
-        sentence: 'Noun verbed.',
-        nodes: {
-          'np': { label: 'NP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [0, 4] },
-          'vp': { label: 'VP', offset: { dTreeX: 0, dTreeY: 0 }, slice: [5, 10] },
-        },
-        offset: { dPlotX: 0, dPlotY: 0 },
-      },
-    },
-  };
+  const unpositionedPlot = new UnpositionedPlot(
+    idMap({
+      'aa': new UnpositionedTree(
+        'Noun verbed.',
+        idMap({
+          'np': new UnpositionedTerminalNode('NP', new TreeCoordsOffset(0, 0), new StringSlice(0, 4)),
+          'vp': new UnpositionedTerminalNode('VP', new TreeCoordsOffset(0, 0), new StringSlice(5, 10)),
+        }),
+        new PlotCoordsOffset(0, 0),
+      ),
+    }),
+  );
 
-  const positionedTree: PositionedTree = {
-    sentence: 'Noun verbs very adverbly.',
-    nodes: {
-      'a': { label: 'S', position: { treeX: 53.625, treeY: -80 }, children: ['b'] },
-      'b': { label: 'NP', position: { treeX: 18, treeY: -60 }, children: ['c'] },
-      'c': { label: 'N', position: { treeX: 18, treeY: -2 }, slice: [0, 4] },
-      'd': { label: 'VP', position: { treeX: 89.25, treeY: -60 }, children: ['e', 'f'] },
-      'e': { label: 'V', position: { treeX: 57, treeY: -2 }, slice: [5, 10] },
-      'f': { label: 'AdvP', position: { treeX: 121.5, treeY: -30 }, triangle: { treeX1: 72, treeX2: 104 }, slice: [11, 24] },
-    },
-    position: { plotX: 50, plotY: -32 },
-    width: 104,
-  };
+  const positionedTree = new PositionedTree(
+    'Noun verbs very adverbly.',
+    idMap({
+      'a': new PositionedBranchingNode('S', new CoordsInTree(53.625, -80), set(['b'])),
+      'b': new PositionedBranchingNode('NP', new CoordsInTree(18, -60), set(['c'])),
+      'c': new PositionedTerminalNode('N', new CoordsInTree(18, -2), new StringSlice(0, 4)),
+      'd': new PositionedBranchingNode('VP', new CoordsInTree(89.25, -60), set(['e', 'f'])),
+      'e': new PositionedTerminalNode('V', new CoordsInTree(57, -2), new StringSlice(5, 10)),
+      'f': new PositionedTerminalNode('AdvP', new CoordsInTree(121.5, -30), new StringSlice(11, 24), new TreeXRange(72, 104)),
+    }),
+    new CoordsInPlot(50, -32),
+    104,
+  );
 
   const nodesAndRects: [PositionedNode, PlotRect, boolean][] = [
     [
-      { label: 'N', position: { treeX: 18, treeY: -2 } },
-      { topLeft: { plotX: 64, plotY: -47 }, bottomRight: { plotX: 78, plotY: -37 } },
+      new PositionedStrandedNode('N', new CoordsInTree(18, -2)),
+      { topLeft: new CoordsInPlot(64, -47), bottomRight: new CoordsInPlot(78, -37) },
       true,
     ],
     [
-      { label: 'N', position: { treeX: 18, treeY: -2 } },
-      { topLeft: { plotX: 68, plotY: -47 }, bottomRight: { plotX: 78, plotY: -37 } },
+      new PositionedStrandedNode('N', new CoordsInTree(18, -2)),
+      { topLeft: new CoordsInPlot(68, -47), bottomRight: new CoordsInPlot(78, -37) },
       true,
     ],
     [
-      { label: 'N', position: { treeX: 18, treeY: -2 } },
-      { topLeft: { plotX: 64, plotY: -47 }, bottomRight: { plotX: 68, plotY: -37 } },
+      new PositionedStrandedNode('N', new CoordsInTree(18, -2)),
+      { topLeft: new CoordsInPlot(64, -47), bottomRight: new CoordsInPlot(68, -37) },
       true,
     ],
     [
-      { label: 'N', position: { treeX: 18, treeY: -2 } },
-      { topLeft: { plotX: 54, plotY: -47 }, bottomRight: { plotX: 58, plotY: -37 } },
+      new PositionedStrandedNode('N', new CoordsInTree(18, -2)),
+      { topLeft: new CoordsInPlot(54, -47), bottomRight: new CoordsInPlot(58, -37) },
       false,
     ],
     [
-      { label: 'VP', position: { treeX: 89.25, treeY: -60 } },
-      { topLeft: { plotX: 64, plotY: -47 }, bottomRight: { plotX: 78, plotY: -37 } },
+      new PositionedStrandedNode('VP', new CoordsInTree(89.25, -60)),
+      { topLeft: new CoordsInPlot(64, -47), bottomRight: new CoordsInPlot(78, -37) },
       false,
     ],
   ];
 
   it('deselects nonexistent trees', () => {
-    expect(pruneSelection({ treeId: 'aa', slice: [0, 4] }, unpositionedPlot))
-      .toStrictEqual({ treeId: 'aa', slice: [0, 4] });
-    expect(pruneSelection({ treeId: 'zz', slice: [0, 4] }, unpositionedPlot))
+    expect(pruneSelection({ treeId: 'aa', slice: new StringSlice(0, 4) }, unpositionedPlot))
+      .toStrictEqual({ treeId: 'aa', slice: new StringSlice(0, 4) });
+    expect(pruneSelection({ treeId: 'zz', slice: new StringSlice(0, 4) }, unpositionedPlot))
       .toStrictEqual({ nodeIndicators: [] });
   });
 
   it('deselects nonexistent nodes', () => {
-    expect(pruneSelection({ nodeIndicators: [{ treeId: 'aa', nodeId: 's' }, { treeId: 'aa', nodeId: 'vp' }] },
-      unpositionedPlot)).toStrictEqual({ nodeIndicators: [{ treeId: 'aa', nodeId: 'vp' }] });
+    expect(pruneSelection({ nodeIndicators: [new NodeIndicatorInPlot('aa', 's'), new NodeIndicatorInPlot('aa', 'vp')] },
+      unpositionedPlot)).toStrictEqual({ nodeIndicators: [new NodeIndicatorInPlot('aa', 'vp')] });
   });
 
   it.each(nodesAndRects)('returns whether a node is in a rectangle %#', (node, rect, expectedResult) => {
