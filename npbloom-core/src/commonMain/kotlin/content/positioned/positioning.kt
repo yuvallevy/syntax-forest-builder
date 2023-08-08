@@ -81,7 +81,7 @@ fun determineStrandedNodePosition(
     }
 
     is UnpositionedFormerlyBranchingNode -> {  // Node was branching - determine its position based on past children
-        val positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc);
+        val positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc)
         val childXs = positionedChildNodes.values.map { it.position.treeX }
         val childYs = positionedChildNodes.values.map { it.position.treeY }
         CoordsInTree(
@@ -96,7 +96,7 @@ fun determineStrandedNodePosition(
             treeY = node.offset.dTreeY,
         )
     }
-};
+}
 
 /**
  * Returns the appropriate position for the given unpositioned node.
@@ -151,7 +151,7 @@ fun applyNodePositions(
     alreadyPositionedNodes: IdMap<PositionedNode> = emptyMap(),
 ): IdMap<PositionedNode> {
     // If no unpositioned nodes are left, we're done
-    if (nodes.isEmpty()) return alreadyPositionedNodes;
+    if (nodes.isEmpty()) return alreadyPositionedNodes
 
     // Nodes that can be positioned at this point in the process are:
     // * Terminal nodes, whose position is entirely based on their assigned slice
@@ -171,7 +171,7 @@ fun applyNodePositions(
 
     // Repeat the process, using as unpositioned nodes only those nodes that are have not been assigned positions yet
     return applyNodePositions(nodesToPositionNext, sentence, strWidthFunc, alreadyPositionedNodes + newPositionedNodes)
-};
+}
 
 /**
  * Returns a copy of the given tree with positions for all nodes.
@@ -198,4 +198,4 @@ fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot)
  */
 @JsExport
 fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): Array<Id> =
-    sortPositionedNodesByXCoord(applyNodePositionsToTree(strWidthFunc, tree), nodeIds);
+    sortPositionedNodesByXCoord(applyNodePositionsToTree(strWidthFunc, tree), nodeIds)

@@ -1,4 +1,4 @@
-import mockStrWidth from '../__tests__/__mocks__/mockStrWidth';
+import { mockStrWidth } from 'npbloom-core';
 
 // Overwrite this with an actual string width measuring function when the time comes
 const strWidth = mockStrWidth;

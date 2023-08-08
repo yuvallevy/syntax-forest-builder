@@ -1,0 +1,133 @@
+package content.unpositioned
+
+import content.NodeIndicatorInPlot
+import content.StringSlice
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class UnpositionedPlotTest {
+    private val plot = UnpositionedPlot(
+        trees = mapOf(
+            "cleo" to UnpositionedTree(
+                sentence = "Cleo laughed.",
+                nodes = mapOf(
+                    "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                    "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n1")),
+                    "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                    "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
+                ),
+                offset = PlotCoordsOffset.ZERO,
+            ),
+            "alex" to UnpositionedTree(
+                sentence = "Alex baked cookies.",
+                nodes = mapOf(
+                    "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                    "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                    "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                    "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                    "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                    "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                ),
+                offset = PlotCoordsOffset.ZERO,
+            ),
+        ),
+    )
+
+    @Test
+    fun treeAndParentNodeIdOfNode() = assertEquals(
+        setOf(NodeIndicatorInPlot("alex", "s2")),
+        plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "vp2")))
+    )
+
+    @Test
+    fun treeAndParentNodeIdOfTwoSiblingNodes() = assertEquals(
+        setOf(NodeIndicatorInPlot("alex", "s2")),
+        plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "np2a"), NodeIndicatorInPlot("alex", "vp2")))
+    )
+
+    @Test
+    fun treeAndParentNodeIdOfTwoNonSiblingNodes() = assertEquals(
+        setOf(NodeIndicatorInPlot("alex", "s2"), NodeIndicatorInPlot("alex", "np2a")),
+        plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "np2a"), NodeIndicatorInPlot("alex", "n2")))
+    )
+
+    @Test
+    fun noParentIdForTopLevelNode() = assertEquals(
+        emptySet(),
+        plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "s2")))
+    )
+
+    @Test
+    fun treeAndParentNodeIdForTwoNodesIfOneTopLevel() = assertEquals(
+        setOf(NodeIndicatorInPlot("alex", "np2a")),
+        plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "s2"), NodeIndicatorInPlot("alex", "n2")))
+    )
+
+    @Test
+    fun transformNodesInMultipleTrees() = assertEquals(
+        UnpositionedPlot(
+            trees = mapOf(
+                "cleo" to UnpositionedTree(
+                    sentence = "Cleo laughed.",
+                    nodes = mapOf(
+                        "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                        "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, -4.0), setOf("n1")),
+                        "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    ),
+                    offset = PlotCoordsOffset.ZERO,
+                ),
+                "alex" to UnpositionedTree(
+                    sentence = "Alex baked cookies.",
+                    nodes = mapOf(
+                        "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 1.0), setOf("np2a", "vp2")),
+                        "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
+                        "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset(0.0, 0.0), setOf("v2", "np2b")),
+                        "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
+                        "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18), false),
+                    ),
+                    offset = PlotCoordsOffset.ZERO,
+                ),
+            ),
+        ),
+        plot.transformNodes(
+            { it.changeOffset(TreeCoordsOffset(0.0, -4.0)) },
+            setOf(NodeIndicatorInPlot("cleo", "np1"), NodeIndicatorInPlot("alex", "s2"))
+        )
+    )
+
+    @Test
+    fun deleteNodesInMultipleTrees() = assertEquals(
+        UnpositionedPlot(
+            trees = mapOf(
+                "cleo" to UnpositionedTree(
+                    sentence = "Cleo laughed.",
+                    nodes = mapOf(
+                        "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    ),
+                    offset = PlotCoordsOffset(0.0, 0.0),
+                ),
+                "alex" to UnpositionedTree(
+                    sentence = "Alex baked cookies.",
+                    nodes = mapOf(
+                        "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a")),
+                        "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
+                        "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
+                        "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18), false),
+                    ),
+                    offset = PlotCoordsOffset(0.0, 0.0),
+                ),
+            ),
+        ),
+        plot.deleteNodes(
+            setOf(
+                NodeIndicatorInPlot("cleo", "s1"),
+                NodeIndicatorInPlot("cleo", "np1"),
+                NodeIndicatorInPlot("alex", "vp2")
+            )
+        )
+    )
+}

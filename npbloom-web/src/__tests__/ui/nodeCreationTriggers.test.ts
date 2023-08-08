@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CoordsInPlot, CoordsInTree, idMap, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, set, StringSlice,
-  TreeXRange
+  CoordsInPlot, CoordsInTree, idMap, mockStrWidth, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, set,
+  StringSlice, TreeXRange
 } from 'npbloom-core';
 import { getNodeCreationTriggersForTree } from '../../ui/nodeCreationTriggers';
-import mockStrWidth from '../__mocks__/mockStrWidth';
 
 describe('node creation triggers', () => {
   const treeWithNoUnassignedSlices = new PositionedTree(
