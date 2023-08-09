@@ -76,6 +76,6 @@ describe('node selection', () => {
   });
 
   it.each(nodesAndRects)('returns whether a node is in a rectangle %#', (node, rect, expectedResult) => {
-    expect(isNodeInRect(rect)(positionedTree)(node)).toBe(expectedResult);
+    expect(isNodeInRect(rect)(positionedTree, node)).toBe(expectedResult);
   });
 });

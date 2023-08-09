@@ -1,6 +1,6 @@
 import {
-  arrayFromSet, isBranching, isTerminal, NodeIndicatorInPlot, PlotCoordsOffset, sortNodesByXCoord, StringSlice,
-  UnpositionedPlot
+  arrayFromSet, InsertedBranchingNode, InsertedTerminalNode, NodeIndicatorInPlot, PlotCoordsOffset, set,
+  sortNodesByXCoord, StringSlice, UnpositionedPlot, UnpositionedBranchingNode, UnpositionedTerminalNode
 } from 'npbloom-core';
 import { Id, NodeLabel, PlotIndex, Sentence } from '../types';
 import * as UndoRedoHistory from '../util/UndoRedoHistory';
@@ -131,11 +131,11 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         !selectedTreeId  // could not figure out tree ID for some other reason
       ) return state;
       const selectedNodeObject = activePlot.tree(selectedTreeId).node(state.selection.nodeIndicators[0].nodeId);
-      if (!isBranching(selectedNodeObject)) return state;
+      if (!(selectedNodeObject instanceof UnpositionedBranchingNode)) return state;
 
       const selectedNodeChildren = arrayFromSet<Id>(selectedNodeObject.children);
       const childNodesSortedByX =
-        sortNodesByXCoord(strWidth, activePlot.trees[selectedTreeId], selectedNodeChildren);
+        sortNodesByXCoord(strWidth, activePlot.tree(selectedTreeId), selectedNodeChildren);
 
       const childSelection: NodeSelectionInPlot | undefined =
         action.side === 'center' && selectedNodeChildren.length === 1 ?
@@ -198,7 +198,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           plotIndex: state.activePlotIndex,
           treeId: selectedTreeId,
           newNodeId: action.newNodeId,
-          newNode: newNodeFromSelection(state.selection, activePlot.trees[selectedTreeId].sentence),
+          newNode: newNodeFromSelection(state.selection, activePlot.tree(selectedTreeId).sentence),
         }),
         selection: { nodeIndicators: [newNodeIndicator] },
         selectionAction: 'select',
@@ -214,12 +214,9 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
           plotIndex: state.activePlotIndex,
           treeId: action.treeId,
           newNodeId: action.newNodeId,
-          newNode: { label: '', ...(
-            'targetChildIds' in action
-              ? { targetChildIds: action.targetChildIds }
-              : { targetSlice: action.targetSlice, triangle: action.triangle }
-            )
-          },
+          newNode: 'targetChildIds' in action
+            ? new InsertedBranchingNode('', null, set(action.targetChildIds))
+            : new InsertedTerminalNode('', null, action.targetSlice, action.triangle),
         }),
         selection: { nodeIndicators: [newNodeIndicator] },
         selectionAction: 'select',
@@ -237,7 +234,7 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
         }),
         selection: {
           nodeIndicators: without(
-            activePlot.getChildNodeIds(state.selection.nodeIndicators),
+            arrayFromSet(activePlot.getChildNodeIds(set(state.selection.nodeIndicators))),
             // Currently selected nodes are about to be deleted, so they should not be selected after deletion
             // (this can happen when two deleted nodes are parent and child)
             state.selection.nodeIndicators,
@@ -311,8 +308,8 @@ export const uiReducer = (state: UiState, action: UiAction): UiState => {
     case 'toggleTriangle': {
       if (!isNodeSelection(state.selection)) return state;
       const currentlyTriangle = state.selection.nodeIndicators.every(({ treeId, nodeId }) => {
-        const node = activePlot.trees[treeId].nodes[nodeId];
-        return isTerminal(node) ? node.triangle : false;
+        const node = activePlot.tree(treeId).node(nodeId);
+        return node instanceof UnpositionedTerminalNode ? node.triangle : false;
       });
       return {
         ...state,

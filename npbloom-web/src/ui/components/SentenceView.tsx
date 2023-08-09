@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { Id, Sentence } from '../../types';
 import { arrayFromSet, PositionedTree, StringSlice } from 'npbloom-core';
 import './SentenceView.scss';
-import { isEmpty } from '../../util/objTransforms';
 import { isSliceSelection, SelectionInPlot } from '../selection';
 import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
@@ -49,7 +48,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   };
 
   const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (event.currentTarget.value.trim() === '' && isEmpty(unpositionedPlot.trees[treeId].nodes)) {
+    if (event.currentTarget.value.trim() === '' && unpositionedPlot.tree(treeId).hasNodes) {
       removeAndDeselectTree(treeId);
     }
   };
@@ -64,7 +63,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     if (event.key === 'ArrowUp') {
       event.currentTarget.blur();
       if (isSliceSelection(state.selection) &&
-        arrayFromSet(unpositionedPlot.tree(state.selection.treeId).getNodeIdsAssignedToSlice(state.selection.slice).length === 0)) {
+        arrayFromSet(unpositionedPlot.tree(state.selection.treeId).getNodeIdsAssignedToSlice(state.selection.slice)).length === 0) {
         addNode();
       } else {
         selectParentNodes();

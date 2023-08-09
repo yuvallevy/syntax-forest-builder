@@ -1,8 +1,7 @@
-import { Id, NodeLabel } from '../../content/types';
-import { filterPositionedNodesInTreeById } from '../../content/positioned/positionedEntityHelpers';
+import { Id, NodeLabel } from '../../types';
+import { PositionedTree } from 'npbloom-core';
 import { calculateNodeCenterOnPlot, ClientCoords, plotCoordsToClientCoords } from '../coords';
 import { useState } from 'react';
-import { PositionedTree } from '../../content/positioned/types';
 import './LabelNodeEditor.scss';
 import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
@@ -43,7 +42,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
 }) => {
   const { state, dispatch } = useUiState();
 
-  const editedNodeObject = filterPositionedNodesInTreeById([nodeId])(tree)[nodeId];
+  const editedNodeObject = tree.node(nodeId);
   const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeObject));
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 

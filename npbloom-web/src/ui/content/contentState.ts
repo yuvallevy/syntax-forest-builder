@@ -168,7 +168,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         type: 'setTree',
         plotIndex: action.plotIndex,
         treeId: action.treeId,
-        old: state.plots[action.plotIndex].trees[action.treeId],
+        old: state.plots[action.plotIndex].tree(action.treeId),
         new: handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)(
           state.plots[action.plotIndex].tree(action.treeId)),
       };
@@ -184,7 +184,7 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
     case 'removeTree': {
       return {
         ...action,
-        removedTree: state.plots[action.plotIndex].trees[action.treeId],
+        removedTree: state.plots[action.plotIndex].tree(action.treeId),
       };
     }
   }

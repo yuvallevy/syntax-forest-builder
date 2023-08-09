@@ -1,7 +1,6 @@
+import { PlotIndex } from '../../types';
 import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';
-import { isEmpty } from '../../util/objTransforms';
-import { PlotIndex } from '../../content/types';
 import './PlotSelector.scss';
 import useUiState from '../useUiState';
 
@@ -19,8 +18,7 @@ const PlotSelector: React.FC = () => {
     <Tabs value={activePlotIndex.toString()} onTabChange={newValue => setActivePlotIndex(Number(newValue))} inverted>
       <Tabs.List>
         {plots.map((plot, index) => {
-          const IconComponent =
-            isEmpty(plot.trees) ? IconFile : Object.keys(plot.trees).length === 1 ? IconTree : IconTrees;
+          const IconComponent = plot.isEmpty ? IconFile : plot.treeCount === 1 ? IconTree : IconTrees;
           return <div className="PlotSelector--tab-container" key={index}>
             <Tabs.Tab
               value={index.toString()}

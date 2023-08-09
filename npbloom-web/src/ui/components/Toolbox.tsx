@@ -1,3 +1,4 @@
+import { UnpositionedTerminalNode } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle, TablerIconsProps
@@ -11,7 +12,6 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './icons';
 import useUiState from '../useUiState';
 import { isNodeSelection } from '../selection';
 import { generateNodeId } from '../content/generateId';
-import { isTerminal, UnpositionedTerminalNode } from '../../content/unpositioned/types';
 
 type ToolboxItem = {
   title: string;
@@ -30,7 +30,7 @@ const Toolbox: React.FC = () => {
   const noNodesSelected = !isNodeSelection(state.selection) || state.selection.nodeIndicators.length === 0;
   const selectedNodeIndicators = isNodeSelection(state.selection) ? state.selection.nodeIndicators : [];
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>
-    state.contentState.current.plots[state.activePlotIndex].trees[treeId].nodes[nodeId]);
+    state.contentState.current.plots[state.activePlotIndex].tree(treeId).node(nodeId));
 
   const startEditing = () => dispatch({ type: 'startEditing' });
   const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
@@ -57,7 +57,8 @@ const Toolbox: React.FC = () => {
 
   const getTriangleButtonState = (): { toggleState: 'on' | 'off' | 'indeterminate'; disabled?: boolean } => {
     // No nodes selected, or some non-terminal nodes selected:
-    if (selectedNodeIndicators.length === 0 || !(selectedNodeObjects.every(isTerminal)))
+    if (selectedNodeIndicators.length === 0 ||
+      !(selectedNodeObjects.every(node => node instanceof UnpositionedTerminalNode)))
       return { disabled: true, toggleState: 'off' };
 
     // At this point we know that there are selected nodes and that they are all terminal

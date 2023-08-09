@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { isBranching, UnpositionedPlot, UnpositionedTree } from '../../../content/unpositioned/types';
+import { arrayFromSet, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
 import { Alert } from '@mantine/core';
 import './BeginnersGuide.scss';
-import { filterEntries, flatten, isEmpty, mapValues, without } from '../../../util/objTransforms';
 import {
   IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant, IconWritingSign
 } from '@tabler/icons-react';
@@ -12,18 +11,6 @@ import useUiState from '../../useUiState';
 interface BeginnersGuideProps {
   onComplete: () => void;
 }
-
-/**
- * Determines whether this tree is "complete" by checking whether it has only one undominated node.
- * This is a bad metric because a tree can have a single undominated node without being complete.
- * TODO: Make this smarter
- */
-const isComplete = (tree: UnpositionedTree) => {
-  const allChildIds = flatten(mapValues(tree.nodes, node => isBranching(node) ? node.children : []));
-  const allNodeIds = Object.keys(tree.nodes);
-  const topLevelNodeIds = without(allNodeIds, allChildIds);
-  return topLevelNodeIds.length === 1 && tree.nodes[topLevelNodeIds[0]].label.length > 0;
-};
 
 const steps = [
   {
@@ -73,18 +60,18 @@ const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
   const previousPlotState = useRef<UnpositionedPlot>();
 
   useEffect(() => {
-    const tree = isEmpty(plotState.trees) ? undefined : Object.values(plotState.trees)[0];
+    const tree = plotState.isEmpty ? undefined : plotState.treesAsArray[0];
     if (!tree) return;
     if (currentStepIndex === 0 && tree.sentence.length >= 15) setCurrentStepIndex(1);
-    else if (currentStepIndex === 1 && !isEmpty(tree.nodes) && Object.values(tree.nodes)[0].label.length > 0) setCurrentStepIndex(2);
-    else if (currentStepIndex === 2 && Object.values(tree.nodes).length >= 2) setCurrentStepIndex(3);
-    else if (currentStepIndex === 3 && !isEmpty(filterEntries(tree.nodes,
-      ([_, node]) => node.label.length > 0 && isBranching(node))))
+    else if (currentStepIndex === 1 && tree.hasNodes && tree.nodesAsArray[0].label.length > 0) setCurrentStepIndex(2);
+    else if (currentStepIndex === 2 && tree.nodeCount >= 2) setCurrentStepIndex(3);
+    else if (currentStepIndex === 3 && tree.anyNodes(
+      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode))
       setCurrentStepIndex(4);
-    else if (currentStepIndex === 4 && !isEmpty(filterEntries(tree.nodes,
-      ([_, node]) => node.label.length > 0 && isBranching(node) && node.children.length >= 2)))
+    else if (currentStepIndex === 4 && tree.anyNodes(
+      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode && arrayFromSet(node.children).length >= 2))
       setCurrentStepIndex(5);
-    else if (currentStepIndex === 5 && isComplete(tree)) setCurrentStepIndex(6);
+    else if (currentStepIndex === 5 && tree.isComplete) setCurrentStepIndex(6);
     else if (currentStepIndex === 6 && plotState !== previousPlotState.current) onComplete();
     previousPlotState.current = plotState;
   }, [currentStepIndex, plotState, onComplete]);

@@ -3,7 +3,7 @@ import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
-import { StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode } from 'npbloom-core';
+import { UnpositionedBranchingNode, UnpositionedTerminalNode, set, StringSlice } from 'npbloom-core';
 import PlotView from './ui/components/PlotView';
 import { generateNodeId } from './ui/content/generateId';
 import { isNodeSelection } from './ui/selection';
@@ -13,7 +13,6 @@ import AboutButton from './ui/components/meta/AboutButton';
 import PlotSelector from './ui/components/PlotSelector';
 import BeginnersGuide from './ui/components/meta/BeginnersGuide';
 import PlotPlaceholder from './ui/components/meta/PlotPlaceholder';
-import { isEmpty } from './util/objTransforms';
 import useUiState from './ui/useUiState';
 
 const App = () => {
@@ -45,7 +44,7 @@ const App = () => {
   };
 
   useHotkeys(['ArrowUp'], () => {
-    if (selectedNodeIndicators.length > 0 && activePlot.allTopLevel(selectedNodeIndicators)) {
+    if (selectedNodeIndicators.length > 0 && activePlot.allTopLevel(set(selectedNodeIndicators))) {
       addNode();
     } else {
       selectParentNodes();
@@ -58,7 +57,7 @@ const App = () => {
 
   useHotkeys(['ArrowDown'], () => {
     if (selectedNodeIndicators.length !== 1) return;
-    const selectedNodeObject = activePlot.trees[selectedNodeIndicators[0].treeId].nodes[selectedNodeIndicators[0].nodeId];
+    const selectedNodeObject = activePlot.tree(selectedNodeIndicators[0].treeId).node(selectedNodeIndicators[0].nodeId);
     if (selectedNodeObject instanceof UnpositionedBranchingNode) {
       selectCenterChildNode();
     } else if (selectedNodeObject instanceof UnpositionedTerminalNode) {
@@ -88,7 +87,7 @@ const App = () => {
     <PlotSelector />
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}
-    /> : isEmpty(activePlot.trees) && <PlotPlaceholder
+    /> : activePlot.isEmpty && <PlotPlaceholder
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
   </MantineProvider>;

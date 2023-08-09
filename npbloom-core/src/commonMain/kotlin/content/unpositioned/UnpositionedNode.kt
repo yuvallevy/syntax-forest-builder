@@ -71,15 +71,3 @@ data class UnpositionedFormerlyBranchingNode(
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
 }
-
-@JsExport
-fun isBranching(node: UnpositionedNode) = node is UnpositionedBranchingNode
-
-@JsExport
-fun isTerminal(node: UnpositionedNode) = node is UnpositionedTerminalNode
-
-@JsExport
-fun isFormerlyBranching(node: UnpositionedNode) = node is UnpositionedFormerlyBranchingNode
-
-@JsExport
-fun isFormerlyTerminal(node: UnpositionedNode) = node is UnpositionedFormerlyTerminalNode

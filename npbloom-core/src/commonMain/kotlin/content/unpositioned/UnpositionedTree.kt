@@ -11,6 +11,14 @@ data class UnpositionedTree(
     val nodes: IdMap<UnpositionedNode>,
     val offset: PlotCoordsOffset,
 ) : TreeCommon {
+    val nodeIds get() = nodes.keys
+
+    val nodesAsArray get() = nodes.values.toTypedArray()
+
+    val nodeCount get() = nodes.size
+
+    val hasNodes get() = nodes.isEmpty()
+
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 
     operator fun contains(nodeId: Id) = nodeId in nodes
@@ -18,6 +26,25 @@ data class UnpositionedTree(
     fun setNode(nodeId: Id, node: UnpositionedNode) = copy(nodes = nodes + (nodeId to node))
 
     fun removeNode(nodeId: Id) = copy(nodes = nodes - nodeId)
+
+    fun <T> mapNodes(transformFunc: (nodeId: Id, node: UnpositionedNode) -> T) =
+        nodes.map { (nodeId, node) -> transformFunc(nodeId, node) }.toTypedArray()
+
+    fun <T> anyNodes(transformFunc: (nodeId: Id, node: UnpositionedNode) -> Boolean) =
+        nodes.any { (nodeId, node) -> transformFunc(nodeId, node) }
+
+    /**
+     * Determines whether this tree is "complete" by checking whether it has only one undominated node.
+     * This is a bad metric because a tree can have a single undominated node without being complete.
+     * TODO: Make this smarter
+     */
+    val isComplete: Boolean get() {
+        val allChildIds = nodes.flatMap { (nodeId, node) ->
+            if (node is UnpositionedBranchingNode) node.children else emptySet()
+        }.toSet()
+        val topLevelNodeIds = (nodeIds - allChildIds).toList()
+        return topLevelNodeIds.singleOrNull()?.let { node(it).label.isNotEmpty() } ?: false
+    }
 
     /**
      * Inserts the given node into the tree, assigning it the given ID.

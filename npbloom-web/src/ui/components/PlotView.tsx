@@ -1,20 +1,15 @@
 import { useMemo, useState } from 'react';
-import { filterEntries, mapEntries, transformValues } from '../../util/objTransforms';
-import { NodeIndicatorInPlot } from '../../content/types';
+import { applyNodePositionsToPlot, arrayFromSet, NodeIndicatorInPlot, PlotCoordsOffset, PositionedPlot } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import { ClientCoords, ClientCoordsOffset, clientRectToPlotRect } from '../coords';
-import { filterPositionedNodesInTree } from '../../content/positioned/positionedEntityHelpers';
 import {
   applySelection, isNodeInRect, isNodeSelection, NodeSelectionMode, SelectionInPlot
 } from '../selection';
 import './PlotView.scss';
-import { PositionedPlot } from '../../content/positioned/types';
-import { applyNodePositionsToPlot } from '../../content/positioned/positioning';
 import strWidth from '../strWidth';
 import useUiState from '../useUiState';
-import { PlotCoordsOffset } from '../../content/unpositioned/types';
 import { generateTreeId } from '../content/generateId';
 
 const PRIMARY_MOUSE_BUTTON = 1;
@@ -29,7 +24,7 @@ const PlotView: React.FC = () => {
 
   const plot: PositionedPlot = useMemo(() => {
     const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
-    return applyNodePositionsToPlot(strWidth)(unpositionedPlot);
+    return applyNodePositionsToPlot(strWidth, unpositionedPlot);
   }, [state.contentState, state.activePlotIndex]);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
@@ -72,7 +67,7 @@ const PlotView: React.FC = () => {
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
-      addTreeAndFocus({ dPlotX: event.clientX, dPlotY: event.clientY });
+      addTreeAndFocus(new PlotCoordsOffset(event.clientX, event.clientY));
     } else {
       setSelection({ nodeIndicators: [] });
     }
@@ -99,17 +94,7 @@ const PlotView: React.FC = () => {
     if (selectionBoxTopLeft && selectionBoxBottomRight) {
       const plotRect = clientRectToPlotRect({ topLeft: selectionBoxTopLeft, bottomRight: selectionBoxBottomRight });
       const nodeInRectPredicate = isNodeInRect(plotRect);
-      const newSelectedNodeIdsByTree = filterEntries(
-        transformValues(
-          plot.trees,
-          tree => Object.keys(filterPositionedNodesInTree(nodeInRectPredicate(tree))(tree))
-        ),
-        ([_, nodeIds]) => nodeIds.length > 0
-      );
-      const newSelectedNodes = Object.entries(newSelectedNodeIdsByTree)
-        .reduce(
-          (nodes, [treeId, nodeIds]) => [...nodes, ...nodeIds.map(nodeId => ({ treeId, nodeId }))],
-          [] as NodeIndicatorInPlot[]);
+      const newSelectedNodes = arrayFromSet<NodeIndicatorInPlot>(plot.filterNodeIndicators(nodeInRectPredicate));
       handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? 'add' : 'set');
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       moveNodes(dragOffset.dClientX, dragOffset.dClientY);
@@ -140,7 +125,7 @@ const PlotView: React.FC = () => {
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
     >
-      {mapEntries(plot.trees, ([treeId, tree]) =>
+      {plot.mapTrees((treeId, tree) =>
         <TreeView
           key={`tree-${treeId}`}
           treeId={treeId}
@@ -156,7 +141,7 @@ const PlotView: React.FC = () => {
         height={selectionBoxBottomRight.clientY - selectionBoxTopLeft.clientY}
       />}
     </svg>
-    {mapEntries(plot.trees, ([treeId, tree]) =>
+    {plot.mapTrees((treeId, tree) =>
       <SentenceView
         key={`sentence-${treeId}`}
         tree={tree}
@@ -165,7 +150,7 @@ const PlotView: React.FC = () => {
       />)}
     {editedNodeIndicator && <LabelNodeEditor
       key={`editable-nodes-${editedNodeIndicator.nodeId}`}
-      tree={plot.trees[editedNodeIndicator.treeId]}
+      tree={plot.tree(editedNodeIndicator.treeId)}
       nodeId={editedNodeIndicator.nodeId}
     />}
   </>;

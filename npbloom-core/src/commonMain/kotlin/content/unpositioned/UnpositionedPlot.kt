@@ -9,6 +9,12 @@ import content.NodeIndicatorInPlot
 
 @JsExport
 data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
+    val isEmpty get() = trees.isEmpty()
+
+    val treesAsArray get() = trees.values.toTypedArray()
+
+    val treeCount get() = trees.size
+
     fun tree(treeId: Id) = trees[treeId] ?: throw NoSuchTreeException(treeId)
 
     operator fun contains(treeId: Id) = treeId in trees

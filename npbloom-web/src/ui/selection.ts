@@ -50,5 +50,5 @@ const isPointInPlotRect = (rect: PlotRect) => (coords: CoordsInPlot) =>
   coords.plotX >= rect.topLeft.plotX && coords.plotY >= rect.topLeft.plotY &&
   coords.plotX <= rect.bottomRight.plotX && coords.plotY <= rect.bottomRight.plotY;
 
-export const isNodeInRect = (rect: PlotRect) => (tree: PositionedTree) => (node: PositionedNode) =>
+export const isNodeInRect = (rect: PlotRect) => (tree: PositionedTree, node: PositionedNode) =>
   isPointInPlotRect(rect)(calculateNodeCenterOnPlot(tree)(node));
