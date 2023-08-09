@@ -1,10 +1,8 @@
 package content.unpositioned
 
+import NoSuchNodeException
 import content.StringSlice
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotSame
-import kotlin.test.assertSame
+import kotlin.test.*
 
 class UnpositionedTreeTest {
     private val tree = UnpositionedTree(
@@ -82,6 +80,118 @@ class UnpositionedTreeTest {
         ),
         offset = PlotCoordsOffset.ZERO,
     )
+
+    @Test
+    fun nodeIds() =
+        assertEquals(setOf("top", "branch1", "term1", "term2"), tree.nodeIds)
+
+    @Test
+    fun nodesAsArray() =
+        assertContentEquals(
+            arrayOf(
+                UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            ),
+            treeWithoutTopLevelTerminalNode.nodesAsArray
+        )
+
+    @Test
+    fun nodeCountZero() =
+        assertEquals(0, UnpositionedTree(sentence = "", nodes = emptyMap(), offset = PlotCoordsOffset.ZERO).nodeCount)
+
+    @Test
+    fun nodeCountNonzero() =
+        assertEquals(4, tree.nodeCount)
+
+    @Test
+    fun hasNodesTrue() =
+        assertTrue(tree.hasNodes)
+
+    @Test
+    fun hasNodesFalse() =
+        assertFalse(UnpositionedTree(sentence = "", nodes = emptyMap(), offset = PlotCoordsOffset.ZERO).hasNodes)
+
+    @Test
+    fun nodeById() =
+        assertEquals(
+            UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            treeWithoutTopLevelBranchingNode.node("term1")
+        )
+
+    @Test
+    fun nodeByIdNonexistent() =
+        assertFailsWith(NoSuchNodeException::class) {
+            treeWithoutTopLevelBranchingNode.node("branch2")
+        }
+
+    @Test
+    fun treeContainsIdTrue() =
+        assertTrue("branch1" in tree)
+
+    @Test
+    fun treeContainsIdFalse() =
+        assertFalse("branch2" in tree)
+
+    @Test
+    fun setNode() =
+        assertEquals(
+            UnpositionedTree(
+                sentence = "Noun verbed.",
+                nodes = mapOf(
+                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    "term1" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
+                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+                ),
+                offset = PlotCoordsOffset.ZERO,
+            ),
+            treeWithoutTopLevelBranchingNode.setNode(
+                "term1",
+                UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true)
+            )
+        )
+
+    @Test
+    fun removeNode() =
+        assertEquals(
+            UnpositionedTree(
+                sentence = "Noun verbed.",
+                nodes = mapOf(
+                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+                ),
+                offset = PlotCoordsOffset.ZERO,
+            ),
+            treeWithoutTopLevelBranchingNode.removeNode("term1")
+        )
+
+    @Test
+    fun mapNodes() =
+        assertContentEquals(
+            arrayOf(
+                "top" to "S",
+                "branch1" to "NP",
+                "term1" to "N",
+                "term2" to "VP",
+            ),
+            tree.mapNodes { nodeId, node -> nodeId to node.label }
+        )
+
+    @Test
+    fun anyNodesTrue() =
+        assertTrue(tree.anyNodes { _, node -> "V" in node.label })
+
+    @Test
+    fun anyNodesFalse() =
+        assertFalse(tree.anyNodes { _, node -> "Adj" in node.label })
+
+    @Test
+    fun isCompleteTrue() =
+        assertTrue(tree.isComplete)
+
+    @Test
+    fun isCompleteFalse() =
+        assertFalse(treeWithoutTopLevelBranchingNode.isComplete)
 
     @Test
     fun oneNodeParentId() =
