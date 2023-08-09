@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  arrayFromSet, idMapGet, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, isTopLevel
+  arrayFromSet, idMapGet, isPositionedNodeTopLevel, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode,
+  PositionedTerminalNode, PositionedTree
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
@@ -83,7 +84,7 @@ const renderNode = (
       rx={3}
       ry={3}
     />
-    {(isTopLevel(allNodes, nodeId) || node.label) && <text
+    {(isPositionedNodeTopLevel(allNodes, nodeId) || node.label) && <text
       x={node.position.treeX}
       y={node.position.treeY}
       fill="#000"

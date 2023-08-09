@@ -176,7 +176,6 @@ fun applyNodePositions(
 /**
  * Returns a copy of the given tree with positions for all nodes.
  */
-@JsExport
 fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree = PositionedTree(
     sentence = tree.sentence,
     nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
@@ -198,4 +197,4 @@ fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot)
  */
 @JsExport
 fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): Array<Id> =
-    sortPositionedNodesByXCoord(applyNodePositionsToTree(strWidthFunc, tree), nodeIds)
+    applyNodePositionsToTree(strWidthFunc, tree).sortNodesByXCoord(nodeIds)

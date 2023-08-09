@@ -1,7 +1,6 @@
 import { Id, Sentence, StrWidthFunc } from '../types';
 import {
-  CoordsInTree, determineNaturalParentNodePosition, getTopLevelPositionedNodes, idMapKeys, isSliceUnassigned,
-  PositionedTree, set, sliceOffsetAndWidth, sortPositionedNodesByXCoord, StringSlice
+  CoordsInTree, determineNaturalParentNodePosition, idMapKeys, PositionedTree, set, sliceOffsetAndWidth, StringSlice
 } from 'npbloom-core';
 import { windowed } from '../util/objTransforms';
 
@@ -33,14 +32,13 @@ const getWordSlices = (sentence: Sentence, wordRegex?: RegExp): StringSlice[] =>
 
 const getNodeCreationTargetsForTree = (strWidthFunc: StrWidthFunc) => (positionedTree: PositionedTree): NodeCreationTarget[] => {
   // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
-  const topLevelNodes = getTopLevelPositionedNodes(positionedTree);
-  const topLevelNodeIds = sortPositionedNodesByXCoord(positionedTree, idMapKeys(topLevelNodes));
+  const topLevelNodeIds = positionedTree.sortNodesByXCoord(idMapKeys(positionedTree.getTopLevelNodes()));
 
   // We also need one trigger above each space between two horizontally adjacent nodes
   const topLevelNodeIdPairs = windowed(topLevelNodeIds, 2);
 
   // Finally, we need one trigger for each word that isn't already assigned to a terminal node
-  const unassignedSlices = getWordSlices(positionedTree.sentence).filter(slice => isSliceUnassigned(positionedTree, slice));
+  const unassignedSlices = getWordSlices(positionedTree.sentence).filter(slice => positionedTree.isSliceUnassigned(slice));
 
   // Find the targets for all of these triggers, i.e. where nodes can be added
   const parentNodeCreationTargets: NodeCreationTarget[] = topLevelNodeIds.map(id => [id]).concat(topLevelNodeIdPairs)

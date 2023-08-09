@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
-import { Id, StringSlice } from './content/types';
+import { Id } from './types';
+import { StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode } from 'npbloom-core';
 import PlotView from './ui/components/PlotView';
 import { generateNodeId } from './ui/content/generateId';
 import { isNodeSelection } from './ui/selection';
@@ -13,7 +14,6 @@ import PlotSelector from './ui/components/PlotSelector';
 import BeginnersGuide from './ui/components/meta/BeginnersGuide';
 import PlotPlaceholder from './ui/components/meta/PlotPlaceholder';
 import { isEmpty } from './util/objTransforms';
-import { isBranching, isTerminal } from './content/unpositioned/types';
 import useUiState from './ui/useUiState';
 
 const App = () => {
@@ -37,10 +37,10 @@ const App = () => {
   const redo = () => dispatch({ type: 'redo' });
 
   /** Filthy hack - select a slice at the DOM level to trigger the appropriate changes in both state and DOM */
-  const selectSliceAtDomLevel = (treeId: Id, [start, end]: StringSlice) => {
+  const selectSliceAtDomLevel = (treeId: Id, { start, endExclusive }: StringSlice) => {
     const element: HTMLInputElement | null = document.querySelector('input#' + treeId);
     if (!element) return;
-    element.setSelectionRange(start, end);
+    element.setSelectionRange(start, endExclusive);
     setTimeout(() => element.focus(), 5);
   };
 
@@ -59,9 +59,9 @@ const App = () => {
   useHotkeys(['ArrowDown'], () => {
     if (selectedNodeIndicators.length !== 1) return;
     const selectedNodeObject = activePlot.trees[selectedNodeIndicators[0].treeId].nodes[selectedNodeIndicators[0].nodeId];
-    if (isBranching(selectedNodeObject)) {
+    if (selectedNodeObject instanceof UnpositionedBranchingNode) {
       selectCenterChildNode();
-    } else if (isTerminal(selectedNodeObject)) {
+    } else if (selectedNodeObject instanceof UnpositionedTerminalNode) {
       selectSliceAtDomLevel(selectedNodeIndicators[0].treeId, selectedNodeObject.slice);
     }
   });
