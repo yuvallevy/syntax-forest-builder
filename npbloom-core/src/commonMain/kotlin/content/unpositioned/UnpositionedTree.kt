@@ -17,7 +17,7 @@ data class UnpositionedTree(
 
     val nodeCount get() = nodes.size
 
-    val hasNodes get() = nodes.isEmpty()
+    val hasNodes get() = nodes.isNotEmpty()
 
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 

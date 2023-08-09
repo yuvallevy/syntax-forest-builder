@@ -48,7 +48,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   };
 
   const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (event.currentTarget.value.trim() === '' && unpositionedPlot.tree(treeId).hasNodes) {
+    if (event.currentTarget.value.trim() === '' && !unpositionedPlot.tree(treeId).hasNodes) {
       removeAndDeselectTree(treeId);
     }
   };
