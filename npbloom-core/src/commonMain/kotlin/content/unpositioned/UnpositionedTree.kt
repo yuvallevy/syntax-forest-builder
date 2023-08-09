@@ -30,8 +30,8 @@ data class UnpositionedTree(
     fun <T> mapNodes(transformFunc: (nodeId: Id, node: UnpositionedNode) -> T) =
         nodes.map { (nodeId, node) -> transformFunc(nodeId, node) }.toTypedArray()
 
-    fun <T> anyNodes(transformFunc: (nodeId: Id, node: UnpositionedNode) -> Boolean) =
-        nodes.any { (nodeId, node) -> transformFunc(nodeId, node) }
+    fun anyNodes(predicate: (nodeId: Id, node: UnpositionedNode) -> Boolean) =
+        nodes.any { (nodeId, node) -> predicate(nodeId, node) }
 
     /**
      * Determines whether this tree is "complete" by checking whether it has only one undominated node.
