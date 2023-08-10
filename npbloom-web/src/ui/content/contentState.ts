@@ -117,8 +117,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
         new: state.plots[action.plotIndex].transformNodes(
-          node => node.changeOffset(new TreeCoordsOffset(action.dx, action.dy)),
           set(action.nodeIndicators),
+          node => node.changeOffset(new TreeCoordsOffset(action.dx, action.dy)),
         ),
       }
     }
@@ -128,8 +128,8 @@ const makeUndoable = (state: ContentState) => (action: ContentAction): ContentCh
         plotIndex: action.plotIndex,
         old: state.plots[action.plotIndex],
         new: state.plots[action.plotIndex].transformNodes(
-          node => node.withOffset(TreeCoordsOffset.Companion.ZERO),
           set(action.nodeIndicators),
+          node => node.withOffset(TreeCoordsOffset.Companion.ZERO),
         ),
       };
     }

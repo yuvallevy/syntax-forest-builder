@@ -53,8 +53,8 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
      * at any point in any tree in the given plot.
      */
     fun transformNodes(
-        transformFunc: NodeTransformFunc,
         nodeIndicators: Set<NodeIndicatorInPlot>,
+        transformFunc: NodeTransformFunc,
     ): UnpositionedPlot =
         copy(
             trees = trees + groupNodeIdsByTree(nodeIndicators).mapValues { (treeId, nodeIds) ->

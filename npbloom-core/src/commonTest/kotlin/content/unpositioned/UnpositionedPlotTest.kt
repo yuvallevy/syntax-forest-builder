@@ -262,10 +262,9 @@ class UnpositionedPlotTest {
                 ),
             ),
         ),
-        plot.transformNodes(
-            { it.changeOffset(TreeCoordsOffset(0.0, -4.0)) },
-            setOf(NodeIndicatorInPlot("cleo", "np1"), NodeIndicatorInPlot("alex", "s2"))
-        )
+        plot.transformNodes(setOf(NodeIndicatorInPlot("cleo", "np1"), NodeIndicatorInPlot("alex", "s2"))) {
+            it.changeOffset(TreeCoordsOffset(0.0, -4.0))
+        }
     )
 
     @Test
