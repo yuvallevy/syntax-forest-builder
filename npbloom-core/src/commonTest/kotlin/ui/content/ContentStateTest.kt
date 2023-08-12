@@ -340,7 +340,18 @@ class ContentStateTest {
                             "zz" to UnpositionedTree(
                                 sentence = "nodes rock",
                                 nodes = mapOf(
-                                    "w" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("x")),
+                                    "w" to UnpositionedFormerlyBranchingNode(
+                                        "NP",
+                                        TreeCoordsOffset(-1.0, 5.0),
+                                        mapOf(
+                                            "x" to UnpositionedTerminalNode(
+                                                "N",
+                                                TreeCoordsOffset(1.0, 8.0),
+                                                StringSlice(0, 5),
+                                                false
+                                            )
+                                        )
+                                    ),
                                     "x" to UnpositionedTerminalNode(
                                         "N",
                                         TreeCoordsOffset(1.0, 8.0),
@@ -368,7 +379,18 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     sentence = "nodes rock",
                     nodes = mapOf(
-                        "w" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("x")),
+                        "w" to UnpositionedFormerlyBranchingNode(
+                            "NP",
+                            TreeCoordsOffset(-1.0, 5.0),
+                            mapOf(
+                                "x" to UnpositionedTerminalNode(
+                                    "N",
+                                    TreeCoordsOffset(1.0, 8.0),
+                                    StringSlice(0, 5),
+                                    false
+                                ),
+                            )
+                        ),
                         "x" to UnpositionedTerminalNode("N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5), false),
                         "y" to UnpositionedTerminalNode("V", TreeCoordsOffset(0.0, 0.0), StringSlice(6, 10), false),
                     ),

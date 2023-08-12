@@ -91,7 +91,7 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
         action.plotIndex,
         action.treeId,
         state.plots[action.plotIndex].tree(action.treeId),
-        state.plots[action.plotIndex].tree(action.treeId).adoptNodes(action.disowningNodeId, action.disownedNodeIds)
+        state.plots[action.plotIndex].tree(action.treeId).disownNodes(action.disowningNodeId, action.disownedNodeIds)
     )
     is MoveNodes -> PlotChanged(
         action.plotIndex,
