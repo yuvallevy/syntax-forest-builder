@@ -6,6 +6,7 @@ import NoSuchTreeException
 import content.Id
 import content.IdMap
 import content.NodeIndicatorInPlot
+import content.renderIdMap
 
 @JsExport
 data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
@@ -18,6 +19,10 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
     fun tree(treeId: Id) = trees[treeId] ?: throw NoSuchTreeException(treeId)
 
     operator fun contains(treeId: Id) = treeId in trees
+
+    @JsName("containsIndicator")
+    operator fun contains(nodeIndicator: NodeIndicatorInPlot) =
+        nodeIndicator.treeId in this && nodeIndicator.nodeId in tree(nodeIndicator.treeId)
 
     fun setTree(treeId: Id, tree: UnpositionedTree) = copy(trees = trees + (treeId to tree))
 

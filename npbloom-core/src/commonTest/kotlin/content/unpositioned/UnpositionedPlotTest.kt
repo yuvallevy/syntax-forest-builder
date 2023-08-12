@@ -110,6 +110,14 @@ class UnpositionedPlotTest {
         assertFalse("yona" in plot)
 
     @Test
+    fun plotContainsIndicatorTrue() =
+        assertTrue(NodeIndicatorInPlot("alex", "n2") in plot)
+
+    @Test
+    fun plotContainsIndicatorFalse() =
+        assertFalse(NodeIndicatorInPlot("cleo", "n2") in plot)
+
+    @Test
     fun setTree() =
         assertEquals(
             UnpositionedPlot(
