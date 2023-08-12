@@ -1,9 +1,9 @@
 import { Id, NodeLabel } from '../../types';
-import { PositionedTree } from 'npbloom-core';
-import { calculateNodeCenterOnPlot, ClientCoords, plotCoordsToClientCoords } from '../coords';
+import {
+  calculateNodeCenterOnPlot, ClientCoords, generateNodeId, plotCoordsToClientCoords, PositionedTree, set
+} from 'npbloom-core';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
-import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
 
 interface LabelNodeEditorInputProps {
@@ -43,7 +43,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   const { state, dispatch } = useUiState();
 
   const editedNodeObject = tree.node(nodeId);
-  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree)(editedNodeObject));
+  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree, editedNodeObject));
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
@@ -62,7 +62,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     if (!state.editedNodeIndicator) return;
     if (event.key === 'ArrowUp') {
       setEditedNodeLabel(event.currentTarget.value);
-      if (unpositionedPlot.allTopLevel([state.editedNodeIndicator])) {
+      if (unpositionedPlot.allTopLevel(set([state.editedNodeIndicator]))) {
         addNode();
       } else {
         selectParentNodes();

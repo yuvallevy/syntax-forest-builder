@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { Id, Sentence } from '../../types';
-import { arrayFromSet, PositionedTree, StringSlice } from 'npbloom-core';
+import {
+  arrayFromSet, generateNodeId, NodeSelectionInPlot, PositionedTree, SelectionInPlot, SliceSelectionInPlot, StringSlice
+} from 'npbloom-core';
 import './SentenceView.scss';
-import { isSliceSelection, SelectionInPlot } from '../selection';
-import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
 
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
@@ -40,11 +40,11 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
-  const handleSliceSelect = (slice: StringSlice) => setSelection({ treeId, slice });
+  const handleSliceSelect = (slice: StringSlice) => setSelection(new SliceSelectionInPlot(treeId, slice));
 
   const removeAndDeselectTree = (treeId: Id) => {
     dispatch({ type: 'removeTree', treeId });
-    setSelection({ nodeIndicators: [] });
+    setSelection(new NodeSelectionInPlot());
   };
 
   const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -62,8 +62,9 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   const handleSentenceKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowUp') {
       event.currentTarget.blur();
-      if (isSliceSelection(state.selection) &&
-        arrayFromSet(unpositionedPlot.tree(state.selection.treeId).getNodeIdsAssignedToSlice(state.selection.slice)).length === 0) {
+      if (state.selection instanceof SliceSelectionInPlot &&
+        arrayFromSet(unpositionedPlot.tree(state.selection.treeId)
+          .getNodeIdsAssignedToSlice(state.selection.slice)).length === 0) {
         addNode();
       } else {
         selectParentNodes();

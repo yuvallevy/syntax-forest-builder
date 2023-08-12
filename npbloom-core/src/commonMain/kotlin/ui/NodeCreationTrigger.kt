@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package ui
 
 import content.IdMap
@@ -25,19 +27,24 @@ private data class TerminalNodeCreationTarget(
     val slice: StringSlice,
 ) : NodeCreationTarget
 
+@JsExport
 sealed interface NodeCreationTrigger {
     val origin: CoordsInTree
     val topLeft: CoordsInTree
     val bottomRight: CoordsInTree
 }
 
+@JsExport
 data class BranchingNodeCreationTrigger(
     override val origin: CoordsInTree,
     override val topLeft: CoordsInTree,
     override val bottomRight: CoordsInTree,
     val childPositions: IdMap<CoordsInTree>,
-) : NodeCreationTrigger
+) : NodeCreationTrigger {
+    val childIds get() = childPositions.keys
+}
 
+@JsExport
 data class TerminalNodeCreationTrigger(
     override val origin: CoordsInTree,
     override val topLeft: CoordsInTree,
@@ -78,6 +85,7 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
     return parentNodeCreationTargets + terminalNodeCreationTargets
 }
 
+@JsExport
 fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Set<NodeCreationTrigger> =
     getNodeCreationTargets(strWidthFunc).map { target ->
         val origin = target.position

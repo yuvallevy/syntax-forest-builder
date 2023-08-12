@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package ui.content
 
 import content.Sentence
@@ -27,6 +29,7 @@ private fun getWordRange(sentence: Sentence, position: Int): StringSlice {
  * If the selection is a slice of length 0, expands it to span the word where the cursor currently is,
  * using the given sentence.
  */
+@JsExport
 fun newNodeFromSelection(selection: SelectionInPlot, sentence: Sentence): InsertedNode = when (selection) {
     is SliceSelectionInPlot -> {
         // A slice of the sentence is selected

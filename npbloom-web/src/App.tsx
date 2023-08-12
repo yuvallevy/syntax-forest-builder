@@ -3,10 +3,11 @@ import { MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
-import { UnpositionedBranchingNode, UnpositionedTerminalNode, set, StringSlice } from 'npbloom-core';
+import {
+  arrayFromSet, generateNodeId, NodeIndicatorInPlot, NodeSelectionInPlot, set, StringSlice, UnpositionedBranchingNode,
+  UnpositionedTerminalNode
+} from 'npbloom-core';
 import PlotView from './ui/components/PlotView';
-import { generateNodeId } from './ui/content/generateId';
-import { isNodeSelection } from './ui/selection';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import Toolbox from './ui/components/Toolbox';
 import AboutButton from './ui/components/meta/AboutButton';
@@ -21,7 +22,8 @@ const App = () => {
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
-  const selectedNodeIndicators = isNodeSelection(selection) ? selection.nodeIndicators : [];
+  const selectedNodeIndicators = selection instanceof NodeSelectionInPlot
+    ? arrayFromSet<NodeIndicatorInPlot>(selection.nodeIndicators) : [];
 
   const activePlot = state.contentState.current.plots[activePlotIndex];
 
@@ -74,7 +76,7 @@ const App = () => {
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
-    if (isNodeSelection(state.selection) && state.selection.nodeIndicators.length === 1) {
+    if (state.selection instanceof NodeSelectionInPlot && arrayFromSet(state.selection.nodeIndicators).length === 1) {
       startEditing();  // For some reason the key press passes right through to the newly-created input.
                        // This seems unreliable. TODO: test cross-browser and on different computers
     }

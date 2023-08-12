@@ -1,4 +1,6 @@
-import { UnpositionedTerminalNode } from 'npbloom-core';
+import {
+  arrayFromSet, generateNodeId, NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, UnpositionedTerminalNode
+} from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle, TablerIconsProps
@@ -7,11 +9,8 @@ import { useRef, useState } from 'react';
 import './Toolbox.scss';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey';
 import { useOs } from '@mantine/hooks';
-import { canRedo, canUndo } from '../uiState';
 import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './icons';
 import useUiState from '../useUiState';
-import { isNodeSelection } from '../selection';
-import { generateNodeId } from '../content/generateId';
 
 type ToolboxItem = {
   title: string;
@@ -26,9 +25,10 @@ type ToolboxItem = {
 const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
 
-  const nothingSelected = isNodeSelection(state.selection) && state.selection.nodeIndicators.length === 0;
-  const noNodesSelected = !isNodeSelection(state.selection) || state.selection.nodeIndicators.length === 0;
-  const selectedNodeIndicators = isNodeSelection(state.selection) ? state.selection.nodeIndicators : [];
+  const nothingSelected = state.selection instanceof NodeSelectionInPlot && arrayFromSet(state.selection.nodeIndicators).length === 0;
+  const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot) || arrayFromSet(state.selection.nodeIndicators).length === 0;
+  const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
+    ? arrayFromSet<NodeIndicatorInPlot>(state.selection.nodeIndicators) : [];
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>
     state.contentState.current.plots[state.activePlotIndex].tree(treeId).node(nodeId));
 
@@ -41,9 +41,9 @@ const Toolbox: React.FC = () => {
     wasEditing && setTimeout(startEditing, 50);  // Hack to restore focus to edited node when clicking the triangle button.
   };
   const toggleAdoptMode = () => dispatch({ type: 'setSelectionAction',
-    selectionAction: state.selectionAction === 'adopt' ? 'select' : 'adopt' });
+    selectionAction: state.selectionAction === NodeSelectionAction.Adopt ? NodeSelectionAction.Select : NodeSelectionAction.Adopt });
   const toggleDisownMode = () => dispatch({ type: 'setSelectionAction',
-    selectionAction: state.selectionAction === 'disown' ? 'select' : 'disown' });
+    selectionAction: state.selectionAction === NodeSelectionAction.Disown ? NodeSelectionAction.Select : NodeSelectionAction.Disown });
   const undo = () => dispatch({ type: 'undo' });
   const redo = () => dispatch({ type: 'redo' });
 
@@ -72,9 +72,9 @@ const Toolbox: React.FC = () => {
   };
 
   const items: ToolboxItem[] = [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !canUndo(state), hotkey: 'Ctrl-Z',
+    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl-Z',
       description: 'Undo the last action.' },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !canRedo(state), hotkey: 'Ctrl-Y',
+    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl-Y',
       description: 'Redo the last undone action.' },
     { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected, hotkey: 'Up',
       description: 'Add a new parent node for the selected text or nodes.' },
@@ -89,10 +89,10 @@ const Toolbox: React.FC = () => {
       description: 'Toggle triangle connectors for the selected terminal nodes.'
     },
     { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === 'adopt' ? 'on' : 'off',
+      toggleState: state.selectionAction === NodeSelectionAction.Adopt ? 'on' : 'off',
       description: 'Adopt one or more nodes as children of the selected node.' },
     { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === 'disown' ? 'on' : 'off',
+      toggleState: state.selectionAction === NodeSelectionAction.Disown ? 'on' : 'off',
       description: 'Disown one or more children of the selected node.' },
     { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
       description: 'Relocate the selected nodes to their original positions.' },

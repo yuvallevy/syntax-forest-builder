@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package history
 
+@JsExport
 data class UndoRedoHistory<S, A : UndoableActionCommon>(
     val applyActionFunc: (state: S, action: A) -> S,
     val reverseActionFunc: (action: A) -> A,
@@ -57,4 +60,5 @@ data class UndoRedoHistory<S, A : UndoableActionCommon>(
     }
 }
 
+@JsExport
 interface UndoableActionCommon

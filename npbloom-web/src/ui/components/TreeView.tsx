@@ -1,15 +1,13 @@
 import React from 'react';
 import {
-  arrayFromSet, idMapGet, isPositionedNodeTopLevel, NodeIndicatorInPlot, PositionedBranchingNode, PositionedNode,
-  PositionedTerminalNode, PositionedTree
+  applySelection, arrayFromSet, BranchingNodeCreationTrigger, ClientCoordsOffset, CoordsInTree, generateNodeId,
+  getNodeCreationTriggers, idMapGet, idMapKeys, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot,
+  NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode,
+  PositionedTerminalNode, PositionedTree, SelectionInPlot, set, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
-import { applySelection, isNodeSelection, NodeSelectionMode, SelectionInPlot } from '../selection';
-import { NodeCreationTrigger, getNodeCreationTriggersForTree } from '../nodeCreationTriggers';
-import { ClientCoordsOffset } from '../coords';
 import strWidth from '../strWidth';
-import { generateNodeId } from '../content/generateId';
 import useUiState from '../useUiState';
 
 const NODE_LEVEL_SPACING = 20;
@@ -71,7 +69,7 @@ const renderNode = (
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
       + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')}
     onMouseDown={event => {
-      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? 'add' : 'set');
+      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? NodeSelectionMode.AddToSelection : NodeSelectionMode.SetSelection);
       onMouseDown && onMouseDown(event);
     }}
     onDoubleClick={onEditStart}
@@ -126,15 +124,18 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
       cy={trigger.origin.treeY}
       r={8}
     />
-    {'childIds' in trigger
-      ? trigger.childPositions.map(childPosition => <line
-        key={`${childPosition.treeX},${childPosition.treeY}`}
-        className="NodeCreationTriggerClickZone--indicator"
-        x1={trigger.origin.treeX}
-        y1={trigger.origin.treeY}
-        x2={childPosition.treeX}
-        y2={childPosition.treeY - NODE_LEVEL_SPACING}
-      />)
+    {trigger instanceof BranchingNodeCreationTrigger
+      ? arrayFromSet<Id>(idMapKeys(trigger.childPositions)).map(childId => {
+        const childPosition = idMapGet<CoordsInTree>(trigger.childPositions, childId);
+        return childPosition ? <line
+          key={`${childPosition.treeX},${childPosition.treeY}`}
+          className="NodeCreationTriggerClickZone--indicator"
+          x1={trigger.origin.treeX}
+          y1={trigger.origin.treeY}
+          x2={childPosition.treeX}
+          y2={childPosition.treeY - NODE_LEVEL_SPACING}
+        /> : null;
+      })
       : <line
         className="NodeCreationTriggerClickZone--indicator"
         x1={trigger.origin.treeX}
@@ -152,8 +153,9 @@ const TreeView: React.FC<TreeViewProps> = ({
 }) => {
   const { state, dispatch } = useUiState();
 
-  const selectedNodeIndicators = isNodeSelection(state.selection) ? state.selection.nodeIndicators : [];
-  const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
+  const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
+    ? state.selection.nodeIndicators : set([]);
+  const selectedNodeIds = arrayFromSet<NodeIndicatorInPlot>(selectedNodeIndicators).map(({ nodeId }) => nodeId);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
   const startEditing = () => dispatch({ type: 'startEditing' });
@@ -162,18 +164,20 @@ const TreeView: React.FC<TreeViewProps> = ({
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
     dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
 
-  const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = 'set') =>
-    state.selectionAction === 'adopt' ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
-      : state.selectionAction === 'disown' ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
-      : setSelection({ nodeIndicators: applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators) });
+  const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
+    state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
+      : state.selectionAction === NodeSelectionAction.Disown ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
+      : setSelection(new NodeSelectionInPlot(applySelection(mode, set([new NodeIndicatorInPlot(treeId, nodeId)]), selectedNodeIndicators)));
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
+    if (!(trigger instanceof BranchingNodeCreationTrigger) && !(trigger instanceof TerminalNodeCreationTrigger))
+      throw Error("Trigger is neither branching nor terminal")
     dispatch({
       type: 'addNodeByTarget',
       treeId,
       newNodeId: generateNodeId(),
       ...(
-        'childIds' in trigger
+        trigger instanceof BranchingNodeCreationTrigger
           ? { targetChildIds: trigger.childIds }
           : { targetSlice: trigger.slice, triangle: false }
       ),
@@ -182,11 +186,13 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   return <g id={`tree-${treeId}`}
             style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {getNodeCreationTriggersForTree(strWidth)(tree).map(trigger => <NodeCreationTriggerClickZone
-      trigger={trigger}
-      key={'childIds' in trigger ? trigger.childIds.join() : `${trigger.slice.start},${trigger.slice.endExclusive}`}
-      onClick={() => handleNodeCreationTriggerClick(trigger)}
-    />)}
+    {arrayFromSet<NodeCreationTrigger>(getNodeCreationTriggers(tree, strWidth)).map(trigger =>
+      <NodeCreationTriggerClickZone
+        trigger={trigger}
+        key={'childIds' in trigger ? arrayFromSet<Id>(trigger.childIds).join()
+          : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
+        onClick={() => handleNodeCreationTriggerClick(trigger)}
+      />)}
     {tree.mapNodes((nodeId, node) =>
       renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}

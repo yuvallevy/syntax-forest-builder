@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package ui.content
 
 import kotlin.js.Date
@@ -16,5 +18,7 @@ private fun generateId(prefix: String) =
             (Date().getTime().toInt() % maxTimestamp).toString(ID_BASE).padStart(ID_TIME_LENGTH, '0') +
             Random.nextLong(0 until maxRandom).toString(ID_BASE).padStart(ID_RANDOM_LENGTH, '0')
 
+@JsExport
 fun generateTreeId() = generateId("t")
+@JsExport
 fun generateNodeId() = generateId("n")

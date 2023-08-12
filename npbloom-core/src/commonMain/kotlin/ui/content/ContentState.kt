@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package ui.content
 
 import changeAt
@@ -13,6 +15,7 @@ import removeAt
 
 private typealias PlotIndex = Int
 
+@JsExport
 data class ContentState(val plots: Array<UnpositionedPlot>) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -35,28 +38,31 @@ data class ContentState(val plots: Array<UnpositionedPlot>) {
 
 private val initialState = ContentState(arrayOf(UnpositionedPlot()))
 
+@JsExport
 sealed interface ContentOrHistoryAction
 
-data object Undo : ContentOrHistoryAction
-data object Redo : ContentOrHistoryAction
+@JsExport data object Undo : ContentOrHistoryAction
+@JsExport data object Redo : ContentOrHistoryAction
 
+@JsExport
 private sealed interface ContentAction : UndoableActionCommon, ContentOrHistoryAction
 
-data object AddPlot : ContentAction
-data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
-data class ResetPlot(val plotIndex: PlotIndex) : ContentAction
-data class InsertNode(val plotIndex: PlotIndex, val treeId: Id, val newNodeId: Id, val newNode: InsertedNode) : ContentAction
-data class DeleteNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
-data class AdoptNodes(val plotIndex: PlotIndex, val treeId: Id, val adoptingNodeId: Id, val adoptedNodeIds: Set<Id>) : ContentAction
-data class DisownNodes(val plotIndex: PlotIndex, val treeId: Id, val disowningNodeId: Id, val disownedNodeIds: Set<Id>) : ContentAction
-data class MoveNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val offsetD: TreeCoordsOffset) : ContentAction
-data class ResetNodePositions(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
-data class SetNodeLabel(val plotIndex: PlotIndex, val nodeIndicator: NodeIndicatorInPlot, val newLabel: String) : ContentAction
-data class SetTriangle(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val triangle: Boolean) : ContentAction
-data class SetSentence(val plotIndex: PlotIndex, val treeId: Id, val newSentence: Sentence, val oldSelectedSlice: StringSlice) : ContentAction
-data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
-data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
+@JsExport data object AddPlot : ContentAction
+@JsExport data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
+@JsExport data class ResetPlot(val plotIndex: PlotIndex) : ContentAction
+@JsExport data class InsertNode(val plotIndex: PlotIndex, val treeId: Id, val newNodeId: Id, val newNode: InsertedNode) : ContentAction
+@JsExport data class DeleteNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+@JsExport data class AdoptNodes(val plotIndex: PlotIndex, val treeId: Id, val adoptingNodeId: Id, val adoptedNodeIds: Set<Id>) : ContentAction
+@JsExport data class DisownNodes(val plotIndex: PlotIndex, val treeId: Id, val disowningNodeId: Id, val disownedNodeIds: Set<Id>) : ContentAction
+@JsExport data class MoveNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val offsetD: TreeCoordsOffset) : ContentAction
+@JsExport data class ResetNodePositions(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+@JsExport data class SetNodeLabel(val plotIndex: PlotIndex, val nodeIndicator: NodeIndicatorInPlot, val newLabel: String) : ContentAction
+@JsExport data class SetTriangle(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val triangle: Boolean) : ContentAction
+@JsExport data class SetSentence(val plotIndex: PlotIndex, val treeId: Id, val newSentence: Sentence, val oldSelectedSlice: StringSlice) : ContentAction
+@JsExport data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
+@JsExport data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
+@JsExport
 sealed interface ContentChange : UndoableActionCommon
 
 data class PlotAdded(val newPlotIndex: PlotIndex, val newPlot: UnpositionedPlot) : ContentChange
@@ -157,8 +163,11 @@ private fun reverseUndoableAction(action: ContentChange): ContentChange = when (
 
 private typealias UndoableContentState = UndoRedoHistory<ContentState, ContentChange>
 
-val initialContentState = UndoRedoHistory(::applyUndoableAction, ::reverseUndoableAction, initialState)
+@JsExport
+val initialContentState: UndoableContentState =
+    UndoRedoHistory(::applyUndoableAction, ::reverseUndoableAction, initialState)
 
+@JsExport
 fun contentReducer(state: UndoableContentState, action: ContentOrHistoryAction): UndoableContentState = when (action) {
     Undo -> state.undo()
     Redo -> state.redo()
