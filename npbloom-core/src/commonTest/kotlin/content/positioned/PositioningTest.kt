@@ -2,6 +2,7 @@ package content.positioned
 
 import content.StringSlice
 import content.unpositioned.*
+import mockStrWidth
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

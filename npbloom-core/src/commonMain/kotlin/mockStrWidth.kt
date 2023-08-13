@@ -1,7 +1,5 @@
 @file:OptIn(ExperimentalJsExport::class)
 
-package content.positioned
-
 // Basic mapping of letter to width, for testing purposes only
 val charWidths: Map<Char, Double> = mapOf(
     ' ' to 4.0,
