@@ -6,7 +6,6 @@ import NoSuchTreeException
 import content.Id
 import content.IdMap
 import content.NodeIndicatorInPlot
-import content.renderIdMap
 
 @JsExport
 data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
