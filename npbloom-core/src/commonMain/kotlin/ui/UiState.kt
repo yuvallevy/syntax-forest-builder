@@ -110,10 +110,9 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is DeletePlot -> {
             val isLastRemainingPlot = state.contentState.current.plots.size == 1
-            val newContentState = contentReducer(
-                state.contentState,
-                if (isLastRemainingPlot) ResetPlot(action.plotIndex) else ui.content.DeletePlot(action.plotIndex)
-            )
+            val newContentState =
+                if (isLastRemainingPlot) contentReducer(state.contentState, ResetPlot(action.plotIndex))
+                else contentReducer(state.contentState, ui.content.DeletePlot(action.plotIndex))
             val newActivePlotIndex =
                 if (state.activePlotIndex < newContentState.current.plots.size) state.activePlotIndex
                 else newContentState.current.plots.size - 1
