@@ -1,0 +1,415 @@
+@file:OptIn(ExperimentalJsExport::class)
+
+package ui
+
+import content.*
+import content.positioned.StrWidthFunc
+import content.positioned.sortNodesByXCoord
+import content.unpositioned.*
+import ui.content.*
+
+private typealias PlotIndex = Int
+
+@JsExport
+sealed interface UiAction
+
+@JsExport
+enum class ChildNodeSide { Left, Right, Center }
+
+@JsExport class SetActivePlotIndex(val newPlotIndex: PlotIndex) : UiAction
+@JsExport class AddPlot : UiAction
+@JsExport class DeletePlot(val plotIndex: PlotIndex) : UiAction
+@JsExport class SetSelection(val newSelection: SelectionInPlot) : UiAction
+@JsExport class SelectParentNodes : UiAction
+@JsExport class SelectChildNode(val side: ChildNodeSide) : UiAction
+@JsExport class StartEditing : UiAction
+@JsExport class StopEditing : UiAction
+@JsExport class SetEditedNodeLabel(val newLabel: NodeLabel) : UiAction
+@JsExport class SetSelectionAction(val selectionAction: NodeSelectionAction) : UiAction
+@JsExport class AddNodeBySelection(val newNodeId: Id) : UiAction
+@JsExport class AddBranchingNodeByTarget(val treeId: Id, val newNodeId: Id, val targetChildIds: Set<Id>) : UiAction
+@JsExport class AddTerminalNodeByTarget(
+    val treeId: Id,
+    val newNodeId: Id,
+    val targetSlice: StringSlice,
+    val triangle: Boolean
+) : UiAction
+
+@JsExport class DeleteSelectedNodes : UiAction
+@JsExport class AdoptNodesBySelection(val adoptedNodeIndicators: Set<NodeIndicatorInPlot>) : UiAction
+@JsExport class DisownNodesBySelection(val disownedNodeIndicators: Set<NodeIndicatorInPlot>) : UiAction
+@JsExport class MoveSelectedNodes(val dx: Double, val dy: Double) : UiAction
+@JsExport class ResetSelectedNodePositions : UiAction
+@JsExport class ToggleTriangle : UiAction
+@JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
+@JsExport class AddTree(val newTreeId: Id, val offset: PlotCoordsOffset) : UiAction
+@JsExport class RemoveTree(val treeId: Id) : UiAction
+@JsExport class Undo : UiAction
+@JsExport class Redo : UiAction
+
+@JsExport
+data class UiState(
+    val contentState: UndoableContentState,
+    val activePlotIndex: PlotIndex,
+    val selection: SelectionInPlot,
+    val selectionAction: NodeSelectionAction,
+    val editedNodeIndicator: NodeIndicatorInPlot?,
+)
+
+@JsExport
+val initialUiState = UiState(
+    activePlotIndex = 0,
+    contentState = initialContentState,
+    selection = NodeSelectionInPlot(),
+    selectionAction = NodeSelectionAction.Select,
+    editedNodeIndicator = null,
+)
+
+private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): NodeSelectionInPlot =
+    when (selection) {
+        is SliceSelectionInPlot -> NodeSelectionInPlot(
+            activePlot.tree(selection.treeId).getNodeIdsAssignedToSlice(selection.slice)
+                .map { nodeId -> NodeIndicatorInPlot(selection.treeId, nodeId) }.toSet()
+        )
+
+        is NodeSelectionInPlot -> when {
+            selection.nodeIndicators.isEmpty() -> selection
+            else -> NodeSelectionInPlot(activePlot.getParentNodeIds(selection.nodeIndicators))
+        }
+    }
+
+@JsExport
+fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiState {
+    val activePlot = state.contentState.current.plots[state.activePlotIndex]
+    val selectedTreeId = when {
+        state.selection is SliceSelectionInPlot -> state.selection.treeId
+        state.selection is NodeSelectionInPlot && state.selection.nodeIndicators.isNotEmpty() ->
+            state.selection.nodeIndicators.toList()[0].treeId
+
+        else -> null
+    }
+    when (action) {
+        is SetActivePlotIndex -> {
+            return state.copy(
+                activePlotIndex = action.newPlotIndex,
+                selection = NodeSelectionInPlot(),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = null,
+            )
+        }
+
+        is AddPlot -> {
+            return state.copy(
+                contentState = contentReducer(state.contentState, AddPlot),
+                activePlotIndex = state.contentState.current.plots.size,
+                selection = NodeSelectionInPlot(),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = null,
+            )
+        }
+
+        is DeletePlot -> {
+            val isLastRemainingPlot = state.contentState.current.plots.size == 1
+            val newContentState = contentReducer(
+                state.contentState,
+                if (isLastRemainingPlot) ResetPlot(action.plotIndex) else ui.content.DeletePlot(action.plotIndex)
+            )
+            val newActivePlotIndex =
+                if (state.activePlotIndex < newContentState.current.plots.size) state.activePlotIndex
+                else newContentState.current.plots.size - 1
+            return state.copy(
+                contentState = newContentState,
+                activePlotIndex = newActivePlotIndex,
+                selection = NodeSelectionInPlot(),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = null,
+            )
+        }
+
+        is SetSelection -> {
+            return state.copy(
+                selection = action.newSelection,
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is SelectParentNodes -> {
+            val parentSelection = selectParentNodes(activePlot, state.selection)
+            return state.copy(
+                selection = parentSelection,
+                editedNodeIndicator = if (state.editedNodeIndicator != null) parentSelection.nodeIndicators.toList()[0]
+                else null,
+            )
+        }
+
+        is SelectChildNode -> {
+            if (
+                state.selection !is NodeSelectionInPlot ||  // no nodes selected
+                state.selection.nodeIndicators.size != 1 ||  // multiple nodes selected
+                selectedTreeId == null  // could not figure out tree ID for some other reason
+            ) return state
+            val selectedNodeObject = activePlot.tree(selectedTreeId)
+                .node(state.selection.nodeIndicators.single().nodeId)
+            if (selectedNodeObject !is UnpositionedBranchingNode) return state
+
+            val selectedNodeChildren = selectedNodeObject.children
+            val childNodesSortedByX =
+                sortNodesByXCoord(strWidthFunc, activePlot.tree(selectedTreeId), selectedNodeObject.children)
+
+            val childSelection: NodeSelectionInPlot =
+                when {
+                    action.side == ChildNodeSide.Center && selectedNodeChildren.size == 1 ->
+                        NodeSelectionInPlot(setOf(NodeIndicatorInPlot(selectedTreeId, childNodesSortedByX[0])))
+
+                    action.side == ChildNodeSide.Center && selectedNodeChildren.size >= 3 ->
+                        NodeSelectionInPlot(setOf(NodeIndicatorInPlot(selectedTreeId, childNodesSortedByX[1])))
+
+                    action.side != ChildNodeSide.Center && selectedNodeChildren.size >= 2 ->
+                        NodeSelectionInPlot(
+                            setOf(
+                                NodeIndicatorInPlot(
+                                    selectedTreeId,
+                                    childNodesSortedByX[if (action.side === ChildNodeSide.Left) 0 else (selectedNodeChildren.size - 1)]
+                                )
+                            )
+                        )
+
+                    else -> null
+                } ?: return state
+
+            return state.copy(
+                selection = childSelection,
+                editedNodeIndicator = if (state.editedNodeIndicator != null) childSelection.nodeIndicators.toList()[0]
+                else null,
+            )
+        }
+
+        is StartEditing -> {
+            return if (state.selection !is NodeSelectionInPlot || state.selection.nodeIndicators.size != 1) state
+            else state.copy(
+                editedNodeIndicator = state.selection.nodeIndicators.single(),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is StopEditing -> {
+            return state.copy(editedNodeIndicator = null)
+        }
+
+        is SetEditedNodeLabel -> {
+            if (state.editedNodeIndicator == null) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    SetNodeLabel(state.activePlotIndex, state.editedNodeIndicator, action.newLabel)
+                )
+            )
+        }
+
+        is SetSelectionAction -> {
+            return state.copy(selectionAction = action.selectionAction)
+        }
+
+        is AddNodeBySelection -> {
+            if (selectedTreeId == null) return state
+            val newNodeIndicator = NodeIndicatorInPlot(selectedTreeId, action.newNodeId)
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, InsertNode(
+                        state.activePlotIndex,
+                        selectedTreeId,
+                        action.newNodeId,
+                        newNodeFromSelection(state.selection, activePlot.tree(selectedTreeId).sentence),
+                    )
+                ),
+                selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = newNodeIndicator,
+            )
+        }
+
+        is AddBranchingNodeByTarget -> {
+            val newNodeIndicator = NodeIndicatorInPlot(action.treeId, action.newNodeId)
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, InsertNode(
+                        state.activePlotIndex,
+                        action.treeId,
+                        action.newNodeId,
+                        InsertedBranchingNode("", null, action.targetChildIds),
+                    )
+                ),
+                selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = newNodeIndicator,
+            )
+        }
+
+        is AddTerminalNodeByTarget -> {
+            val newNodeIndicator = NodeIndicatorInPlot(action.treeId, action.newNodeId)
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, InsertNode(
+                        state.activePlotIndex,
+                        action.treeId,
+                        action.newNodeId,
+                        InsertedTerminalNode("", null, action.targetSlice, action.triangle),
+                    )
+                ),
+                selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
+                selectionAction = NodeSelectionAction.Select,
+                editedNodeIndicator = newNodeIndicator,
+            )
+        }
+
+        is DeleteSelectedNodes -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    DeleteNodes(state.activePlotIndex, state.selection.nodeIndicators)
+                ),
+                selection = NodeSelectionInPlot(
+                    // Currently selected nodes are about to be deleted, so they should not be selected after deletion
+                    // (this can happen when two deleted nodes are parent and child)
+                    activePlot.getChildNodeIds(state.selection.nodeIndicators) - state.selection.nodeIndicators,
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is AdoptNodesBySelection -> {
+            if (
+                state.selection !is NodeSelectionInPlot ||  // no nodes selected
+                state.selection.nodeIndicators.size != 1 ||  // multiple nodes selected
+                selectedTreeId == null  // could not figure out tree ID for some other reason
+            ) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    AdoptNodes(
+                        state.activePlotIndex,
+                        selectedTreeId,
+                        state.selection.nodeIndicators.single().nodeId,
+                        action.adoptedNodeIndicators.filter { it.treeId == selectedTreeId }.map { it.nodeId }.toSet()
+                    ),
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is DisownNodesBySelection -> {
+            if (
+                state.selection !is NodeSelectionInPlot ||  // no nodes selected
+                state.selection.nodeIndicators.size != 1 ||  // multiple nodes selected
+                selectedTreeId == null  // could not figure out tree ID for some other reason
+            ) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    DisownNodes(
+                        state.activePlotIndex,
+                        selectedTreeId,
+                        state.selection.nodeIndicators.single().nodeId,
+                        action.disownedNodeIndicators.filter { it.treeId == selectedTreeId }.map { it.nodeId }.toSet()
+                    ),
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is MoveSelectedNodes -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, MoveNodes(
+                        state.activePlotIndex,
+                        state.selection.nodeIndicators,
+                        TreeCoordsOffset(action.dx, action.dy),
+                    )
+                ),
+            )
+        }
+
+        is ResetSelectedNodePositions -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, ResetNodePositions(
+                        state.activePlotIndex,
+                        state.selection.nodeIndicators,
+                    )
+                ),
+            )
+        }
+
+        is ToggleTriangle -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            val currentlyTriangle = state.selection.nodeIndicators.all { (treeId, nodeId) ->
+                val node = activePlot.tree(treeId).node(nodeId)
+                if (node is UnpositionedTerminalNode) node.triangle else false
+            }
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    SetTriangle(
+                        state.activePlotIndex,
+                        state.selection.nodeIndicators,
+                        !currentlyTriangle,
+                    )
+                ),
+            )
+        }
+
+        is SetSentence -> {
+            if (selectedTreeId == null) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, SetSentence(
+                        state.activePlotIndex,
+                        action.treeId ?: selectedTreeId,
+                        action.newSentence,
+                        action.oldSelectedSlice,
+                    )
+                ),
+            )
+        }
+
+        is AddTree -> {
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, AddTree(
+                        state.activePlotIndex,
+                        action.newTreeId,
+                        action.offset,
+                    )
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is RemoveTree -> {
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, DeleteTree(
+                        state.activePlotIndex,
+                        action.treeId,
+                    )
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is Undo, is Redo -> {
+            val newContentState = contentReducer(state.contentState, if (action is Undo) Undo else Redo)
+            val newActivePlotIndex =
+                if (state.activePlotIndex < newContentState.current.plots.size) state.activePlotIndex
+                else newContentState.current.plots.size - 1
+            return state.copy(
+                contentState = newContentState,
+                activePlotIndex = newActivePlotIndex,
+                selection = pruneSelection(state.selection, newContentState.current.plots[newActivePlotIndex]),
+            )
+        }
+    }
+}

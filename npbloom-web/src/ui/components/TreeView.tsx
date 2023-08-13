@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  applySelection, arrayFromSet, BranchingNodeCreationTrigger, ClientCoordsOffset, CoordsInTree, generateNodeId,
+  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection, arrayFromSet,
+  BranchingNodeCreationTrigger, ClientCoordsOffset, CoordsInTree, DisownNodesBySelection, generateNodeId,
   getNodeCreationTriggers, idMapGet, idMapKeys, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot,
   NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode,
-  PositionedTerminalNode, PositionedTree, SelectionInPlot, set, TerminalNodeCreationTrigger
+  PositionedTerminalNode, PositionedTree, SelectionInPlot, set, SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
@@ -157,12 +158,12 @@ const TreeView: React.FC<TreeViewProps> = ({
     ? state.selection.nodeIndicators : set([]);
   const selectedNodeIds = arrayFromSet<NodeIndicatorInPlot>(selectedNodeIndicators).map(({ nodeId }) => nodeId);
 
-  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
-  const startEditing = () => dispatch({ type: 'startEditing' });
+  const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
+  const startEditing = () => dispatch(new StartEditing());
   const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch({ type: 'adoptNodesBySelection', adoptedNodeIndicators });
+    dispatch(new AdoptNodesBySelection(set(adoptedNodeIndicators)));
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
+    dispatch(new DisownNodesBySelection(set(disownedNodeIndicators)));
 
   const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
@@ -170,18 +171,11 @@ const TreeView: React.FC<TreeViewProps> = ({
       : setSelection(new NodeSelectionInPlot(applySelection(mode, set([new NodeIndicatorInPlot(treeId, nodeId)]), selectedNodeIndicators)));
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
-    if (!(trigger instanceof BranchingNodeCreationTrigger) && !(trigger instanceof TerminalNodeCreationTrigger))
-      throw Error("Trigger is neither branching nor terminal")
-    dispatch({
-      type: 'addNodeByTarget',
-      treeId,
-      newNodeId: generateNodeId(),
-      ...(
-        trigger instanceof BranchingNodeCreationTrigger
-          ? { targetChildIds: trigger.childIds }
-          : { targetSlice: trigger.slice, triangle: false }
-      ),
-    });
+    if (trigger instanceof BranchingNodeCreationTrigger) {
+      dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIds));
+    } else if (trigger instanceof TerminalNodeCreationTrigger) {
+      dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, false));
+    }
   };
 
   return <g id={`tree-${treeId}`}

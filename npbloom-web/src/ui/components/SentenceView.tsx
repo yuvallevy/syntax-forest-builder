@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import { Id, Sentence } from '../../types';
 import {
-  arrayFromSet, generateNodeId, NodeSelectionInPlot, PositionedTree, SelectionInPlot, SliceSelectionInPlot, StringSlice
+  AddNodeBySelection, arrayFromSet, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree,
+  SelectionInPlot, SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -34,16 +35,16 @@ const SentenceView: React.FC<SentenceViewProps> = ({
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
 
-  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
-  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
-  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
-  const undo = () => dispatch({ type: 'undo' });
-  const redo = () => dispatch({ type: 'redo' });
+  const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
+  const selectParentNodes = () => dispatch(new SelectParentNodes());
+  const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
+  const undo = () => dispatch(new Undo());
+  const redo = () => dispatch(new Redo());
 
   const handleSliceSelect = (slice: StringSlice) => setSelection(new SliceSelectionInPlot(treeId, slice));
 
   const removeAndDeselectTree = (treeId: Id) => {
-    dispatch({ type: 'removeTree', treeId });
+    dispatch(new RemoveTree(treeId));
     setSelection(new NodeSelectionInPlot());
   };
 
@@ -53,11 +54,10 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }
   };
 
-  const handleSentenceChange = (newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch({
-    type: 'setSentence',
+  const handleSentenceChange = (newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch(new SetSentence(
     newSentence,
     oldSelectedSlice,
-  });
+  ));
 
   const handleSentenceKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowUp') {

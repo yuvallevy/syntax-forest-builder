@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import {
-  applyNodePositionsToPlot, applySelection, arrayFromSet, ClientCoords, ClientCoordsOffset, ClientRect, generateTreeId,
-  isNodeInRect, NodeIndicatorInPlot, NodeSelectionInPlot, NodeSelectionAction, NodeSelectionMode, PlotCoordsOffset,
-  PositionedNode, PositionedPlot, PositionedTree, SelectionInPlot, set
+  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, arrayFromSet, ClientCoords,
+  ClientCoordsOffset, ClientRect, DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes,
+  NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PlotCoordsOffset, PositionedNode,
+  PositionedPlot, PositionedTree, SelectionInPlot, set, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -28,12 +29,12 @@ const PlotView: React.FC = () => {
     return applyNodePositionsToPlot(strWidth, unpositionedPlot);
   }, [state.contentState, state.activePlotIndex]);
 
-  const setSelection = (newSelection: SelectionInPlot) => dispatch({ type: 'setSelection', newSelection });
-  const moveNodes = (dx: number, dy: number) => dispatch({ type: 'moveSelectedNodes', dx, dy });
+  const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
+  const moveNodes = (dx: number, dy: number) => dispatch(new MoveSelectedNodes(dx, dy));
   const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch({ type: 'adoptNodesBySelection', adoptedNodeIndicators });
+    dispatch(new AdoptNodesBySelection(adoptedNodeIndicators));
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch({ type: 'disownNodesBySelection', disownedNodeIndicators });
+    dispatch(new DisownNodesBySelection(disownedNodeIndicators));
 
   const [dragStartCoords, setDragStartCoords] = useState<ClientCoords | undefined>();
   const [dragEndCoords, setDragEndCoords] = useState<ClientCoords | undefined>();
@@ -56,7 +57,7 @@ const PlotView: React.FC = () => {
 
   const addTreeAndFocus = (position: PlotCoordsOffset) => {
     const newTreeId = generateTreeId();
-    dispatch({ type: 'addTree', newTreeId, offset: position });
+    dispatch(new AddTree(newTreeId, position));
     setTimeout(() =>
       (document.querySelector(`input#${newTreeId}`) as (HTMLInputElement | null))?.focus(), 50);
   };

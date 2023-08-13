@@ -1,5 +1,7 @@
 import {
-  arrayFromSet, generateNodeId, NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, UnpositionedTerminalNode
+  AddNodeBySelection, arrayFromSet, DeleteSelectedNodes, generateNodeId, NodeIndicatorInPlot, NodeSelectionAction,
+  NodeSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo,
+  UnpositionedTerminalNode
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
@@ -32,20 +34,20 @@ const Toolbox: React.FC = () => {
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>
     state.contentState.current.plots[state.activePlotIndex].tree(treeId).node(nodeId));
 
-  const startEditing = () => dispatch({ type: 'startEditing' });
-  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
-  const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
-  const resetNodePositions = () => dispatch({ type: 'resetSelectedNodePositions' });
+  const startEditing = () => dispatch(new StartEditing());
+  const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
+  const deleteNode = () => dispatch(new DeleteSelectedNodes());
+  const resetNodePositions = () => dispatch(new ResetSelectedNodePositions());
   const toggleTriangle = (wasEditing: boolean) => {
-    dispatch({ type: 'toggleTriangle' });
+    dispatch(new ToggleTriangle());
     wasEditing && setTimeout(startEditing, 50);  // Hack to restore focus to edited node when clicking the triangle button.
   };
-  const toggleAdoptMode = () => dispatch({ type: 'setSelectionAction',
-    selectionAction: state.selectionAction === NodeSelectionAction.Adopt ? NodeSelectionAction.Select : NodeSelectionAction.Adopt });
-  const toggleDisownMode = () => dispatch({ type: 'setSelectionAction',
-    selectionAction: state.selectionAction === NodeSelectionAction.Disown ? NodeSelectionAction.Select : NodeSelectionAction.Disown });
-  const undo = () => dispatch({ type: 'undo' });
-  const redo = () => dispatch({ type: 'redo' });
+  const toggleAdoptMode = () => dispatch(new SetSelectionAction(
+    state.selectionAction === NodeSelectionAction.Adopt ? NodeSelectionAction.Select : NodeSelectionAction.Adopt));
+  const toggleDisownMode = () => dispatch(new SetSelectionAction(
+    state.selectionAction === NodeSelectionAction.Disown ? NodeSelectionAction.Select : NodeSelectionAction.Disown));
+  const undo = () => dispatch(new Undo());
+  const redo = () => dispatch(new Redo());
 
   const os = useOs();
 

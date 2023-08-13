@@ -1,4 +1,5 @@
 import { PlotIndex } from '../../types';
+import { AddPlot, DeletePlot, SetActivePlotIndex } from 'npbloom-core';
 import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';
 import './PlotSelector.scss';
@@ -10,9 +11,9 @@ const PlotSelector: React.FC = () => {
   const plots = state.contentState.current.plots;
   const activePlotIndex = state.activePlotIndex;
 
-  const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch({ type: 'setActivePlotIndex', newPlotIndex });
-  const addPlot = () => dispatch({ type: 'addPlot' });
-  const deletePlot = (plotIndex: PlotIndex) => dispatch({ type: 'deletePlot', plotIndex });
+  const setActivePlotIndex = (newPlotIndex: PlotIndex) => dispatch(new SetActivePlotIndex(newPlotIndex));
+  const addPlot = () => dispatch(new AddPlot());
+  const deletePlot = (plotIndex: PlotIndex) => dispatch(new DeletePlot(plotIndex));
 
   return <Paper sx={{ position: 'fixed', left: 0, right: 0, bottom: 0 }}>
     <Tabs value={activePlotIndex.toString()} onTabChange={newValue => setActivePlotIndex(Number(newValue))} inverted>

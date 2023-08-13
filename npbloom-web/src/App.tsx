@@ -4,8 +4,9 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  arrayFromSet, generateNodeId, NodeIndicatorInPlot, NodeSelectionInPlot, set, StringSlice, UnpositionedBranchingNode,
-  UnpositionedTerminalNode
+  AddNodeBySelection, arrayFromSet, ChildNodeSide, DeleteSelectedNodes, generateNodeId, NodeIndicatorInPlot,
+  NodeSelectionInPlot, Redo, set, SelectChildNode, SelectParentNodes, StartEditing, StringSlice,
+  UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
 } from 'npbloom-core';
 import PlotView from './ui/components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -27,15 +28,15 @@ const App = () => {
 
   const activePlot = state.contentState.current.plots[activePlotIndex];
 
-  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
-  const selectLeftChildNode = () => dispatch({ type: 'selectChildNode', side: 'left' });
-  const selectRightChildNode = () => dispatch({ type: 'selectChildNode', side: 'right' });
-  const selectCenterChildNode = () => dispatch({ type: 'selectChildNode', side: 'center' });
-  const startEditing = () => dispatch({ type: 'startEditing' });
-  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
-  const deleteNode = () => dispatch({ type: 'deleteSelectedNodes' });
-  const undo = () => dispatch({ type: 'undo' });
-  const redo = () => dispatch({ type: 'redo' });
+  const selectParentNodes = () => dispatch(new SelectParentNodes());
+  const selectLeftChildNode = () => dispatch(new SelectChildNode(ChildNodeSide.Left));
+  const selectRightChildNode = () => dispatch(new SelectChildNode(ChildNodeSide.Right));
+  const selectCenterChildNode = () => dispatch(new SelectChildNode(ChildNodeSide.Center));
+  const startEditing = () => dispatch(new StartEditing());
+  const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
+  const deleteNode = () => dispatch(new DeleteSelectedNodes());
+  const undo = () => dispatch(new Undo());
+  const redo = () => dispatch(new Redo());
 
   /** Filthy hack - select a slice at the DOM level to trigger the appropriate changes in both state and DOM */
   const selectSliceAtDomLevel = (treeId: Id, { start, endExclusive }: StringSlice) => {

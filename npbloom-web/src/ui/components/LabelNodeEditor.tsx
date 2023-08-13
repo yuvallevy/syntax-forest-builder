@@ -1,6 +1,7 @@
 import { Id, NodeLabel } from '../../types';
 import {
-  calculateNodeCenterOnPlot, ClientCoords, generateNodeId, plotCoordsToClientCoords, PositionedTree, set
+  AddNodeBySelection, calculateNodeCenterOnPlot, ClientCoords, generateNodeId, plotCoordsToClientCoords, PositionedTree,
+  SelectParentNodes, set, SetEditedNodeLabel, StopEditing
 } from 'npbloom-core';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
@@ -48,10 +49,10 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
 
-  const selectParentNodes = () => dispatch({ type: 'selectParentNodes' });
-  const stopEditing = () => dispatch({ type: 'stopEditing' });
-  const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch({ type: 'setEditedNodeLabel', newLabel });
-  const addNode = () => dispatch({ type: 'addNodeBySelection', newNodeId: generateNodeId() });
+  const selectParentNodes = () => dispatch(new SelectParentNodes());
+  const stopEditing = () => dispatch(new StopEditing());
+  const setEditedNodeLabel = (newLabel: NodeLabel) => dispatch(new SetEditedNodeLabel(newLabel));
+  const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
 
   const handleNodeEditorBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setEditedNodeLabel(event.currentTarget.value);
