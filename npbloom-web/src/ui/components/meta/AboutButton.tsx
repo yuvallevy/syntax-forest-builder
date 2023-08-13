@@ -12,7 +12,7 @@ const AboutButton = () => {
       sx={{ position: 'fixed', right: '1rem', top: '1rem' }}
       onClick={open}
     >
-      0.4
+      0.5
     </Button>
     <Modal opened={opened} onClose={close} title="About" centered size="lg">
       <div style={{ textAlign: 'center' }}>
@@ -24,7 +24,9 @@ const AboutButton = () => {
         Click above the words to add nodes, and click above the nodes to add parent nodes,
         working your way up the tree.</p>
       <p>
-        NPBloom is written in <Anchor href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">
+        NPBloom is written in <Anchor href="https://kotlinlang.org/" target="_blank" rel="noopener noreferrer">
+          Kotlin
+        </Anchor> and <Anchor href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">
           TypeScript
         </Anchor>, powered by <Anchor href="https://react.dev/" target="_blank" rel="noopener noreferrer">
           React
