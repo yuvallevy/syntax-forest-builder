@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { arrayFromSet, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
+import { arrayFromSet, generateSentence, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
 import { Alert } from '@mantine/core';
 import './BeginnersGuide.scss';
 import {
   IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant, IconWritingSign
 } from '@tabler/icons-react';
-import generateSentence from './generateSentence';
 import useUiState from '../../useUiState';
 
 interface BeginnersGuideProps {
