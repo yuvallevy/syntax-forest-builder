@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { Id, Sentence } from '../../types';
 import {
-  AddNodeBySelection, arrayFromSet, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree,
-  SelectionInPlot, SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
+  AddNodeBySelection, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree, SelectionInPlot,
+  SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -45,7 +45,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
 
   const removeAndDeselectTree = (treeId: Id) => {
     dispatch(new RemoveTree(treeId));
-    setSelection(new NodeSelectionInPlot());
+    setSelection(NodeSelectionInPlot.Companion.fromArray([]));
   };
 
   const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -63,8 +63,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     if (event.key === 'ArrowUp') {
       event.currentTarget.blur();
       if (state.selection instanceof SliceSelectionInPlot &&
-        arrayFromSet(unpositionedPlot.tree(state.selection.treeId)
-          .getNodeIdsAssignedToSlice(state.selection.slice)).length === 0) {
+        unpositionedPlot.tree(state.selection.treeId)
+          .getNodeIdsAssignedToSliceAsArray(state.selection.slice).length === 0) {
         addNode();
       } else {
         selectParentNodes();

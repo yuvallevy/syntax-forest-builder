@@ -36,13 +36,15 @@ sealed interface NodeCreationTrigger {
 }
 
 @JsExport
-data class BranchingNodeCreationTrigger(
+data class BranchingNodeCreationTrigger internal constructor(
     override val origin: CoordsInTree,
     override val topLeft: CoordsInTree,
     override val bottomRight: CoordsInTree,
-    val childIds: Set<Id>,
+    internal val childIds: Set<Id>,
     val childPositions: Array<CoordsInTree>,
 ) : NodeCreationTrigger {
+    val childIdsAsArray = childIds.toTypedArray()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class.js != other::class.js) return false
@@ -111,7 +113,7 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
 }
 
 @JsExport
-fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Set<NodeCreationTrigger> =
+fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Array<NodeCreationTrigger> =
     getNodeCreationTargets(strWidthFunc).map { target ->
         val origin = target.position
         val topLeft = CoordsInTree(
@@ -129,4 +131,4 @@ fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Set<Node
             is TerminalNodeCreationTarget ->
                 TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice)
         }
-    }.toSet()
+    }.toTypedArray()

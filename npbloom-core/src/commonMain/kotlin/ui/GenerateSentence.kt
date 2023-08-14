@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package ui
 
 // Moderately-long example words and names to make sure the click areas are large enough for untrained users

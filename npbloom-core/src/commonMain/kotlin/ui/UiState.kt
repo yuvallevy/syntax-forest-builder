@@ -28,7 +28,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetEditedNodeLabel(val newLabel: NodeLabel) : UiAction
 @JsExport class SetSelectionAction(val selectionAction: NodeSelectionAction) : UiAction
 @JsExport class AddNodeBySelection(val newNodeId: Id) : UiAction
-@JsExport class AddBranchingNodeByTarget(val treeId: Id, val newNodeId: Id, val targetChildIds: Set<Id>) : UiAction
+@JsExport class AddBranchingNodeByTarget(val treeId: Id, val newNodeId: Id, val targetChildIds: Array<Id>) : UiAction
 @JsExport class AddTerminalNodeByTarget(
     val treeId: Id,
     val newNodeId: Id,
@@ -37,8 +37,8 @@ enum class ChildNodeSide { Left, Right, Center }
 ) : UiAction
 
 @JsExport class DeleteSelectedNodes : UiAction
-@JsExport class AdoptNodesBySelection(val adoptedNodeIndicators: Set<NodeIndicatorInPlot>) : UiAction
-@JsExport class DisownNodesBySelection(val disownedNodeIndicators: Set<NodeIndicatorInPlot>) : UiAction
+@JsExport class AdoptNodesBySelection(val adoptedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
+@JsExport class DisownNodesBySelection(val disownedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
 @JsExport class MoveSelectedNodes(val dx: Double, val dy: Double) : UiAction
 @JsExport class ResetSelectedNodePositions : UiAction
 @JsExport class ToggleTriangle : UiAction
@@ -236,7 +236,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         state.activePlotIndex,
                         action.treeId,
                         action.newNodeId,
-                        InsertedBranchingNode("", null, action.targetChildIds),
+                        InsertedBranchingNode("", null, action.targetChildIds.toSet()),
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),

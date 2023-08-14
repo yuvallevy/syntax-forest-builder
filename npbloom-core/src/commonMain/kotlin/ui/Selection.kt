@@ -12,7 +12,14 @@ import content.unpositioned.UnpositionedPlot
 @JsExport
 sealed interface SelectionInPlot
 @JsExport
-data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) : SelectionInPlot
+data class NodeSelectionInPlot internal constructor(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) :
+    SelectionInPlot {
+    val nodeIndicatorsAsArray = nodeIndicators.toTypedArray()
+
+    companion object {
+        fun fromArray(nodeIndicatorArray: Array<NodeIndicatorInPlot>) = NodeSelectionInPlot(nodeIndicatorArray.toSet())
+    }
+}
 @JsExport
 data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : SelectionInPlot
 
@@ -21,7 +28,6 @@ enum class NodeSelectionAction { Select, Adopt, Disown }
 @JsExport
 enum class NodeSelectionMode { SetSelection, AddToSelection }
 
-@JsExport
 fun applySelection(
     mode: NodeSelectionMode,
     newNodeIndicators: Set<NodeIndicatorInPlot>,
@@ -30,6 +36,14 @@ fun applySelection(
     NodeSelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
     NodeSelectionMode.SetSelection -> newNodeIndicators
 }
+
+@JsExport
+fun applySelection(
+    mode: NodeSelectionMode,
+    newNodeIndicators: Array<NodeIndicatorInPlot>,
+    existingNodeIndicators: Array<NodeIndicatorInPlot> = emptyArray(),
+): Array<NodeIndicatorInPlot> =
+    applySelection(mode, newNodeIndicators.toSet(), existingNodeIndicators.toSet()).toTypedArray()
 
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.

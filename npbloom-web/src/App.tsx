@@ -4,9 +4,8 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  AddNodeBySelection, arrayFromSet, ChildNodeSide, DeleteSelectedNodes, generateNodeId, NodeIndicatorInPlot,
-  NodeSelectionInPlot, Redo, set, SelectChildNode, SelectParentNodes, StartEditing, StringSlice,
-  UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
+  AddNodeBySelection, ChildNodeSide, DeleteSelectedNodes, generateNodeId, NodeSelectionInPlot, Redo, SelectChildNode,
+  SelectParentNodes, StartEditing, StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
 } from 'npbloom-core';
 import PlotView from './ui/components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -23,8 +22,7 @@ const App = () => {
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
-  const selectedNodeIndicators = selection instanceof NodeSelectionInPlot
-    ? arrayFromSet<NodeIndicatorInPlot>(selection.nodeIndicators) : [];
+  const selectedNodeIndicators = selection instanceof NodeSelectionInPlot ? selection.nodeIndicatorsAsArray : [];
 
   const activePlot = state.contentState.current.plots[activePlotIndex];
 
@@ -47,7 +45,7 @@ const App = () => {
   };
 
   useHotkeys(['ArrowUp'], () => {
-    if (selectedNodeIndicators.length > 0 && activePlot.allTopLevel(set(selectedNodeIndicators))) {
+    if (selectedNodeIndicators.length > 0 && activePlot.allTopLevel(selectedNodeIndicators)) {
       addNode();
     } else {
       selectParentNodes();
@@ -77,7 +75,7 @@ const App = () => {
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
-    if (state.selection instanceof NodeSelectionInPlot && arrayFromSet(state.selection.nodeIndicators).length === 1) {
+    if (state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 1) {
       startEditing();  // For some reason the key press passes right through to the newly-created input.
                        // This seems unreliable. TODO: test cross-browser and on different computers
     }

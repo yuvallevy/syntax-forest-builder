@@ -4,7 +4,7 @@ import content.StringSlice
 import content.positioned.*
 import mockStrWidth
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.assertContentEquals
 
 class NodeCreationTriggerTest {
     private val positionedTree = PositionedTree(
@@ -22,8 +22,8 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggers() =
-        assertEquals(
-            setOf(
+        assertContentEquals(
+            arrayOf(
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(54.0, -42.0),
                     topLeft = CoordsInTree(38.0, -70.0),

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import {
-  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, arrayFromSet, ClientCoords,
-  ClientCoordsOffset, ClientRect, DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes,
-  NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PlotCoordsOffset, PositionedNode,
-  PositionedPlot, PositionedTree, SelectionInPlot, set, SetSelection
+  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, ClientCoords, ClientCoordsOffset,
+  ClientRect, DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes, NodeIndicatorInPlot,
+  NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PlotCoordsOffset, PositionedNode, PositionedPlot,
+  PositionedTree, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -19,9 +19,9 @@ const PlotView: React.FC = () => {
   const { state, dispatch } = useUiState();
 
   const nothingSelected = state.selection instanceof NodeSelectionInPlot &&
-    arrayFromSet<NodeIndicatorInPlot>(state.selection.nodeIndicators).length === 0;
+    state.selection.nodeIndicatorsAsArray.length === 0;
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
-    ? state.selection.nodeIndicators : set([]);
+    ? state.selection.nodeIndicatorsAsArray : [];
   const { editedNodeIndicator } = state;
 
   const plot: PositionedPlot = useMemo(() => {
@@ -65,13 +65,14 @@ const PlotView: React.FC = () => {
   const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes(nodeIndicators)
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes(nodeIndicators)
-      : setSelection(new NodeSelectionInPlot(applySelection(mode, set(nodeIndicators), selectedNodeIndicators)));
+      : setSelection(NodeSelectionInPlot.Companion.fromArray(
+        applySelection(mode, nodeIndicators, selectedNodeIndicators)));
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
       addTreeAndFocus(new PlotCoordsOffset(event.clientX, event.clientY));
     } else {
-      setSelection(new NodeSelectionInPlot());
+      setSelection(NodeSelectionInPlot.Companion.fromArray([]));
     }
   };
 
@@ -96,7 +97,7 @@ const PlotView: React.FC = () => {
     if (selectionBoxTopLeft && selectionBoxBottomRight) {
       const plotRect = new ClientRect(selectionBoxTopLeft, selectionBoxBottomRight).toPlotRect();
       const nodeInRectPredicate = (tree: PositionedTree, node: PositionedNode) => isNodeInRect(tree, node, plotRect);
-      const newSelectedNodes = arrayFromSet<NodeIndicatorInPlot>(plot.filterNodeIndicators(nodeInRectPredicate));
+      const newSelectedNodes = plot.filterNodeIndicatorsAsArray(nodeInRectPredicate);
       handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? NodeSelectionMode.AddToSelection : NodeSelectionMode.SetSelection);
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       moveNodes(dragOffset.dClientX, dragOffset.dClientY);

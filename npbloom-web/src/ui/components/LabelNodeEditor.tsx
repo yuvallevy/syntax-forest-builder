@@ -1,7 +1,7 @@
 import { Id, NodeLabel } from '../../types';
 import {
   AddNodeBySelection, calculateNodeCenterOnPlot, ClientCoords, generateNodeId, plotCoordsToClientCoords, PositionedTree,
-  SelectParentNodes, set, SetEditedNodeLabel, StopEditing
+  SelectParentNodes, SetEditedNodeLabel, StopEditing
 } from 'npbloom-core';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
@@ -63,7 +63,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     if (!state.editedNodeIndicator) return;
     if (event.key === 'ArrowUp') {
       setEditedNodeLabel(event.currentTarget.value);
-      if (unpositionedPlot.allTopLevel(set([state.editedNodeIndicator]))) {
+      if (unpositionedPlot.allTopLevel([state.editedNodeIndicator])) {
         addNode();
       } else {
         selectParentNodes();

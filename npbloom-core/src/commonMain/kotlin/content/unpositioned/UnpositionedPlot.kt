@@ -8,7 +8,7 @@ import content.IdMap
 import content.NodeIndicatorInPlot
 
 @JsExport
-data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
+data class UnpositionedPlot internal constructor(internal val trees: IdMap<UnpositionedTree> = emptyMap()) {
     val isEmpty get() = trees.isEmpty()
 
     val treesAsArray get() = trees.values.toTypedArray()
@@ -17,15 +17,14 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
 
     fun tree(treeId: Id) = trees[treeId] ?: throw NoSuchTreeException(treeId)
 
-    operator fun contains(treeId: Id) = treeId in trees
+    internal operator fun contains(treeId: Id) = treeId in trees
 
-    @JsName("containsIndicator")
-    operator fun contains(nodeIndicator: NodeIndicatorInPlot) =
+    internal operator fun contains(nodeIndicator: NodeIndicatorInPlot) =
         nodeIndicator.treeId in this && nodeIndicator.nodeId in tree(nodeIndicator.treeId)
 
-    fun setTree(treeId: Id, tree: UnpositionedTree) = copy(trees = trees + (treeId to tree))
+    internal fun setTree(treeId: Id, tree: UnpositionedTree) = copy(trees = trees + (treeId to tree))
 
-    fun removeTree(treeId: Id) = copy(trees = trees - treeId)
+    internal fun removeTree(treeId: Id) = copy(trees = trees - treeId)
 
     fun <T> mapTrees(transformFunc: (treeId: Id, tree: UnpositionedTree) -> T) =
         trees.map { (treeId, tree) -> transformFunc(treeId, tree) }.toTypedArray()
@@ -33,7 +32,7 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
     /**
      * Returns a list of tree and node IDs referring to the parents of the given nodes.
      */
-    fun getParentNodeIds(nodeIndicators: Set<NodeIndicatorInPlot>): Set<NodeIndicatorInPlot> =
+    internal fun getParentNodeIds(nodeIndicators: Set<NodeIndicatorInPlot>): Set<NodeIndicatorInPlot> =
         groupNodeIdsByTree(nodeIndicators).flatMap { (treeId, nodeIds) ->
             trees[treeId]!!.getParentNodeIds(nodeIds).map { NodeIndicatorInPlot(treeId, it) }
         }.toSet()
@@ -41,7 +40,7 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
     /**
      * Returns a list of tree and node IDs referring to the children of the given nodes.
      */
-    fun getChildNodeIds(nodeIndicators: Set<NodeIndicatorInPlot>): Set<NodeIndicatorInPlot> =
+    internal fun getChildNodeIds(nodeIndicators: Set<NodeIndicatorInPlot>): Set<NodeIndicatorInPlot> =
         groupNodeIdsByTree(nodeIndicators).flatMap { (treeId, nodeIds) ->
             trees[treeId]!!.getChildNodeIds(nodeIds).map { NodeIndicatorInPlot(treeId, it) }
         }.toSet()
@@ -49,14 +48,17 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
     /**
      * Returns whether all given nodes are top-level nodes.
      */
-    fun allTopLevel(nodeIndicators: Set<NodeIndicatorInPlot>): Boolean =
+    internal fun allTopLevel(nodeIndicators: Set<NodeIndicatorInPlot>): Boolean =
         this.getParentNodeIds(nodeIndicators).isEmpty()
+
+    fun allTopLevel(nodeIndicators: Array<NodeIndicatorInPlot>): Boolean =
+        this.getParentNodeIds(nodeIndicators.toSet()).isEmpty()
 
     /**
      * Transforms the nodes with the given indicators using the given transform function
      * at any point in any tree in the given plot.
      */
-    fun transformNodes(
+    internal fun transformNodes(
         nodeIndicators: Set<NodeIndicatorInPlot>,
         transformFunc: NodeTransformFunc,
     ): UnpositionedPlot =
@@ -69,7 +71,7 @@ data class UnpositionedPlot(val trees: IdMap<UnpositionedTree> = emptyMap()) {
     /**
      * Deletes the nodes with the given indicators from the given plot.
      */
-    fun deleteNodes(nodeIndicators: Set<NodeIndicatorInPlot>): UnpositionedPlot =
+    internal fun deleteNodes(nodeIndicators: Set<NodeIndicatorInPlot>): UnpositionedPlot =
         copy(
             trees = trees + groupNodeIdsByTree(nodeIndicators).mapValues { (treeId, nodeIds) ->
                 trees[treeId]!!.deleteNodes(nodeIds)

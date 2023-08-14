@@ -60,6 +60,7 @@ internal data class SetSentence(val plotIndex: PlotIndex, val treeId: Id, val ne
 internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
+@JsExport
 sealed interface ContentChange : UndoableActionCommon
 
 internal data class PlotAdded(val newPlotIndex: PlotIndex, val newPlot: UnpositionedPlot) : ContentChange

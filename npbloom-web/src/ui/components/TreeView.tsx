@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection, arrayFromSet,
+  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection,
   BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, generateNodeId, getNodeCreationTriggers,
   idMapGet, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
   NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
-  PositionedTree, SelectionInPlot, set, SetSelection, StartEditing, TerminalNodeCreationTrigger
+  PositionedTree, SelectionInPlot, SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
@@ -32,10 +32,9 @@ interface TreeViewProps {
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
-  arrayFromSet(node.children).map(childId => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const childNode: PositionedNode = idMapGet(allNodes, childId);
+  node.childrenAsArray.map(childId => {
+    const childNode = idMapGet<PositionedNode>(allNodes, childId);
+    if (!childNode) return false;
     return <line
         key={`to-${childId}`}
         stroke="#000"
@@ -153,24 +152,24 @@ const TreeView: React.FC<TreeViewProps> = ({
   const { state, dispatch } = useUiState();
 
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
-    ? state.selection.nodeIndicators : set([]);
-  const selectedNodeIds = arrayFromSet<NodeIndicatorInPlot>(selectedNodeIndicators).map(({ nodeId }) => nodeId);
+    ? state.selection.nodeIndicatorsAsArray : [];
+  const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
   const startEditing = () => dispatch(new StartEditing());
   const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch(new AdoptNodesBySelection(set(adoptedNodeIndicators)));
+    dispatch(new AdoptNodesBySelection(adoptedNodeIndicators));
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
-    dispatch(new DisownNodesBySelection(set(disownedNodeIndicators)));
+    dispatch(new DisownNodesBySelection(disownedNodeIndicators));
 
   const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
-      : setSelection(new NodeSelectionInPlot(applySelection(mode, set([new NodeIndicatorInPlot(treeId, nodeId)]), selectedNodeIndicators)));
+      : setSelection(NodeSelectionInPlot.Companion.fromArray(applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators)));
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
     if (trigger instanceof BranchingNodeCreationTrigger) {
-      dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIds));
+      dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIdsAsArray));
     } else if (trigger instanceof TerminalNodeCreationTrigger) {
       dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, false));
     }
@@ -178,10 +177,10 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   return <g id={`tree-${treeId}`}
             style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {arrayFromSet<NodeCreationTrigger>(getNodeCreationTriggers(tree, strWidth)).map(trigger =>
+    {getNodeCreationTriggers(tree, strWidth).map(trigger =>
       <NodeCreationTriggerClickZone
         trigger={trigger}
-        key={'childIds' in trigger ? arrayFromSet<Id>(trigger.childIds).join()
+        key={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIdsAsArray.join()
           : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}

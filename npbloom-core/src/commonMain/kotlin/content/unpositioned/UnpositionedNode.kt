@@ -10,14 +10,12 @@ sealed interface UnpositionedNode : NodeCommon, WithOffsetInTree {
 }
 
 @JsExport
-data class UnpositionedBranchingNode(
+data class UnpositionedBranchingNode internal constructor(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
-    val children: Set<Id>,
+    internal val children: Set<Id>,
 ) : UnpositionedNode {
-    @JsName("new")
-    constructor(label: NodeLabel, offset: TreeCoordsOffset, children: Array<Id>) :
-            this(label, offset, children.toSet())
+    val childrenAsArray = children.toTypedArray()
 
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
@@ -25,7 +23,7 @@ data class UnpositionedBranchingNode(
 }
 
 @JsExport
-data class UnpositionedTerminalNode(
+data class UnpositionedTerminalNode internal constructor(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     val slice: StringSlice,
@@ -40,7 +38,7 @@ data class UnpositionedTerminalNode(
 sealed interface UnpositionedStrandedNode : UnpositionedNode
 
 @JsExport
-data class UnpositionedPlainStrandedNode(
+data class UnpositionedPlainStrandedNode internal constructor(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
 ) : UnpositionedStrandedNode {
@@ -50,7 +48,7 @@ data class UnpositionedPlainStrandedNode(
 }
 
 @JsExport
-data class UnpositionedFormerlyTerminalNode(
+data class UnpositionedFormerlyTerminalNode internal constructor(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     val formerSlice: StringSlice,
@@ -62,10 +60,10 @@ data class UnpositionedFormerlyTerminalNode(
 }
 
 @JsExport
-data class UnpositionedFormerlyBranchingNode(
+data class UnpositionedFormerlyBranchingNode internal constructor(
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
-    val formerDescendants: IdMap<UnpositionedNode>,
+    internal val formerDescendants: IdMap<UnpositionedNode>,
 ) : UnpositionedStrandedNode {
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 

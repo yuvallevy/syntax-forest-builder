@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { arrayFromSet, generateSentence, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
+import { generateSentence, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
 import { Alert } from '@mantine/core';
 import './BeginnersGuide.scss';
 import {
@@ -68,7 +68,7 @@ const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
       (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode))
       setCurrentStepIndex(4);
     else if (currentStepIndex === 4 && tree.anyNodes(
-      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode && arrayFromSet(node.children).length >= 2))
+      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode && node.childrenAsArray.length >= 2))
       setCurrentStepIndex(5);
     else if (currentStepIndex === 5 && tree.isComplete) setCurrentStepIndex(6);
     else if (currentStepIndex === 6 && plotState !== previousPlotState.current) onComplete();
