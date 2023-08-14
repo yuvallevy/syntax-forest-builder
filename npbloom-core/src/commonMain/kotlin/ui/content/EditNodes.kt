@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package ui.content
 
 import content.Sentence
@@ -29,8 +27,7 @@ private fun getWordRange(sentence: Sentence, position: Int): StringSlice {
  * If the selection is a slice of length 0, expands it to span the word where the cursor currently is,
  * using the given sentence.
  */
-@JsExport
-fun newNodeFromSelection(selection: SelectionInPlot, sentence: Sentence): InsertedNode = when (selection) {
+internal fun newNodeFromSelection(selection: SelectionInPlot, sentence: Sentence): InsertedNode = when (selection) {
     is SliceSelectionInPlot -> {
         // A slice of the sentence is selected
         val sliceAfterSpread =
@@ -96,7 +93,7 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
  * @param oldSelection The selection before the change was made.
  *   This is used to determine how exactly node ranges should change.
  */
-fun UnpositionedTree.handleLocalSentenceChange(newSentence: Sentence, oldSelection: StringSlice) =
+internal fun UnpositionedTree.handleLocalSentenceChange(newSentence: Sentence, oldSelection: StringSlice) =
     UnpositionedTree(newSentence, nodes, offset).transformAllNodes {
         it.shiftNodeSliceAfterChange(oldSelection, newSentence.length - sentence.length)
     }

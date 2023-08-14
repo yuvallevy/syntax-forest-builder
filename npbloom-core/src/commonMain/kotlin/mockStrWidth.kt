@@ -1,7 +1,7 @@
 @file:OptIn(ExperimentalJsExport::class)
 
 // Basic mapping of letter to width, for testing purposes only
-val charWidths: Map<Char, Double> = mapOf(
+private val charWidths: Map<Char, Double> = mapOf(
     ' ' to 4.0,
     '.' to 4.0,
     'A' to 12.0,

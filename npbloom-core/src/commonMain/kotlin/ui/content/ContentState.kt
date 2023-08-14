@@ -38,7 +38,7 @@ data class ContentState(val plots: Array<UnpositionedPlot>) {
 
 private val initialState = ContentState(arrayOf(UnpositionedPlot()))
 
-sealed interface ContentOrHistoryAction
+internal sealed interface ContentOrHistoryAction
 
 data object Undo : ContentOrHistoryAction
 data object Redo : ContentOrHistoryAction
@@ -46,28 +46,28 @@ data object Redo : ContentOrHistoryAction
 private sealed interface ContentAction : UndoableActionCommon, ContentOrHistoryAction
 
 data object AddPlot : ContentAction
-data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
-data class ResetPlot(val plotIndex: PlotIndex) : ContentAction
-data class InsertNode(val plotIndex: PlotIndex, val treeId: Id, val newNodeId: Id, val newNode: InsertedNode) : ContentAction
-data class DeleteNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
-data class AdoptNodes(val plotIndex: PlotIndex, val treeId: Id, val adoptingNodeId: Id, val adoptedNodeIds: Set<Id>) : ContentAction
-data class DisownNodes(val plotIndex: PlotIndex, val treeId: Id, val disowningNodeId: Id, val disownedNodeIds: Set<Id>) : ContentAction
-data class MoveNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val offsetD: TreeCoordsOffset) : ContentAction
-data class ResetNodePositions(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
-data class SetNodeLabel(val plotIndex: PlotIndex, val nodeIndicator: NodeIndicatorInPlot, val newLabel: String) : ContentAction
-data class SetTriangle(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val triangle: Boolean) : ContentAction
-data class SetSentence(val plotIndex: PlotIndex, val treeId: Id, val newSentence: Sentence, val oldSelectedSlice: StringSlice) : ContentAction
-data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
-data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
+internal data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
+internal data class ResetPlot(val plotIndex: PlotIndex) : ContentAction
+internal data class InsertNode(val plotIndex: PlotIndex, val treeId: Id, val newNodeId: Id, val newNode: InsertedNode) : ContentAction
+internal data class DeleteNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+internal data class AdoptNodes(val plotIndex: PlotIndex, val treeId: Id, val adoptingNodeId: Id, val adoptedNodeIds: Set<Id>) : ContentAction
+internal data class DisownNodes(val plotIndex: PlotIndex, val treeId: Id, val disowningNodeId: Id, val disownedNodeIds: Set<Id>) : ContentAction
+internal data class MoveNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val offsetD: TreeCoordsOffset) : ContentAction
+internal data class ResetNodePositions(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+internal data class SetNodeLabel(val plotIndex: PlotIndex, val nodeIndicator: NodeIndicatorInPlot, val newLabel: String) : ContentAction
+internal data class SetTriangle(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>, val triangle: Boolean) : ContentAction
+internal data class SetSentence(val plotIndex: PlotIndex, val treeId: Id, val newSentence: Sentence, val oldSelectedSlice: StringSlice) : ContentAction
+internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
+internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
 sealed interface ContentChange : UndoableActionCommon
 
-data class PlotAdded(val newPlotIndex: PlotIndex, val newPlot: UnpositionedPlot) : ContentChange
-data class PlotChanged(val plotIndex: PlotIndex, val old: UnpositionedPlot, val new: UnpositionedPlot) : ContentChange
-data class PlotDeleted(val plotIndex: PlotIndex, val removedPlot: UnpositionedPlot) : ContentChange
-data class TreeAdded(val plotIndex: PlotIndex, val newTreeId: Id, val newTree: UnpositionedTree) : ContentChange
-data class TreeChanged(val plotIndex: PlotIndex, val treeId: Id, val old: UnpositionedTree, val new: UnpositionedTree) : ContentChange
-data class TreeDeleted(val plotIndex: PlotIndex, val treeId: Id, val removedTree: UnpositionedTree) : ContentChange
+internal data class PlotAdded(val newPlotIndex: PlotIndex, val newPlot: UnpositionedPlot) : ContentChange
+internal data class PlotChanged(val plotIndex: PlotIndex, val old: UnpositionedPlot, val new: UnpositionedPlot) : ContentChange
+internal data class PlotDeleted(val plotIndex: PlotIndex, val removedPlot: UnpositionedPlot) : ContentChange
+internal data class TreeAdded(val plotIndex: PlotIndex, val newTreeId: Id, val newTree: UnpositionedTree) : ContentChange
+internal data class TreeChanged(val plotIndex: PlotIndex, val treeId: Id, val old: UnpositionedTree, val new: UnpositionedTree) : ContentChange
+internal data class TreeDeleted(val plotIndex: PlotIndex, val treeId: Id, val removedTree: UnpositionedTree) : ContentChange
 
 private fun makeUndoable(state: ContentState, action: ContentAction): ContentChange = when (action) {
     AddPlot -> PlotAdded(state.plots.size, UnpositionedPlot())
@@ -160,10 +160,10 @@ private fun reverseUndoableAction(action: ContentChange): ContentChange = when (
 
 typealias UndoableContentState = UndoRedoHistory<ContentState, ContentChange>
 
-val initialContentState: UndoableContentState =
+internal val initialContentState: UndoableContentState =
     UndoRedoHistory(::applyUndoableAction, ::reverseUndoableAction, initialState)
 
-fun contentReducer(state: UndoableContentState, action: ContentOrHistoryAction): UndoableContentState = when (action) {
+internal fun contentReducer(state: UndoableContentState, action: ContentOrHistoryAction): UndoableContentState = when (action) {
     Undo -> state.undo()
     Redo -> state.redo()
     is ContentAction -> state.applyAction(makeUndoable(state.current, action))

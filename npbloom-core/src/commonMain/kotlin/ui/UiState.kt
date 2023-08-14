@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalJsExport::class)
+@file:Suppress("CanSealedSubClassBeObject")
 
 package ui
 

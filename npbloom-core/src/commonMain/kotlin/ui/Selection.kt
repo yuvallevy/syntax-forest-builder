@@ -34,8 +34,7 @@ fun applySelection(
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.
  */
-@JsExport
-fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot): SelectionInPlot =
+internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot): SelectionInPlot =
     when (selection) {
         is SliceSelectionInPlot -> if (selection.treeId in plot) selection else NodeSelectionInPlot(emptySet())
         is NodeSelectionInPlot -> NodeSelectionInPlot(selection.nodeIndicators.filter { it in plot }.toSet())

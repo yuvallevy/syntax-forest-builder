@@ -14,16 +14,14 @@ const val DEFAULT_NODE_LEVEL_DIFF = -40.0
 
 typealias StrWidthFunc = (str: String) -> Double
 
-@JsExport
-fun sliceOffsetAndWidth(strWidthFunc: StrWidthFunc, sentence: Sentence, slice: StringSlice): Array<Double> {
+internal fun sliceOffsetAndWidth(strWidthFunc: StrWidthFunc, sentence: Sentence, slice: StringSlice): Array<Double> {
     val (sliceStart, sliceEndExclusive) = slice
     val widthBeforeSlice = strWidthFunc(sentence.slice(0 until sliceStart))
     val sliceWidth = strWidthFunc(sentence.slice(sliceStart until sliceEndExclusive))
     return arrayOf(widthBeforeSlice, sliceWidth)
 }
 
-@JsExport
-fun determineNaturalParentNodePosition(childNodePositions: Set<CoordsInTree>): CoordsInTree =
+internal fun determineNaturalParentNodePosition(childNodePositions: Set<CoordsInTree>): CoordsInTree =
     // Branching nodes are positioned as follows:
     // X - average of all X positions of its direct descendants (regardless of any descendants further down the tree)
     // Y - a certain distance above the topmost child node
@@ -32,7 +30,7 @@ fun determineNaturalParentNodePosition(childNodePositions: Set<CoordsInTree>): C
         treeY = childNodePositions.minOf { it.treeY } + DEFAULT_NODE_LEVEL_DIFF
     )
 
-fun determineBranchingNodePosition(
+internal fun determineBranchingNodePosition(
     alreadyPositionedNodes: IdMap<PositionedNode>,
     node: UnpositionedBranchingNode,
 ): CoordsInTree {
@@ -45,7 +43,7 @@ fun determineBranchingNodePosition(
     )
 }
 
-fun determineTerminalNodePosition(strWidthFunc: StrWidthFunc, sentence: Sentence, node: UnpositionedTerminalNode): CoordsInTree {
+internal fun determineTerminalNodePosition(strWidthFunc: StrWidthFunc, sentence: Sentence, node: UnpositionedTerminalNode): CoordsInTree {
     // Terminal nodes are positioned as follows:
     // X - exact center of the assigned slice, as measured in pixels
     // Y - a little above the slice if it is not a triangle node; a larger distance above the slice if it is
@@ -56,7 +54,7 @@ fun determineTerminalNodePosition(strWidthFunc: StrWidthFunc, sentence: Sentence
     )
 }
 
-fun determineTerminalNodeTriangleRange(
+internal fun determineTerminalNodeTriangleRange(
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
     node: UnpositionedTerminalNode,
@@ -66,8 +64,7 @@ fun determineTerminalNodeTriangleRange(
         TreeXRange(widthBeforeSlice, widthBeforeSlice + sliceWidth)
     } else null
 
-@JsExport
-fun determineStrandedNodePosition(
+internal fun determineStrandedNodePosition(
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
     node: UnpositionedStrandedNode
@@ -101,8 +98,7 @@ fun determineStrandedNodePosition(
 /**
  * Returns the appropriate position for the given unpositioned node.
  */
-@JsExport
-fun determineNodePosition(
+internal fun determineNodePosition(
     alreadyPositionedNodes: IdMap<PositionedNode>,
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
@@ -117,8 +113,7 @@ fun determineNodePosition(
  * Returns a positioned node corresponding to the given unpositioned node, based on already assigned node positions,
  * width calculation function and sentence associated with the tree.
  */
-@JsExport
-fun applyNodePosition(
+internal fun applyNodePosition(
     alreadyPositionedNodes: IdMap<PositionedNode>,
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
@@ -143,8 +138,7 @@ fun applyNodePosition(
  * Receives an ID map of unpositioned nodes and returns an equivalent map of nodes with assigned positions.
  * This function is recursive and progressively assigns positions to more and more nodes until the whole tree is filled.
  */
-@JsExport
-fun applyNodePositions(
+internal fun applyNodePositions(
     nodes: IdMap<UnpositionedNode>,
     sentence: Sentence,
     strWidthFunc: StrWidthFunc,
@@ -176,7 +170,7 @@ fun applyNodePositions(
 /**
  * Returns a copy of the given tree with positions for all nodes.
  */
-fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree = PositionedTree(
+internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree = PositionedTree(
     sentence = tree.sentence,
     nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
     position = CoordsInPlot(tree.offset.dPlotX, tree.offset.dPlotY),
@@ -195,6 +189,5 @@ fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot)
 /**
  * Receives an array of node IDs in the given tree and returns them sorted by X-coordinate.
  */
-@JsExport
-fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): Array<Id> =
+internal fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): Array<Id> =
     applyNodePositionsToTree(strWidthFunc, tree).sortNodesByXCoord(nodeIds)

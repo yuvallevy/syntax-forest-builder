@@ -1,42 +1,37 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package content.unpositioned
 
 import content.*
 
 typealias NodeTransformFunc = (oldNode: UnpositionedNode) -> UnpositionedNode
 
-@JsExport
 sealed interface InsertedNode : NodeCommon {
     override val label: NodeLabel
     val targetParentId: Id?
 }
 
-@JsExport
-data class InsertedBranchingNode(
+internal data class InsertedBranchingNode(
     override val label: NodeLabel,
     override val targetParentId: Id?,
     val targetChildIds: Set<Id>,
 ) : InsertedNode
 
-@JsExport
-data class InsertedTerminalNode(
+internal data class InsertedTerminalNode(
     override val label: NodeLabel,
     override val targetParentId: Id?,
     val targetSlice: StringSlice,
     val triangle: Boolean,
 ) : InsertedNode
 
-fun IdMap<UnpositionedNode>.descendantIds(node: UnpositionedBranchingNode): Set<Id> {
+internal fun IdMap<UnpositionedNode>.descendantIds(node: UnpositionedBranchingNode): Set<Id> {
     val directChildren = node.children.map { this[it] }
     val indirectDescendantIds = directChildren.filterIsInstance<UnpositionedBranchingNode>().flatMap(::descendantIds)
     return node.children + indirectDescendantIds
 }
 
-fun IdMap<UnpositionedNode>.descendantsOf(node: UnpositionedBranchingNode): IdMap<UnpositionedNode> =
+internal fun IdMap<UnpositionedNode>.descendantsOf(node: UnpositionedBranchingNode): IdMap<UnpositionedNode> =
     descendantIds(node).associateWith { this[it]!! }
 
-fun IdMap<UnpositionedNode>.toStrandedNode(node: UnpositionedNode): UnpositionedStrandedNode =
+internal fun IdMap<UnpositionedNode>.toStrandedNode(node: UnpositionedNode): UnpositionedStrandedNode =
     when (node) {
         is UnpositionedBranchingNode ->
             UnpositionedFormerlyBranchingNode(node.label, node.offset, descendantsOf(node))
@@ -47,7 +42,7 @@ fun IdMap<UnpositionedNode>.toStrandedNode(node: UnpositionedNode): Unpositioned
         else -> UnpositionedPlainStrandedNode(node.label, node.offset)
     }
 
-fun IdMap<UnpositionedNode>.unassignAsChildren(nodeIds: Set<Id>, node: UnpositionedNode): UnpositionedNode {
+internal fun IdMap<UnpositionedNode>.unassignAsChildren(nodeIds: Set<Id>, node: UnpositionedNode): UnpositionedNode {
     if (node !is UnpositionedBranchingNode) return node
 
     val filteredChildren = node.children - nodeIds
@@ -58,9 +53,9 @@ fun IdMap<UnpositionedNode>.unassignAsChildren(nodeIds: Set<Id>, node: Unpositio
     return node.copy(children = filteredChildren)
 }
 
-fun IdMap<UnpositionedNode>.setNodeById(nodeId: Id, newNode: UnpositionedNode) = this + (nodeId to newNode)
+internal fun IdMap<UnpositionedNode>.setNodeById(nodeId: Id, newNode: UnpositionedNode) = this + (nodeId to newNode)
 
-fun IdMap<UnpositionedNode>.insertNode(insertedNode: InsertedNode, nodeId: Id): IdMap<UnpositionedNode> {
+internal fun IdMap<UnpositionedNode>.insertNode(insertedNode: InsertedNode, nodeId: Id): IdMap<UnpositionedNode> {
     val nodeMapWithNewNode: IdMap<UnpositionedNode> = when (insertedNode) {
         is InsertedBranchingNode -> mapValues { (_, node) ->
             if (node is UnpositionedBranchingNode) node.copy(children = node.children - insertedNode.targetChildIds)
@@ -88,7 +83,7 @@ fun IdMap<UnpositionedNode>.insertNode(insertedNode: InsertedNode, nodeId: Id): 
     } else nodeMapWithNewNode
 }
 
-fun IdMap<UnpositionedNode>.transformNodes(
+internal fun IdMap<UnpositionedNode>.transformNodes(
     nodeIds: Set<Id>,
     transformFunc: NodeTransformFunc,
 ): IdMap<UnpositionedNode> =
@@ -99,7 +94,7 @@ fun IdMap<UnpositionedNode>.transformNodes(
         ) else transformedNodes
     }
 
-fun IdMap<UnpositionedNode>.deleteNodes(nodeIds: Set<Id>): IdMap<UnpositionedNode> {
+internal fun IdMap<UnpositionedNode>.deleteNodes(nodeIds: Set<Id>): IdMap<UnpositionedNode> {
     if (nodeIds.isEmpty() || isEmpty()) return this
     val filteredNodes = filterKeys { it !in nodeIds }
     return filteredNodes.mapValues { (_, node) -> unassignAsChildren(nodeIds, node) }
