@@ -20,6 +20,3 @@ fun <T> idMap(elements: dynamic): IdMap<T> {
 
 @JsExport
 fun <T> idMapGet(elements: IdMap<T>, id: Id) = elements[id]
-
-@JsExport
-fun idMapKeys(elements: IdMap<*>) = elements.keys.toSet()

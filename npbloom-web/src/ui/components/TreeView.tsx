@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection, arrayFromSet,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, CoordsInTree, DisownNodesBySelection, generateNodeId,
-  getNodeCreationTriggers, idMapGet, idMapKeys, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot,
-  NodeSelectionAction, NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode,
-  PositionedTerminalNode, PositionedTree, SelectionInPlot, set, SetSelection, StartEditing, TerminalNodeCreationTrigger
+  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, generateNodeId, getNodeCreationTriggers,
+  idMapGet, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
+  NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
+  PositionedTree, SelectionInPlot, set, SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id, IdMap } from '../../types';
 import './TreeView.scss';
@@ -126,17 +126,15 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
       r={8}
     />
     {trigger instanceof BranchingNodeCreationTrigger
-      ? arrayFromSet<Id>(idMapKeys(trigger.childPositions)).map(childId => {
-        const childPosition = idMapGet<CoordsInTree>(trigger.childPositions, childId);
-        return childPosition ? <line
+      ? trigger.childPositions.map(childPosition =>
+        childPosition ? <line
           key={`${childPosition.treeX},${childPosition.treeY}`}
           className="NodeCreationTriggerClickZone--indicator"
           x1={trigger.origin.treeX}
           y1={trigger.origin.treeY}
           x2={childPosition.treeX}
           y2={childPosition.treeY - NODE_LEVEL_SPACING}
-        /> : null;
-      })
+        /> : null)
       : <line
         className="NodeCreationTriggerClickZone--indicator"
         x1={trigger.origin.treeX}

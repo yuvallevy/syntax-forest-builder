@@ -28,26 +28,22 @@ class NodeCreationTriggerTest {
                     origin = CoordsInTree(54.0, -42.0),
                     topLeft = CoordsInTree(38.0, -70.0),
                     bottomRight = CoordsInTree(70.0, -22.0),
-                    childPositions = mapOf(
-                        "aF3BLs" to CoordsInTree(54.0, -2.0)
-                    )
+                    childIds = setOf("aF3BLs"),
+                    childPositions = arrayOf(CoordsInTree(54.0, -2.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(101.0, -60.0),
                     topLeft = CoordsInTree(85.0, -88.0),
                     bottomRight = CoordsInTree(117.0, -40.0),
-                    childPositions = mapOf(
-                        "X9M" to CoordsInTree(101.0, -20.0)
-                    )
+                    childIds = setOf("X9M"),
+                    childPositions = arrayOf(CoordsInTree(101.0, -20.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(77.5, -60.0),
                     topLeft = CoordsInTree(61.5, -88.0),
                     bottomRight = CoordsInTree(93.5, -40.0),
-                    childPositions = mapOf(
-                        "aF3BLs" to CoordsInTree(54.0, -2.0),
-                        "X9M" to CoordsInTree(101.0, -20.0),
-                    )
+                    childIds = setOf("aF3BLs", "X9M"),
+                    childPositions = arrayOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
                 ),
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(15.5, -20.0),

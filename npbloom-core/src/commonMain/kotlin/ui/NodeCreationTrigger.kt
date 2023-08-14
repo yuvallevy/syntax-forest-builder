@@ -2,7 +2,7 @@
 
 package ui
 
-import content.IdMap
+import content.Id
 import content.Sentence
 import content.StringSlice
 import content.positioned.*
@@ -19,7 +19,8 @@ private sealed interface NodeCreationTarget {
 
 private data class BranchingNodeCreationTarget(
     override val position: CoordsInTree,
-    val childPositions: IdMap<CoordsInTree>,
+    val childIds: Set<Id>,
+    val childPositions: Array<CoordsInTree>,
 ) : NodeCreationTarget
 
 private data class TerminalNodeCreationTarget(
@@ -39,9 +40,32 @@ data class BranchingNodeCreationTrigger(
     override val origin: CoordsInTree,
     override val topLeft: CoordsInTree,
     override val bottomRight: CoordsInTree,
-    val childPositions: IdMap<CoordsInTree>,
+    val childIds: Set<Id>,
+    val childPositions: Array<CoordsInTree>,
 ) : NodeCreationTrigger {
-    val childIds get() = childPositions.keys
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class.js != other::class.js) return false
+
+        other as BranchingNodeCreationTrigger
+
+        if (origin != other.origin) return false
+        if (topLeft != other.topLeft) return false
+        if (bottomRight != other.bottomRight) return false
+        if (childIds != other.childIds) return false
+        if (!childPositions.contentEquals(other.childPositions)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = origin.hashCode()
+        result = 31 * result + topLeft.hashCode()
+        result = 31 * result + bottomRight.hashCode()
+        result = 31 * result + childIds.hashCode()
+        result = 31 * result + childPositions.contentHashCode()
+        return result
+    }
 }
 
 @JsExport
@@ -70,7 +94,8 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
         .map { nodeIds ->
             BranchingNodeCreationTarget(
                 position = determineNaturalParentNodePosition(nodeIds.map { node(it).position }.toSet()),
-                childPositions = nodeIds.associateWith { node(it).position },
+                childIds = nodeIds.toSet(),
+                childPositions = nodeIds.map { node(it).position }.toTypedArray(),
             )
         }.toSet()
     val terminalNodeCreationTargets: Set<NodeCreationTarget> = unassignedSlices.map { slice ->
@@ -99,7 +124,7 @@ fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Set<Node
         )
         when (target) {
             is BranchingNodeCreationTarget ->
-                BranchingNodeCreationTrigger(origin, topLeft, bottomRight, target.childPositions)
+                BranchingNodeCreationTrigger(origin, topLeft, bottomRight, target.childIds, target.childPositions)
 
             is TerminalNodeCreationTarget ->
                 TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice)
