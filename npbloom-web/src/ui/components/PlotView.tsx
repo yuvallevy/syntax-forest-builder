@@ -128,7 +128,7 @@ const PlotView: React.FC = () => {
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
     >
-      {plot.mapTrees(tree =>
+      {plot.trees.map(tree =>
         <TreeView
           key={`tree-${tree.id}`}
           treeId={tree.id}
@@ -144,7 +144,7 @@ const PlotView: React.FC = () => {
         height={selectionBoxBottomRight.clientY - selectionBoxTopLeft.clientY}
       />}
     </svg>
-    {plot.mapTrees(tree =>
+    {plot.trees.map(tree =>
       <SentenceView
         key={`sentence-${tree.id}`}
         tree={tree}

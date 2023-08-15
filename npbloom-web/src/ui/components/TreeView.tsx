@@ -184,7 +184,7 @@ const TreeView: React.FC<TreeViewProps> = ({
           : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
-    {tree.mapNodes(node =>
+    {tree.nodes.map(node =>
       renderNode(node.id, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}
   </g>;

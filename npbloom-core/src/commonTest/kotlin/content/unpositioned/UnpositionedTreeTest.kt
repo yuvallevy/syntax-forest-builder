@@ -174,18 +174,6 @@ class UnpositionedTreeTest {
         )
 
     @Test
-    fun mapNodes() =
-        assertContentEquals(
-            arrayOf(
-                "top" to "S",
-                "branch1" to "NP",
-                "term1" to "N",
-                "term2" to "VP",
-            ),
-            tree.mapNodes { it.id to it.label }
-        )
-
-    @Test
     fun anyNodesTrue() =
         assertTrue(tree.anyNodes { "V" in it.label })
 

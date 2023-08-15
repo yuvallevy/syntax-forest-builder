@@ -48,7 +48,7 @@ data class IdMap<T : WithId> internal constructor(private val items: Set<T>) {
 
     internal inline fun filter(predicate: (T) -> Boolean) = IdMap(items.filter(predicate))
     internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = items.flatMap(transform).toTypedArray()
-    internal inline fun <R> map(transform: (T) -> R) = items.map(transform).toTypedArray()
+    fun <R> map(transform: (T) -> R) = items.map(transform).toTypedArray()
     internal inline fun <U : WithId> mapToNewIdMap(transform: (T) -> U) = IdMap(items.map(transform))
     internal inline fun <R : Comparable<R>> minOf(selector: (T) -> R) = items.minOf(selector)
 }

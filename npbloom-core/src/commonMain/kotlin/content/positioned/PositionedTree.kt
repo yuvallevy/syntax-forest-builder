@@ -17,8 +17,6 @@ data class PositionedTree(
 
     internal operator fun contains(nodeId: Id) = nodeId in nodes
 
-    fun <T> mapNodes(transform: (node: PositionedNode) -> T) = nodes.map(transform)
-
     /**
      * Returns nodes matching the given predicate in the given tree.
      */

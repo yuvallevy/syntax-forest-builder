@@ -13,8 +13,6 @@ data class PositionedPlot(val trees: IdMap<PositionedTree>) {
 
     operator fun contains(treeId: Id) = treeId in trees
 
-    fun <T> mapTrees(transformFunc: (tree: PositionedTree) -> T) = trees.map(transformFunc)
-
     /**
      * Returns a set of node indicators referring to nodes matching the given predicate.
      */

@@ -28,9 +28,6 @@ data class UnpositionedTree(
 
     internal fun removeNode(nodeId: Id) = copy(nodes = nodes - nodeId)
 
-    fun <T> mapNodes(transformFunc: (node: UnpositionedNode) -> T) =
-        nodes.map(transformFunc)
-
     fun anyNodes(predicate: (node: UnpositionedNode) -> Boolean) = nodes.any(predicate)
 
     /**

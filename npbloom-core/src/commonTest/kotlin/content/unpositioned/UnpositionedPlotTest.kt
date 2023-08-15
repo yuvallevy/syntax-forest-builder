@@ -195,16 +195,6 @@ class UnpositionedPlotTest {
         )
 
     @Test
-    fun mapTrees() =
-        assertContentEquals(
-            arrayOf(
-                "cleo" to "Cleo laughed.",
-                "alex" to "Alex baked cookies.",
-            ),
-            plot.mapTrees { tree -> tree.id to tree.sentence }
-        )
-
-    @Test
     fun treeAndParentNodeIdOfNode() = assertEquals(
         setOf(NodeIndicatorInPlot("alex", "s2")),
         plot.getParentNodeIds(setOf(NodeIndicatorInPlot("alex", "vp2")))

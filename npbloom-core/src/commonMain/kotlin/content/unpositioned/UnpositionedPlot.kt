@@ -26,8 +26,6 @@ data class UnpositionedPlot internal constructor(val trees: IdMap<UnpositionedTr
 
     internal fun removeTree(treeId: Id) = copy(trees = trees - treeId)
 
-    fun <T> mapTrees(transformFunc: (tree: UnpositionedTree) -> T) = trees.map(transformFunc)
-
     /**
      * Returns a list of tree and node IDs referring to the parents of the given nodes.
      */
