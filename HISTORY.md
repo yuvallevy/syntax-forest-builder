@@ -1,4 +1,6 @@
 ## Alpha
+### 0.5 (2023-07&ndash;2023-08)
+* Rewrote core functionality.
 ### 0.4 (2023-06-24)
 * Added a way to create multiple plots, which are separate boards that can each hold multiple trees.
 * Fixed bug that caused a new node to be created when pressing <kbd>&uarr;</kbd>
