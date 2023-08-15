@@ -132,7 +132,7 @@ internal fun applyNodePosition(
  * Receives an ID map of unpositioned nodes and returns an equivalent map of nodes with assigned positions.
  * This function is recursive and progressively assigns positions to more and more nodes until the whole tree is filled.
  */
-internal fun applyNodePositions(
+internal tailrec fun applyNodePositions(
     nodes: IdMap<UnpositionedNode>,
     sentence: Sentence,
     strWidthFunc: StrWidthFunc,
