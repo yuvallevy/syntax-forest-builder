@@ -5,7 +5,7 @@ package content.unpositioned
 import content.*
 
 @JsExport
-sealed interface UnpositionedNode : NodeCommon, WithOffsetInTree {
+sealed interface UnpositionedNode : NodeBase, WithOffsetInTree {
     fun withLabel(newLabel: NodeLabel): UnpositionedNode
 }
 
@@ -68,7 +68,7 @@ data class UnpositionedFormerlyBranchingNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
-    internal val formerDescendants: IdMap<UnpositionedNode>,
+    internal val formerDescendants: EntitySet<UnpositionedNode>,
 ) : UnpositionedStrandedNode {
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 

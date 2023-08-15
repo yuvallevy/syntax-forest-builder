@@ -3,7 +3,7 @@
 package history
 
 @JsExport
-data class UndoRedoHistory<S, A : UndoableActionCommon>(
+data class UndoRedoHistory<S, A : UndoableActionBase>(
     val applyActionFunc: (state: S, action: A) -> S,
     val reverseActionFunc: (action: A) -> A,
     val current: S,
@@ -61,4 +61,4 @@ data class UndoRedoHistory<S, A : UndoableActionCommon>(
 }
 
 @JsExport
-interface UndoableActionCommon
+interface UndoableActionBase

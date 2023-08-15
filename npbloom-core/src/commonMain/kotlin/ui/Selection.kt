@@ -55,5 +55,5 @@ internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot):
     }
 
 @JsExport
-fun isNodeInRect(tree: PositionedTree, node: PositionedNode, rect: PlotRect) =
+fun isNodeInRect(tree: PositionedTree, node: PositionedNode, rect: RectInPlot) =
     calculateNodeCenterOnPlot(tree, node) in rect

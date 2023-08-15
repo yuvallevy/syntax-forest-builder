@@ -3,7 +3,7 @@
 package content.positioned
 
 import content.Id
-import content.IdMap
+import content.EntitySet
 import content.Sentence
 import content.StringSlice
 import content.unpositioned.*
@@ -31,7 +31,7 @@ internal fun determineNaturalParentNodePosition(childNodePositions: Set<CoordsIn
     )
 
 internal fun determineBranchingNodePosition(
-    alreadyPositionedNodes: IdMap<PositionedNode>,
+    alreadyPositionedNodes: EntitySet<PositionedNode>,
     node: UnpositionedBranchingNode,
 ): CoordsInTree {
     val positionedChildNodes = alreadyPositionedNodes.filter { it.id in node.children }
@@ -93,7 +93,7 @@ internal fun determineStrandedNodePosition(
  * Returns the appropriate position for the given unpositioned node.
  */
 internal fun determineNodePosition(
-    alreadyPositionedNodes: IdMap<PositionedNode>,
+    alreadyPositionedNodes: EntitySet<PositionedNode>,
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
     node: UnpositionedNode,
@@ -108,7 +108,7 @@ internal fun determineNodePosition(
  * width calculation function and sentence associated with the tree.
  */
 internal fun applyNodePosition(
-    alreadyPositionedNodes: IdMap<PositionedNode>,
+    alreadyPositionedNodes: EntitySet<PositionedNode>,
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
     node: UnpositionedNode,
@@ -133,11 +133,11 @@ internal fun applyNodePosition(
  * This function is recursive and progressively assigns positions to more and more nodes until the whole tree is filled.
  */
 internal tailrec fun applyNodePositions(
-    nodes: IdMap<UnpositionedNode>,
+    nodes: EntitySet<UnpositionedNode>,
     sentence: Sentence,
     strWidthFunc: StrWidthFunc,
-    alreadyPositionedNodes: IdMap<PositionedNode> = IdMap(),
-): IdMap<PositionedNode> {
+    alreadyPositionedNodes: EntitySet<PositionedNode> = EntitySet(),
+): EntitySet<PositionedNode> {
     // If no unpositioned nodes are left, we're done
     if (nodes.isEmpty()) return alreadyPositionedNodes
 
@@ -178,7 +178,7 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
 @JsExport
 fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot): PositionedPlot =
     PositionedPlot(
-        trees = plot.trees.mapToNewIdMap { tree -> applyNodePositionsToTree(strWidthFunc, tree) },
+        trees = plot.trees.mapToNewEntitySet { tree -> applyNodePositionsToTree(strWidthFunc, tree) },
     )
 
 /**

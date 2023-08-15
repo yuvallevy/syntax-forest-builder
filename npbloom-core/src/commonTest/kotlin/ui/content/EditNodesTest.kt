@@ -1,6 +1,6 @@
 package ui.content
 
-import content.IdMap
+import content.EntitySet
 import content.StringSlice
 import content.unpositioned.*
 import ui.SliceSelectionInPlot
@@ -11,7 +11,7 @@ class EditNodesTest {
     private val tree = UnpositionedTree(
         id = "pq6dLbe",
         "The dog jumped.",
-        IdMap(
+        EntitySet(
             UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset(0.0, 0.0), setOf("term1", "term2")),
             UnpositionedTerminalNode("term1", "Det", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 3)),
             UnpositionedTerminalNode("term2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(4, 7)),

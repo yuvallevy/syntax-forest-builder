@@ -1,18 +1,18 @@
 package content.unpositioned
 
 import NoSuchTreeException
-import content.IdMap
+import content.EntitySet
 import content.NodeIndicatorInPlot
 import content.StringSlice
 import kotlin.test.*
 
 class UnpositionedPlotTest {
     private val plot = UnpositionedPlot(
-        trees = IdMap(
+        trees = EntitySet(
             UnpositionedTree(
                 id = "cleo",
                 sentence = "Cleo laughed.",
-                nodes = IdMap(
+                nodes = EntitySet(
                     UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
                     UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
                     UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -23,7 +23,7 @@ class UnpositionedPlotTest {
             UnpositionedTree(
                 id = "alex",
                 sentence = "Alex baked cookies.",
-                nodes = IdMap(
+                nodes = EntitySet(
                     UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
                     UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                     UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -51,7 +51,7 @@ class UnpositionedPlotTest {
                 UnpositionedTree(
                     id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
                         UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -61,7 +61,7 @@ class UnpositionedPlotTest {
                 ), UnpositionedTree(
                     id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
                         UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                         UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -88,7 +88,7 @@ class UnpositionedPlotTest {
             UnpositionedTree(
                 id = "alex",
                 sentence = "Alex baked cookies.",
-                nodes = IdMap(
+                nodes = EntitySet(
                     UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
                     UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                     UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -127,11 +127,11 @@ class UnpositionedPlotTest {
     fun setTree() =
         assertEquals(
             UnpositionedPlot(
-                trees = IdMap(
+                trees = EntitySet(
                     UnpositionedTree(
                         id = "cleo",
                         sentence = "Cleo laughed.",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
                             UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
                             UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -142,7 +142,7 @@ class UnpositionedPlotTest {
                     UnpositionedTree(
                         id = "alex",
                         sentence = "Alex baked cookies.",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
                             UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                             UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -158,7 +158,7 @@ class UnpositionedPlotTest {
                 UnpositionedTree(
                     id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
                         UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                         UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -175,11 +175,11 @@ class UnpositionedPlotTest {
     fun removeTree() =
         assertEquals(
             UnpositionedPlot(
-                trees = IdMap(
+                trees = EntitySet(
                     UnpositionedTree(
                         id = "alex",
                         sentence = "Alex baked cookies.",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
                             UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
                             UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
@@ -251,11 +251,11 @@ class UnpositionedPlotTest {
     @Test
     fun transformNodesInMultipleTrees() = assertEquals(
         UnpositionedPlot(
-            trees = IdMap(
+            trees = EntitySet(
                 UnpositionedTree(
                     id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
                         UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset(0.0, -4.0), setOf("n1")),
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
@@ -266,7 +266,7 @@ class UnpositionedPlotTest {
                 UnpositionedTree(
                     id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 1.0), setOf("np2a", "vp2")),
                         UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
                         UnpositionedTerminalNode("n2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
@@ -291,11 +291,11 @@ class UnpositionedPlotTest {
     @Test
     fun deleteNodesInMultipleTrees() = assertEquals(
         UnpositionedPlot(
-            trees = IdMap(
+            trees = EntitySet(
                 UnpositionedTree(
                     id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
@@ -304,7 +304,7 @@ class UnpositionedPlotTest {
                 UnpositionedTree(
                     id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a")),
                         UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
                         UnpositionedTerminalNode("n2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),

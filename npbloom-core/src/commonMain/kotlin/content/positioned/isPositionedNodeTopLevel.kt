@@ -3,8 +3,8 @@
 package content.positioned
 
 import content.Id
-import content.IdMap
+import content.EntitySet
 
 @JsExport
-fun isPositionedNodeTopLevel(nodes: IdMap<PositionedNode>, nodeId: Id) =
+fun isPositionedNodeTopLevel(nodes: EntitySet<PositionedNode>, nodeId: Id) =
     nodes.none { it is PositionedBranchingNode && nodeId in it.children }

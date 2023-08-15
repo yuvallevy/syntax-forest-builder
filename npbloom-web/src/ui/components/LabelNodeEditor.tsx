@@ -1,6 +1,6 @@
 import { Id, NodeLabel } from '../../types';
 import {
-  AddNodeBySelection, calculateNodeCenterOnPlot, ClientCoords, generateNodeId, plotCoordsToClientCoords, PositionedTree,
+  AddNodeBySelection, calculateNodeCenterOnPlot, CoordsInClient, generateNodeId, coordsInPlotToCoordsInClient, PositionedTree,
   SelectParentNodes, SetEditedNodeLabel, StopEditing
 } from 'npbloom-core';
 import { useState } from 'react';
@@ -9,7 +9,7 @@ import useUiState from '../useUiState';
 
 interface LabelNodeEditorInputProps {
   value: string;
-  baseCoords: ClientCoords,
+  baseCoords: CoordsInClient,
   onInput: (inputValue: string) => void;
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -44,7 +44,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   const { state, dispatch } = useUiState();
 
   const editedNodeObject = tree.node(nodeId);
-  const nodePositionOnPlot = plotCoordsToClientCoords(calculateNodeCenterOnPlot(tree, editedNodeObject));
+  const nodePositionOnPlot = coordsInPlotToCoordsInClient(calculateNodeCenterOnPlot(tree, editedNodeObject));
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];

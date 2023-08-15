@@ -6,7 +6,7 @@ import changeAt
 import content.*
 import content.unpositioned.*
 import history.UndoRedoHistory
-import history.UndoableActionCommon
+import history.UndoableActionBase
 import insertAt
 import removeAt
 
@@ -40,7 +40,7 @@ internal sealed interface ContentOrHistoryAction
 data object Undo : ContentOrHistoryAction
 data object Redo : ContentOrHistoryAction
 
-private sealed interface ContentAction : UndoableActionCommon, ContentOrHistoryAction
+private sealed interface ContentAction : UndoableActionBase, ContentOrHistoryAction
 
 data object AddPlot : ContentAction
 internal data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
@@ -58,7 +58,7 @@ internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val off
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
 @JsExport
-sealed interface ContentChange : UndoableActionCommon
+sealed interface ContentChange : UndoableActionBase
 
 internal data class PlotAdded(val newPlotIndex: PlotIndex, val newPlot: UnpositionedPlot) : ContentChange
 internal data class PlotChanged(val plotIndex: PlotIndex, val old: UnpositionedPlot, val new: UnpositionedPlot) : ContentChange
@@ -120,7 +120,7 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
         state.plots[action.plotIndex].tree(action.treeId)
             .handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)
     )
-    is AddTree -> TreeAdded(action.plotIndex, UnpositionedTree(action.newTreeId, "", IdMap(), action.offset))
+    is AddTree -> TreeAdded(action.plotIndex, UnpositionedTree(action.newTreeId, "", EntitySet(), action.offset))
     is DeleteTree -> TreeDeleted(action.plotIndex, state.plots[action.plotIndex].tree(action.treeId))
 }
 

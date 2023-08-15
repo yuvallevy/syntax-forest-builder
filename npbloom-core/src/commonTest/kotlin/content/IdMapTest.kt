@@ -9,110 +9,110 @@ private data class SomethingWithId(
     val someWords: Set<String>,
 ) : WithId
 
-class IdMapTest {
+class EntitySetTest {
     private val something = SomethingWithId("q50jebq2", 982, setOf("weigh"))
     private val anotherThing = SomethingWithId("soq4s", 743, setOf("autumn", "rejoice"))
 
     private val oneMoreThing = SomethingWithId("JDuK06OV", 631, setOf("modesty", "flour"))
     private val yetAnotherThing = SomethingWithId("J3nG", 671, setOf("hammer"))
 
-    private val idMap = IdMap(something, anotherThing)
+    private val entitySet = EntitySet(something, anotherThing)
 
     @Test
-    fun ids() = assertEquals(setOf("q50jebq2", "soq4s"), idMap.ids)
+    fun ids() = assertEquals(setOf("q50jebq2", "soq4s"), entitySet.ids)
 
     @Test
-    fun size() = assertEquals(2, idMap.size)
+    fun size() = assertEquals(2, entitySet.size)
 
     @Test
     fun toTypedArray() =
-        assertContentEquals(arrayOf(something, anotherThing), idMap.toTypedArray())
+        assertContentEquals(arrayOf(something, anotherThing), entitySet.toTypedArray())
 
     @Test
-    fun containsTrue() = assertTrue("soq4s" in idMap)
+    fun containsTrue() = assertTrue("soq4s" in entitySet)
 
     @Test
-    fun containsFalse() = assertFalse("4Bgzl98b" in idMap)
+    fun containsFalse() = assertFalse("4Bgzl98b" in entitySet)
 
     @Test
-    fun get() = assertEquals(something, idMap["q50jebq2"])
+    fun get() = assertEquals(something, entitySet["q50jebq2"])
 
     @Test
-    fun minus() = assertEquals(IdMap(anotherThing), idMap - something.id)
+    fun minus() = assertEquals(EntitySet(anotherThing), entitySet - something.id)
 
     @Test
     fun plusSingle() =
         assertEquals(
-            IdMap(something, anotherThing, oneMoreThing),
-            idMap + oneMoreThing
+            EntitySet(something, anotherThing, oneMoreThing),
+            entitySet + oneMoreThing
         )
 
     @Test
     fun plusIterable() =
         assertEquals(
-            IdMap(something, anotherThing, oneMoreThing, yetAnotherThing),
-            idMap + setOf(yetAnotherThing, oneMoreThing)
+            EntitySet(something, anotherThing, oneMoreThing, yetAnotherThing),
+            entitySet + setOf(yetAnotherThing, oneMoreThing)
         )
 
     @Test
     fun plusArray() =
         assertEquals(
-            IdMap(something, anotherThing, oneMoreThing, yetAnotherThing),
-            idMap + arrayOf(yetAnotherThing, oneMoreThing)
+            EntitySet(something, anotherThing, oneMoreThing, yetAnotherThing),
+            entitySet + arrayOf(yetAnotherThing, oneMoreThing)
         )
 
     @Test
-    fun isEmptyTrue() = assertTrue(IdMap<SomethingWithId>().isEmpty())
+    fun isEmptyTrue() = assertTrue(EntitySet<SomethingWithId>().isEmpty())
 
     @Test
-    fun isEmptyFalse() = assertFalse(idMap.isEmpty())
+    fun isEmptyFalse() = assertFalse(entitySet.isEmpty())
 
     @Test
-    fun isNotEmptyTrue() = assertTrue(idMap.isNotEmpty())
+    fun isNotEmptyTrue() = assertTrue(entitySet.isNotEmpty())
 
     @Test
-    fun isNotEmptyFalse() = assertFalse(IdMap<SomethingWithId>().isNotEmpty())
+    fun isNotEmptyFalse() = assertFalse(EntitySet<SomethingWithId>().isNotEmpty())
 
     @Test
-    fun allTrue() = assertTrue(idMap.all { it.someNumber > 700 })
+    fun allTrue() = assertTrue(entitySet.all { it.someNumber > 700 })
 
     @Test
-    fun allFalse() = assertFalse(idMap.all { it.someWords.size == 3 })
+    fun allFalse() = assertFalse(entitySet.all { it.someWords.size == 3 })
 
     @Test
-    fun anyTrue() = assertTrue(idMap.any { it.someWords.size == 2 })
+    fun anyTrue() = assertTrue(entitySet.any { it.someWords.size == 2 })
 
     @Test
-    fun anyFalse() = assertFalse(idMap.any { it.someNumber < 700 })
+    fun anyFalse() = assertFalse(entitySet.any { it.someNumber < 700 })
 
     @Test
-    fun noneTrue() = assertTrue(idMap.none { it.someNumber > 800 && it.someWords.size == 2 })
+    fun noneTrue() = assertTrue(entitySet.none { it.someNumber > 800 && it.someWords.size == 2 })
 
     @Test
-    fun noneFalse() = assertFalse(idMap.none { it.someNumber > 800 || it.someWords.size == 2 })
+    fun noneFalse() = assertFalse(entitySet.none { it.someNumber > 800 || it.someWords.size == 2 })
 
     @Test
-    fun filterAll() = assertEquals(IdMap(something, anotherThing), idMap.filter { it.someWords.size <= 2 })
+    fun filterAll() = assertEquals(EntitySet(something, anotherThing), entitySet.filter { it.someWords.size <= 2 })
 
     @Test
-    fun filterSome() = assertEquals(IdMap(something), idMap.filter { it.someNumber > 800 })
+    fun filterSome() = assertEquals(EntitySet(something), entitySet.filter { it.someNumber > 800 })
 
     @Test
-    fun filterNone() = assertEquals(IdMap(), idMap.filter { it.someWords.isEmpty() })
+    fun filterNone() = assertEquals(EntitySet(), entitySet.filter { it.someWords.isEmpty() })
 
     @Test
-    fun flatMap() = assertContentEquals(arrayOf("weigh", "autumn", "rejoice"), idMap.flatMap { it.someWords })
+    fun flatMap() = assertContentEquals(arrayOf("weigh", "autumn", "rejoice"), entitySet.flatMap { it.someWords })
 
     @Test
-    fun map() = assertContentEquals(arrayOf(31, 27), idMap.map { sqrt(it.someNumber.toDouble()).toInt() })
+    fun map() = assertContentEquals(arrayOf(31, 27), entitySet.map { sqrt(it.someNumber.toDouble()).toInt() })
 
     @Test
-    fun mapToNewIdMap() = assertEquals(
-        IdMap(
+    fun mapToNewEntitySet() = assertEquals(
+        EntitySet(
             SomethingWithId("q50jebq2", 42, setOf("hgiew")),
             SomethingWithId("soq4s", 281, setOf("nmutua", "eciojer")),
         ),
-        idMap.mapToNewIdMap { it.copy(
+        entitySet.mapToNewEntitySet { it.copy(
             someNumber = 1024 - it.someNumber,
             someWords = it.someWords.map(String::reversed).toSet(),
         ) }

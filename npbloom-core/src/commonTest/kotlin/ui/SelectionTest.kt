@@ -1,6 +1,6 @@
 package ui
 
-import content.IdMap
+import content.EntitySet
 import content.NodeIndicatorInPlot
 import content.StringSlice
 import content.positioned.*
@@ -12,11 +12,11 @@ import kotlin.test.assertTrue
 
 class SelectionTest {
     private val plot = UnpositionedPlot(
-        trees = IdMap(
+        trees = EntitySet(
             UnpositionedTree(
                 id = "YC38BV4q",
                 sentence = "Alex baked cookies.",
-                nodes = IdMap(
+                nodes = EntitySet(
                     UnpositionedBranchingNode("kgzt", "VP", TreeCoordsOffset(0.0, -10.0), setOf("aF3BLs", "X9M")),
                     UnpositionedTerminalNode("aF3BLs", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                     UnpositionedTerminalNode("X9M", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18), triangle = true),
@@ -27,11 +27,11 @@ class SelectionTest {
     )
 
     private val positionedPlot = PositionedPlot(
-        trees = IdMap(
+        trees = EntitySet(
             PositionedTree(
                 id = "YC38BV4q",
                 sentence = "Alex baked cookies.",
-                nodes = IdMap(
+                nodes = EntitySet(
                     PositionedBranchingNode("kgzt", "VP", CoordsInTree(77.5, -70.0), setOf("aF3BLs", "X9M")),
                     PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
                     PositionedTerminalNode("X9M", "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
@@ -159,7 +159,7 @@ class SelectionTest {
             isNodeInRect(
                 positionedPlot.tree("YC38BV4q"),
                 positionedPlot.tree("YC38BV4q").node("aF3BLs"),
-                PlotRect(CoordsInPlot(78.0, -27.0), CoordsInPlot(90.0, -12.0))
+                RectInPlot(CoordsInPlot(78.0, -27.0), CoordsInPlot(90.0, -12.0))
             )
         )
 
@@ -169,7 +169,7 @@ class SelectionTest {
             isNodeInRect(
                 positionedPlot.tree("YC38BV4q"),
                 positionedPlot.tree("YC38BV4q").node("X9M"),
-                PlotRect(CoordsInPlot(80.0, -28.0), CoordsInPlot(95.0, -10.0))
+                RectInPlot(CoordsInPlot(80.0, -28.0), CoordsInPlot(95.0, -10.0))
             )
         )
 }

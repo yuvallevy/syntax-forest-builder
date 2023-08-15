@@ -14,20 +14,20 @@ typealias DClientY = Double
 // Calculate plot coords from client coords & vice versa, when they're different (when zoom and/or pan are implemented)
 
 @JsExport
-data class ClientCoords(val clientX: ClientX, val clientY: ClientY) {
-    fun toPlotCoords() = CoordsInPlot(clientX, clientY)
+data class CoordsInClient(val clientX: ClientX, val clientY: ClientY) {
+    fun toCoordsInPlot() = CoordsInPlot(clientX, clientY)
 }
 
 @JsExport
 data class ClientCoordsOffset(val dClientX: DClientX, val dClientY: DClientY)
 
 @JsExport
-data class ClientRect(val topLeft: ClientCoords, val bottomRight: ClientCoords) {
-    fun toPlotRect() = PlotRect(topLeft.toPlotCoords(), bottomRight.toPlotCoords())
+data class RectInClient(val topLeft: CoordsInClient, val bottomRight: CoordsInClient) {
+    fun toRectInPlot() = RectInPlot(topLeft.toCoordsInPlot(), bottomRight.toCoordsInPlot())
 }
 
 @JsExport
-data class PlotRect(val topLeft: CoordsInPlot, val bottomRight: CoordsInPlot) {
+data class RectInPlot(val topLeft: CoordsInPlot, val bottomRight: CoordsInPlot) {
     /**
      * Returns whether the given point is inside the given rectangle.
      */
@@ -37,8 +37,8 @@ data class PlotRect(val topLeft: CoordsInPlot, val bottomRight: CoordsInPlot) {
 }
 
 @JsExport
-@JsName("plotCoordsToClientCoords")
-fun CoordsInPlot.toClientCoords() = ClientCoords(plotX, plotY)
+@JsName("coordsInPlotToCoordsInClient")
+fun CoordsInPlot.toCoordsInClient() = CoordsInClient(plotX, plotY)
 
 /**
  * Returns the center coordinate of the given node in the given tree with respect to its containing plot.

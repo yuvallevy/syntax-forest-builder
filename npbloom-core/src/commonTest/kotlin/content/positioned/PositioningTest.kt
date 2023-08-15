@@ -1,6 +1,6 @@
 package content.positioned
 
-import content.IdMap
+import content.EntitySet
 import content.StringSlice
 import content.unpositioned.*
 import mockStrWidth
@@ -12,7 +12,7 @@ class PositioningTest {
     private val treeWithTerminalNodes = UnpositionedTree(
         id = "O29",
         sentence = "Noun verbs.",
-        nodes = IdMap(
+        nodes = EntitySet(
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
         ),
@@ -22,7 +22,7 @@ class PositioningTest {
     private val treeWithTriangleNodes = UnpositionedTree(
         id = "oqYi7",
         sentence = "Noun verb phrases.",
-        nodes = IdMap(
+        nodes = EntitySet(
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
         ),
@@ -32,7 +32,7 @@ class PositioningTest {
     private val treeWithStrandedNodes = UnpositionedTree(
         id = "7NI69oA",
         sentence = "Noun verbs.",
-        nodes = IdMap(
+        nodes = EntitySet(
             UnpositionedFormerlyBranchingNode("c", "S", TreeCoordsOffset.ZERO, treeWithTerminalNodes.nodes),
         ),
         offset = PlotCoordsOffset.ZERO,
@@ -41,7 +41,7 @@ class PositioningTest {
     private val treeWithBranchingNodes = UnpositionedTree(
         id = "BJcX",
         sentence = "Noun verbs.",
-        nodes = IdMap(
+        nodes = EntitySet(
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
             UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
@@ -52,7 +52,7 @@ class PositioningTest {
     private val treeWithBranchingAndTriangleNodes = UnpositionedTree(
         id = "926mr",
         sentence = "Noun verb phrases.",
-        nodes = IdMap(
+        nodes = EntitySet(
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
             UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),

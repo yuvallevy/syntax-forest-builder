@@ -1,6 +1,6 @@
 package ui.content
 
-import content.IdMap
+import content.EntitySet
 import content.NodeIndicatorInPlot
 import content.StringSlice
 import content.unpositioned.*
@@ -11,11 +11,11 @@ class ContentStateTest {
     private val testInitialState = ContentState(
         plots = arrayOf(
             UnpositionedPlot(
-                trees = IdMap(
+                trees = EntitySet(
                     UnpositionedTree(
                         id = "aa",
                         sentence = "tree state",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
                             UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10)),
                         ),
@@ -24,7 +24,7 @@ class ContentStateTest {
                     UnpositionedTree(
                         id = "zz",
                         sentence = "nodes rock",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                             UnpositionedTerminalNode("x", "N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5)),
                             UnpositionedTerminalNode("y", "V", TreeCoordsOffset.ZERO, StringSlice(6, 10)),
@@ -34,11 +34,11 @@ class ContentStateTest {
                 ),
             ),
             UnpositionedPlot(
-                trees = IdMap(
+                trees = EntitySet(
                     UnpositionedTree(
                         id = "aa",
                         sentence = "syntax is fun",
-                        nodes = IdMap(
+                        nodes = EntitySet(
                             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 6)),
                             UnpositionedTerminalNode(
                                 "b",
@@ -62,11 +62,11 @@ class ContentStateTest {
                 1,
                 testInitialState.plots[1],
                 UnpositionedPlot(
-                    trees = IdMap(
+                    trees = EntitySet(
                         UnpositionedTree(
                             id = "aa",
                             sentence = "syntax is fun",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -5.0), StringSlice(0, 6)),
                                 testInitialState.plots[1].tree("aa").node("b"),
                             ),
@@ -125,11 +125,11 @@ class ContentStateTest {
                 plots = arrayOf(
                     testInitialState.plots[0],
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "syntax is fun",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -158,7 +158,7 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     id = "aa",
                     sentence = "syntax is fun",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 6), false),
                         UnpositionedTerminalNode("b", "VP", TreeCoordsOffset(1.0, 10.0), StringSlice(7, 13), true),
                         UnpositionedBranchingNode("c", "NP", TreeCoordsOffset(0.0, 0.0), setOf("a")),
@@ -175,11 +175,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -193,10 +193,10 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedFormerlyBranchingNode(
                                         "w",
-                                        "NP", TreeCoordsOffset(-1.0, 5.0), IdMap(
+                                        "NP", TreeCoordsOffset(-1.0, 5.0), EntitySet(
                                             UnpositionedTerminalNode(
                                                 "x",
                                                 "N",
@@ -225,11 +225,11 @@ class ContentStateTest {
                 plotIndex = 0,
                 old = testInitialState.plots[0],
                 new = UnpositionedPlot(
-                    trees = IdMap(
+                    trees = EntitySet(
                         UnpositionedTree(
                             id = "aa",
                             sentence = "tree state",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedTerminalNode(
                                     "a",
                                     "N",
@@ -243,10 +243,10 @@ class ContentStateTest {
                         UnpositionedTree(
                             id = "zz",
                             sentence = "nodes rock",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedFormerlyBranchingNode(
                                     "w",
-                                    "NP", TreeCoordsOffset(-1.0, 5.0), IdMap(
+                                    "NP", TreeCoordsOffset(-1.0, 5.0), EntitySet(
                                         UnpositionedTerminalNode(
                                             "x",
                                             "N",
@@ -278,11 +278,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -303,7 +303,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedBranchingNode("x", "N", TreeCoordsOffset(0.0, 0.0), setOf("y")),
                                     UnpositionedTerminalNode(
@@ -327,7 +327,7 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     id = "zz",
                     sentence = "nodes rock",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                         UnpositionedBranchingNode("x", "N", TreeCoordsOffset(0.0, 0.0), setOf("y")),
                         UnpositionedTerminalNode("y", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(6, 10), false),
@@ -344,11 +344,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -369,12 +369,12 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedFormerlyBranchingNode(
                                         "w",
                                         "NP",
                                         TreeCoordsOffset(-1.0, 5.0),
-                                        IdMap(
+                                        EntitySet(
                                             UnpositionedTerminalNode(
                                                 "x",
                                                 "N",
@@ -412,12 +412,12 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     id = "zz",
                     sentence = "nodes rock",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedFormerlyBranchingNode(
                             "w",
                             "NP",
                             TreeCoordsOffset(-1.0, 5.0),
-                            IdMap(
+                            EntitySet(
                                 UnpositionedTerminalNode(
                                     "x",
                                     "N",
@@ -442,11 +442,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -467,7 +467,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -495,11 +495,11 @@ class ContentStateTest {
                 plotIndex = 0,
                 old = testInitialState.plots[0],
                 new = UnpositionedPlot(
-                    trees = IdMap(
+                    trees = EntitySet(
                         UnpositionedTree(
                             id = "aa",
                             sentence = "tree state",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedTerminalNode(
                                     "a",
                                     "N",
@@ -520,7 +520,7 @@ class ContentStateTest {
                         UnpositionedTree(
                             id = "zz",
                             sentence = "nodes rock",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                 UnpositionedTerminalNode(
                                     "x",
@@ -554,11 +554,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -579,7 +579,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(0.0, 0.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -607,11 +607,11 @@ class ContentStateTest {
                 plotIndex = 0,
                 old = testInitialState.plots[0],
                 new = UnpositionedPlot(
-                    trees = IdMap(
+                    trees = EntitySet(
                         UnpositionedTree(
                             id = "aa",
                             sentence = "tree state",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedTerminalNode(
                                     "a",
                                     "N",
@@ -632,7 +632,7 @@ class ContentStateTest {
                         UnpositionedTree(
                             id = "zz",
                             sentence = "nodes rock",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(0.0, 0.0), setOf("x")),
                                 UnpositionedTerminalNode(
                                     "x",
@@ -663,11 +663,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "NP",
@@ -688,7 +688,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -718,7 +718,7 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     id = "aa",
                     sentence = "tree state",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedTerminalNode("a", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10), false),
                     ),
@@ -734,11 +734,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -759,7 +759,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -787,11 +787,11 @@ class ContentStateTest {
                 plotIndex = 0,
                 old = testInitialState.plots[0],
                 new = UnpositionedPlot(
-                    trees = IdMap(
+                    trees = EntitySet(
                         UnpositionedTree(
                             id = "aa",
                             sentence = "tree state",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedTerminalNode(
                                     "a",
                                     "N",
@@ -812,7 +812,7 @@ class ContentStateTest {
                         UnpositionedTree(
                             id = "zz",
                             sentence = "nodes rock",
-                            nodes = IdMap(
+                            nodes = EntitySet(
                                 UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                 UnpositionedTerminalNode(
                                     "x",
@@ -843,11 +843,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tee state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -868,7 +868,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -898,7 +898,7 @@ class ContentStateTest {
                 new = UnpositionedTree(
                     id = "aa",
                     sentence = "tee state",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 3), false),
                         UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(4, 9), false),
                     ),
@@ -914,11 +914,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "aa",
                                 sentence = "tree state",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedTerminalNode(
                                         "a",
                                         "N",
@@ -939,7 +939,7 @@ class ContentStateTest {
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "",
-                                nodes = IdMap(
+                                nodes = EntitySet(
 
                                 ),
                                 offset = PlotCoordsOffset(105.0, 88.0),
@@ -954,7 +954,7 @@ class ContentStateTest {
                 plotIndex = 0, newTree = UnpositionedTree(
                     id = "zz",
                     sentence = "",
-                    nodes = IdMap(
+                    nodes = EntitySet(
 
                     ),
                     offset = PlotCoordsOffset(105.0, 88.0),
@@ -969,11 +969,11 @@ class ContentStateTest {
             current = ContentState(
                 plots = arrayOf(
                     UnpositionedPlot(
-                        trees = IdMap(
+                        trees = EntitySet(
                             UnpositionedTree(
                                 id = "zz",
                                 sentence = "nodes rock",
-                                nodes = IdMap(
+                                nodes = EntitySet(
                                     UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
                                     UnpositionedTerminalNode(
                                         "x",
@@ -1001,7 +1001,7 @@ class ContentStateTest {
                 plotIndex = 0, removedTree = UnpositionedTree(
                     id = "aa",
                     sentence = "tree state",
-                    nodes = IdMap(
+                    nodes = EntitySet(
                         UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode(
                             "b",

@@ -9,10 +9,10 @@ import content.*
 data class PositionedTree(
     override val id: Id,
     override val sentence: Sentence,
-    val nodes: IdMap<PositionedNode>,
+    val nodes: EntitySet<PositionedNode>,
     val position: CoordsInPlot,
     val width: Width,
-) : TreeCommon {
+) : TreeBase {
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 
     internal operator fun contains(nodeId: Id) = nodeId in nodes
@@ -20,18 +20,18 @@ data class PositionedTree(
     /**
      * Returns nodes matching the given predicate in the given tree.
      */
-    internal fun filterNodes(predicate: (node: PositionedNode) -> Boolean): IdMap<PositionedNode> =
+    internal fun filterNodes(predicate: (node: PositionedNode) -> Boolean): EntitySet<PositionedNode> =
         nodes.filter(predicate)
 
     /**
      * Returns nodes with the given IDs in the given tree.
      */
-    internal fun filterNodesById(nodeIds: Set<Id>): IdMap<PositionedNode> = nodes.filter { it.id in nodeIds }
+    internal fun filterNodesById(nodeIds: Set<Id>): EntitySet<PositionedNode> = nodes.filter { it.id in nodeIds }
 
     /**
      * Returns an ID map consisting of the top-level nodes in the given tree.
      */
-    internal fun getTopLevelNodes(): IdMap<PositionedNode> =
+    internal fun getTopLevelNodes(): EntitySet<PositionedNode> =
         nodes.filter { isPositionedNodeTopLevel(nodes, it.id) }
 
     /**

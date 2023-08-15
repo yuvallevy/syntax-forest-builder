@@ -9,9 +9,9 @@ import content.*
 data class UnpositionedTree(
     override val id: Id,
     override val sentence: Sentence,
-    val nodes: IdMap<UnpositionedNode>,
+    val nodes: EntitySet<UnpositionedNode>,
     val offset: PlotCoordsOffset,
-) : TreeCommon {
+) : TreeBase {
     internal val nodeIds get() = nodes.ids
 
     val nodesAsArray get() = nodes.toTypedArray()
@@ -66,7 +66,7 @@ data class UnpositionedTree(
      * Transforms all nodes in the given tree using the given transform function.
      */
     internal fun transformAllNodes(transformFunc: NodeTransformFunc): UnpositionedTree =
-        copy(nodes = IdMap(*nodes.map(transformFunc)))
+        copy(nodes = EntitySet(*nodes.map(transformFunc)))
 
     /**
      * Deletes the nodes with the given IDs from the given tree.

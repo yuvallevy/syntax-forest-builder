@@ -11,7 +11,7 @@ typealias TreeY = Double
 typealias Width = Double
 
 @JsExport
-sealed interface PositionedNode : NodeCommon, WithPositionInTree
+sealed interface PositionedNode : NodeBase, WithPositionInTree
 
 @JsExport
 data class PositionedBranchingNode(

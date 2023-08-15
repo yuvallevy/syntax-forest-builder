@@ -4,11 +4,11 @@ package content.unpositioned
 
 import NoSuchTreeException
 import content.Id
-import content.IdMap
+import content.EntitySet
 import content.NodeIndicatorInPlot
 
 @JsExport
-data class UnpositionedPlot internal constructor(val trees: IdMap<UnpositionedTree> = IdMap()) {
+data class UnpositionedPlot internal constructor(val trees: EntitySet<UnpositionedTree> = EntitySet()) {
     val isEmpty get() = trees.isEmpty()
 
     val treesAsArray get() = trees.toTypedArray()

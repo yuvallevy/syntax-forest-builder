@@ -5,7 +5,7 @@ data class TestState(
     val stringValue: String,
 )
 
-sealed interface TestAction : UndoableActionCommon
+sealed interface TestAction : UndoableActionBase
 
 data class IncrementNumber(val difference: Int) : TestAction
 data class DecrementNumber(val difference: Int) : TestAction

@@ -1,6 +1,6 @@
 package ui
 
-import content.IdMap
+import content.EntitySet
 import content.StringSlice
 import content.positioned.*
 import mockStrWidth
@@ -11,7 +11,7 @@ class NodeCreationTriggerTest {
     private val positionedTree = PositionedTree(
         id = "4BhlO7NO",
         sentence = "Alex baked cookies.",
-        nodes = IdMap(
+        nodes = EntitySet(
             PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
             PositionedTerminalNode("X9M",
                 "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),

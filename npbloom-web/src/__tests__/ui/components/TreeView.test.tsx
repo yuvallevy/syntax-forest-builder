@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import TreeView from '../../../ui/components/TreeView';
 import {
-  CoordsInPlot, CoordsInTree, IdMap, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, StringSlice,
+  CoordsInPlot, CoordsInTree, EntitySet, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, StringSlice,
   TreeXRange
 } from 'npbloom-core';
 
@@ -10,7 +10,7 @@ describe('tree rendering', () => {
   const tree = new PositionedTree(
     'nNQGVK0O',
     'Noun verbs very adverbly.',
-    IdMap.of([
+    EntitySet.of([
       new PositionedBranchingNode('a', 'S', new CoordsInTree(53.625, -80)).withChildrenFromArray(['b', 'd']),
       new PositionedBranchingNode('b', 'NP', new CoordsInTree(18, -60)).withChildrenFromArray(['c']),
       new PositionedTerminalNode('c', 'N', new CoordsInTree(18, -2), new StringSlice(0, 4)),
@@ -25,7 +25,7 @@ describe('tree rendering', () => {
   const treeWithUnlabeledNode = new PositionedTree(
     'lv846',
     'Who was IP?',
-    IdMap.of([
+    EntitySet.of([
       new PositionedBranchingNode('a', 'CP', new CoordsInTree(37.375, -100)).withChildrenFromArray(['c', 'd']),
       new PositionedBranchingNode('b', 'C\'', new CoordsInTree(59.25, -60)).withChildrenFromArray(['d', 'e']),
       new PositionedTerminalNode('c', '', new CoordsInTree(15.5, -2), new StringSlice(0, 3)),

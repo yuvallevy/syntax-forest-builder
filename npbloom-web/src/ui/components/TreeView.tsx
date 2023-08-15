@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, generateNodeId, getNodeCreationTriggers,
-  IdMap, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot,
-  NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot,
-  SetSelection, StartEditing, TerminalNodeCreationTrigger
+  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySet, generateNodeId,
+  getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
+  NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
+  PositionedTree, SelectionInPlot, SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id } from '../../types';
 import './TreeView.scss';
@@ -31,7 +31,7 @@ interface TreeViewProps {
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
 }
 
-const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
+const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: EntitySet<PositionedNode>): React.ReactNode[] =>
   node.childrenAsArray.map(childId => {
     const childNode = allNodes.get(childId);
     if (!childNode) return false;
@@ -57,7 +57,7 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
 const renderNode = (
   nodeId: Id,
   node: PositionedNode,
-  allNodes: IdMap<PositionedNode>,
+  allNodes: EntitySet<PositionedNode>,
   selectedNodeIds: Id[],
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
