@@ -35,7 +35,7 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: core-build-artifact
-        path: npbloom-core/dist/js/productionLibrary
+        path: npbloom-core/build/dist/js/productionLibrary
         retention-days: 7
 
   build-web:
