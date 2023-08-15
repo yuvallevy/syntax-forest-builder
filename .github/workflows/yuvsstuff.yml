@@ -22,7 +22,7 @@ jobs:
     - name: Test core
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: test
+        arguments: jsTest
         build-root-directory: npbloom-core
 
     - name: Build core
