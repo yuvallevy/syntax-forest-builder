@@ -1,32 +1,35 @@
 package content.unpositioned
 
 import NoSuchTreeException
+import content.IdMap
 import content.NodeIndicatorInPlot
 import content.StringSlice
 import kotlin.test.*
 
 class UnpositionedPlotTest {
     private val plot = UnpositionedPlot(
-        trees = mapOf(
-            "cleo" to UnpositionedTree(
+        trees = IdMap(
+            UnpositionedTree(
+                id = "cleo",
                 sentence = "Cleo laughed.",
-                nodes = mapOf(
-                    "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
-                    "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n1")),
-                    "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                    "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                    UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
+                    UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                    UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
-            "alex" to UnpositionedTree(
+            UnpositionedTree(
+                id = "alex",
                 sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
-                    "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                    "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                    "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                    "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                    "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                    UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                    UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                    UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                    UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                    UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -46,23 +49,25 @@ class UnpositionedPlotTest {
         assertContentEquals(
             arrayOf(
                 UnpositionedTree(
+                    id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = mapOf(
-                        "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
-                        "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n1")),
-                        "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                        "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                        UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
+                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
                     ),
                     offset = PlotCoordsOffset.ZERO,
                 ), UnpositionedTree(
+                    id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = mapOf(
-                        "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
-                        "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                        "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                        "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                        "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                        "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                        UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                        UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                     ),
                     offset = PlotCoordsOffset.ZERO,
                 )
@@ -81,14 +86,15 @@ class UnpositionedPlotTest {
     fun treeById() =
         assertEquals(
             UnpositionedTree(
+                id = "alex",
                 sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
-                    "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                    "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                    "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                    "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                    "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                    UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                    UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                    UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                    UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                    UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -121,59 +127,65 @@ class UnpositionedPlotTest {
     fun setTree() =
         assertEquals(
             UnpositionedPlot(
-                trees = mapOf(
-                    "cleo" to UnpositionedTree(
+                trees = IdMap(
+                    UnpositionedTree(
+                        id = "cleo",
                         sentence = "Cleo laughed.",
-                        nodes = mapOf(
-                            "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
-                            "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n1")),
-                            "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                            "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
+                        nodes = IdMap(
+                            UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                            UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
+                            UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                            UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
                         ),
                         offset = PlotCoordsOffset.ZERO,
                     ),
-                    "alex" to UnpositionedTree(
+                    UnpositionedTree(
+                        id = "alex",
                         sentence = "Alex baked cookies.",
-                        nodes = mapOf(
-                            "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
-                            "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                            "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                            "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                            "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                            "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                        nodes = IdMap(
+                            UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
+                            UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                            UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                            UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                            UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                            UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                         ),
                         offset = PlotCoordsOffset.ZERO,
                     ),
                 ),
             ),
-            plot.setTree("alex", UnpositionedTree(
-                sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
-                    "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                    "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                    "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                    "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                    "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
-                ),
-                offset = PlotCoordsOffset.ZERO,
-            ))
+            plot.setTree(
+                UnpositionedTree(
+                    id = "alex",
+                    sentence = "Alex baked cookies.",
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 8.0), setOf("np2a", "vp2")),
+                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                        UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                        UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                    ),
+                    offset = PlotCoordsOffset.ZERO,
+                )
+            )
         )
 
     @Test
     fun removeTree() =
         assertEquals(
             UnpositionedPlot(
-                trees = mapOf(
-                    "alex" to UnpositionedTree(
+                trees = IdMap(
+                    UnpositionedTree(
+                        id = "alex",
                         sentence = "Alex baked cookies.",
-                        nodes = mapOf(
-                            "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
-                            "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                            "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                            "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                            "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                            "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
+                        nodes = IdMap(
+                            UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                            UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
+                            UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                            UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
+                            UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                            UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                         ),
                         offset = PlotCoordsOffset.ZERO,
                     ),
@@ -189,7 +201,7 @@ class UnpositionedPlotTest {
                 "cleo" to "Cleo laughed.",
                 "alex" to "Alex baked cookies.",
             ),
-            plot.mapTrees { treeId, tree -> treeId to tree.sentence }
+            plot.mapTrees { tree -> tree.id to tree.sentence }
         )
 
     @Test
@@ -230,7 +242,11 @@ class UnpositionedPlotTest {
 
     @Test
     fun treeAndChildNodeIdOfTwoNodes() = assertEquals(
-        setOf(NodeIndicatorInPlot("alex", "np2a"), NodeIndicatorInPlot("alex", "vp2"), NodeIndicatorInPlot("alex", "n2")),
+        setOf(
+            NodeIndicatorInPlot("alex", "np2a"),
+            NodeIndicatorInPlot("alex", "vp2"),
+            NodeIndicatorInPlot("alex", "n2")
+        ),
         plot.getChildNodeIds(setOf(NodeIndicatorInPlot("alex", "s2"), NodeIndicatorInPlot("alex", "np2a")))
     )
 
@@ -245,26 +261,33 @@ class UnpositionedPlotTest {
     @Test
     fun transformNodesInMultipleTrees() = assertEquals(
         UnpositionedPlot(
-            trees = mapOf(
-                "cleo" to UnpositionedTree(
+            trees = IdMap(
+                UnpositionedTree(
+                    id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = mapOf(
-                        "s1" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
-                        "np1" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, -4.0), setOf("n1")),
-                        "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
-                        "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                        UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset(0.0, -4.0), setOf("n1")),
+                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
                     offset = PlotCoordsOffset.ZERO,
                 ),
-                "alex" to UnpositionedTree(
+                UnpositionedTree(
+                    id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = mapOf(
-                        "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 1.0), setOf("np2a", "vp2")),
-                        "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
-                        "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
-                        "vp2" to UnpositionedBranchingNode("VP", TreeCoordsOffset(0.0, 0.0), setOf("v2", "np2b")),
-                        "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
-                        "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18), false),
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 1.0), setOf("np2a", "vp2")),
+                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
+                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset(0.0, 0.0), setOf("v2", "np2b")),
+                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
+                        UnpositionedTerminalNode("np2b", 
+                            "NP",
+                            TreeCoordsOffset(0.0, 0.0),
+                            StringSlice(11, 18),
+                            false
+                        ),
                     ),
                     offset = PlotCoordsOffset.ZERO,
                 ),
@@ -278,23 +301,30 @@ class UnpositionedPlotTest {
     @Test
     fun deleteNodesInMultipleTrees() = assertEquals(
         UnpositionedPlot(
-            trees = mapOf(
-                "cleo" to UnpositionedTree(
+            trees = IdMap(
+                UnpositionedTree(
+                    id = "cleo",
                     sentence = "Cleo laughed.",
-                    nodes = mapOf(
-                        "n1" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
-                        "vp1" to UnpositionedTerminalNode("VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    nodes = IdMap(
+                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
                     offset = PlotCoordsOffset(0.0, 0.0),
                 ),
-                "alex" to UnpositionedTree(
+                UnpositionedTree(
+                    id = "alex",
                     sentence = "Alex baked cookies.",
-                    nodes = mapOf(
-                        "s2" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("np2a")),
-                        "np2a" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
-                        "n2" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
-                        "v2" to UnpositionedTerminalNode("V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
-                        "np2b" to UnpositionedTerminalNode("NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18), false),
+                    nodes = IdMap(
+                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a")),
+                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
+                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
+                        UnpositionedTerminalNode("np2b", 
+                            "NP",
+                            TreeCoordsOffset(0.0, 0.0),
+                            StringSlice(11, 18),
+                            false
+                        ),
                     ),
                     offset = PlotCoordsOffset(0.0, 0.0),
                 ),

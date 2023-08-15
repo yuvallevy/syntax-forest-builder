@@ -5,6 +5,6 @@ package content
 typealias Sentence = String
 
 @JsExport
-interface TreeCommon {
+interface TreeCommon : WithId {
     val sentence: Sentence
 }

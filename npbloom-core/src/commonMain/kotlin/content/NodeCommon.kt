@@ -5,6 +5,6 @@ package content
 typealias NodeLabel = String
 
 @JsExport
-interface NodeCommon {
+interface NodeCommon : WithId {
     val label: NodeLabel
 }

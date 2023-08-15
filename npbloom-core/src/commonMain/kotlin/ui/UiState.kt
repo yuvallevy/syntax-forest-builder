@@ -218,8 +218,11 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     state.contentState, InsertNode(
                         state.activePlotIndex,
                         selectedTreeId,
-                        action.newNodeId,
-                        newNodeFromSelection(state.selection, activePlot.tree(selectedTreeId).sentence),
+                        newNodeFromSelection(
+                            action.newNodeId,
+                            state.selection,
+                            activePlot.tree(selectedTreeId).sentence
+                        ),
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
@@ -235,8 +238,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     state.contentState, InsertNode(
                         state.activePlotIndex,
                         action.treeId,
-                        action.newNodeId,
-                        InsertedBranchingNode("", null, action.targetChildIds.toSet()),
+                        InsertedBranchingNode(action.newNodeId, "", null, action.targetChildIds.toSet()),
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
@@ -252,8 +254,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     state.contentState, InsertNode(
                         state.activePlotIndex,
                         action.treeId,
-                        action.newNodeId,
-                        InsertedTerminalNode("", null, action.targetSlice, action.triangle),
+                        InsertedTerminalNode(action.newNodeId, "", null, action.targetSlice, action.triangle),
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),

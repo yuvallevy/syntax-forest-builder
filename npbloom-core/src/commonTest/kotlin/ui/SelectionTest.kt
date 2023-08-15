@@ -1,5 +1,6 @@
 package ui
 
+import content.IdMap
 import content.NodeIndicatorInPlot
 import content.StringSlice
 import content.positioned.*
@@ -11,13 +12,14 @@ import kotlin.test.assertTrue
 
 class SelectionTest {
     private val plot = UnpositionedPlot(
-        trees = mapOf(
-            "YC38BV4q" to UnpositionedTree(
+        trees = IdMap(
+            UnpositionedTree(
+                id = "YC38BV4q",
                 sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "kgzt" to UnpositionedBranchingNode("VP", TreeCoordsOffset(0.0, -10.0), setOf("aF3BLs", "X9M")),
-                    "aF3BLs" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                    "X9M" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(11, 18), triangle = true),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("kgzt", "VP", TreeCoordsOffset(0.0, -10.0), setOf("aF3BLs", "X9M")),
+                    UnpositionedTerminalNode("aF3BLs", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+                    UnpositionedTerminalNode("X9M", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18), triangle = true),
                 ),
                 offset = PlotCoordsOffset(30.0, -10.0),
             )
@@ -25,13 +27,14 @@ class SelectionTest {
     )
 
     private val positionedPlot = PositionedPlot(
-        trees = mapOf(
-            "YC38BV4q" to PositionedTree(
+        trees = IdMap(
+            PositionedTree(
+                id = "YC38BV4q",
                 sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "kgzt" to PositionedBranchingNode("VP", CoordsInTree(77.5, -70.0), setOf("aF3BLs", "X9M")),
-                    "aF3BLs" to PositionedTerminalNode("V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
-                    "X9M" to PositionedTerminalNode("NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
+                nodes = IdMap(
+                    PositionedBranchingNode("kgzt", "VP", CoordsInTree(77.5, -70.0), setOf("aF3BLs", "X9M")),
+                    PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
+                    PositionedTerminalNode("X9M", "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
                         TreeXRange(77.0, 125.0)),
                 ),
                 position = CoordsInPlot(30.0, -10.0),

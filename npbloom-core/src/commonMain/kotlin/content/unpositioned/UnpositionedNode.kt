@@ -11,6 +11,7 @@ sealed interface UnpositionedNode : NodeCommon, WithOffsetInTree {
 
 @JsExport
 data class UnpositionedBranchingNode internal constructor(
+    override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     internal val children: Set<Id>,
@@ -24,6 +25,7 @@ data class UnpositionedBranchingNode internal constructor(
 
 @JsExport
 data class UnpositionedTerminalNode internal constructor(
+    override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     val slice: StringSlice,
@@ -39,6 +41,7 @@ sealed interface UnpositionedStrandedNode : UnpositionedNode
 
 @JsExport
 data class UnpositionedPlainStrandedNode internal constructor(
+    override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
 ) : UnpositionedStrandedNode {
@@ -49,6 +52,7 @@ data class UnpositionedPlainStrandedNode internal constructor(
 
 @JsExport
 data class UnpositionedFormerlyTerminalNode internal constructor(
+    override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     val formerSlice: StringSlice,
@@ -61,6 +65,7 @@ data class UnpositionedFormerlyTerminalNode internal constructor(
 
 @JsExport
 data class UnpositionedFormerlyBranchingNode internal constructor(
+    override val id: Id,
     override val label: NodeLabel,
     override val offset: TreeCoordsOffset,
     internal val formerDescendants: IdMap<UnpositionedNode>,

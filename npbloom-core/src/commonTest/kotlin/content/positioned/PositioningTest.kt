@@ -1,5 +1,6 @@
 package content.positioned
 
+import content.IdMap
 import content.StringSlice
 import content.unpositioned.*
 import mockStrWidth
@@ -9,47 +10,52 @@ import kotlin.test.assertEquals
 
 class PositioningTest {
     private val treeWithTerminalNodes = UnpositionedTree(
+        id = "O29",
         sentence = "Noun verbs.",
-        nodes = mapOf(
-            "a" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "b" to UnpositionedTerminalNode("V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
+        nodes = IdMap(
+            UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithTriangleNodes = UnpositionedTree(
+        id = "oqYi7",
         sentence = "Noun verb phrases.",
-        nodes = mapOf(
-            "a" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
-            "b" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
+        nodes = IdMap(
+            UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
+            UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithStrandedNodes = UnpositionedTree(
+        id = "7NI69oA",
         sentence = "Noun verbs.",
-        nodes = mapOf(
-            "c" to UnpositionedFormerlyBranchingNode("S", TreeCoordsOffset.ZERO, treeWithTerminalNodes.nodes),
+        nodes = IdMap(
+            UnpositionedFormerlyBranchingNode("c", "S", TreeCoordsOffset.ZERO, treeWithTerminalNodes.nodes),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithBranchingNodes = UnpositionedTree(
+        id = "BJcX",
         sentence = "Noun verbs.",
-        nodes = mapOf(
-            "a" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "b" to UnpositionedTerminalNode("V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
-            "c" to UnpositionedBranchingNode("S", TreeCoordsOffset.ZERO, setOf("a", "b")),
+        nodes = IdMap(
+            UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
+            UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithBranchingAndTriangleNodes = UnpositionedTree(
+        id = "926mr",
         sentence = "Noun verb phrases.",
-        nodes = mapOf(
-            "a" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
-            "b" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
-            "c" to UnpositionedBranchingNode("S", TreeCoordsOffset.ZERO, setOf("a", "b")),
+        nodes = IdMap(
+            UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
+            UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
+            UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
         ),
         offset = PlotCoordsOffset.ZERO,
     )

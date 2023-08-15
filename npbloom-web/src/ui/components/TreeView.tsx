@@ -2,11 +2,11 @@ import React from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection,
   BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, generateNodeId, getNodeCreationTriggers,
-  idMapGet, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
-  NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
-  PositionedTree, SelectionInPlot, SetSelection, StartEditing, TerminalNodeCreationTrigger
+  IdMap, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot,
+  NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot,
+  SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
-import { Id, IdMap } from '../../types';
+import { Id } from '../../types';
 import './TreeView.scss';
 import strWidth from '../strWidth';
 import useUiState from '../useUiState';
@@ -33,7 +33,7 @@ interface TreeViewProps {
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: IdMap<PositionedNode>): React.ReactNode[] =>
   node.childrenAsArray.map(childId => {
-    const childNode = idMapGet<PositionedNode>(allNodes, childId);
+    const childNode = allNodes.get(childId);
     if (!childNode) return false;
     return <line
         key={`to-${childId}`}
@@ -184,8 +184,8 @@ const TreeView: React.FC<TreeViewProps> = ({
           : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
-    {tree.mapNodes((nodeId, node) =>
-      renderNode(nodeId, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
+    {tree.mapNodes(node =>
+      renderNode(node.id, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}
   </g>;
 };

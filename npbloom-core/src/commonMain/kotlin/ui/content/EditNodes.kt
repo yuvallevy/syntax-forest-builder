@@ -1,5 +1,6 @@
 package ui.content
 
+import content.Id
 import content.Sentence
 import content.StringSlice
 import content.unpositioned.*
@@ -27,22 +28,25 @@ private fun getWordRange(sentence: Sentence, position: Int): StringSlice {
  * If the selection is a slice of length 0, expands it to span the word where the cursor currently is,
  * using the given sentence.
  */
-internal fun newNodeFromSelection(selection: SelectionInPlot, sentence: Sentence): InsertedNode = when (selection) {
-    is SliceSelectionInPlot -> {
-        // A slice of the sentence is selected
-        val sliceAfterSpread =
-            if (selection.slice.isZeroLength) getWordRange(sentence, selection.slice.start) else selection.slice
-        val (sliceStartAfterSpread, sliceEndAfterSpread) = sliceAfterSpread
-        InsertedTerminalNode("", null, sliceAfterSpread,
-            triangle = ' ' in sentence.slice(sliceStartAfterSpread until sliceEndAfterSpread))
-    }
+internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sentence: Sentence): InsertedNode =
+    when (selection) {
+        is SliceSelectionInPlot -> {
+            // A slice of the sentence is selected
+            val sliceAfterSpread =
+                if (selection.slice.isZeroLength) getWordRange(sentence, selection.slice.start) else selection.slice
+            val (sliceStartAfterSpread, sliceEndAfterSpread) = sliceAfterSpread
+            InsertedTerminalNode(
+                newNodeId, "", null, sliceAfterSpread,
+                triangle = ' ' in sentence.slice(sliceStartAfterSpread until sliceEndAfterSpread)
+            )
+        }
 
-    is NodeSelectionInPlot -> {
-        // One or more nodes are selected
-        val selectedNodeIds = selection.nodeIndicators.map { it.nodeId }.toSet()
-        InsertedBranchingNode("", null, selectedNodeIds)
+        is NodeSelectionInPlot -> {
+            // One or more nodes are selected
+            val selectedNodeIds = selection.nodeIndicators.map { it.nodeId }.toSet()
+            InsertedBranchingNode(newNodeId, "", null, selectedNodeIds)
+        }
     }
-}
 
 /**
  * Shifts the slice associated with a node by the given number of characters,
@@ -65,15 +69,18 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
                     newNodeSliceStart += shiftBy
                 }
             }
+
             oldSelection.start == slice.endExclusive -> {  // Cursor was at the end of the slice
                 if (shiftBy < 0) {  // If removing, contract the slice
                     newNodeSliceEnd += shiftBy
                 }
             }
+
             oldSelection.start < slice.start -> {  // Cursor was before the slice
                 newNodeSliceStart += shiftBy
                 newNodeSliceEnd += shiftBy
             }
+
             oldSelection.start in (slice.start + 1) until slice.endExclusive -> {  // Cursor was in the middle of the slice
                 newNodeSliceEnd += shiftBy
             }
@@ -82,7 +89,7 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
         TODO("Not implemented yet")
     }
     return UnpositionedTerminalNode(
-        label, offset, StringSlice(newNodeSliceStart, newNodeSliceEnd), triangle
+        id, label, offset, StringSlice(newNodeSliceStart, newNodeSliceEnd), triangle
     )
 }
 
@@ -94,6 +101,6 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
  *   This is used to determine how exactly node ranges should change.
  */
 internal fun UnpositionedTree.handleLocalSentenceChange(newSentence: Sentence, oldSelection: StringSlice) =
-    UnpositionedTree(newSentence, nodes, offset).transformAllNodes {
+    UnpositionedTree(id, newSentence, nodes, offset).transformAllNodes {
         it.shiftNodeSliceAfterChange(oldSelection, newSentence.length - sentence.length)
     }

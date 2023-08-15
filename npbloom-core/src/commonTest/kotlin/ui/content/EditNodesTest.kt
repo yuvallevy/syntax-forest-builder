@@ -1,5 +1,6 @@
 package ui.content
 
+import content.IdMap
 import content.StringSlice
 import content.unpositioned.*
 import ui.SliceSelectionInPlot
@@ -8,13 +9,14 @@ import kotlin.test.assertEquals
 
 class EditNodesTest {
     private val tree = UnpositionedTree(
+        id = "pq6dLbe",
         "The dog jumped.",
-        mapOf(
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset(0.0, 0.0), setOf("term1", "term2")),
-            "term1" to UnpositionedTerminalNode("Det", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 3)),
-            "term2" to UnpositionedTerminalNode("N", TreeCoordsOffset(0.0, 0.0), StringSlice(4, 7)),
-            "term3" to UnpositionedTerminalNode("VP", TreeCoordsOffset(0.0, 0.0), StringSlice(8, 14), true),
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term3")),
+        IdMap(
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset(0.0, 0.0), setOf("term1", "term2")),
+            UnpositionedTerminalNode("term1", "Det", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 3)),
+            UnpositionedTerminalNode("term2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(4, 7)),
+            UnpositionedTerminalNode("term3", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(8, 14), true),
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term3")),
         ),
         PlotCoordsOffset(0.0, 0.0),
     )
@@ -22,22 +24,22 @@ class EditNodesTest {
     @Test
     fun newNodeFromSelectedWord() =
         assertEquals(
-            InsertedTerminalNode("", null, StringSlice(0, 4), triangle = false),
-            newNodeFromSelection(SliceSelectionInPlot("YC38BV4q", StringSlice(0, 4)), "Alex baked cookies.")
+            InsertedTerminalNode("UE7q2t37", "", null, StringSlice(0, 4), triangle = false),
+            newNodeFromSelection("UE7q2t37", SliceSelectionInPlot("YC38BV4q", StringSlice(0, 4)), "Alex baked cookies.")
         )
 
     @Test
     fun newNodeFromSelectedPhrase() =
         assertEquals(
-            InsertedTerminalNode("", null, StringSlice(5, 18), triangle = true),
-            newNodeFromSelection(SliceSelectionInPlot("YC38BV4q", StringSlice(5, 18)), "Alex baked cookies.")
+            InsertedTerminalNode("I1cw913", "", null, StringSlice(5, 18), triangle = true),
+            newNodeFromSelection("I1cw913", SliceSelectionInPlot("YC38BV4q", StringSlice(5, 18)), "Alex baked cookies.")
         )
 
     @Test
     fun newNodeFromZeroLengthSlice() =
         assertEquals(
-            InsertedTerminalNode("", null, StringSlice(0, 4), triangle = false),
-            newNodeFromSelection(SliceSelectionInPlot("YC38BV4q", StringSlice(3, 3)), "Alex baked cookies.")
+            InsertedTerminalNode("v1M9Wei9", "", null, StringSlice(0, 4), triangle = false),
+            newNodeFromSelection("v1M9Wei9", SliceSelectionInPlot("YC38BV4q", StringSlice(3, 3)), "Alex baked cookies.")
         )
 
     @Test

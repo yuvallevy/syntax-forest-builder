@@ -1,41 +1,45 @@
 package content.positioned
 
+import content.IdMap
 import content.StringSlice
 import kotlin.test.*
 
 class PositionedTreeTest {
     private val tree = PositionedTree(
+        id = "218qL3a",
         sentence = "Noun verbs very adverbly.",
-        nodes = mapOf(
-            "a" to PositionedBranchingNode("S", CoordsInTree(53.625, -80.0), setOf("b")),
-            "b" to PositionedBranchingNode("NP", CoordsInTree(18.0, -60.0), setOf("c")),
-            "c" to PositionedTerminalNode("N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
-            "d" to PositionedBranchingNode("VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
-            "e" to PositionedTerminalNode("V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
-            "f" to PositionedTerminalNode("AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+        nodes = IdMap(
+            PositionedBranchingNode("a", "S", CoordsInTree(53.625, -80.0), setOf("b")),
+            PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
+            PositionedTerminalNode("c", "N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
+            PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
+            PositionedTerminalNode("e", "V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
+            PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
         ),
         position = CoordsInPlot(50.0, -32.0),
         width = 104.0,
     )
 
     private val treeWithoutSNode = PositionedTree(
+        id = "218qL3a",
         sentence = "Noun verbs very adverbly.",
-        nodes = mapOf(
-            "b" to PositionedBranchingNode("NP", CoordsInTree(18.0, -60.0), setOf("c")),
-            "c" to PositionedTerminalNode("N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
-            "d" to PositionedBranchingNode("VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
-            "e" to PositionedTerminalNode("V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
-            "f" to PositionedTerminalNode("AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+        nodes = IdMap(
+            PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
+            PositionedTerminalNode("c", "N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
+            PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
+            PositionedTerminalNode("e", "V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
+            PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
         ),
         position = CoordsInPlot(50.0, -32.0),
         width = 104.0,
     )
 
     private val treeWithoutVPNodeAndConnections = PositionedTree(
+        id = "218qL3a",
         sentence = "Noun verbs very adverbly.",
-        nodes = mapOf(
-            "b" to PositionedBranchingNode("NP", CoordsInTree(18.0, -60.0), setOf("c")),
-            "c" to PositionedTerminalNode("N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
+        nodes = IdMap(
+            PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
+            PositionedTerminalNode("c", "N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
         ),
         position = CoordsInPlot(50.0, -32.0),
         width = 104.0,
@@ -44,8 +48,8 @@ class PositionedTreeTest {
     @Test
     fun filterByTrianglehoodPredicate() =
         assertEquals(
-            mapOf(
-                "f" to PositionedTerminalNode("AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0))
+            IdMap<PositionedNode>(
+                PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0))
             ),
             tree.filterNodes { it is PositionedTerminalNode && it.triangle != null }
         )
@@ -53,10 +57,10 @@ class PositionedTreeTest {
     @Test
     fun filterByPhrasePredicate() =
         assertEquals(
-            mapOf(
-                "b" to PositionedBranchingNode("NP", CoordsInTree(18.0, -60.0), setOf("c")),
-                "d" to PositionedBranchingNode("VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
-                "f" to PositionedTerminalNode("AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+            IdMap(
+                PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
+                PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
+                PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
             ),
             tree.filterNodes { """^\w+P${'$'}""".toRegex() matches it.label }
         )
@@ -64,9 +68,9 @@ class PositionedTreeTest {
     @Test
     fun filterNodesByIds() =
         assertEquals(
-            mapOf(
-                "a" to PositionedBranchingNode("S", CoordsInTree(53.625, -80.0), setOf("b")),
-                "e" to PositionedTerminalNode("V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
+            IdMap(
+                PositionedBranchingNode("a", "S", CoordsInTree(53.625, -80.0), setOf("b")),
+                PositionedTerminalNode("e", "V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
             ),
             tree.filterNodesById(setOf("a", "e"))
         )
@@ -74,9 +78,9 @@ class PositionedTreeTest {
     @Test
     fun getTopLevelNodes() =
         assertEquals(
-            mapOf(
-                "b" to PositionedBranchingNode("NP", CoordsInTree(18.0, -60.0), setOf("c")),
-                "d" to PositionedBranchingNode("VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
+            IdMap<PositionedNode>(
+                PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
+                PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
             ),
             treeWithoutSNode.getTopLevelNodes()
         )

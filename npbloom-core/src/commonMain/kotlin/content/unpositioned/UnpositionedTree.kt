@@ -6,14 +6,15 @@ import NoSuchNodeException
 import content.*
 
 @JsExport
-data class UnpositionedTree internal constructor(
+data class UnpositionedTree(
+    override val id: Id,
     override val sentence: Sentence,
-    internal val nodes: IdMap<UnpositionedNode>,
+    val nodes: IdMap<UnpositionedNode>,
     val offset: PlotCoordsOffset,
 ) : TreeCommon {
-    internal val nodeIds get() = nodes.keys
+    internal val nodeIds get() = nodes.ids
 
-    val nodesAsArray get() = nodes.values.toTypedArray()
+    val nodesAsArray get() = nodes.toTypedArray()
 
     val nodeCount get() = nodes.size
 
@@ -23,15 +24,14 @@ data class UnpositionedTree internal constructor(
 
     internal operator fun contains(nodeId: Id) = nodeId in nodes
 
-    internal fun setNode(nodeId: Id, node: UnpositionedNode) = copy(nodes = nodes + (nodeId to node))
+    internal fun setNode(node: UnpositionedNode) = copy(nodes = nodes + node)
 
     internal fun removeNode(nodeId: Id) = copy(nodes = nodes - nodeId)
 
-    fun <T> mapNodes(transformFunc: (nodeId: Id, node: UnpositionedNode) -> T) =
-        nodes.map { (nodeId, node) -> transformFunc(nodeId, node) }.toTypedArray()
+    fun <T> mapNodes(transformFunc: (node: UnpositionedNode) -> T) =
+        nodes.map(transformFunc)
 
-    fun anyNodes(predicate: (nodeId: Id, node: UnpositionedNode) -> Boolean) =
-        nodes.any { (nodeId, node) -> predicate(nodeId, node) }
+    fun anyNodes(predicate: (node: UnpositionedNode) -> Boolean) = nodes.any(predicate)
 
     /**
      * Determines whether this tree is "complete" by checking whether it has only one undominated node.
@@ -39,9 +39,8 @@ data class UnpositionedTree internal constructor(
      * TODO: Make this smarter
      */
     val isComplete: Boolean get() {
-        val allChildIds = nodes.flatMap { (nodeId, node) ->
-            if (node is UnpositionedBranchingNode) node.children else emptySet()
-        }.toSet()
+        val allChildIds = nodes.flatMap { if (it is UnpositionedBranchingNode) it.children else emptySet() }
+            .toSet()
         val topLevelNodeIds = (nodeIds - allChildIds).toList()
         return topLevelNodeIds.singleOrNull()?.let { node(it).label.isNotEmpty() } ?: false
     }
@@ -49,8 +48,8 @@ data class UnpositionedTree internal constructor(
     /**
      * Inserts the given node into the tree, assigning it the given ID.
      */
-    internal fun insertNode(node: InsertedNode, newNodeId: Id): UnpositionedTree =
-        copy(nodes = nodes.insertNode(node, newNodeId))
+    internal fun insertNode(node: InsertedNode): UnpositionedTree =
+        copy(nodes = nodes.insertNode(node))
 
     /**
      * Transforms the node with the given ID using the given transform function
@@ -70,7 +69,7 @@ data class UnpositionedTree internal constructor(
      * Transforms all nodes in the given tree using the given transform function.
      */
     internal fun transformAllNodes(transformFunc: NodeTransformFunc): UnpositionedTree =
-        copy(nodes = nodes.mapValues { (_, node) -> transformFunc(node) })
+        copy(nodes = IdMap(*nodes.map(transformFunc)))
 
     /**
      * Deletes the nodes with the given IDs from the given tree.
@@ -90,6 +89,7 @@ data class UnpositionedTree internal constructor(
                 transformAllNodes { nodes.unassignAsChildren(adoptedNodeIds, it) }
             treeWithoutExistingConnections.transformNode(adoptingNodeId) {
                 UnpositionedBranchingNode(
+                    id = it.id,
                     label = it.label,
                     offset = TreeCoordsOffset.ZERO,
                     children = (if (it is UnpositionedBranchingNode) it.children else emptySet()) + adoptedNodeIds
@@ -106,7 +106,7 @@ data class UnpositionedTree internal constructor(
         else transformNode(disowningNodeId) { node -> nodes.unassignAsChildren(disownedNodeIds, node) }
 
     internal fun filterNodeIdsByNode(predicate: (node: UnpositionedNode) -> Boolean): Set<Id> =
-        nodes.filterValues(predicate).keys
+        nodes.filter(predicate).ids
 
     internal fun getParentNodeIds(nodeIds: Set<Id>): Set<Id> =
         filterNodeIdsByNode { node ->

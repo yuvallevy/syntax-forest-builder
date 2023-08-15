@@ -1,5 +1,6 @@
 package ui
 
+import content.IdMap
 import content.StringSlice
 import content.positioned.*
 import mockStrWidth
@@ -8,10 +9,11 @@ import kotlin.test.assertContentEquals
 
 class NodeCreationTriggerTest {
     private val positionedTree = PositionedTree(
+        id = "4BhlO7NO",
         sentence = "Alex baked cookies.",
-        nodes = mapOf(
-            "aF3BLs" to PositionedTerminalNode("V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
-            "X9M" to PositionedTerminalNode(
+        nodes = IdMap(
+            PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
+            PositionedTerminalNode("X9M",
                 "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
                 TreeXRange(77.0, 125.0)
             ),

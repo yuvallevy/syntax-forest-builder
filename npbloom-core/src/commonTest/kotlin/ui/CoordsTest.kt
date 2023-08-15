@@ -1,5 +1,6 @@
 package ui
 
+import content.IdMap
 import content.StringSlice
 import content.positioned.*
 import kotlin.test.Test
@@ -9,13 +10,14 @@ import kotlin.test.assertTrue
 
 class CoordsTest {
     private val positionedPlot = PositionedPlot(
-        trees = mapOf(
-            "YC38BV4q" to PositionedTree(
+        trees = IdMap(
+            PositionedTree(
+                id = "YC38BV4q",
                 sentence = "Alex baked cookies.",
-                nodes = mapOf(
-                    "kgzt" to PositionedBranchingNode("VP", CoordsInTree(77.5, -70.0), setOf("aF3BLs", "X9M")),
-                    "aF3BLs" to PositionedTerminalNode("V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
-                    "X9M" to PositionedTerminalNode(
+                nodes = IdMap(
+                    PositionedBranchingNode("kgzt", "VP", CoordsInTree(77.5, -70.0), setOf("aF3BLs", "X9M")),
+                    PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
+                    PositionedTerminalNode("X9M",
                         "NP",
                         CoordsInTree(101.0, -20.0),
                         StringSlice(11, 18),

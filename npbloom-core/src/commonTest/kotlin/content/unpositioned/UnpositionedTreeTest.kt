@@ -1,82 +1,89 @@
 package content.unpositioned
 
 import NoSuchNodeException
+import content.IdMap
 import content.StringSlice
 import kotlin.test.*
 
 class UnpositionedTreeTest {
     private val tree = UnpositionedTree(
+        id = "ia9iV",
         sentence = "Noun verbed.",
-        nodes = mapOf(
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+        nodes = IdMap(
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithoutTopLevelTerminalNode = UnpositionedTree(
+        id = "ia9iV",
         sentence = "Noun verbed.",
-        nodes = mapOf(
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+        nodes = IdMap(
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithoutTopLevelBranchingNode = UnpositionedTree(
+        id = "ia9iV",
         sentence = "Noun verbed.",
-        nodes = mapOf(
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+        nodes = IdMap(
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithStrandedNode = UnpositionedTree(
+        id = "Y43W8qV",
         sentence = "Noun verbed it.",
-        nodes = mapOf(
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "stranded" to UnpositionedFormerlyTerminalNode(
+        nodes = IdMap(
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedFormerlyTerminalNode("stranded", 
                 "VP",
                 TreeCoordsOffset(2.0, -10.0),
                 StringSlice(5, 14),
                 true
             ),
-            "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
-            "term3" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(12, 14)),
+            UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+            UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14)),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithNodeMissingBranches = UnpositionedTree(
+        id = "VJsCdW",
         sentence = "Noun verbed and verbed.",
-        nodes = mapOf(
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "branch2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2")),
-            "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
-            "term3" to UnpositionedTerminalNode("Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15)),
-            "term4" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
+        nodes = IdMap(
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedBranchingNode("branch2", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
+            UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
+            UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15)),
+            UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
 
     private val treeWithTerminalBecomingBranching = UnpositionedTree(
+        id = "cQotq75p",
         sentence = "Noun verbed adverbly.",
-        nodes = mapOf(
-            "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "shapeshifter")),
-            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            "shapeshifter" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 20), true),
-            "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
-            "term3" to UnpositionedTerminalNode("AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
+        nodes = IdMap(
+            UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "shapeshifter")),
+            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("shapeshifter", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 20), true),
+            UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+            UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
         ),
         offset = PlotCoordsOffset.ZERO,
     )
@@ -89,16 +96,16 @@ class UnpositionedTreeTest {
     fun nodesAsArray() =
         assertContentEquals(
             arrayOf(
-                UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             ),
             treeWithoutTopLevelTerminalNode.nodesAsArray
         )
 
     @Test
     fun nodeCountZero() =
-        assertEquals(0, UnpositionedTree(sentence = "", nodes = emptyMap(), offset = PlotCoordsOffset.ZERO).nodeCount)
+        assertEquals(0, UnpositionedTree(id = "L18", sentence = "", nodes = IdMap(), offset = PlotCoordsOffset.ZERO).nodeCount)
 
     @Test
     fun nodeCountNonzero() =
@@ -110,12 +117,12 @@ class UnpositionedTreeTest {
 
     @Test
     fun hasNodesFalse() =
-        assertFalse(UnpositionedTree(sentence = "", nodes = emptyMap(), offset = PlotCoordsOffset.ZERO).hasNodes)
+        assertFalse(UnpositionedTree(id = "zif", sentence = "", nodes = IdMap(), offset = PlotCoordsOffset.ZERO).hasNodes)
 
     @Test
     fun nodeById() =
         assertEquals(
-            UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             treeWithoutTopLevelBranchingNode.node("term1")
         )
 
@@ -137,17 +144,17 @@ class UnpositionedTreeTest {
     fun setNode() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.setNode(
-                "term1",
-                UnpositionedTerminalNode("NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true)
+                UnpositionedTerminalNode("term1", "NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true)
             )
         )
 
@@ -155,10 +162,11 @@ class UnpositionedTreeTest {
     fun removeNode() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -174,16 +182,16 @@ class UnpositionedTreeTest {
                 "term1" to "N",
                 "term2" to "VP",
             ),
-            tree.mapNodes { nodeId, node -> nodeId to node.label }
+            tree.mapNodes { it.id to it.label }
         )
 
     @Test
     fun anyNodesTrue() =
-        assertTrue(tree.anyNodes { _, node -> "V" in node.label })
+        assertTrue(tree.anyNodes { "V" in it.label })
 
     @Test
     fun anyNodesFalse() =
-        assertFalse(tree.anyNodes { _, node -> "Adj" in node.label })
+        assertFalse(tree.anyNodes { "Adj" in it.label })
 
     @Test
     fun isCompleteTrue() =
@@ -233,18 +241,18 @@ class UnpositionedTreeTest {
     fun insertTopLevelTerminalNode() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "new" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("new", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             treeWithoutTopLevelTerminalNode.insertNode(
-                InsertedTerminalNode("V", null, StringSlice(5, 11), false),
-                "new"
+                InsertedTerminalNode("new", "V", null, StringSlice(5, 11), false)
             )
         )
 
@@ -252,18 +260,18 @@ class UnpositionedTreeTest {
     fun insertTopLevelTerminalNodeWithTriangle() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "new" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("new", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             treeWithoutTopLevelTerminalNode.insertNode(
-                InsertedTerminalNode("VP", null, StringSlice(5, 11), true),
-                "new"
+                InsertedTerminalNode("new", "VP", null, StringSlice(5, 11), true)
             )
         )
 
@@ -271,18 +279,18 @@ class UnpositionedTreeTest {
     fun insertTopLevelBranchingNodeWithChild() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "new" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2")),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("new", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.insertNode(
-                InsertedBranchingNode("VP", null, setOf("term2")),
-                "new"
+                InsertedBranchingNode("new", "VP", null, setOf("term2"))
             )
         )
 
@@ -290,18 +298,18 @@ class UnpositionedTreeTest {
     fun insertTopLevelBranchingNodeWithTwoChildren() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "new" to UnpositionedBranchingNode("S", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("new", "S", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.insertNode(
-                InsertedBranchingNode("S", null, setOf("branch1", "term2")),
-                "new"
+                InsertedBranchingNode("new", "S", null, setOf("branch1", "term2"))
             )
         )
 
@@ -309,19 +317,19 @@ class UnpositionedTreeTest {
     fun insertBranchingNodeWithTerminalChild() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("new")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "new" to UnpositionedBranchingNode("N'", TreeCoordsOffset.ZERO, setOf("term1")),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("new")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("new", "N'", TreeCoordsOffset.ZERO, setOf("term1")),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             tree.insertNode(
-                InsertedBranchingNode("N'", "branch1", setOf("term1")),
-                "new"
+                InsertedBranchingNode("new", "N'", "branch1", setOf("term1"))
             )
         )
 
@@ -329,19 +337,19 @@ class UnpositionedTreeTest {
     fun insertBranchingNodeWithBranchingChild() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("term2", "new")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "new" to UnpositionedBranchingNode("?", TreeCoordsOffset.ZERO, setOf("branch1")),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("term2", "new")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("new", "?", TreeCoordsOffset.ZERO, setOf("branch1")),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             tree.insertNode(
-                InsertedBranchingNode("?", "top", setOf("branch1")),
-                "new"
+                InsertedBranchingNode("new", "?", "top", setOf("branch1"))
             )
         )
 
@@ -349,19 +357,19 @@ class UnpositionedTreeTest {
     fun insertBranchingNodeWithTwoChildren() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("new")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "new" to UnpositionedBranchingNode("?", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("new")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("new", "?", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
             tree.insertNode(
-                InsertedBranchingNode("?", "top", setOf("branch1", "term2")),
-                "new"
+                InsertedBranchingNode("new", "?", "top", setOf("branch1", "term2"))
             )
         )
 
@@ -369,12 +377,13 @@ class UnpositionedTreeTest {
     fun setNodeLabel() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    "branch1" to UnpositionedBranchingNode("test", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+                    UnpositionedBranchingNode("branch1", "test", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -385,12 +394,13 @@ class UnpositionedTreeTest {
     fun setTrianglehoodOfTwoNodes() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -404,15 +414,16 @@ class UnpositionedTreeTest {
     fun assignNodeAsChildOfBranching() =
         assertEquals(
             UnpositionedTree(
+                id = "VJsCdW",
                 sentence = "Noun verbed and verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "branch2" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
-                    "term3" to UnpositionedTerminalNode("Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
-                    "term4" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("branch2", "VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
+                    UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
+                    UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -423,18 +434,19 @@ class UnpositionedTreeTest {
     fun assignNodeAsChildOfTerminal() =
         assertEquals(
             UnpositionedTree(
+                id = "cQotq75p",
                 sentence = "Noun verbed adverbly.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode(
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", 
                         "S",
                         TreeCoordsOffset(0.0, 5.0),
                         setOf("branch1", "shapeshifter")
                     ),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "shapeshifter" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2")),
-                    "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "term3" to UnpositionedTerminalNode("AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("shapeshifter", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
+                    UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -445,14 +457,15 @@ class UnpositionedTreeTest {
     fun assignNodeAsChildOfStranded() =
         assertEquals(
             UnpositionedTree(
+                id = "Y43W8qV",
                 sentence = "Noun verbed it.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "stranded" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2")),
-                    "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "term3" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("stranded", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
+                    UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -463,19 +476,20 @@ class UnpositionedTreeTest {
     fun assignTwoNodesAsChildrenOfBranching() =
         assertEquals(
             UnpositionedTree(
+                id = "VJsCdW",
                 sentence = "Noun verbed and verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "branch2" to UnpositionedBranchingNode(
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("branch2", 
                         "VP",
                         TreeCoordsOffset.ZERO,
                         setOf("term2", "term3", "term4")
                     ),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
-                    "term3" to UnpositionedTerminalNode("Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
-                    "term4" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
+                    UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
+                    UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -486,18 +500,19 @@ class UnpositionedTreeTest {
     fun assignTwoNodesAsChildrenOfTerminal() =
         assertEquals(
             UnpositionedTree(
+                id = "cQotq75p",
                 sentence = "Noun verbed adverbly.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode(
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", 
                         "S",
                         TreeCoordsOffset(0.0, 5.0),
                         setOf("branch1", "shapeshifter")
                     ),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "shapeshifter" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
-                    "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "term3" to UnpositionedTerminalNode("AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("shapeshifter", "VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
+                    UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -508,14 +523,15 @@ class UnpositionedTreeTest {
     fun assignTwoNodesAsChildrenOfStranded() =
         assertEquals(
             UnpositionedTree(
+                id = "Y43W8qV",
                 sentence = "Noun verbed it.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "stranded" to UnpositionedBranchingNode("VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
-                    "term2" to UnpositionedTerminalNode("V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                    "term3" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedBranchingNode("stranded", "VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
+                    UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -526,12 +542,13 @@ class UnpositionedTreeTest {
     fun notStrandedWhenDisowningIfChildrenLeft() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("term2")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("term2")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -542,16 +559,17 @@ class UnpositionedTreeTest {
     fun strandedWhenDisowningIfOnlyChildDisowned() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    "branch1" to UnpositionedFormerlyBranchingNode(
-                        "NP", TreeCoordsOffset.ZERO, mapOf(
-                            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+                    UnpositionedFormerlyBranchingNode("branch1", 
+                        "NP", TreeCoordsOffset.ZERO, IdMap(
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -562,18 +580,19 @@ class UnpositionedTreeTest {
     fun strandedWhenDisowningIfAllChildrenDisowned() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedFormerlyBranchingNode(
-                        "S", TreeCoordsOffset(0.0, 5.0), mapOf(
-                            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                            "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedFormerlyBranchingNode("top", 
+                        "S", TreeCoordsOffset(0.0, 5.0), IdMap(
+                            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                            UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -584,12 +603,13 @@ class UnpositionedTreeTest {
     fun removeExistingConnectionWhenAdopting() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1", "term2")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1", "term2")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -604,12 +624,13 @@ class UnpositionedTreeTest {
     fun changeAllNodes() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("test", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    "branch1" to UnpositionedBranchingNode("test", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("test", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("test", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "test", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
+                    UnpositionedBranchingNode("branch1", "test", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "test", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "test", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -620,11 +641,12 @@ class UnpositionedTreeTest {
     fun deleteTopLevel() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -635,11 +657,12 @@ class UnpositionedTreeTest {
     fun deleteBranching() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("term2")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("term2")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -650,11 +673,12 @@ class UnpositionedTreeTest {
     fun deleteTerminal() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -665,10 +689,11 @@ class UnpositionedTreeTest {
     fun deleteParentAndChild() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -679,14 +704,15 @@ class UnpositionedTreeTest {
     fun deleteAncestorAndDescendant() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "branch1" to UnpositionedFormerlyBranchingNode(
-                        "NP", TreeCoordsOffset.ZERO, mapOf(
-                            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedFormerlyBranchingNode("branch1", 
+                        "NP", TreeCoordsOffset.ZERO, IdMap(
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
-                    "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                    UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),
@@ -697,12 +723,13 @@ class UnpositionedTreeTest {
     fun deleteUnrelatedNodes() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedBranchingNode("S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    "branch1" to UnpositionedFormerlyBranchingNode(
-                        "NP", TreeCoordsOffset.ZERO, mapOf(
-                            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
+                    UnpositionedFormerlyBranchingNode("branch1", 
+                        "NP", TreeCoordsOffset.ZERO, IdMap(
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
                 ),
@@ -715,16 +742,17 @@ class UnpositionedTreeTest {
     fun strandedWhenChildrenGone() =
         assertEquals(
             UnpositionedTree(
+                id = "ia9iV",
                 sentence = "Noun verbed.",
-                nodes = mapOf(
-                    "top" to UnpositionedFormerlyBranchingNode(
-                        "S", TreeCoordsOffset(0.0, 5.0), mapOf(
-                            "branch1" to UnpositionedBranchingNode("NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                            "term2" to UnpositionedTerminalNode("VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
-                            "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                nodes = IdMap(
+                    UnpositionedFormerlyBranchingNode("top", 
+                        "S", TreeCoordsOffset(0.0, 5.0), IdMap(
+                            UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
+                            UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
-                    "term1" to UnpositionedTerminalNode("N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
                 offset = PlotCoordsOffset.ZERO,
             ),

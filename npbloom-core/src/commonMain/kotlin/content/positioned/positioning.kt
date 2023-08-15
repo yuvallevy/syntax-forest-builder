@@ -34,9 +34,9 @@ internal fun determineBranchingNodePosition(
     alreadyPositionedNodes: IdMap<PositionedNode>,
     node: UnpositionedBranchingNode,
 ): CoordsInTree {
-    val positionedChildNodes = alreadyPositionedNodes.filterKeys { it in node.children }
+    val positionedChildNodes = alreadyPositionedNodes.filter { it.id in node.children }
     val naturalPosition =
-        determineNaturalParentNodePosition(positionedChildNodes.mapValues { (_, node) -> node.position }.values.toSet())
+        determineNaturalParentNodePosition(positionedChildNodes.map { it.position }.toSet())
     return CoordsInTree(
         treeX = naturalPosition.treeX + node.offset.dTreeX,
         treeY = naturalPosition.treeY + node.offset.dTreeY,
@@ -79,20 +79,14 @@ internal fun determineStrandedNodePosition(
 
     is UnpositionedFormerlyBranchingNode -> {  // Node was branching - determine its position based on past children
         val positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc)
-        val childXs = positionedChildNodes.values.map { it.position.treeX }
-        val childYs = positionedChildNodes.values.map { it.position.treeY }
         CoordsInTree(
-            treeX = childXs.average() + node.offset.dTreeX,
-            treeY = childYs.min() + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
+            treeX = positionedChildNodes.map { it.position.treeX }.average() + node.offset.dTreeX,
+            treeY = positionedChildNodes.minOf { it.position.treeY } + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
         )
     }
 
-    is UnpositionedPlainStrandedNode -> {  // Node was never anything other than stranded - just use its X and Y offset
-        CoordsInTree(
-            treeX = node.offset.dTreeX,
-            treeY = node.offset.dTreeY,
-        )
-    }
+    is UnpositionedPlainStrandedNode ->  // Node was never anything other than stranded - just use its X and Y offset
+        CoordsInTree(treeX = node.offset.dTreeX, treeY = node.offset.dTreeY)
 }
 
 /**
@@ -120,16 +114,16 @@ internal fun applyNodePosition(
     node: UnpositionedNode,
 ): PositionedNode = when (node) {
     is UnpositionedBranchingNode -> PositionedBranchingNode(
-        label = node.label, children = node.children,
+        id = node.id, label = node.label, children = node.children,
         position = determineBranchingNodePosition(alreadyPositionedNodes, node),
     )
     is UnpositionedTerminalNode -> PositionedTerminalNode(
-        label = node.label, slice = node.slice,
+        id = node.id, label = node.label, slice = node.slice,
         triangle = determineTerminalNodeTriangleRange(strWidthFunc, sentence, node),
         position = determineTerminalNodePosition(strWidthFunc, sentence, node),
     )
     is UnpositionedStrandedNode -> PositionedStrandedNode(
-        label = node.label,
+        id = node.id, label = node.label,
         position = determineStrandedNodePosition(strWidthFunc, sentence, node),
     )
 }
@@ -142,7 +136,7 @@ internal fun applyNodePositions(
     nodes: IdMap<UnpositionedNode>,
     sentence: Sentence,
     strWidthFunc: StrWidthFunc,
-    alreadyPositionedNodes: IdMap<PositionedNode> = emptyMap(),
+    alreadyPositionedNodes: IdMap<PositionedNode> = IdMap(),
 ): IdMap<PositionedNode> {
     // If no unpositioned nodes are left, we're done
     if (nodes.isEmpty()) return alreadyPositionedNodes
@@ -151,17 +145,17 @@ internal fun applyNodePositions(
     // * Terminal nodes, whose position is entirely based on their assigned slice
     // * Stranded nodes, which internally store the descendants or slice that they once had
     // * Branching nodes whose children all have known positions
-    val nodesToPositionNow = nodes.filterValues { unpositionedNode ->
+    val nodesToPositionNow = nodes.filter { unpositionedNode ->
         unpositionedNode !is UnpositionedBranchingNode || unpositionedNode.children.all { it in alreadyPositionedNodes }
     }
 
     // Assign positions to all the nodes we've determined to be ready for positioning
-    val newPositionedNodes = nodesToPositionNow.mapValues { (_, node) ->
-        applyNodePosition(alreadyPositionedNodes, strWidthFunc, sentence, node)
+    val newPositionedNodes = nodesToPositionNow.map {
+        applyNodePosition(alreadyPositionedNodes, strWidthFunc, sentence, it)
     }
 
     // All other nodes will be positioned in one of the next iterations
-    val nodesToPositionNext = nodes.filterKeys { it !in nodesToPositionNow }
+    val nodesToPositionNext = nodes.filter { it.id !in nodesToPositionNow }
 
     // Repeat the process, using as unpositioned nodes only those nodes that are have not been assigned positions yet
     return applyNodePositions(nodesToPositionNext, sentence, strWidthFunc, alreadyPositionedNodes + newPositionedNodes)
@@ -171,6 +165,7 @@ internal fun applyNodePositions(
  * Returns a copy of the given tree with positions for all nodes.
  */
 internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree = PositionedTree(
+    id = tree.id,
     sentence = tree.sentence,
     nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
     position = CoordsInPlot(tree.offset.dPlotX, tree.offset.dPlotY),
@@ -183,7 +178,7 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
 @JsExport
 fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot): PositionedPlot =
     PositionedPlot(
-        trees = plot.trees.mapValues { (_, node) -> applyNodePositionsToTree(strWidthFunc, node) },
+        trees = plot.trees.mapToNewIdMap { tree -> applyNodePositionsToTree(strWidthFunc, tree) },
     )
 
 /**

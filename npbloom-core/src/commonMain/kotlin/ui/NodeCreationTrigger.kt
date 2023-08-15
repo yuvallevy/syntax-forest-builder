@@ -83,7 +83,7 @@ private fun getWordSlices(sentence: Sentence): Set<StringSlice> =
 
 private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): Set<NodeCreationTarget> {
     // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
-    val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().keys).toList()
+    val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().ids).toList()
 
     // We also need one trigger above each space between two horizontally adjacent nodes
     val topLevelNodeIdPairs = topLevelNodeIds.windowed(2)

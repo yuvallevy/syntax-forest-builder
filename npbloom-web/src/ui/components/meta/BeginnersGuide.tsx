@@ -65,10 +65,10 @@ const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
     else if (currentStepIndex === 1 && tree.hasNodes && tree.nodesAsArray[0].label.length > 0) setCurrentStepIndex(2);
     else if (currentStepIndex === 2 && tree.nodeCount >= 2) setCurrentStepIndex(3);
     else if (currentStepIndex === 3 && tree.anyNodes(
-      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode))
+      node => node.label.length > 0 && node instanceof UnpositionedBranchingNode))
       setCurrentStepIndex(4);
     else if (currentStepIndex === 4 && tree.anyNodes(
-      (_, node) => node.label.length > 0 && node instanceof UnpositionedBranchingNode && node.childrenAsArray.length >= 2))
+      node => node.label.length > 0 && node instanceof UnpositionedBranchingNode && node.childrenAsArray.length >= 2))
       setCurrentStepIndex(5);
     else if (currentStepIndex === 5 && tree.isComplete) setCurrentStepIndex(6);
     else if (currentStepIndex === 6 && plotState !== previousPlotState.current) onComplete();

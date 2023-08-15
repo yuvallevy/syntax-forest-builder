@@ -8,10 +8,10 @@ import content.IdMap
 import content.NodeIndicatorInPlot
 
 @JsExport
-data class UnpositionedPlot internal constructor(internal val trees: IdMap<UnpositionedTree> = emptyMap()) {
+data class UnpositionedPlot internal constructor(val trees: IdMap<UnpositionedTree> = IdMap()) {
     val isEmpty get() = trees.isEmpty()
 
-    val treesAsArray get() = trees.values.toTypedArray()
+    val treesAsArray get() = trees.toTypedArray()
 
     val treeCount get() = trees.size
 
@@ -22,12 +22,11 @@ data class UnpositionedPlot internal constructor(internal val trees: IdMap<Unpos
     internal operator fun contains(nodeIndicator: NodeIndicatorInPlot) =
         nodeIndicator.treeId in this && nodeIndicator.nodeId in tree(nodeIndicator.treeId)
 
-    internal fun setTree(treeId: Id, tree: UnpositionedTree) = copy(trees = trees + (treeId to tree))
+    internal fun setTree(tree: UnpositionedTree) = copy(trees = trees + tree)
 
     internal fun removeTree(treeId: Id) = copy(trees = trees - treeId)
 
-    fun <T> mapTrees(transformFunc: (treeId: Id, tree: UnpositionedTree) -> T) =
-        trees.map { (treeId, tree) -> transformFunc(treeId, tree) }.toTypedArray()
+    fun <T> mapTrees(transformFunc: (tree: UnpositionedTree) -> T) = trees.map(transformFunc)
 
     /**
      * Returns a list of tree and node IDs referring to the parents of the given nodes.
@@ -65,17 +64,17 @@ data class UnpositionedPlot internal constructor(internal val trees: IdMap<Unpos
         copy(
             trees = trees + groupNodeIdsByTree(nodeIndicators).mapValues { (treeId, nodeIds) ->
                 trees[treeId]!!.transformNodes(nodeIds, transformFunc)
-            }
+            }.values
         )
 
     /**
      * Deletes the nodes with the given indicators from the given plot.
      */
-    internal fun deleteNodes(nodeIndicators: Set<NodeIndicatorInPlot>): UnpositionedPlot =
+    internal fun deleteNodes(nodeIndicators: Set<NodeIndicatorInPlot>) =
         copy(
             trees = trees + groupNodeIdsByTree(nodeIndicators).mapValues { (treeId, nodeIds) ->
                 trees[treeId]!!.deleteNodes(nodeIds)
-            }
+            }.values
         )
 }
 

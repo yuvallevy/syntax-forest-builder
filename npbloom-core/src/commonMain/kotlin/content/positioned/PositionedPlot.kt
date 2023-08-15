@@ -13,20 +13,16 @@ data class PositionedPlot(val trees: IdMap<PositionedTree>) {
 
     operator fun contains(treeId: Id) = treeId in trees
 
-    fun <T> mapTrees(transformFunc: (treeId: Id, tree: PositionedTree) -> T) =
-        trees.map { (treeId, tree) -> transformFunc(treeId, tree) }.toTypedArray()
+    fun <T> mapTrees(transformFunc: (tree: PositionedTree) -> T) = trees.map(transformFunc)
 
     /**
      * Returns a set of node indicators referring to nodes matching the given predicate.
      */
-    private fun filterNodeIndicatorsAsList(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
-        trees.flatMap { (treeId, tree) ->
-            tree.filterNodes { predicate(tree, it) }.keys.map { NodeIndicatorInPlot(treeId, it) }
+    fun filterNodeIndicatorsAsArray(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
+        trees.flatMap { tree ->
+            tree.filterNodes { predicate(tree, it) }.ids.map { NodeIndicatorInPlot(tree.id, it) }
         }
 
     internal fun filterNodeIndicators(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
-        filterNodeIndicatorsAsList(predicate).toSet()
-
-    fun filterNodeIndicatorsAsArray(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
-        filterNodeIndicatorsAsList(predicate).toTypedArray()
+        filterNodeIndicatorsAsArray(predicate).toSet()
 }

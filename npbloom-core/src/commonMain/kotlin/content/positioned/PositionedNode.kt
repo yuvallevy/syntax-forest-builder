@@ -14,16 +14,21 @@ typealias Width = Double
 sealed interface PositionedNode : NodeCommon, WithPositionInTree
 
 @JsExport
-data class PositionedBranchingNode internal constructor(
+data class PositionedBranchingNode(
+    override val id: Id,
     override val label: NodeLabel,
     override val position: CoordsInTree,
-    internal val children: Set<Id>,
+    internal val children: Set<Id> = emptySet(),
 ) : PositionedNode {
     val childrenAsArray = children.toTypedArray()
+
+    fun withChildrenFromArray(children: Array<Id>) =
+        copy(id = id, label = label, position = position, children = children.toSet())
 }
 
 @JsExport
-data class PositionedTerminalNode internal constructor(
+data class PositionedTerminalNode(
+    override val id: Id,
     override val label: NodeLabel,
     override val position: CoordsInTree,
     val slice: StringSlice,
@@ -31,7 +36,8 @@ data class PositionedTerminalNode internal constructor(
 ) : PositionedNode
 
 @JsExport
-data class PositionedStrandedNode internal constructor(
+data class PositionedStrandedNode(
+    override val id: Id,
     override val label: NodeLabel,
     override val position: CoordsInTree,
 ) : PositionedNode

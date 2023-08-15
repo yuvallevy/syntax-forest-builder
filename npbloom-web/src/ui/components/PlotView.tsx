@@ -128,10 +128,10 @@ const PlotView: React.FC = () => {
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
     >
-      {plot.mapTrees((treeId, tree) =>
+      {plot.mapTrees(tree =>
         <TreeView
-          key={`tree-${treeId}`}
-          treeId={treeId}
+          key={`tree-${tree.id}`}
+          treeId={tree.id}
           tree={tree}
           nodeDragOffset={mouseInteractionMode === 'draggingNodes' ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}
@@ -144,11 +144,11 @@ const PlotView: React.FC = () => {
         height={selectionBoxBottomRight.clientY - selectionBoxTopLeft.clientY}
       />}
     </svg>
-    {plot.mapTrees((treeId, tree) =>
+    {plot.mapTrees(tree =>
       <SentenceView
-        key={`sentence-${treeId}`}
+        key={`sentence-${tree.id}`}
         tree={tree}
-        treeId={treeId}
+        treeId={tree.id}
         className={selectionBoxTopLeft && selectionBoxBottomRight ? 'box-selecting' : undefined}
       />)}
     {editedNodeIndicator && <LabelNodeEditor

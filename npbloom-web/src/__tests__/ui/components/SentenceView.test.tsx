@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import SentenceView from '../../../ui/components/SentenceView';
-import { CoordsInPlot, idMap, PositionedTree } from 'npbloom-core';
+import { CoordsInPlot, IdMap, PositionedTree } from 'npbloom-core';
 
 describe('sentence rendering', () => {
   const tree = new PositionedTree(
+    'IOVaVs',
     'Noun verb phrases.',
-    idMap({}),
+    IdMap.of([]),
     new CoordsInPlot(-100, 20),
     123,
   );
