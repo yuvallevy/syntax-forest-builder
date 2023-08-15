@@ -35,12 +35,13 @@ data class UnpositionedTree(
      * This is a bad metric because a tree can have a single undominated node without being complete.
      * TODO: Make this smarter
      */
-    val isComplete: Boolean get() {
-        val allChildIds = nodes.flatMap { if (it is UnpositionedBranchingNode) it.children else emptySet() }
-            .toSet()
-        val topLevelNodeIds = (nodeIds - allChildIds).toList()
-        return topLevelNodeIds.singleOrNull()?.let { node(it).label.isNotEmpty() } ?: false
-    }
+    val isComplete: Boolean
+        get() {
+            val allChildIds = nodes.flatMap { if (it is UnpositionedBranchingNode) it.children else emptySet() }
+                .toSet()
+            val topLevelNodeIds = (nodeIds - allChildIds).toList()
+            return topLevelNodeIds.singleOrNull()?.let { node(it).label.isNotEmpty() } ?: false
+        }
 
     /**
      * Inserts the given node into the tree, assigning it the given ID.
@@ -85,11 +86,8 @@ data class UnpositionedTree(
             val treeWithoutExistingConnections =
                 transformAllNodes { nodes.unassignAsChildren(adoptedNodeIds, it) }
             treeWithoutExistingConnections.transformNode(adoptingNodeId) {
-                UnpositionedBranchingNode(
-                    id = it.id,
-                    label = it.label,
-                    offset = TreeCoordsOffset.ZERO,
-                    children = (if (it is UnpositionedBranchingNode) it.children else emptySet()) + adoptedNodeIds
+                UnpositionedBranchingNode(it.id, it.label, TreeCoordsOffset.ZERO,
+                    (if (it is UnpositionedBranchingNode) it.children else emptySet()) + adoptedNodeIds
                 )
             }
         }

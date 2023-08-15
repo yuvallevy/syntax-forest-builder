@@ -47,12 +47,8 @@ class UnpositionedTreeTest {
             UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "stranded")),
             UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            UnpositionedFormerlyTerminalNode("stranded", 
-                "VP",
-                TreeCoordsOffset(2.0, -10.0),
-                StringSlice(5, 14),
-                true
-            ),
+            UnpositionedFormerlyTerminalNode("stranded", "VP", TreeCoordsOffset(2.0, -10.0), StringSlice(5, 14),
+                true),
             UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
             UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14)),
         ),
@@ -105,7 +101,10 @@ class UnpositionedTreeTest {
 
     @Test
     fun nodeCountZero() =
-        assertEquals(0, UnpositionedTree(id = "L18", sentence = "", nodes = EntitySet(), offset = PlotCoordsOffset.ZERO).nodeCount)
+        assertEquals(
+            0,
+            UnpositionedTree(id = "L18", sentence = "", nodes = EntitySet(), offset = PlotCoordsOffset.ZERO).nodeCount
+        )
 
     @Test
     fun nodeCountNonzero() =
@@ -117,7 +116,14 @@ class UnpositionedTreeTest {
 
     @Test
     fun hasNodesFalse() =
-        assertFalse(UnpositionedTree(id = "zif", sentence = "", nodes = EntitySet(), offset = PlotCoordsOffset.ZERO).hasNodes)
+        assertFalse(
+            UnpositionedTree(
+                id = "zif",
+                sentence = "",
+                nodes = EntitySet(),
+                offset = PlotCoordsOffset.ZERO
+            ).hasNodes
+        )
 
     @Test
     fun nodeById() =
@@ -425,11 +431,8 @@ class UnpositionedTreeTest {
                 id = "cQotq75p",
                 sentence = "Noun verbed adverbly.",
                 nodes = EntitySet(
-                    UnpositionedBranchingNode("top", 
-                        "S",
-                        TreeCoordsOffset(0.0, 5.0),
-                        setOf("branch1", "shapeshifter")
-                    ),
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0),
+                        setOf("branch1", "shapeshifter")),
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedBranchingNode("shapeshifter", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
@@ -470,11 +473,8 @@ class UnpositionedTreeTest {
                     UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "branch2")),
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
-                    UnpositionedBranchingNode("branch2", 
-                        "VP",
-                        TreeCoordsOffset.ZERO,
-                        setOf("term2", "term3", "term4")
-                    ),
+                    UnpositionedBranchingNode("branch2", "VP", TreeCoordsOffset.ZERO,
+                        setOf("term2", "term3", "term4")),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
                     UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
                     UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
@@ -491,11 +491,8 @@ class UnpositionedTreeTest {
                 id = "cQotq75p",
                 sentence = "Noun verbed adverbly.",
                 nodes = EntitySet(
-                    UnpositionedBranchingNode("top", 
-                        "S",
-                        TreeCoordsOffset(0.0, 5.0),
-                        setOf("branch1", "shapeshifter")
-                    ),
+                    UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0),
+                        setOf("branch1", "shapeshifter")),
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedBranchingNode("shapeshifter", "VP", TreeCoordsOffset.ZERO, setOf("term2", "term3")),
@@ -551,9 +548,9 @@ class UnpositionedTreeTest {
                 sentence = "Noun verbed.",
                 nodes = EntitySet(
                     UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term2")),
-                    UnpositionedFormerlyBranchingNode("branch1", 
-                        "NP", TreeCoordsOffset.ZERO, EntitySet(
-                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
+                    UnpositionedFormerlyBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO,
+                        EntitySet(
+                            UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false)
                         )
                     ),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
@@ -571,8 +568,8 @@ class UnpositionedTreeTest {
                 id = "ia9iV",
                 sentence = "Noun verbed.",
                 nodes = EntitySet(
-                    UnpositionedFormerlyBranchingNode("top", 
-                        "S", TreeCoordsOffset(0.0, 5.0), EntitySet(
+                    UnpositionedFormerlyBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0),
+                        EntitySet(
                             UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                             UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
@@ -695,8 +692,8 @@ class UnpositionedTreeTest {
                 id = "ia9iV",
                 sentence = "Noun verbed.",
                 nodes = EntitySet(
-                    UnpositionedFormerlyBranchingNode("branch1", 
-                        "NP", TreeCoordsOffset.ZERO, EntitySet(
+                    UnpositionedFormerlyBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO,
+                        EntitySet(
                             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
@@ -715,8 +712,8 @@ class UnpositionedTreeTest {
                 sentence = "Noun verbed.",
                 nodes = EntitySet(
                     UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                    UnpositionedFormerlyBranchingNode("branch1", 
-                        "NP", TreeCoordsOffset.ZERO, EntitySet(
+                    UnpositionedFormerlyBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO,
+                        EntitySet(
                             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                         )
                     ),
@@ -733,8 +730,8 @@ class UnpositionedTreeTest {
                 id = "ia9iV",
                 sentence = "Noun verbed.",
                 nodes = EntitySet(
-                    UnpositionedFormerlyBranchingNode("top", 
-                        "S", TreeCoordsOffset(0.0, 5.0), EntitySet(
+                    UnpositionedFormerlyBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0),
+                        EntitySet(
                             UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                             UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),

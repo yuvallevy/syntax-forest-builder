@@ -44,7 +44,10 @@ internal fun EntitySet<UnpositionedNode>.toStrandedNode(node: UnpositionedNode):
         else -> UnpositionedPlainStrandedNode(node.id, node.label, node.offset)
     }
 
-internal fun EntitySet<UnpositionedNode>.unassignAsChildren(nodeIds: Set<Id>, node: UnpositionedNode): UnpositionedNode {
+internal fun EntitySet<UnpositionedNode>.unassignAsChildren(
+    nodeIds: Set<Id>,
+    node: UnpositionedNode
+): UnpositionedNode {
     if (node !is UnpositionedBranchingNode) return node
 
     val filteredChildren = node.children - nodeIds

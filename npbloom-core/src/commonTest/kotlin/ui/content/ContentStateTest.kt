@@ -40,13 +40,8 @@ class ContentStateTest {
                         sentence = "syntax is fun",
                         nodes = EntitySet(
                             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 6)),
-                            UnpositionedTerminalNode(
-                                "b",
-                                "VP",
-                                TreeCoordsOffset(1.0, 10.0),
-                                StringSlice(7, 13),
-                                triangle = true
-                            ),
+                            UnpositionedTerminalNode("b", "VP", TreeCoordsOffset(1.0, 10.0), StringSlice(7, 13),
+                                triangle = true),
                         ),
                         offset = PlotCoordsOffset(20.0, 10.0),
                     ),
@@ -130,20 +125,10 @@ class ContentStateTest {
                                 id = "aa",
                                 sentence = "syntax is fun",
                                 nodes = EntitySet(
-                                    UnpositionedTerminalNode(
-                                        "a",
-                                        "N",
-                                        TreeCoordsOffset(0.0, 0.0),
-                                        StringSlice(0, 6),
-                                        false
-                                    ),
-                                    UnpositionedTerminalNode(
-                                        "b",
-                                        "VP",
-                                        TreeCoordsOffset(1.0, 10.0),
-                                        StringSlice(7, 13),
-                                        true
-                                    ),
+                                    UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 6),
+                                        false),
+                                    UnpositionedTerminalNode("b", "VP", TreeCoordsOffset(1.0, 10.0),
+                                        StringSlice(7, 13), true),
                                     UnpositionedBranchingNode("c", "NP", TreeCoordsOffset(0.0, 0.0), setOf("a")),
                                 ),
                                 offset = PlotCoordsOffset(20.0, 10.0),

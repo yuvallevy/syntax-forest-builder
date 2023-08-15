@@ -11,6 +11,7 @@ import content.unpositioned.UnpositionedPlot
 
 @JsExport
 sealed interface SelectionInPlot
+
 @JsExport
 data class NodeSelectionInPlot internal constructor(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) :
     SelectionInPlot {
@@ -20,11 +21,13 @@ data class NodeSelectionInPlot internal constructor(val nodeIndicators: Set<Node
         fun fromArray(nodeIndicatorArray: Array<NodeIndicatorInPlot>) = NodeSelectionInPlot(nodeIndicatorArray.toSet())
     }
 }
+
 @JsExport
 data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : SelectionInPlot
 
 @JsExport
 enum class NodeSelectionAction { Select, Adopt, Disown }
+
 @JsExport
 enum class NodeSelectionMode { SetSelection, AddToSelection }
 

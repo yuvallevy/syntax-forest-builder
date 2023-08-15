@@ -3,8 +3,8 @@
 package content.unpositioned
 
 import NoSuchTreeException
-import content.Id
 import content.EntitySet
+import content.Id
 import content.NodeIndicatorInPlot
 
 @JsExport

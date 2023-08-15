@@ -112,15 +112,13 @@ class SelectionTest {
     @Test
     fun pruneSelectionAfterNothingDeleted() =
         assertEquals(
-            NodeSelectionInPlot(setOf(
-                NodeIndicatorInPlot("YC38BV4q", "kgzt"),
-                NodeIndicatorInPlot("YC38BV4q", "aF3BLs"),
-            )),
+            NodeSelectionInPlot(
+                setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"), NodeIndicatorInPlot("YC38BV4q", "aF3BLs"))
+            ),
             pruneSelection(
-                NodeSelectionInPlot(setOf(
-                    NodeIndicatorInPlot("YC38BV4q", "kgzt"),
-                    NodeIndicatorInPlot("YC38BV4q", "aF3BLs"),
-                )),
+                NodeSelectionInPlot(
+                    setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"), NodeIndicatorInPlot("YC38BV4q", "aF3BLs"))
+                ),
                 plot
             )
         )
@@ -128,14 +126,13 @@ class SelectionTest {
     @Test
     fun pruneSelectionAfterOneNodeDeleted() =
         assertEquals(
-            NodeSelectionInPlot(setOf(
-                NodeIndicatorInPlot("YC38BV4q", "kgzt"),
-            )),
+            NodeSelectionInPlot(
+                setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"))
+            ),
             pruneSelection(
-                NodeSelectionInPlot(setOf(
-                    NodeIndicatorInPlot("YC38BV4q", "kgzt"),
-                    NodeIndicatorInPlot("YC38BV4q", "O5Jowkc"),
-                )),
+                NodeSelectionInPlot(
+                    setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"), NodeIndicatorInPlot("YC38BV4q", "O5Jowkc"))
+                ),
                 plot
             )
         )
@@ -145,10 +142,9 @@ class SelectionTest {
         assertEquals(
             NodeSelectionInPlot(emptySet()),
             pruneSelection(
-                NodeSelectionInPlot(setOf(
-                    NodeIndicatorInPlot("YC38BV4q", "c97Tes"),
-                    NodeIndicatorInPlot("YC38BV4q", "O5Jowkc"),
-                )),
+                NodeSelectionInPlot(
+                    setOf(NodeIndicatorInPlot("YC38BV4q", "c97Tes"), NodeIndicatorInPlot("YC38BV4q", "O5Jowkc"))
+                ),
                 plot
             )
         )

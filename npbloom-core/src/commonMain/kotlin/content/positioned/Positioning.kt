@@ -2,8 +2,8 @@
 
 package content.positioned
 
-import content.Id
 import content.EntitySet
+import content.Id
 import content.Sentence
 import content.StringSlice
 import content.unpositioned.*
@@ -43,7 +43,11 @@ internal fun determineBranchingNodePosition(
     )
 }
 
-internal fun determineTerminalNodePosition(strWidthFunc: StrWidthFunc, sentence: Sentence, node: UnpositionedTerminalNode): CoordsInTree {
+internal fun determineTerminalNodePosition(
+    strWidthFunc: StrWidthFunc,
+    sentence: Sentence,
+    node: UnpositionedTerminalNode
+): CoordsInTree {
     // Terminal nodes are positioned as follows:
     // X - exact center of the assigned slice, as measured in pixels
     // Y - a little above the slice if it is not a triangle node; a larger distance above the slice if it is
@@ -117,11 +121,13 @@ internal fun applyNodePosition(
         id = node.id, label = node.label, children = node.children,
         position = determineBranchingNodePosition(alreadyPositionedNodes, node),
     )
+
     is UnpositionedTerminalNode -> PositionedTerminalNode(
         id = node.id, label = node.label, slice = node.slice,
         triangle = determineTerminalNodeTriangleRange(strWidthFunc, sentence, node),
         position = determineTerminalNodePosition(strWidthFunc, sentence, node),
     )
+
     is UnpositionedStrandedNode -> PositionedStrandedNode(
         id = node.id, label = node.label,
         position = determineStrandedNodePosition(strWidthFunc, sentence, node),
@@ -164,13 +170,14 @@ internal tailrec fun applyNodePositions(
 /**
  * Returns a copy of the given tree with positions for all nodes.
  */
-internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree = PositionedTree(
-    id = tree.id,
-    sentence = tree.sentence,
-    nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
-    position = CoordsInPlot(tree.offset.dPlotX, tree.offset.dPlotY),
-    width = strWidthFunc(tree.sentence),
-)
+internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: UnpositionedTree): PositionedTree =
+    PositionedTree(
+        id = tree.id,
+        sentence = tree.sentence,
+        nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
+        position = CoordsInPlot(tree.offset.dPlotX, tree.offset.dPlotY),
+        width = strWidthFunc(tree.sentence),
+    )
 
 /**
  * Returns a copy of the given plot with positions for all trees and nodes.

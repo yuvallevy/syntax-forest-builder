@@ -112,9 +112,8 @@ class EntitySetTest {
             SomethingWithId("q50jebq2", 42, setOf("hgiew")),
             SomethingWithId("soq4s", 281, setOf("nmutua", "eciojer")),
         ),
-        entitySet.mapToNewEntitySet { it.copy(
-            someNumber = 1024 - it.someNumber,
-            someWords = it.someWords.map(String::reversed).toSet(),
-        ) }
+        entitySet.mapToNewEntitySet {
+            it.copy(someNumber = 1024 - it.someNumber, someWords = it.someWords.map(String::reversed).toSet())
+        }
     )
 }

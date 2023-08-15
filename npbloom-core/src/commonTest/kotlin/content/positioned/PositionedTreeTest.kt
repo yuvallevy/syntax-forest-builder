@@ -14,7 +14,8 @@ class PositionedTreeTest {
             PositionedTerminalNode("c", "N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
             PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
             PositionedTerminalNode("e", "V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
-            PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+            PositionedTerminalNode( "f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24),
+                TreeXRange(72.0, 104.0)),
         ),
         position = CoordsInPlot(50.0, -32.0),
         width = 104.0,
@@ -28,7 +29,8 @@ class PositionedTreeTest {
             PositionedTerminalNode("c", "N", CoordsInTree(18.0, -2.0), StringSlice(0, 4)),
             PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
             PositionedTerminalNode("e", "V", CoordsInTree(57.0, -2.0), StringSlice(5, 10)),
-            PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+            PositionedTerminalNode( "f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24),
+                TreeXRange(72.0, 104.0)),
         ),
         position = CoordsInPlot(50.0, -32.0),
         width = 104.0,
@@ -49,7 +51,8 @@ class PositionedTreeTest {
     fun filterByTrianglehoodPredicate() =
         assertEquals(
             EntitySet<PositionedNode>(
-                PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0))
+                PositionedTerminalNode( "f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24),
+                    TreeXRange(72.0, 104.0))
             ),
             tree.filterNodes { it is PositionedTerminalNode && it.triangle != null }
         )
@@ -60,7 +63,8 @@ class PositionedTreeTest {
             EntitySet(
                 PositionedBranchingNode("b", "NP", CoordsInTree(18.0, -60.0), setOf("c")),
                 PositionedBranchingNode("d", "VP", CoordsInTree(89.25, -60.0), setOf("e", "f")),
-                PositionedTerminalNode("f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24), TreeXRange(72.0, 104.0)),
+                PositionedTerminalNode( "f", "AdvP", CoordsInTree(121.5, -30.0), StringSlice(11, 24),
+                    TreeXRange(72.0, 104.0)),
             ),
             tree.filterNodes { """^\w+P${'$'}""".toRegex() matches it.label }
         )

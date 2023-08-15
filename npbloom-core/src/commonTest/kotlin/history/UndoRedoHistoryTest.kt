@@ -16,17 +16,17 @@ class UndoRedoHistoryTest {
 
     private val undoRedoHistoryAfterTwoActions = initialUndoRedoHistory.copy(
         current = initialState.copy(numberValue = 19, stringValue = "alright cool!"),
-        undoStack = arrayOf(action2, action1)
+        undoStack = arrayOf(action2, action1),
     )
 
     private val undoRedoHistoryAfterUndoOnce = initialUndoRedoHistory.copy(
         current = initialState.copy(stringValue = "alright cool!"),
-        undoStack = arrayOf(action1)
-        , redoStack = arrayOf(action2)
+        undoStack = arrayOf(action1),
+        redoStack = arrayOf(action2),
     )
 
     private val undoRedoHistoryAfterUndoTwice = initialUndoRedoHistory.copy(
-        redoStack = arrayOf(action1, action2)
+        redoStack = arrayOf(action1, action2),
     )
 
     @Test

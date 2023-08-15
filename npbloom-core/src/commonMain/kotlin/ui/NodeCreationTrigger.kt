@@ -92,8 +92,8 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
     val unassignedSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
 
     // Find the targets for all of these triggers, i.e. where nodes can be added
-    val parentNodeCreationTargets: Set<NodeCreationTarget> = (topLevelNodeIds.map { listOf(it) } + topLevelNodeIdPairs)
-        .map { nodeIds ->
+    val parentNodeCreationTargets: Set<NodeCreationTarget> =
+        (topLevelNodeIds.map { listOf(it) } + topLevelNodeIdPairs).map { nodeIds ->
             BranchingNodeCreationTarget(
                 position = determineNaturalParentNodePosition(nodeIds.map { node(it).position }.toSet()),
                 childIds = nodeIds.toSet(),
@@ -117,18 +117,15 @@ fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Array<No
     getNodeCreationTargets(strWidthFunc).map { target ->
         val origin = target.position
         val topLeft = CoordsInTree(
-            target.position.treeX - MAX_TRIGGER_WIDTH / 2,
-            target.position.treeY - MAX_TRIGGER_PADDING_TOP
+            target.position.treeX - MAX_TRIGGER_WIDTH / 2, target.position.treeY - MAX_TRIGGER_PADDING_TOP
         )
         val bottomRight = CoordsInTree(
-            target.position.treeX + MAX_TRIGGER_WIDTH / 2,
-            target.position.treeY + MAX_TRIGGER_PADDING_BOTTOM
+            target.position.treeX + MAX_TRIGGER_WIDTH / 2, target.position.treeY + MAX_TRIGGER_PADDING_BOTTOM
         )
         when (target) {
             is BranchingNodeCreationTarget ->
                 BranchingNodeCreationTrigger(origin, topLeft, bottomRight, target.childIds, target.childPositions)
 
-            is TerminalNodeCreationTarget ->
-                TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice)
+            is TerminalNodeCreationTarget -> TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice)
         }
     }.toTypedArray()

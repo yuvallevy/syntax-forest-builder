@@ -2,8 +2,8 @@
 
 package content.positioned
 
-import content.Id
 import content.EntitySet
+import content.Id
 
 @JsExport
 fun isPositionedNodeTopLevel(nodes: EntitySet<PositionedNode>, nodeId: Id) =

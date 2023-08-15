@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class StringSliceTest() {
+class StringSliceTest {
     @Test
     fun isZeroLengthTrue() = assertTrue(StringSlice(5, 5).isZeroLength)
 

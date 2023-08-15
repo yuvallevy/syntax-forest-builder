@@ -13,10 +13,8 @@ class NodeCreationTriggerTest {
         sentence = "Alex baked cookies.",
         nodes = EntitySet(
             PositionedTerminalNode("aF3BLs", "V", CoordsInTree(54.0, -2.0), StringSlice(5, 10), null),
-            PositionedTerminalNode("X9M",
-                "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
-                TreeXRange(77.0, 125.0)
-            ),
+            PositionedTerminalNode( "X9M", "NP", CoordsInTree(101.0, -20.0), StringSlice(11, 18),
+                TreeXRange(77.0, 125.0)),
         ),
         position = CoordsInPlot(30.0, -10.0),
         width = 129.0,
