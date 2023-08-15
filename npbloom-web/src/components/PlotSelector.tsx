@@ -1,4 +1,4 @@
-import { PlotIndex } from '../../types';
+import { PlotIndex } from '../types';
 import { AddPlot, DeletePlot, SetActivePlotIndex } from 'npbloom-core';
 import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';

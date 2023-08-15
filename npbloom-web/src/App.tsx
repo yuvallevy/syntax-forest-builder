@@ -7,14 +7,14 @@ import {
   AddNodeBySelection, ChildNodeSide, DeleteSelectedNodes, generateNodeId, NodeSelectionInPlot, Redo, SelectChildNode,
   SelectParentNodes, StartEditing, StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
 } from 'npbloom-core';
-import PlotView from './ui/components/PlotView';
+import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import Toolbox from './ui/components/Toolbox';
-import AboutButton from './ui/components/meta/AboutButton';
-import PlotSelector from './ui/components/PlotSelector';
-import BeginnersGuide from './ui/components/meta/BeginnersGuide';
-import PlotPlaceholder from './ui/components/meta/PlotPlaceholder';
-import useUiState from './ui/useUiState';
+import Toolbox from './components/Toolbox';
+import AboutButton from './components/meta/AboutButton';
+import PlotSelector from './components/PlotSelector';
+import BeginnersGuide from './components/meta/BeginnersGuide';
+import PlotPlaceholder from './components/meta/PlotPlaceholder';
+import useUiState from './useUiState';
 
 const App = () => {
   const { state, dispatch } = useUiState();

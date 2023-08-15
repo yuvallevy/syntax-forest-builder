@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import SentenceView from '../../../ui/components/SentenceView';
+import SentenceView from '../../components/SentenceView';
 import { CoordsInPlot, EntitySet, PositionedTree } from 'npbloom-core';
 
 describe('sentence rendering', () => {

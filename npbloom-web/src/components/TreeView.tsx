@@ -6,7 +6,7 @@ import {
   NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
   PositionedTree, SelectionInPlot, SetSelection, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
-import { Id } from '../../types';
+import { Id } from '../types';
 import './TreeView.scss';
 import strWidth from '../strWidth';
 import useUiState from '../useUiState';

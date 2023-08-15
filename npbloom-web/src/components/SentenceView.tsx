@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Id, Sentence } from '../../types';
+import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree, SelectionInPlot,
   SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import TreeView from '../../../ui/components/TreeView';
+import TreeView from '../../components/TreeView';
 import {
   CoordsInPlot, CoordsInTree, EntitySet, PositionedBranchingNode, PositionedTerminalNode, PositionedTree, StringSlice,
   TreeXRange

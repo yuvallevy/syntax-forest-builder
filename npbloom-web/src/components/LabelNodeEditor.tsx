@@ -1,7 +1,7 @@
-import { Id, NodeLabel } from '../../types';
+import { Id, NodeLabel } from '../types';
 import {
-  AddNodeBySelection, calculateNodeCenterOnPlot, CoordsInClient, generateNodeId, coordsInPlotToCoordsInClient, PositionedTree,
-  SelectParentNodes, SetEditedNodeLabel, StopEditing
+  AddNodeBySelection, calculateNodeCenterOnPlot, CoordsInClient, generateNodeId, coordsInPlotToCoordsInClient,
+  PositionedTree, SelectParentNodes, SetEditedNodeLabel, StopEditing
 } from 'npbloom-core';
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
