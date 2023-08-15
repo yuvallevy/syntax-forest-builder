@@ -6,9 +6,6 @@ on:
 jobs:
   build-core:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./npbloom-core
 
     steps:
     - uses: actions/checkout@v3
@@ -26,25 +23,24 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: test
+        build-root-directory: npbloom-core
 
     - name: Build core
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+        build-root-directory: npbloom-core
 
     - name: Upload core build
       uses: actions/upload-artifact@v3.1.2
       with:
         name: core-build-artifact
-        path: dist/js/productionLibrary
+        path: npbloom-core/dist/js/productionLibrary
         retention-days: 7
 
   build-web:
     needs: build-core
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./npbloom-web
 
     steps:
     - uses: actions/checkout@v3
@@ -56,21 +52,23 @@ jobs:
 
     - name: Install
       run: npm install
+      working-directory: npbloom-web
 
     - name: Download core build
       uses: actions/download-artifact@v3.0.2
       with:
         name: core-build-artifact
-        path: node_modules/npbloom-core
+        path: npbloom-web/node_modules/npbloom-core
 
     - name: Build web
       run: npm run build
+      working-directory: npbloom-web
 
     - name: Upload web build
       uses: actions/upload-artifact@v3.1.2
       with:
         name: web-build-artifact
-        path: dist
+        path: npbloom-web/dist
         retention-days: 7
 
   deploy:
