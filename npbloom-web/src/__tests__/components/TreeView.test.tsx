@@ -44,14 +44,6 @@ describe('tree rendering', () => {
     ).asFragment()).toMatchSnapshot();
   });
 
-  it.skip('renders a tree with position-assigned nodes where some are selected', () => {
-    expect(render(
-      <svg>
-        <TreeView treeId="tree1" tree={tree} selectedNodeIds={['b', 'f']} />
-      </svg>
-    ).asFragment()).toMatchSnapshot();
-  });
-
   it('renders dominated unlabeled nodes without text or gap', () => {
     expect(render(
       <svg>
