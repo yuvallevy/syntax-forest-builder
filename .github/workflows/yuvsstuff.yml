@@ -4,8 +4,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-core:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./npbloom-core
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@ccb4328a959376b642e027874838f60f8e596de3
+
+    - name: Test core
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: test
+
+    - name: Build core
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
+
+    - name: Upload core build
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: core-build-artifact
+        path: dist/js/productionLibrary
+        retention-days: 7
+
+  build-web:
+    needs: build-core
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./npbloom-web
 
     steps:
     - uses: actions/checkout@v3
@@ -15,28 +54,35 @@ jobs:
       with:
         node-version: 18.x
 
-    - name: Build
-      run: |
-        npm install
-        npm run build
+    - name: Install
+      run: npm install
 
-    - name: Upload a Build Artifact
+    - name: Download core build
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: core-build-artifact
+        path: node_modules/npbloom-core
+
+    - name: Build web
+      run: npm run build
+
+    - name: Upload web build
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: build-artifact
+        name: web-build-artifact
         path: dist
         retention-days: 7
 
   deploy:
-    needs: build
+    needs: build-web
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2.1.1
+    - name: Download web build
+      uses: actions/download-artifact@v3.0.2
       with:
-        name: build-artifact
-        path: dist
+        name: web-build-artifact
+        path: npbloom-web-dist
 
     - name: Deploy over FTP
       uses: sand4rt/ftp-deployer@v1.7
@@ -47,5 +93,5 @@ jobs:
         username: ${{ secrets.YS_FTP_USERNAME }}
         password: ${{ secrets.YS_FTP_PASSWORD }}
         remote_folder: ${{ secrets.YS_REMOTE_FOLDER }}
-        local_folder: dist
+        local_folder: npbloom-web-dist
         cleanup: true
