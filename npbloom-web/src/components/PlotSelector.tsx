@@ -23,7 +23,7 @@ const PlotSelector: React.FC = () => {
           return <div className="PlotSelector--tab-container" key={index}>
             <Tabs.Tab
               value={index.toString()}
-              icon={<IconComponent size="0.8rem" />}
+              icon={<IconComponent size={13} />}
               className={index === activePlotIndex ? 'PlotSelector--tab-button--selected' : ''}
             >
               Plot {index + 1}
@@ -46,7 +46,7 @@ const PlotSelector: React.FC = () => {
           <Tabs.Tab
             value="newPlot"
             onClick={addPlot}
-            icon={<IconFilePlus size="0.8rem" />}
+            icon={<IconFilePlus size={13} />}
           />
         </Tooltip>
       </Tabs.List>
