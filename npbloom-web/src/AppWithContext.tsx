@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
 import { initialUiState, UiAction, uiReducer as uiReducerWithoutStrWidth, UiState } from 'npbloom-core';
-import strWidth from './strWidth';
+import strWidth from './strWidth/strWidthByChars';
 import UiStateContext from './UiStateContext';
 import App from './App';
 

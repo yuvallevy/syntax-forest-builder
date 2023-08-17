@@ -8,7 +8,7 @@ import {
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
-import strWidth from '../strWidth';
+import strWidth from '../strWidth/strWidthByChars';
 import useUiState from '../useUiState';
 
 const NODE_LEVEL_SPACING = 20;

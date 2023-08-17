@@ -9,7 +9,7 @@ import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import './PlotView.scss';
-import strWidth from '../strWidth';
+import strWidth from '../strWidth/strWidthByChars';
 import useUiState from '../useUiState';
 
 const PRIMARY_MOUSE_BUTTON = 1;
