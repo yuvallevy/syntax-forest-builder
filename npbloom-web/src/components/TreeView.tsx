@@ -4,7 +4,7 @@ import {
   BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySet, generateNodeId,
   getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
   NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
-  PositionedTree, SelectionInPlot, SetSelection, StartEditing, TerminalNodeCreationTrigger
+  PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -177,7 +177,11 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   return <g id={`tree-${treeId}`}
             style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
-    {getNodeCreationTriggers(tree, strWidth).map(trigger =>
+    {getNodeCreationTriggers(
+      tree,
+      strWidth,
+      state.selection instanceof SliceSelectionInPlot ? state.selection.slice : null,
+    ).map(trigger =>
       <NodeCreationTriggerClickZone
         trigger={trigger}
         key={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIdsAsArray.join()

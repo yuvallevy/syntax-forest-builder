@@ -6,6 +6,7 @@ import content.Id
 import content.Sentence
 import content.StringSlice
 import content.positioned.*
+import content.slicesOverlap
 
 private const val MAX_TRIGGER_WIDTH = 32.0
 private const val MAX_TRIGGER_PADDING_TOP = 28.0
@@ -81,7 +82,10 @@ data class TerminalNodeCreationTrigger(
 private fun getWordSlices(sentence: Sentence): Set<StringSlice> =
     wordRegex.findAll(sentence).map { StringSlice(it.range.first, it.range.last + 1) }.toSet()
 
-private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): Set<NodeCreationTarget> {
+private fun PositionedTree.getNodeCreationTargets(
+    strWidthFunc: StrWidthFunc,
+    selectedSlice: StringSlice?,
+): Set<NodeCreationTarget> {
     // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
     val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().ids).toList()
 
@@ -89,7 +93,12 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
     val topLevelNodeIdPairs = topLevelNodeIds.windowed(2)
 
     // Finally, we need one trigger for each word that isn't already assigned to a terminal node
-    val unassignedSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
+    // and isn't part of the selection
+    val unassignedWordSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
+    val unassignedSlices =
+        if (selectedSlice != null && !selectedSlice.isZeroLength && isSliceUnassigned(selectedSlice))
+            unassignedWordSlices.filterNot { slicesOverlap(it, selectedSlice) } + selectedSlice
+        else unassignedWordSlices
 
     // Find the targets for all of these triggers, i.e. where nodes can be added
     val parentNodeCreationTargets: Set<NodeCreationTarget> =
@@ -113,8 +122,11 @@ private fun PositionedTree.getNodeCreationTargets(strWidthFunc: StrWidthFunc): S
 }
 
 @JsExport
-fun PositionedTree.getNodeCreationTriggers(strWidthFunc: StrWidthFunc): Array<NodeCreationTrigger> =
-    getNodeCreationTargets(strWidthFunc).map { target ->
+fun PositionedTree.getNodeCreationTriggers(
+    strWidthFunc: StrWidthFunc,
+    selectedSlice: StringSlice?,
+): Array<NodeCreationTrigger> =
+    getNodeCreationTargets(strWidthFunc, selectedSlice).map { target ->
         val origin = target.position
         val topLeft = CoordsInTree(
             target.position.treeX - MAX_TRIGGER_WIDTH / 2, target.position.treeY - MAX_TRIGGER_PADDING_TOP

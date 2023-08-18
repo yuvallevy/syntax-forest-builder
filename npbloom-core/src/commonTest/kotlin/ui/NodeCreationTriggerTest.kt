@@ -21,7 +21,7 @@ class NodeCreationTriggerTest {
     )
 
     @Test
-    fun getNodeCreationTriggers() =
+    fun getNodeCreationTriggersWithNoSelection() =
         assertContentEquals(
             arrayOf(
                 BranchingNodeCreationTrigger(
@@ -52,6 +52,41 @@ class NodeCreationTriggerTest {
                     slice = StringSlice(0, 4)
                 ),
             ),
-            positionedTree.getNodeCreationTriggers(::mockStrWidth)
+            positionedTree.getNodeCreationTriggers(::mockStrWidth, null)
+        )
+
+    @Test
+    fun getNodeCreationTriggersWithSliceSelection() =
+        assertContentEquals(
+            arrayOf(
+                BranchingNodeCreationTrigger(
+                    origin = CoordsInTree(54.0, -42.0),
+                    topLeft = CoordsInTree(38.0, -70.0),
+                    bottomRight = CoordsInTree(70.0, -22.0),
+                    childIds = setOf("aF3BLs"),
+                    childPositions = arrayOf(CoordsInTree(54.0, -2.0))
+                ),
+                BranchingNodeCreationTrigger(
+                    origin = CoordsInTree(101.0, -60.0),
+                    topLeft = CoordsInTree(85.0, -88.0),
+                    bottomRight = CoordsInTree(117.0, -40.0),
+                    childIds = setOf("X9M"),
+                    childPositions = arrayOf(CoordsInTree(101.0, -20.0))
+                ),
+                BranchingNodeCreationTrigger(
+                    origin = CoordsInTree(77.5, -60.0),
+                    topLeft = CoordsInTree(61.5, -88.0),
+                    bottomRight = CoordsInTree(93.5, -40.0),
+                    childIds = setOf("aF3BLs", "X9M"),
+                    childPositions = arrayOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(23.5, -20.0),
+                    topLeft = CoordsInTree(7.5, -48.0),
+                    bottomRight = CoordsInTree(39.5, 0.0),
+                    slice = StringSlice(2, 4)
+                ),
+            ),
+            positionedTree.getNodeCreationTriggers(::mockStrWidth, StringSlice(2, 4))
         )
 }
