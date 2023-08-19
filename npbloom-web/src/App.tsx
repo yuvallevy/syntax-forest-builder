@@ -89,6 +89,7 @@ const App = () => {
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}
     /> : activePlot.isEmpty && <PlotPlaceholder
+      showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
   </MantineProvider>;
