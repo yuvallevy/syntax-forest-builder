@@ -137,4 +137,31 @@ class NodeCreationTriggerTest {
             positionedTree.copy(nodes = EntitySet())
                 .getNodeCreationTriggers(::mockStrWidth, StringSlice(0, 10))
         )
+
+    @Test
+    fun getNodeCreationTriggersSliceSelectionIsWordAndSpace() =
+        assertContentEquals(
+            arrayOf(
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(15.5, -20.0),
+                    topLeft = CoordsInTree(-0.5, -48.0),
+                    bottomRight = CoordsInTree(31.5, 0.0),
+                    slice = StringSlice(0, 4)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(101.0, -20.0),
+                    topLeft = CoordsInTree(85.0, -48.0),
+                    bottomRight = CoordsInTree(117.0, 0.0),
+                    slice = StringSlice(11, 18)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(54.0, -20.0),
+                    topLeft = CoordsInTree(38.0, -48.0),
+                    bottomRight = CoordsInTree(70.0, 0.0),
+                    slice = StringSlice(5, 10)
+                ),
+            ),
+            positionedTree.copy(nodes = EntitySet())
+                .getNodeCreationTriggers(::mockStrWidth, StringSlice(4, 11)) // slice includes one space on each side
+        )
 }

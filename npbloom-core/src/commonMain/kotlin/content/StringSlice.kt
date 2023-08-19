@@ -9,6 +9,8 @@ typealias SliceEndExclusive = Int
 data class StringSlice(val start: SliceStart, val endExclusive: SliceEndExclusive) {
     val isZeroLength = start == endExclusive
 
+    fun contentInString(str: String) = str.slice(start until endExclusive)
+
     /**
      * Returns whether this slice overlaps with the given one.
      */
@@ -18,8 +20,7 @@ data class StringSlice(val start: SliceStart, val endExclusive: SliceEndExclusiv
     )
 
     /**
-     * Returns whether this slice of the given sentence covers more than one word.
+     * Returns whether this slice of the given string covers more than one word.
      */
-    infix fun crossesWordBoundaryIn(sentence: Sentence) =
-        ' ' in sentence.slice(start until endExclusive)
+    infix fun crossesWordBoundaryIn(str: String) = ' ' in contentInString(str)
 }

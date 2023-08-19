@@ -1,6 +1,7 @@
 package content
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -10,6 +11,9 @@ class StringSliceTest {
 
     @Test
     fun isZeroLengthFalse() = assertFalse(StringSlice(4, 9).isZeroLength)
+
+    @Test
+    fun contentInString() = assertEquals("a cat", StringSlice(9, 14).contentInString("There is a cat here"))
 
     @Test
     fun nonOverlappingSlices() = assertFalse(StringSlice(0, 6) overlapsWith StringSlice(8, 9))

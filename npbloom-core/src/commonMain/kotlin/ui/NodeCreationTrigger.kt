@@ -93,12 +93,18 @@ private fun PositionedTree.getNodeCreationTargets(
     // We also need one trigger above each space between two horizontally adjacent nodes
     val topLevelNodeIdPairs = topLevelNodeIds.windowed(2)
 
+    val selSliceTrimmed = selectedSlice?.contentInString(sentence)?.let { sliceContent ->
+        val whitespaceBefore = sliceContent.length - sliceContent.trimStart().length
+        val whitespaceAfter = sliceContent.length - sliceContent.trimEnd().length
+        StringSlice(selectedSlice.start + whitespaceBefore, selectedSlice.endExclusive - whitespaceAfter)
+    }
+
     // Finally, we need one trigger for each word that isn't already assigned to a terminal node
     // and isn't part of the selection
     val unassignedWordSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
     val unassignedSlices =
-        if (selectedSlice != null && !selectedSlice.isZeroLength && isSliceUnassigned(selectedSlice))
-            unassignedWordSlices.filterNot { it overlapsWith selectedSlice } + selectedSlice
+        if (selSliceTrimmed != null && !selSliceTrimmed.isZeroLength && isSliceUnassigned(selSliceTrimmed))
+            unassignedWordSlices.filterNot { it overlapsWith selSliceTrimmed } + selSliceTrimmed
         else unassignedWordSlices
 
     // Find the targets for all of these triggers, i.e. where nodes can be added
