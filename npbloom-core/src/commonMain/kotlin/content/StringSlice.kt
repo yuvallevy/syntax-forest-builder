@@ -23,4 +23,13 @@ data class StringSlice(val start: SliceStart, val endExclusive: SliceEndExclusiv
      * Returns whether this slice of the given string covers more than one word.
      */
     infix fun crossesWordBoundaryIn(str: String) = ' ' in contentInString(str)
+
+    /**
+     * Returns this slice with whitespace on both edges trimmed, using the given sentence.
+     */
+    fun trimSpacesForString(str: String) = contentInString(str).let { sliceContent ->
+        val whitespaceBefore = sliceContent.length - sliceContent.trimStart().length
+        val whitespaceAfter = sliceContent.length - sliceContent.trimEnd().length
+        StringSlice(start + whitespaceBefore, endExclusive - whitespaceAfter)
+    }
 }
