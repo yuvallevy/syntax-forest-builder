@@ -6,7 +6,6 @@ import content.Id
 import content.Sentence
 import content.StringSlice
 import content.positioned.*
-import content.slicesOverlap
 
 private const val MAX_TRIGGER_WIDTH = 32.0
 private const val MAX_TRIGGER_PADDING_TOP = 28.0
@@ -99,7 +98,7 @@ private fun PositionedTree.getNodeCreationTargets(
     val unassignedWordSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
     val unassignedSlices =
         if (selectedSlice != null && !selectedSlice.isZeroLength && isSliceUnassigned(selectedSlice))
-            unassignedWordSlices.filterNot { slicesOverlap(it, selectedSlice) } + selectedSlice
+            unassignedWordSlices.filterNot { it overlapsWith selectedSlice } + selectedSlice
         else unassignedWordSlices
 
     // Find the targets for all of these triggers, i.e. where nodes can be added
@@ -117,7 +116,7 @@ private fun PositionedTree.getNodeCreationTargets(
                 position = CoordsInTree(widthBeforeSlice + (sliceWidth / 2), -MAX_TRIGGER_PADDING_BOTTOM),
                 slice = slice,
                 triangle =
-                    if (' ' in sentence.slice(slice.start until slice.endExclusive))
+                    if (slice crossesWordBoundaryIn sentence)
                         TreeXRange(widthBeforeSlice, widthBeforeSlice + sliceWidth)
                     else null
             )

@@ -44,5 +44,5 @@ data class PositionedTree(
      * Returns true if there are no nodes assigned to any slices overlapping the given one.
      */
     internal fun isSliceUnassigned(slice: StringSlice) =
-        nodes.none { it is PositionedTerminalNode && slicesOverlap(it.slice, slice) }
+        nodes.none { it is PositionedTerminalNode && it.slice overlapsWith slice }
 }

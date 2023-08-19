@@ -120,7 +120,7 @@ data class UnpositionedTree(
         // check whether it is within the node slice or at either of its boundaries
             filterNodeIdsByNode { node -> node is UnpositionedTerminalNode && node.slice.start <= slice.start && slice.start <= node.slice.endExclusive }
         // otherwise use a simple overlap check where adjacent slices are not counted as overlapping
-        else filterNodeIdsByNode { node -> node is UnpositionedTerminalNode && slicesOverlap(slice, node.slice) }
+        else filterNodeIdsByNode { node -> node is UnpositionedTerminalNode && slice overlapsWith node.slice }
 
     fun getNodeIdsAssignedToSliceAsArray(slice: StringSlice): Array<Id> =
         getNodeIdsAssignedToSlice(slice).toTypedArray()

@@ -37,7 +37,7 @@ internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sen
             val (sliceStartAfterSpread, sliceEndAfterSpread) = sliceAfterSpread
             InsertedTerminalNode(
                 newNodeId, "", null, sliceAfterSpread,
-                triangle = ' ' in sentence.slice(sliceStartAfterSpread until sliceEndAfterSpread)
+                triangle = sliceAfterSpread crossesWordBoundaryIn sentence
             )
         }
 
