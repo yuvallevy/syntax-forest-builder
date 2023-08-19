@@ -27,6 +27,7 @@ private data class BranchingNodeCreationTarget(
 private data class TerminalNodeCreationTarget(
     override val position: CoordsInTree,
     val slice: StringSlice,
+    val triangle: TreeXRange? = null,
 ) : NodeCreationTarget
 
 @JsExport
@@ -77,6 +78,7 @@ data class TerminalNodeCreationTrigger(
     override val topLeft: CoordsInTree,
     override val bottomRight: CoordsInTree,
     val slice: StringSlice,
+    val triangle: TreeXRange? = null,
 ) : NodeCreationTrigger
 
 private fun getWordSlices(sentence: Sentence): Set<StringSlice> =
@@ -114,6 +116,10 @@ private fun PositionedTree.getNodeCreationTargets(
             TerminalNodeCreationTarget(
                 position = CoordsInTree(widthBeforeSlice + (sliceWidth / 2), -MAX_TRIGGER_PADDING_BOTTOM),
                 slice = slice,
+                triangle =
+                    if (' ' in sentence.slice(slice.start until slice.endExclusive))
+                        TreeXRange(widthBeforeSlice, widthBeforeSlice + sliceWidth)
+                    else null
             )
         }
     }.toSet()
@@ -138,6 +144,7 @@ fun PositionedTree.getNodeCreationTriggers(
             is BranchingNodeCreationTarget ->
                 BranchingNodeCreationTrigger(origin, topLeft, bottomRight, target.childIds, target.childPositions)
 
-            is TerminalNodeCreationTarget -> TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice)
+            is TerminalNodeCreationTarget ->
+                TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice, target.triangle)
         }
     }.toTypedArray()

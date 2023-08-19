@@ -21,7 +21,33 @@ class NodeCreationTriggerTest {
     )
 
     @Test
-    fun getNodeCreationTriggersWithNoSelection() =
+    fun getNodeCreationTriggersNoSelectionNoNodes() =
+        assertContentEquals(
+            arrayOf(
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(15.5, -20.0),
+                    topLeft = CoordsInTree(-0.5, -48.0),
+                    bottomRight = CoordsInTree(31.5, 0.0),
+                    slice = StringSlice(0, 4)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(54.0, -20.0),
+                    topLeft = CoordsInTree(38.0, -48.0),
+                    bottomRight = CoordsInTree(70.0, 0.0),
+                    slice = StringSlice(5, 10)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(101.0, -20.0),
+                    topLeft = CoordsInTree(85.0, -48.0),
+                    bottomRight = CoordsInTree(117.0, 0.0),
+                    slice = StringSlice(11, 18)
+                ),
+            ),
+            positionedTree.copy(nodes = EntitySet()).getNodeCreationTriggers(::mockStrWidth, null)
+        )
+
+    @Test
+    fun getNodeCreationTriggersNoSelectionSomeNodes() =
         assertContentEquals(
             arrayOf(
                 BranchingNodeCreationTrigger(
@@ -56,7 +82,7 @@ class NodeCreationTriggerTest {
         )
 
     @Test
-    fun getNodeCreationTriggersWithSliceSelection() =
+    fun getNodeCreationTriggersSliceSelectionSomeNodes() =
         assertContentEquals(
             arrayOf(
                 BranchingNodeCreationTrigger(
@@ -88,5 +114,27 @@ class NodeCreationTriggerTest {
                 ),
             ),
             positionedTree.getNodeCreationTriggers(::mockStrWidth, StringSlice(2, 4))
+        )
+
+    @Test
+    fun getNodeCreationTriggersSliceSelectionIsPhrase() =
+        assertContentEquals(
+            arrayOf(
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(101.0, -20.0),
+                    topLeft = CoordsInTree(85.0, -48.0),
+                    bottomRight = CoordsInTree(117.0, 0.0),
+                    slice = StringSlice(11, 18)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(36.5, -20.0),
+                    topLeft = CoordsInTree(20.5, -48.0),
+                    bottomRight = CoordsInTree(52.5, 0.0),
+                    slice = StringSlice(0, 10),
+                    triangle = TreeXRange(0.0, 73.0)
+                ),
+            ),
+            positionedTree.copy(nodes = EntitySet())
+                .getNodeCreationTriggers(::mockStrWidth, StringSlice(0, 10))
         )
 }

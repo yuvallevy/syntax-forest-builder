@@ -134,6 +134,11 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
           x2={childPosition.treeX}
           y2={childPosition.treeY - NODE_LEVEL_SPACING}
         /> : null)
+      : (trigger as TerminalNodeCreationTrigger).triangle ?
+        <path
+          className="NodeCreationTriggerClickZone--indicator"
+          d={`M${trigger.origin.treeX} ${trigger.origin.treeY} L${trigger.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${trigger.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
+        />
       : <line
         className="NodeCreationTriggerClickZone--indicator"
         x1={trigger.origin.treeX}
@@ -171,7 +176,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     if (trigger instanceof BranchingNodeCreationTrigger) {
       dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIdsAsArray));
     } else if (trigger instanceof TerminalNodeCreationTrigger) {
-      dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, false));
+      dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, trigger.triangle));
     }
   };
 
