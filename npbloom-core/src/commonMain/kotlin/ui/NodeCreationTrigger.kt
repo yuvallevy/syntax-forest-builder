@@ -12,6 +12,7 @@ private const val MAX_TRIGGER_PADDING_TOP = 28.0
 private const val MAX_TRIGGER_PADDING_BOTTOM = 20.0
 
 private val wordRegex = """['A-Za-z\u00c0-\u1fff]+""".toRegex()
+private val spaceSequenceRegex = """\s{3,}""".toRegex()
 
 private sealed interface NodeCreationTarget {
     val position: CoordsInTree
@@ -83,6 +84,13 @@ data class TerminalNodeCreationTrigger(
 private fun getWordSlices(sentence: Sentence): Set<StringSlice> =
     wordRegex.findAll(sentence).map { StringSlice(it.range.first, it.range.last + 1) }.toSet()
 
+/**
+ * Finds slices corresponding to at least one space surrounded by one more space on each side.
+ * These are likely to represent phonetically empty heads (e.g. I or T heads in some English sentences).
+ */
+private fun getSpaceSequenceSlices(sentence: Sentence): Set<StringSlice> =
+    spaceSequenceRegex.findAll(sentence).map { StringSlice(it.range.first + 1, it.range.last) }.toSet()
+
 private fun PositionedTree.getNodeCreationTargets(
     strWidthFunc: StrWidthFunc,
     selectedSlice: StringSlice?,
@@ -95,7 +103,7 @@ private fun PositionedTree.getNodeCreationTargets(
 
     // Finally, we need one trigger for each word that isn't already assigned to a terminal node
     // and isn't part of the selection
-    val unassignedWordSlices = getWordSlices(sentence).filter(this::isSliceUnassigned)
+    val unassignedWordSlices = (getSpaceSequenceSlices(sentence) + getWordSlices(sentence)).filter(this::isSliceUnassigned)
     val unassignedSlices =
         if (selectedSlice != null && !selectedSlice.isZeroLength && isSliceUnassigned(selectedSlice))
             unassignedWordSlices.filterNot { it overlapsWith selectedSlice } + selectedSlice

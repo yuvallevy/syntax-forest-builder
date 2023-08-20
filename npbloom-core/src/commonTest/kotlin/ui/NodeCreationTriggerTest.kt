@@ -47,6 +47,32 @@ class NodeCreationTriggerTest {
         )
 
     @Test
+    fun getNodeCreationTriggersNoSelectionEmptyHead() =
+        assertContentEquals(
+            arrayOf(
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(42.0, -20.0),
+                    topLeft = CoordsInTree(26.0, -48.0),
+                    bottomRight = CoordsInTree(58.0, 0.0),
+                    slice = StringSlice(6, 8)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(17.0, -20.0),
+                    topLeft = CoordsInTree(1.0, -48.0),
+                    bottomRight = CoordsInTree(33.0, 0.0),
+                    slice = StringSlice(0, 5)
+                ),
+                TerminalNodeCreationTrigger(
+                    origin = CoordsInTree(58.5, -20.0),
+                    topLeft = CoordsInTree(42.5, -48.0),
+                    bottomRight = CoordsInTree(74.5, 0.0),
+                    slice = StringSlice(9, 12)
+                ),
+            ),
+            positionedTree.copy(sentence = "Birds    fly.", nodes = EntitySet()).getNodeCreationTriggers(::mockStrWidth, null)
+        )
+
+    @Test
     fun getNodeCreationTriggersNoSelectionSomeNodes() =
         assertContentEquals(
             arrayOf(

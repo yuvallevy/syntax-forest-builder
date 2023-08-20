@@ -20,9 +20,10 @@ data class StringSlice(val start: SliceStart, val endExclusive: SliceEndExclusiv
     )
 
     /**
-     * Returns whether this slice of the given string covers more than one word.
+     * Returns whether this slice of the given string crosses a word boundary.
      */
-    infix fun crossesWordBoundaryIn(str: String) = ' ' in contentInString(str)
+    infix fun crossesWordBoundaryIn(str: String) =
+        contentInString(str).let { it.isNotBlank() && ' ' in it }
 
     /**
      * Returns this slice with whitespace on both edges trimmed, using the given sentence.
