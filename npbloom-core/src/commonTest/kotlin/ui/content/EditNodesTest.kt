@@ -48,6 +48,8 @@ class EditNodesTest {
             Triple("The dogs jumped.", StringSlice(7, 7), StringSlice(4, 7)),
             Triple("The wdog jumped.", StringSlice(4, 4), StringSlice(5, 8)),
             Triple("The doug jumped.", StringSlice(6, 6), StringSlice(4, 8)),
+            Triple("The blue dog jumped.", StringSlice(4, 4), StringSlice(9, 12)),
+            Triple("The dog quickly jumped.", StringSlice(8, 8), StringSlice(4, 7)),
             Triple("The og jumped.", StringSlice(5, 5), StringSlice(4, 6)),  // Backward delete from index 5
             Triple("The og jumped.", StringSlice(4, 4), StringSlice(4, 6)),  // Forward delete from index 4
             Triple("The dg jumped.", StringSlice(6, 6), StringSlice(4, 6)),  // Backward delete from index 6
@@ -56,11 +58,13 @@ class EditNodesTest {
             Triple("The do jumped.", StringSlice(6, 6), StringSlice(4, 6)),  // Forward delete from index 6
             Triple("The g jumped.", StringSlice(6, 6), StringSlice(4, 5)),  // Backward word delete from index 6
             Triple("The d jumped.", StringSlice(5, 5), StringSlice(4, 5)),  // Forward word delete from index 5
+            Triple("The  jumped.", StringSlice(4, 7), StringSlice(4, 4)),  // Selection delete encompassing entire word
+            Triple("The jumped.", StringSlice(4, 8), StringSlice(4, 4)),  // Selection delete encompassing entire word and space after it
+            Triple("dog jumped.", StringSlice(0, 4), StringSlice(0, 3)),  // Selection delete before slice
+            Triple("The dog", StringSlice(8, 15), StringSlice(4, 7)),  // Selection delete after slice
         ).map { (newSentence, oldSelection, newSlice) ->
-            assertEquals(
-                newSlice,
-                (tree.handleLocalSentenceChange(newSentence, oldSelection)
-                    .node("term2") as UnpositionedTerminalNode).slice
-            )
+            val newNode = tree.handleLocalSentenceChange(newSentence, oldSelection).node("term2")
+            if (newNode is UnpositionedTerminalNode) assertEquals(newSlice, newNode.slice)
+            else if (newNode is UnpositionedFormerlyTerminalNode) assertEquals(newSlice, newNode.formerSlice)
         }
 }

@@ -86,7 +86,17 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
             }
         }
     } else {  // A selection spanning at least one character was made
-        TODO("Not implemented yet")
+        when {
+            slice overlapsWith oldSelection -> {
+                return UnpositionedFormerlyTerminalNode(
+                    id, label, offset, StringSlice(oldSelection.start, oldSelection.start), triangle)
+            }
+
+            oldSelection.start < slice.start -> {
+                newNodeSliceStart += shiftBy
+                newNodeSliceEnd += shiftBy
+            }
+        }
     }
     return UnpositionedTerminalNode(
         id, label, offset, StringSlice(newNodeSliceStart, newNodeSliceEnd), triangle
