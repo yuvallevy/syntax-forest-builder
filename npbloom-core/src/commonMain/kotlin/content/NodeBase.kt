@@ -7,4 +7,5 @@ typealias NodeLabel = String
 @JsExport
 interface NodeBase : WithId {
     val label: NodeLabel
+    val yAlignMode: YAlignMode
 }

@@ -2,10 +2,7 @@
 
 package content.positioned
 
-import content.EntitySet
-import content.Id
-import content.Sentence
-import content.StringSlice
+import content.*
 import content.unpositioned.*
 
 const val DEFAULT_TERMINAL_NODE_Y = -2.0
@@ -118,18 +115,18 @@ internal fun applyNodePosition(
     node: UnpositionedNode,
 ): PositionedNode = when (node) {
     is UnpositionedBranchingNode -> PositionedBranchingNode(
-        id = node.id, label = node.label, children = node.children,
+        id = node.id, label = node.label, children = node.children, yAlignMode = node.yAlignMode,
         position = determineBranchingNodePosition(alreadyPositionedNodes, node),
     )
 
     is UnpositionedTerminalNode -> PositionedTerminalNode(
-        id = node.id, label = node.label, slice = node.slice,
+        id = node.id, label = node.label, slice = node.slice, yAlignMode = node.yAlignMode,
         triangle = determineTerminalNodeTriangleRange(strWidthFunc, sentence, node),
         position = determineTerminalNodePosition(strWidthFunc, sentence, node),
     )
 
     is UnpositionedStrandedNode -> PositionedStrandedNode(
-        id = node.id, label = node.label,
+        id = node.id, label = node.label, yAlignMode = node.yAlignMode,
         position = determineStrandedNodePosition(strWidthFunc, sentence, node),
     )
 }
@@ -145,7 +142,15 @@ internal tailrec fun applyNodePositions(
     alreadyPositionedNodes: EntitySet<PositionedNode> = EntitySet(),
 ): EntitySet<PositionedNode> {
     // If no unpositioned nodes are left, we're done
-    if (nodes.isEmpty()) return alreadyPositionedNodes
+    if (nodes.isEmpty()) return alreadyPositionedNodes.mapToNewEntitySet { positionedNode ->
+        if (positionedNode.yAlignMode == YAlignMode.Top) {
+            val parent = alreadyPositionedNodes
+                .find { it is PositionedBranchingNode && positionedNode.id in it.children } as PositionedBranchingNode
+            val siblings = (parent.children - positionedNode.id).mapNotNull { alreadyPositionedNodes[it] }
+            val minTreeY = siblings.minOf { it.position.treeY }
+            positionedNode.withPosition(positionedNode.position.treeX, minTreeY)
+        } else positionedNode
+    }
 
     // Nodes that can be positioned at this point in the process are:
     // * Terminal nodes, whose position is entirely based on their assigned slice

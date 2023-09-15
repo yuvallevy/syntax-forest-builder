@@ -2,6 +2,7 @@ package content.positioned
 
 import content.EntitySet
 import content.StringSlice
+import content.YAlignMode
 import content.unpositioned.*
 import mockStrWidth
 import kotlin.test.Test
@@ -60,6 +61,18 @@ class PositioningTest {
         offset = PlotCoordsOffset.ZERO,
     )
 
+    private val treeWithVerticallyAlignedNode = UnpositionedTree(
+        id = "926mr",
+        sentence = "Noun verbs.",
+        nodes = EntitySet(
+            UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), yAlignMode = YAlignMode.Top),
+            UnpositionedTerminalNode("d", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
+            UnpositionedBranchingNode("b", "VP", TreeCoordsOffset.ZERO, setOf("d")),
+            UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
+        ),
+        offset = PlotCoordsOffset.ZERO,
+    )
+
     @Test
     fun positionTerminalNodes() {
         val result = applyNodePositionsToTree(::mockStrWidth, treeWithTerminalNodes)
@@ -97,6 +110,12 @@ class PositioningTest {
         val result = applyNodePositionsToTree(::mockStrWidth, treeWithTriangleNodes)
         val triangleNode = result.nodes["b"] as PositionedTerminalNode
         assertEquals(TreeXRange(40.0, 119.0), triangleNode.triangle)
+    }
+
+    @Test
+    fun positionVerticallyAlignedNodes() {
+        val result = applyNodePositionsToTree(::mockStrWidth, treeWithVerticallyAlignedNode)
+        assertEquals(CoordsInTree(18.0, -42.0), result.node("a").position)
     }
 
     @Test

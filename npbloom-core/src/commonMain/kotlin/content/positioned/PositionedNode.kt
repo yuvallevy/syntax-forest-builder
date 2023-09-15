@@ -19,11 +19,14 @@ data class PositionedBranchingNode(
     override val label: NodeLabel,
     override val position: CoordsInTree,
     internal val children: Set<Id> = emptySet(),
+    override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : PositionedNode {
     val childrenAsArray = children.toTypedArray()
 
     fun withChildrenFromArray(children: Array<Id>) =
         copy(id = id, label = label, position = position, children = children.toSet())
+
+    override fun withPosition(treeX: TreeX, treeY: TreeY) = copy(position = CoordsInTree(treeX, treeY))
 }
 
 @JsExport
@@ -33,11 +36,17 @@ data class PositionedTerminalNode(
     override val position: CoordsInTree,
     val slice: StringSlice,
     val triangle: TreeXRange? = null,
-) : PositionedNode
+    override val yAlignMode: YAlignMode = YAlignMode.Bottom,
+) : PositionedNode {
+    override fun withPosition(treeX: TreeX, treeY: TreeY) = copy(position = CoordsInTree(treeX, treeY))
+}
 
 @JsExport
 data class PositionedStrandedNode(
     override val id: Id,
     override val label: NodeLabel,
     override val position: CoordsInTree,
-) : PositionedNode
+    override val yAlignMode: YAlignMode = YAlignMode.Bottom,
+) : PositionedNode {
+    override fun withPosition(treeX: TreeX, treeY: TreeY) = copy(position = CoordsInTree(treeX, treeY))
+}

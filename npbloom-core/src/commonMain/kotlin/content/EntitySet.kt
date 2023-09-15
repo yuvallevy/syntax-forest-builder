@@ -47,6 +47,7 @@ data class EntitySet<T : WithId> internal constructor(private val entities: Set<
     internal inline fun none(predicate: (T) -> Boolean) = entities.none(predicate)
 
     internal inline fun filter(predicate: (T) -> Boolean) = EntitySet(entities.filter(predicate))
+    internal inline fun find(predicate: (T) -> Boolean) = entities.find(predicate)
     internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = entities.flatMap(transform).toTypedArray()
     fun <R> map(transform: (T) -> R) = entities.map(transform).toTypedArray()
     internal inline fun <U : WithId> mapToNewEntitySet(transform: (T) -> U) = EntitySet(entities.map(transform))
