@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
-  AddNodeBySelection, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree, SelectionInPlot,
-  SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
+  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree,
+  SelectionInPlot, SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -54,10 +54,21 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }
   };
 
-  const handleSentenceChange = (newSentence: Sentence, oldSelectedSlice: StringSlice) => dispatch(new SetSentence(
-    newSentence,
-    oldSelectedSlice,
-  ));
+  const handleSentenceChange = (input: HTMLInputElement, newSentence: Sentence, oldSelectedSlice: StringSlice) => {
+    dispatch(new SetSentence(newSentence, oldSelectedSlice));
+    if (input.selectionStart && input.selectionStart === input.selectionEnd) {
+      const selectionBeforeAutoSubscript = input.selectionStart;
+      const oldTextUpToSelection = newSentence.slice(0, selectionBeforeAutoSubscript);
+      const newTextUpToSelection = formatSubscriptInString(oldTextUpToSelection);
+      if (newTextUpToSelection) {
+        setTimeout(() =>
+          dispatch(new SetSentence(
+            newTextUpToSelection + newSentence.slice(selectionBeforeAutoSubscript),
+            new StringSlice(selectionBeforeAutoSubscript, selectionBeforeAutoSubscript)
+          )), 100);
+      }
+    }
+  };
 
   const handleSentenceKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowUp') {
@@ -96,7 +107,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }}
     placeholder="Type a sentence..."
     onBlur={handleSentenceBlur}
-    onInput={e => handleSentenceChange(e.currentTarget.value,
+    onInput={e => handleSentenceChange(e.currentTarget, e.currentTarget.value,
       oldSelection.current || new StringSlice(e.currentTarget.value.length, e.currentTarget.value.length))}
     onSelect={e => {
       const slice = getSelectionSlice(e.currentTarget);
