@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MantineProvider } from '@mantine/core';
+import { Flex, MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -9,6 +9,7 @@ import {
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
+import Settings from './components/meta/Settings';
 import Toolbox from './components/Toolbox';
 import AboutButton from './components/meta/AboutButton';
 import PlotSelector from './components/PlotSelector';
@@ -84,7 +85,10 @@ const UiRoot = () => {
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView />
     <Toolbox />
-    <AboutButton />
+    <Flex justify="flex-end" sx={{ position: 'fixed', right: '0.75rem', top: '0.75rem' }}>
+      <Settings />
+      <AboutButton />
+    </Flex>
     <PlotSelector />
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}

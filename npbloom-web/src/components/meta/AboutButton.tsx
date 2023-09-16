@@ -1,5 +1,6 @@
 import { Anchor, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconInfoCircle } from '@tabler/icons-react';
 import Logo from './npbloom-logo.svg';
 
 const AboutButton = () => {
@@ -9,10 +10,9 @@ const AboutButton = () => {
     <Button
       variant="subtle"
       size="xs"
-      sx={{ position: 'fixed', right: '1rem', top: '1rem' }}
       onClick={open}
     >
-      0.5
+      <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; About
     </Button>
     <Modal opened={opened} onClose={close} title="About" centered size="lg">
       <div style={{ textAlign: 'center' }}>
