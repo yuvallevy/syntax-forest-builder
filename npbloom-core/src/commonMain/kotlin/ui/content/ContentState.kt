@@ -8,11 +8,13 @@ import content.unpositioned.*
 import history.UndoRedoHistory
 import history.UndoableActionBase
 import insertAt
+import kotlinx.serialization.Serializable
 import removeAt
 
 private typealias PlotIndex = Int
 
 @JsExport
+@Serializable
 data class ContentState(val plots: Array<UnpositionedPlot>) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
