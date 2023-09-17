@@ -2,12 +2,15 @@
 
 package content
 
+import kotlinx.serialization.Serializable
+
 /**
  * Wrapper around a set of objects that have an `id` field (all types of trees and nodes).
  * Previously a simple `Map<Id, T>` was used for fast access by ID, and objects themselves did not store their IDs.
  * EntitySet internally stores this mapping but exposes a `Set`-like interface for easy iteration and JS interop.
  */
 @JsExport
+@Serializable
 data class EntitySet<T : WithId> internal constructor(private val entities: Set<T>) {
     @JsName("of")
     constructor(vararg items: T) : this(items.toSet())

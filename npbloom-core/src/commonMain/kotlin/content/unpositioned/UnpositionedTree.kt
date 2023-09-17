@@ -4,8 +4,10 @@ package content.unpositioned
 
 import NoSuchNodeException
 import content.*
+import kotlinx.serialization.Serializable
 
 @JsExport
+@Serializable
 data class UnpositionedTree(
     override val id: Id,
     override val sentence: Sentence,

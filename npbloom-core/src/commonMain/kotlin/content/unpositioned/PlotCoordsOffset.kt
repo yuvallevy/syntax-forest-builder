@@ -2,10 +2,13 @@
 
 package content.unpositioned
 
+import kotlinx.serialization.Serializable
+
 typealias DPlotX = Double
 typealias DPlotY = Double
 
 @JsExport
+@Serializable
 data class PlotCoordsOffset(val dPlotX: DPlotX, val dPlotY: DPlotY) {
     internal operator fun plus(other: PlotCoordsOffset) =
         PlotCoordsOffset(dPlotX + other.dPlotX, dPlotY + other.dPlotY)

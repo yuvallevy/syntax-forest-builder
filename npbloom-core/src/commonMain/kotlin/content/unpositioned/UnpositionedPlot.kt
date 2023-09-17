@@ -6,8 +6,10 @@ import NoSuchTreeException
 import content.EntitySet
 import content.Id
 import content.NodeIndicatorInPlot
+import kotlinx.serialization.Serializable
 
 @JsExport
+@Serializable
 data class UnpositionedPlot internal constructor(val trees: EntitySet<UnpositionedTree> = EntitySet()) {
     val isEmpty get() = trees.isEmpty()
 

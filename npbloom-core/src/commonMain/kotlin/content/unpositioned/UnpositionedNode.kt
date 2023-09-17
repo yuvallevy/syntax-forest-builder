@@ -3,13 +3,17 @@
 package content.unpositioned
 
 import content.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @JsExport
+@Serializable
 sealed interface UnpositionedNode : NodeBase, WithOffsetInTree {
     fun withLabel(newLabel: NodeLabel): UnpositionedNode
 }
 
 @JsExport
+@Serializable
 data class UnpositionedBranchingNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
@@ -17,7 +21,7 @@ data class UnpositionedBranchingNode internal constructor(
     internal val children: Set<Id>,
     override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedNode {
-    val childrenAsArray = children.toTypedArray()
+    @Transient val childrenAsArray = children.toTypedArray()
 
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
@@ -25,6 +29,7 @@ data class UnpositionedBranchingNode internal constructor(
 }
 
 @JsExport
+@Serializable
 data class UnpositionedTerminalNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
@@ -39,9 +44,11 @@ data class UnpositionedTerminalNode internal constructor(
 }
 
 @JsExport
+@Serializable
 sealed interface UnpositionedStrandedNode : UnpositionedNode
 
 @JsExport
+@Serializable
 data class UnpositionedPlainStrandedNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
@@ -54,6 +61,7 @@ data class UnpositionedPlainStrandedNode internal constructor(
 }
 
 @JsExport
+@Serializable
 data class UnpositionedFormerlyTerminalNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
@@ -68,6 +76,7 @@ data class UnpositionedFormerlyTerminalNode internal constructor(
 }
 
 @JsExport
+@Serializable
 data class UnpositionedFormerlyBranchingNode internal constructor(
     override val id: Id,
     override val label: NodeLabel,
