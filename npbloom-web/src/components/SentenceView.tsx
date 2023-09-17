@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree,
@@ -6,6 +6,7 @@ import {
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
+import SettingsStateContext from '../SettingsStateContext';
 
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
 const EMPTY_SENTENCE_WIDTH = 120;
@@ -32,6 +33,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   className,
 }) => {
   const { state, dispatch } = useUiState();
+  const { settingsState } = useContext(SettingsStateContext);
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
 
@@ -56,7 +58,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
 
   const handleSentenceChange = (input: HTMLInputElement, newSentence: Sentence, oldSelectedSlice: StringSlice) => {
     dispatch(new SetSentence(newSentence, oldSelectedSlice));
-    if (input.selectionStart && input.selectionStart === input.selectionEnd) {
+    if (settingsState.autoFormatSubscript && input.selectionStart && input.selectionStart === input.selectionEnd) {
       const selectionBeforeAutoSubscript = input.selectionStart;
       const oldTextUpToSelection = newSentence.slice(0, selectionBeforeAutoSubscript);
       const newTextUpToSelection = formatSubscriptInString(oldTextUpToSelection);
