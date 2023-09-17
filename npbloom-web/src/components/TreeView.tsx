@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection,
   BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySet, generateNodeId,
@@ -8,8 +8,8 @@ import {
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
-import strWidth from '../strWidth/strWidthByChars';
 import useUiState from '../useUiState';
+import SettingsStateContext from '../SettingsStateContext';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -155,6 +155,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   onNodeMouseDown,
 }) => {
   const { state, dispatch } = useUiState();
+  const { strWidth } = useContext(SettingsStateContext);
 
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];

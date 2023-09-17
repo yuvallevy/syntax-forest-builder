@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, ClientCoordsOffset, CoordsInClient,
   DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes, NodeIndicatorInPlot, NodeSelectionAction,
@@ -9,14 +9,15 @@ import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import './PlotView.scss';
-import strWidth from '../strWidth/strWidthByChars';
 import useUiState from '../useUiState';
+import SettingsStateContext from '../SettingsStateContext';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
 
 const PlotView: React.FC = () => {
   const { state, dispatch } = useUiState();
+  const { strWidth } = useContext(SettingsStateContext);
 
   const nothingSelected = state.selection instanceof NodeSelectionInPlot &&
     state.selection.nodeIndicatorsAsArray.length === 0;
@@ -27,7 +28,7 @@ const PlotView: React.FC = () => {
   const plot: PositionedPlot = useMemo(() => {
     const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
     return applyNodePositionsToPlot(strWidth, unpositionedPlot);
-  }, [state.contentState, state.activePlotIndex]);
+  }, [state.contentState, state.activePlotIndex, strWidth]);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
   const moveNodes = (dx: number, dy: number) => dispatch(new MoveSelectedNodes(dx, dy));
