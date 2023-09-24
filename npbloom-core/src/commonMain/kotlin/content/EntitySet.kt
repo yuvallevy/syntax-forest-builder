@@ -2,6 +2,7 @@
 
 package content
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -11,7 +12,9 @@ import kotlinx.serialization.Serializable
  */
 @JsExport
 @Serializable
-data class EntitySet<T : WithId> internal constructor(private val entities: Set<T>) {
+data class EntitySet<T : WithId> internal constructor(
+    @SerialName("e") private val entities: Set<T>
+) {
     @JsName("of")
     constructor(vararg items: T) : this(items.toSet())
     internal constructor(items: List<T>) : this(items.toSet())

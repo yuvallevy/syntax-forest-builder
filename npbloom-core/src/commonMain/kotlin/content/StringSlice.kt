@@ -2,13 +2,14 @@
 
 package content
 
+import content.serializers.StringSliceSerializer
 import kotlinx.serialization.Serializable
 
 typealias SliceStart = Int
 typealias SliceEndExclusive = Int
 
 @JsExport
-@Serializable
+@Serializable(StringSliceSerializer::class)
 data class StringSlice(val start: SliceStart, val endExclusive: SliceEndExclusive) {
     val isZeroLength = start == endExclusive
 

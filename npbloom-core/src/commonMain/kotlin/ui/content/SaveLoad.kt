@@ -1,22 +1,28 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package ui.content
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.cbor.*
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
 
-private const val FORMAT_VERSION_KEY = "version"
-private const val FORMAT_VERSION = 1
+@OptIn(ExperimentalStdlibApi::class)
+private val magicNumber = "59b10011f04e5700".hexToByteArray()
+private val formatVersion = byteArrayOf(1, 0)
 
-fun ContentState.serialize() =
-    Json.encodeToString(
-        JsonObject(
-            mapOf(FORMAT_VERSION_KEY to JsonPrimitive(FORMAT_VERSION)) +
-                    Json.encodeToJsonElement(this).jsonObject
-        )
-    )
+fun ContentState.toFileContents() =
+    magicNumber + formatVersion + Cbor.encodeToByteArray(this)
 
-fun ContentState.Companion.fromSerialized(string: String) =
-    Json.decodeFromJsonElement<ContentState>(
-        JsonObject(
-            Json.parseToJsonElement(string).jsonObject - FORMAT_VERSION_KEY
-        )
-    )
+fun ContentState.Companion.fromFileContents(byteArray: ByteArray): ContentState {
+    if (!byteArray.sliceArray(magicNumber.indices).contentEquals(magicNumber)) error("This is not an NPBloom file")
+    if (!byteArray.sliceArray(magicNumber.size until magicNumber.size + formatVersion.size)
+        .contentEquals(formatVersion)) error("Unrecognized file format version")
+    try {
+        return Cbor.decodeFromByteArray(
+            byteArray.sliceArray(magicNumber.size + formatVersion.size until byteArray.size))
+    } catch (e: SerializationException) {
+        error("The file appears to be corrupt")
+    }
+}
