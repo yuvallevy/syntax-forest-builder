@@ -47,6 +47,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class RemoveTree(val treeId: Id) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
+@JsExport class LoadContentState(val contentState: ContentState) : UiAction
 
 @JsExport
 data class UiState(
@@ -412,5 +413,10 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 selection = pruneSelection(state.selection, newContentState.current.plots[newActivePlotIndex]),
             )
         }
+
+        is LoadContentState ->
+            return initialUiState.copy(
+                contentState = initialContentState.copy(current = action.contentState)
+            )
     }
 }
