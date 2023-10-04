@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Group, Modal, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import { FileWithMetadata } from './fileIoImpl';
+import prettyBytes from 'pretty-bytes';
 
 interface FileIoModalProps {
   opened: boolean;
@@ -12,6 +13,9 @@ interface FileIoModalProps {
   onLoad: (fileName: string) => Promise<void>;
   onClose: () => void;
 }
+
+const prettyDate = (date: Date) =>
+  (date.getDay() === new Date().getDay()) ? `Today, ${date.toLocaleTimeString()}` : date.toLocaleString();
 
 const FileIoModal: React.FC<FileIoModalProps> = ({
   opened,
@@ -65,8 +69,8 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
             onClick={interactionMode === 'load' ? () => onLoad(file.name) : undefined}
           >
             <td>{file.name}</td>
-            <td>{file.size}</td>
-            <td>{file.modifiedTime.toLocaleString()}</td>
+            <td>{prettyBytes(file.size)}</td>
+            <td>{prettyDate(file.modifiedTime)}</td>
           </tr>;
         })}
         </tbody>
