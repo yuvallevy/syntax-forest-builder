@@ -2,8 +2,10 @@
 
 package content
 
+import kotlinx.serialization.SerialName
+
 @JsExport
 enum class YAlignMode {
-    Top,
-    Bottom,
+    @SerialName("^") Top,
+    @SerialName("v") Bottom,
 }

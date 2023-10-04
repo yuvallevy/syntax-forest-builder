@@ -4,13 +4,16 @@ package content.unpositioned
 
 import NoSuchNodeException
 import content.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @JsExport
+@Serializable
 data class UnpositionedTree(
-    override val id: Id,
-    override val sentence: Sentence,
-    val nodes: EntitySet<UnpositionedNode>,
-    val offset: PlotCoordsOffset,
+    @SerialName("i") override val id: Id,
+    @SerialName("s") override val sentence: Sentence,
+    @SerialName("n") val nodes: EntitySet<UnpositionedNode>,
+    @SerialName("o") val offset: PlotCoordsOffset = PlotCoordsOffset.ZERO,
 ) : TreeBase {
     internal val nodeIds get() = nodes.ids
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Flex, MantineProvider } from '@mantine/core';
+import { Button, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
+import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -16,12 +17,18 @@ import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
+import useFileIo from './fileIo/useFileIo';
+import { useOs } from '@mantine/hooks';
+import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 
 const UiRoot = () => {
   const { state, dispatch } = useUiState();
   const { selection, activePlotIndex } = state;
 
+  const os = useOs();
+
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
+  const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal } = useFileIo();
 
   const selectedNodeIndicators = selection instanceof NodeSelectionInPlot ? selection.nodeIndicatorsAsArray : [];
 
@@ -75,6 +82,10 @@ const UiRoot = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
+  useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); });
+
+  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); openFileSaveModal(); });
+
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
     if (state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 1) {
       startEditing();  // For some reason the key press passes right through to the newly-created input.
@@ -85,7 +96,35 @@ const UiRoot = () => {
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView />
     <Toolbox />
-    <Flex justify="flex-end" sx={{ position: 'fixed', right: '0.75rem', top: '0.75rem' }}>
+    <Flex align="center" sx={{ position: 'fixed', left: '0.75rem', right: '0.75rem', top: '0.75rem' }}>
+      <Menu shadow="md" withArrow position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
+        <Menu.Target>
+          <Button variant="subtle" size="xs">
+            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; File
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item
+            icon={<IconFolder size={14} />}
+            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-O', os)}</Text>}
+            onClick={openFileLoadModal}
+          >
+            Open...
+          </Menu.Item>
+          <Menu.Item
+            icon={<IconDeviceFloppy size={14} />}
+            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
+            onClick={openFileSaveModal}
+          >
+            Save...
+          </Menu.Item>
+          {activeFileName && <><Menu.Divider />
+          <Menu.Item disabled>
+            Currently open file:<br />{activeFileName}
+          </Menu.Item></>}
+        </Menu.Dropdown>
+      </Menu>
+      <Space style={{ flexGrow: 1 }} />
       <Settings />
       <AboutButton />
     </Flex>
@@ -96,6 +135,7 @@ const UiRoot = () => {
       showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
+    {fileIoModalComponent}
   </MantineProvider>;
 }
 

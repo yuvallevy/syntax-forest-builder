@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "net.yuvsstuff"
@@ -20,6 +21,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.0")
             }
         }
         val commonTest by getting {
