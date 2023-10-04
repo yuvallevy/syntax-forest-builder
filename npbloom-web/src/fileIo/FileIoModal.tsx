@@ -75,8 +75,10 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
     {interactionMode === 'save' && <>
       <form onSubmit={handleSaveClicked}>
         <Group>
+          <label htmlFor="filename">Save as:</label>
           <TextInput
             ref={fileNameInputRef}
+            id="filename"
             value={fileNameInputValue}
             autoFocus
             style={{ flexGrow: 1 }}
