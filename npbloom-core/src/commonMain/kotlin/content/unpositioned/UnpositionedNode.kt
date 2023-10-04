@@ -9,8 +9,11 @@ import kotlinx.serialization.Transient
 
 @JsExport
 @Serializable
-sealed interface UnpositionedNode : NodeBase, WithOffsetInTree {
+sealed interface UnpositionedNode : NodeBase {
+    val offset: TreeCoordsOffset
     fun withLabel(newLabel: NodeLabel): UnpositionedNode
+    fun withOffset(newOffset: TreeCoordsOffset): UnpositionedNode
+    fun changeOffset(offsetD: TreeCoordsOffset) = withOffset(offset + offsetD)
 }
 
 @JsExport
