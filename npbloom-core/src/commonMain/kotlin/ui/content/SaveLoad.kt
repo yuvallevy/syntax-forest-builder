@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalSerializationApi::class)
+@file:OptIn(ExperimentalSerializationApi::class, ExperimentalJsExport::class)
 
 package ui.content
 
@@ -12,6 +12,8 @@ import kotlinx.serialization.encodeToByteArray
 private val magicNumber = "59b10011f04e5700".hexToByteArray()
 private val formatVersion = byteArrayOf(1, 0)
 
+@JsExport
+@JsName("contentStateToFileContents")
 fun ContentState.toFileContents() =
     magicNumber + formatVersion + Cbor.encodeToByteArray(this)
 
