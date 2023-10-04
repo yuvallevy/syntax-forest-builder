@@ -134,7 +134,7 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
           x2={childPosition.treeX}
           y2={childPosition.treeY - NODE_LEVEL_SPACING}
         /> : null)
-      : (trigger as TerminalNodeCreationTrigger).triangle ?
+      : trigger instanceof TerminalNodeCreationTrigger && trigger.triangle ?
         <path
           className="NodeCreationTriggerClickZone--indicator"
           d={`M${trigger.origin.treeX} ${trigger.origin.treeY} L${trigger.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${trigger.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
