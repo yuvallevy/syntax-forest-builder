@@ -32,15 +32,20 @@ kotlin {
     }
 }
 
-tasks.register("correctJsModuleExtension") {
+tasks.register("patchKotlinJsBugs") {
     doLast {
         with(File("build/dist/js/productionLibrary/package.json")) {
             val correctedModuleName = readText().replace("npbloom-core.js", "npbloom-core.mjs")
             writeText(correctedModuleName)
         }
+        with(File("build/dist/js/productionLibrary/npbloom-core.d.ts")) {
+            val declarationsWithoutSyntaxErrors = readText().replace(
+                """\s*static get Companion\(\):\s*\{\s*\}\s*&\s*any\/\* SerializerFactory \*\/;""".toRegex(), "")
+            writeText(declarationsWithoutSyntaxErrors)
+        }
     }
 }
 
 tasks.named("build") {
-    finalizedBy("correctJsModuleExtension")
+    finalizedBy("patchKotlinJsBugs")
 }
