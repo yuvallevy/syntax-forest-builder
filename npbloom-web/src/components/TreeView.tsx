@@ -177,7 +177,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     if (trigger instanceof BranchingNodeCreationTrigger) {
       dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIdsAsArray));
     } else if (trigger instanceof TerminalNodeCreationTrigger) {
-      dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, trigger.triangle));
+      dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, !!trigger.triangle));
     }
   };
 
