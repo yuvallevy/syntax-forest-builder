@@ -56,6 +56,8 @@ const useFileIo = () => {
           closeFileIoModal();
         });
 
+  const saveOrSaveAs = () => activeFileName ? handleSave(activeFileName) : openFileSaveModal();
+
   const fileIoModalComponent = <FileIoModal
     opened={fileIoModalOpened}
     fileList={fileList}
@@ -71,6 +73,7 @@ const useFileIo = () => {
     activeFileName,
     openFileSaveModal,
     openFileLoadModal,
+    saveOrSaveAs,
   };
 };
 

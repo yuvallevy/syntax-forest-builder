@@ -28,7 +28,7 @@ const UiRoot = () => {
   const os = useOs();
 
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
-  const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal } = useFileIo();
+  const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal, saveOrSaveAs } = useFileIo();
 
   const selectedNodeIndicators = selection instanceof NodeSelectionInPlot ? selection.nodeIndicatorsAsArray : [];
 
@@ -84,7 +84,7 @@ const UiRoot = () => {
 
   useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); });
 
-  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); openFileSaveModal(); });
+  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); });
 
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
     if (state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 1) {
@@ -114,9 +114,12 @@ const UiRoot = () => {
           <Menu.Item
             icon={<IconDeviceFloppy size={14} />}
             rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
-            onClick={openFileSaveModal}
+            onClick={saveOrSaveAs}
           >
-            Save...
+            Save{activeFileName ? '' : '...'}
+          </Menu.Item>
+          <Menu.Item disabled={!activeFileName} onClick={openFileSaveModal}>
+            Save As...
           </Menu.Item>
           {activeFileName && <><Menu.Divider />
           <Menu.Item disabled>
