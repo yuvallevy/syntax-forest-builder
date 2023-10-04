@@ -1,6 +1,12 @@
 ## Alpha
-### 0.5 (2023-07&ndash;2023-08)
-* Rewrote core functionality.
+### 0.5 (2023-10-04)
+* Rewrote core functionality in Kotlin to make writing this a little more fun. (Pun intended)
+* Added the long-overdue save/load function.
+  * Currently only works within the browser. Uploading/downloading and exporting to other formats is a planned addition.
+* Added automatic reformatting of letters and numbers as subscripts (optional, on by default).
+* Rewrote text width measurement in two ways, one fast and one accurate.
+* Added a settings screen to toggle subscript auto-format and text width measurement method.
+* Added a crash screen for when something goes wrong.
 ### 0.4 (2023-06-24)
 * Added a way to create multiple plots, which are separate boards that can each hold multiple trees.
 * Fixed bug that caused a new node to be created when pressing <kbd>&uarr;</kbd>
