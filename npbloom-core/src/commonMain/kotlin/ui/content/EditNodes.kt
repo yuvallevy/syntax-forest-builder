@@ -34,7 +34,6 @@ internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sen
             // A slice of the sentence is selected
             val sliceAfterSpread =
                 if (selection.slice.isZeroLength) getWordRange(sentence, selection.slice.start) else selection.slice
-            val (sliceStartAfterSpread, sliceEndAfterSpread) = sliceAfterSpread
             InsertedTerminalNode(
                 newNodeId, "", null, sliceAfterSpread,
                 triangle = sliceAfterSpread crossesWordBoundaryIn sentence
