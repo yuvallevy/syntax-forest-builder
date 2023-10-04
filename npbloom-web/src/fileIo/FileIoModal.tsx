@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Group, Modal, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import { FileWithMetadata } from './fileIoImpl';
@@ -13,6 +13,9 @@ interface FileIoModalProps {
   onLoad: (fileName: string) => Promise<void>;
   onClose: () => void;
 }
+
+const compareFileNames = (file1: FileWithMetadata, file2: FileWithMetadata) =>
+  Intl.Collator().compare(file1.name, file2.name);
 
 const prettyDate = (date: Date) =>
   (date.getDay() === new Date().getDay()) ? `Today, ${date.toLocaleTimeString()}` : date.toLocaleString();
@@ -29,6 +32,8 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   const [fileNameInputValue, setFileNameInputValue] = useState('');
   const fileNameInputRef = useRef<HTMLInputElement>(null);
   const [savingStatus, setSavingStatus] = useState<'idle' | 'loading' | 'success' | Error>('idle');
+
+  const sortedFileList = useMemo(() => fileList.sort(compareFileNames), [fileList]);
 
   useEffect(() => {
     if (opened) {
@@ -62,8 +67,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
         </tr>
         </thead>
         <tbody>
-        {fileList.map(file => {
-          return <tr
+          {sortedFileList.map((file) => <tr
             key={file.name}
             style={{ cursor: interactionMode === 'load' ? 'pointer' : 'unset' }}
             onClick={interactionMode === 'load' ? () => onLoad(file.name) : undefined}
@@ -71,8 +75,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
             <td>{file.name}</td>
             <td>{prettyBytes(file.size)}</td>
             <td>{prettyDate(file.modifiedTime)}</td>
-          </tr>;
-        })}
+          </tr>)}
         </tbody>
       </Table>
     </ScrollArea>
