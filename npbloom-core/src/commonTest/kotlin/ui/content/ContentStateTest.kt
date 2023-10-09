@@ -52,7 +52,7 @@ class ContentStateTest {
 
     private val testInitialContentState = initialContentState.copy(
         current = testInitialState,
-        undoStack = arrayOf(
+        undoStack = listOf(
             PlotChanged(
                 1,
                 testInitialState.plots[1],
@@ -77,12 +77,12 @@ class ContentStateTest {
         action: ContentOrHistoryAction,
         current: ContentState,
         newUndoableAction: ContentChange? = null,
-        undoStack: Array<ContentChange> = testInitialContentState.undoStack,
-        redoStack: Array<ContentChange> = testInitialContentState.redoStack,
+        undoStack: List<ContentChange> = testInitialContentState.undoStack,
+        redoStack: List<ContentChange> = testInitialContentState.redoStack,
     ) = assertEquals(
         testInitialContentState.copy(
             current = current,
-            undoStack = if (newUndoableAction != null) arrayOf(newUndoableAction) + undoStack else undoStack,
+            undoStack = if (newUndoableAction != null) listOf(newUndoableAction) + undoStack else undoStack,
             redoStack = redoStack,
         ),
         contentReducer(testInitialContentState, action)
