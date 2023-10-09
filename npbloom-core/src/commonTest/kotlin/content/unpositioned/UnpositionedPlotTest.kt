@@ -45,36 +45,6 @@ class UnpositionedPlotTest {
         assertFalse(plot.isEmpty)
 
     @Test
-    fun treesAsArray() =
-        assertContentEquals(
-            arrayOf(
-                UnpositionedTree(
-                    id = "cleo",
-                    sentence = "Cleo laughed.",
-                    nodes = EntitySet(
-                        UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
-                        UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset.ZERO, setOf("n1")),
-                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
-                    ),
-                    offset = PlotCoordsOffset.ZERO,
-                ), UnpositionedTree(
-                    id = "alex",
-                    sentence = "Alex baked cookies.",
-                    nodes = EntitySet(
-                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
-                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset.ZERO, setOf("n2")),
-                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-                        UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset.ZERO, setOf("v2", "np2b")),
-                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
-                        UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
-                    ),
-                    offset = PlotCoordsOffset.ZERO,
-                )
-            ), plot.treesAsArray
-        )
-
-    @Test
     fun treeCountZero() =
         assertEquals(0, UnpositionedPlot().treeCount)
 

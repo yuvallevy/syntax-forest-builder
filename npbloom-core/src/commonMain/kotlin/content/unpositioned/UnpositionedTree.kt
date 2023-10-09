@@ -19,7 +19,7 @@ data class UnpositionedTree(
 ) : TreeBase {
     internal val nodeIds get() = nodes.ids
 
-    val nodesAsArray get() = nodes.toTypedArray()
+    val nodesAsArray get() = nodes.toJsArray()
 
     val nodeCount get() = nodes.size
 
@@ -72,7 +72,7 @@ data class UnpositionedTree(
      * Transforms all nodes in the given tree using the given transform function.
      */
     internal fun transformAllNodes(transformFunc: NodeTransformFunc): UnpositionedTree =
-        copy(nodes = EntitySet(*nodes.map(transformFunc)))
+        copy(nodes = EntitySet(nodes.map(transformFunc)))
 
     /**
      * Deletes the nodes with the given IDs from the given tree.

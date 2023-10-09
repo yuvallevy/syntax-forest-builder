@@ -25,10 +25,6 @@ class EntitySetTest {
     fun size() = assertEquals(2, entitySet.size)
 
     @Test
-    fun toTypedArray() =
-        assertContentEquals(arrayOf(something, anotherThing), entitySet.toTypedArray())
-
-    @Test
     fun containsTrue() = assertTrue("soq4s" in entitySet)
 
     @Test
@@ -101,10 +97,10 @@ class EntitySetTest {
     fun filterNone() = assertEquals(EntitySet(), entitySet.filter { it.someWords.isEmpty() })
 
     @Test
-    fun flatMap() = assertContentEquals(arrayOf("weigh", "autumn", "rejoice"), entitySet.flatMap { it.someWords })
+    fun flatMap() = assertEquals(listOf("weigh", "autumn", "rejoice"), entitySet.flatMap { it.someWords })
 
     @Test
-    fun map() = assertContentEquals(arrayOf(31, 27), entitySet.map { sqrt(it.someNumber.toDouble()).toInt() })
+    fun map() = assertEquals(listOf(31, 27), entitySet.map { sqrt(it.someNumber.toDouble()).toInt() })
 
     @Test
     fun mapToNewEntitySet() = assertEquals(

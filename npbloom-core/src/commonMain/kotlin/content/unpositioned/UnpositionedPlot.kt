@@ -18,7 +18,7 @@ data class UnpositionedPlot internal constructor(
 ) {
     val isEmpty get() = trees.isEmpty()
 
-    val treesAsArray get() = trees.toTypedArray()
+    val treesAsArray get() = trees.toJsArray()
 
     val treeCount get() = trees.size
 

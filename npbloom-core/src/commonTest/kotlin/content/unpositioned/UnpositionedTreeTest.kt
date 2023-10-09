@@ -89,17 +89,6 @@ class UnpositionedTreeTest {
         assertEquals(setOf("top", "branch1", "term1", "term2"), tree.nodeIds)
 
     @Test
-    fun nodesAsArray() =
-        assertContentEquals(
-            arrayOf(
-                UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1")),
-                UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
-                UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
-            ),
-            treeWithoutTopLevelTerminalNode.nodesAsArray
-        )
-
-    @Test
     fun nodeCountZero() =
         assertEquals(
             0,
