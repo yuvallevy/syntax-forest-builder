@@ -2,6 +2,9 @@
 
 package ui.content
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
 private val subscriptSubstitutions = mapOf(
     '0' to '\u2080',
     '1' to '\u2081',

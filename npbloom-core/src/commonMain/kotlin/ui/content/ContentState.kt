@@ -11,6 +11,8 @@ import insertAt
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import removeAt
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 private typealias PlotIndex = Int
 

@@ -6,6 +6,8 @@ import NoSuchTreeException
 import content.EntitySet
 import content.Id
 import content.NodeIndicatorInPlot
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
 data class PositionedPlot(val trees: EntitySet<PositionedTree>) {

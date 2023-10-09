@@ -4,6 +4,8 @@ package content
 
 import content.serializers.StringSliceSerializer
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 typealias SliceStart = Int
 typealias SliceEndExclusive = Int

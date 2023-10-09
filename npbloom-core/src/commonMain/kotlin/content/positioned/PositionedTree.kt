@@ -4,6 +4,8 @@ package content.positioned
 
 import NoSuchNodeException
 import content.*
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
 data class PositionedTree(

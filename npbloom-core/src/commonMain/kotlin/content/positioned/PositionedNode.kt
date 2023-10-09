@@ -3,6 +3,8 @@
 package content.positioned
 
 import content.*
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 typealias PlotX = Double
 typealias PlotY = Double

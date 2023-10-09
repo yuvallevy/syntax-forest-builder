@@ -5,6 +5,8 @@ package ui.content
 import kotlin.js.Date
 import kotlin.random.Random
 import kotlin.random.nextLong
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 private const val ID_TIME_LENGTH = 6
 private const val ID_RANDOM_LENGTH = 4

@@ -4,6 +4,8 @@ package content.positioned
 
 import content.*
 import content.unpositioned.*
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 const val DEFAULT_TERMINAL_NODE_Y = -2.0
 const val DEFAULT_TRIANGLE_NODE_Y = -20.0

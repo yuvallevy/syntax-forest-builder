@@ -5,6 +5,9 @@ package ui
 import content.positioned.CoordsInPlot
 import content.positioned.PositionedNode
 import content.positioned.PositionedTree
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 typealias ClientX = Double
 typealias ClientY = Double

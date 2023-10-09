@@ -8,6 +8,8 @@ import content.Id
 import content.NodeIndicatorInPlot
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable

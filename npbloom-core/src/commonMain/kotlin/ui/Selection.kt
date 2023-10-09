@@ -8,6 +8,8 @@ import content.StringSlice
 import content.positioned.PositionedNode
 import content.positioned.PositionedTree
 import content.unpositioned.UnpositionedPlot
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
 sealed interface SelectionInPlot

@@ -4,6 +4,9 @@ package content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 /**
  * Wrapper around a set of objects that have an `id` field (all types of trees and nodes).

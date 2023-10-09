@@ -6,6 +6,8 @@ import content.Id
 import content.Sentence
 import content.StringSlice
 import content.positioned.*
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 private const val MAX_TRIGGER_WIDTH = 32.0
 private const val MAX_TRIGGER_PADDING_TOP = 28.0
