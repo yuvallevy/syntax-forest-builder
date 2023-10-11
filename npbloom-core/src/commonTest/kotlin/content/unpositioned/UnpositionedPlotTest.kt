@@ -72,10 +72,11 @@ class UnpositionedPlotTest {
         )
 
     @Test
-    fun treeByIdNonexistent() =
+    fun treeByIdNonexistent() {
         assertFailsWith(NoSuchTreeException::class) {
             plot.tree("yona")
         }
+    }
 
     @Test
     fun plotContainsIdTrue() =

@@ -62,7 +62,7 @@ class EditNodesTest {
             Triple("The jumped.", StringSlice(4, 8), StringSlice(4, 4)),  // Selection delete encompassing entire word and space after it
             Triple("dog jumped.", StringSlice(0, 4), StringSlice(0, 3)),  // Selection delete before slice
             Triple("The dog", StringSlice(8, 15), StringSlice(4, 7)),  // Selection delete after slice
-        ).map { (newSentence, oldSelection, newSlice) ->
+        ).forEach { (newSentence, oldSelection, newSlice) ->
             val newNode = tree.handleLocalSentenceChange(newSentence, oldSelection).node("term2")
             if (newNode is UnpositionedTerminalNode) assertEquals(newSlice, newNode.slice)
             else if (newNode is UnpositionedFormerlyTerminalNode) assertEquals(newSlice, newNode.formerSlice)

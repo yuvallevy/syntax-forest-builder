@@ -122,10 +122,11 @@ class UnpositionedTreeTest {
         )
 
     @Test
-    fun nodeByIdNonexistent() =
+    fun nodeByIdNonexistent() {
         assertFailsWith(NoSuchNodeException::class) {
             treeWithoutTopLevelBranchingNode.node("branch2")
         }
+    }
 
     @Test
     fun treeContainsIdTrue() =
