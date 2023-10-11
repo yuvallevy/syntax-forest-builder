@@ -44,10 +44,6 @@ data class EntitySet<T : WithId> internal constructor(
         entities.filterNot { newItems.any { newNode -> it.id == newNode.id } }.toSet() + newItems
     )
 
-    internal operator fun plus(newItems: Array<T>) = EntitySet(
-        entities.filterNot { newItems.any { newNode -> it.id == newNode.id } }.toSet() + newItems
-    )
-
     internal fun isEmpty() = entities.isEmpty()
     internal fun isNotEmpty() = entities.isNotEmpty()
 

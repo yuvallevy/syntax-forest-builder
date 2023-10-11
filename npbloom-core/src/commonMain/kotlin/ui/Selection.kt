@@ -10,6 +10,7 @@ import content.positioned.PositionedTree
 import content.unpositioned.UnpositionedPlot
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
 sealed interface SelectionInPlot
@@ -33,6 +34,7 @@ enum class NodeSelectionAction { Select, Adopt, Disown }
 @JsExport
 enum class NodeSelectionMode { SetSelection, AddToSelection }
 
+@JsName("applySelectionByKtSets")
 fun applySelection(
     mode: NodeSelectionMode,
     newNodeIndicators: Set<NodeIndicatorInPlot>,
@@ -41,14 +43,6 @@ fun applySelection(
     NodeSelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
     NodeSelectionMode.SetSelection -> newNodeIndicators
 }
-
-@JsExport
-fun applySelection(
-    mode: NodeSelectionMode,
-    newNodeIndicators: Array<NodeIndicatorInPlot>,
-    existingNodeIndicators: Array<NodeIndicatorInPlot> = emptyArray(),
-): Array<NodeIndicatorInPlot> =
-    applySelection(mode, newNodeIndicators.toSet(), existingNodeIndicators.toSet()).toTypedArray()
 
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.

@@ -175,7 +175,7 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
     if (trigger instanceof BranchingNodeCreationTrigger) {
-      dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIdsAsArray));
+      dispatch(new AddBranchingNodeByTarget(treeId, generateNodeId(), trigger.childIds));
     } else if (trigger instanceof TerminalNodeCreationTrigger) {
       dispatch(new AddTerminalNodeByTarget(treeId, generateNodeId(), trigger.slice, !!trigger.triangle));
     }
@@ -190,7 +190,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     ).map(trigger =>
       <NodeCreationTriggerClickZone
         trigger={trigger}
-        key={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIdsAsArray.join()
+        key={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIds.join()
           : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}

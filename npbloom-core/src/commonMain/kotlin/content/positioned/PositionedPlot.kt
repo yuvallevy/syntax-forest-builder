@@ -21,7 +21,7 @@ data class PositionedPlot(val trees: EntitySet<PositionedTree>) {
     fun filterNodeIndicatorsAsArray(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
         trees.flatMap { tree ->
             tree.filterNodes { predicate(tree, it) }.ids.map { NodeIndicatorInPlot(tree.id, it) }
-        }
+        }.toTypedArray()
 
     internal fun filterNodeIndicators(predicate: (tree: PositionedTree, node: PositionedNode) -> Boolean) =
         filterNodeIndicatorsAsArray(predicate).toSet()

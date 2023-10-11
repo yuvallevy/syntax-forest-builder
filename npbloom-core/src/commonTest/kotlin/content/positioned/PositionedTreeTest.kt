@@ -91,7 +91,7 @@ class PositionedTreeTest {
 
     @Test
     fun sortNodesByXCoord() =
-        assertContentEquals(arrayOf("b", "c", "a", "e"), tree.sortNodesByXCoord(setOf("a", "b", "c", "e")))
+        assertEquals(listOf("b", "c", "a", "e"), tree.sortNodesByXCoord(setOf("a", "b", "c", "e")))
 
     @Test
     fun checkIfSliceUnassigned() {

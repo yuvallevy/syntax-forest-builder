@@ -37,10 +37,10 @@ data class PositionedTree(
         nodes.filter { isPositionedNodeTopLevel(nodes, it.id) }
 
     /**
-     * Receives an array of node IDs in the given tree and returns them sorted by X-coordinate.
+     * Receives a set of node IDs in the given tree and returns them sorted by X-coordinate.
      */
-    internal fun sortNodesByXCoord(nodeIds: Set<Id>): Array<Id> =
-        nodeIds.sortedBy { nodes[it]!!.position.treeX }.toTypedArray()
+    internal fun sortNodesByXCoord(nodeIds: Set<Id>): List<Id> =
+        nodeIds.sortedBy { nodes[it]!!.position.treeX }
 
     /**
      * Returns true if there are no nodes assigned to any slices overlapping the given one.

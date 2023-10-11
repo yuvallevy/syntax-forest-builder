@@ -13,11 +13,11 @@ const val DEFAULT_NODE_LEVEL_DIFF = -40.0
 
 typealias StrWidthFunc = (str: String) -> Double
 
-internal fun sliceOffsetAndWidth(strWidthFunc: StrWidthFunc, sentence: Sentence, slice: StringSlice): Array<Double> {
+internal fun sliceOffsetAndWidth(strWidthFunc: StrWidthFunc, sentence: Sentence, slice: StringSlice): Pair<Double, Double> {
     val (sliceStart, sliceEndExclusive) = slice
     val widthBeforeSlice = strWidthFunc(sentence.slice(0 until sliceStart))
     val sliceWidth = strWidthFunc(sentence.slice(sliceStart until sliceEndExclusive))
-    return arrayOf(widthBeforeSlice, sliceWidth)
+    return Pair(widthBeforeSlice, sliceWidth)
 }
 
 internal fun determineNaturalParentNodePosition(childNodePositions: Set<CoordsInTree>): CoordsInTree =
@@ -198,5 +198,5 @@ fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot)
 /**
  * Receives an array of node IDs in the given tree and returns them sorted by X-coordinate.
  */
-internal fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): Array<Id> =
+internal fun sortNodesByXCoord(strWidthFunc: StrWidthFunc, tree: UnpositionedTree, nodeIds: Set<Id>): List<Id> =
     applyNodePositionsToTree(strWidthFunc, tree).sortNodesByXCoord(nodeIds)

@@ -8,6 +8,7 @@ import content.StringSlice
 import content.positioned.*
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 private const val MAX_TRIGGER_WIDTH = 32.0
 private const val MAX_TRIGGER_PADDING_TOP = 28.0
@@ -23,7 +24,7 @@ private sealed interface NodeCreationTarget {
 private data class BranchingNodeCreationTarget(
     override val position: CoordsInTree,
     val childIds: Set<Id>,
-    val childPositions: Array<CoordsInTree>,
+    val childPositions: List<CoordsInTree>,
 ) : NodeCreationTarget
 
 private data class TerminalNodeCreationTarget(
@@ -44,34 +45,12 @@ data class BranchingNodeCreationTrigger internal constructor(
     override val origin: CoordsInTree,
     override val topLeft: CoordsInTree,
     override val bottomRight: CoordsInTree,
-    internal val childIds: Set<Id>,
-    val childPositions: Array<CoordsInTree>,
+    @JsName("childIdsAsKtSet") val childIds: Set<Id>,
+    @JsName("childPositionsAsKtList") val childPositions: List<CoordsInTree>,
 ) : NodeCreationTrigger {
-    val childIdsAsArray = childIds.toTypedArray()
+    @JsName("childIds") val childIdsAsArray = childIds.toTypedArray()
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class.js != other::class.js) return false
-
-        other as BranchingNodeCreationTrigger
-
-        if (origin != other.origin) return false
-        if (topLeft != other.topLeft) return false
-        if (bottomRight != other.bottomRight) return false
-        if (childIds != other.childIds) return false
-        if (!childPositions.contentEquals(other.childPositions)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = origin.hashCode()
-        result = 31 * result + topLeft.hashCode()
-        result = 31 * result + bottomRight.hashCode()
-        result = 31 * result + childIds.hashCode()
-        result = 31 * result + childPositions.contentHashCode()
-        return result
-    }
+    @JsName("childPositions") val childPositionsAsArray = childPositions.toTypedArray()
 }
 
 @JsExport
@@ -98,7 +77,7 @@ private fun PositionedTree.getNodeCreationTargets(
     selectedSlice: StringSlice?,
 ): Set<NodeCreationTarget> {
     // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
-    val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().ids).toList()
+    val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().ids)
 
     // We also need one trigger above each space between two horizontally adjacent nodes
     val topLevelNodeIdPairs = topLevelNodeIds.windowed(2)
@@ -117,7 +96,7 @@ private fun PositionedTree.getNodeCreationTargets(
             BranchingNodeCreationTarget(
                 position = determineNaturalParentNodePosition(nodeIds.map { node(it).position }.toSet()),
                 childIds = nodeIds.toSet(),
-                childPositions = nodeIds.map { node(it).position }.toTypedArray(),
+                childPositions = nodeIds.map { node(it).position },
             )
         }.toSet()
     val terminalNodeCreationTargets: Set<NodeCreationTarget> = unassignedSlices.map { slice ->
@@ -136,11 +115,11 @@ private fun PositionedTree.getNodeCreationTargets(
     return parentNodeCreationTargets + terminalNodeCreationTargets
 }
 
-@JsExport
+@JsName("getNodeCreationTriggersAsKtList")
 fun PositionedTree.getNodeCreationTriggers(
     strWidthFunc: StrWidthFunc,
     selectedSlice: StringSlice?,
-): Array<NodeCreationTrigger> =
+): List<NodeCreationTrigger> =
     getNodeCreationTargets(strWidthFunc, selectedSlice?.trimSpacesForString(sentence)).map { target ->
         val origin = target.position
         val topLeft = CoordsInTree(
@@ -156,4 +135,4 @@ fun PositionedTree.getNodeCreationTriggers(
             is TerminalNodeCreationTarget ->
                 TerminalNodeCreationTrigger(origin, topLeft, bottomRight, target.slice, target.triangle)
         }
-    }.toTypedArray()
+    }

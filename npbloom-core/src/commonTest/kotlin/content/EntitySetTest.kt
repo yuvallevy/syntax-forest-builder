@@ -51,13 +51,6 @@ class EntitySetTest {
         )
 
     @Test
-    fun plusArray() =
-        assertEquals(
-            EntitySet(something, anotherThing, oneMoreThing, yetAnotherThing),
-            entitySet + arrayOf(yetAnotherThing, oneMoreThing)
-        )
-
-    @Test
     fun isEmptyTrue() = assertTrue(EntitySet<SomethingWithId>().isEmpty())
 
     @Test

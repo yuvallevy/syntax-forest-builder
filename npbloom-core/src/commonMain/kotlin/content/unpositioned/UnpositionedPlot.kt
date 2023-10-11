@@ -10,6 +10,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
 @Serializable
@@ -52,7 +53,8 @@ data class UnpositionedPlot internal constructor(
     /**
      * Returns whether all given nodes are top-level nodes.
      */
-    internal fun allTopLevel(nodeIndicators: Set<NodeIndicatorInPlot>): Boolean =
+    @JsName("allTopLevelByKtSet")
+    fun allTopLevel(nodeIndicators: Set<NodeIndicatorInPlot>): Boolean =
         this.getParentNodeIds(nodeIndicators).isEmpty()
 
     fun allTopLevel(nodeIndicators: Array<NodeIndicatorInPlot>): Boolean =
