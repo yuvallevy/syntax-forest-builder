@@ -64,6 +64,40 @@ export const getFileMetadataList = (db: IDBDatabase): Promise<FileWithMetadata[]
     fileListRequest.onerror = () => reject(fileListRequest.error);
   });
 
+const saveFileRaw = (
+  db: IDBDatabase,
+  rawContents: Int8Array,
+  fileName: string,
+  modifiedTime: Date = new Date(),
+): Promise<[void, void]> => {
+  const transaction = db.transaction([FILE_METADATA_STORE_NAME, FILE_CONTENT_STORE_NAME], 'readwrite');
+
+  const addContentPromise = new Promise<void>((resolve, reject) => {
+    const addContentRequest = transaction.objectStore(FILE_CONTENT_STORE_NAME)
+      .put({ name: fileName, body: rawContents } as FileWithBody);
+    addContentRequest.onsuccess = () => resolve();
+    addContentRequest.onerror = () => reject(addContentRequest.error);
+  });
+
+  const addMetadataPromise = new Promise<void>((resolve, reject) => {
+    const addMetadataRequest = transaction.objectStore(FILE_METADATA_STORE_NAME)
+      .put({ name: fileName, size: rawContents.byteLength, type: 'forest', modifiedTime } as FileWithMetadata);
+    addMetadataRequest.onsuccess = () => resolve();
+    addMetadataRequest.onerror = () => reject(addMetadataRequest.error);
+  });
+
+  return Promise.all([addContentPromise, addMetadataPromise]);
+};
+
+const loadFileRaw = (db: IDBDatabase, fileName: string): Promise<Int8Array> =>
+  new Promise((resolve, reject) => {
+    const getContentRequest = db.transaction([FILE_CONTENT_STORE_NAME], 'readwrite')
+      .objectStore(FILE_CONTENT_STORE_NAME)
+      .get(fileName);
+    getContentRequest.onsuccess = () => resolve((getContentRequest.result as FileWithBody).body);
+    getContentRequest.onerror = () => reject(getContentRequest.error);
+  });
+
 /**
  * Saves the content state to a file in the IndexedDB under the given name.
  */
@@ -72,37 +106,39 @@ export const saveContentStateToFile = (
   contentState: ContentState,
   fileName: string,
   modifiedTime: Date = new Date(),
-): Promise<[void, void]> => {
-  const body = contentStateToFileContents(contentState);
-  const transaction = db.transaction([FILE_METADATA_STORE_NAME, FILE_CONTENT_STORE_NAME], 'readwrite');
-
-  const addContentPromise = new Promise<void>((resolve, reject) => {
-    const addContentRequest = transaction.objectStore(FILE_CONTENT_STORE_NAME)
-      .put({ name: fileName, body } as FileWithBody);
-    addContentRequest.onsuccess = () => resolve();
-    addContentRequest.onerror = () => reject(addContentRequest.error);
-  });
-
-  const addMetadataPromise = new Promise<void>((resolve, reject) => {
-    const addMetadataRequest = transaction.objectStore(FILE_METADATA_STORE_NAME)
-      .put({ name: fileName, size: body.byteLength, type: 'forest', modifiedTime } as FileWithMetadata);
-    addMetadataRequest.onsuccess = () => resolve();
-    addMetadataRequest.onerror = () => reject(addMetadataRequest.error);
-  });
-
-  return Promise.all([addContentPromise, addMetadataPromise]);
-};
+): Promise<[void, void]> =>
+  saveFileRaw(db, contentStateToFileContents(contentState), fileName, modifiedTime);
 
 /**
  * Retrieves the content of a file stored in the IndexedDB by name,
  * and returns a promise resolving to the reconstructed ContentState object.
  */
 export const loadContentStateFromFile = (db: IDBDatabase, fileName: string): Promise<ContentState> =>
-  new Promise((resolve, reject) => {
-    const getContentRequest = db.transaction([FILE_CONTENT_STORE_NAME], 'readwrite')
+  loadFileRaw(db, fileName).then(contentStateFromFileContents);
+
+export const renameFile = (db: IDBDatabase, oldFileName: string, newFileName: string): Promise<[void, void]> =>
+  loadFileRaw(db, oldFileName)
+    .then(rawContents => saveFileRaw(db, rawContents, newFileName))
+    .then(() => deleteFile(db, oldFileName));
+
+export const deleteFile = (db: IDBDatabase, fileName: string): Promise<[void, void]> => {
+  const transaction = db.transaction([FILE_CONTENT_STORE_NAME, FILE_METADATA_STORE_NAME], 'readwrite');
+
+  const deleteContentPromise = new Promise<void>((resolve, reject) => {
+    const deleteContentRequest = transaction
       .objectStore(FILE_CONTENT_STORE_NAME)
-      .get(fileName);
-    getContentRequest.onsuccess = () =>
-      resolve(contentStateFromFileContents((getContentRequest.result as FileWithBody).body));
-    getContentRequest.onerror = () => reject(getContentRequest.error);
+      .delete(fileName);
+    deleteContentRequest.onsuccess = () => resolve();
+    deleteContentRequest.onerror = () => reject(deleteContentRequest.error);
   });
+
+  const deleteMetadataPromise = new Promise<void>((resolve, reject) => {
+    const deleteMetadataRequest = transaction
+      .objectStore(FILE_METADATA_STORE_NAME)
+      .delete(fileName);
+    deleteMetadataRequest.onsuccess = () => resolve();
+    deleteMetadataRequest.onerror = () => reject(deleteMetadataRequest.error);
+  });
+
+  return Promise.all([deleteContentPromise, deleteMetadataPromise]);
+};
