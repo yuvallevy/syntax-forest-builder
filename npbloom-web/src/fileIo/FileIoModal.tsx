@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Group, Modal, ScrollArea, Table, Text, TextInput } from '@mantine/core';
-import { IconDeviceFloppy } from '@tabler/icons-react';
+import { ActionIcon, Button, Group, Modal, ScrollArea, Table, Text, TextInput } from '@mantine/core';
+import { IconDeviceFloppy, IconEdit, IconTrash } from '@tabler/icons-react';
 import { FileWithMetadata } from './fileIoImpl';
 import prettyBytes from 'pretty-bytes';
+import './FileIoModal.scss';
 
 interface FileIoModalProps {
   opened: boolean;
@@ -11,6 +12,8 @@ interface FileIoModalProps {
   activeFileName?: string;
   onSave: (fileName: string) => Promise<void>;
   onLoad: (fileName: string) => Promise<void>;
+  onRename: (oldFileName: string, newFileName: string) => Promise<void>;
+  onDelete: (fileName: string) => Promise<void>;
   onClose: () => void;
 }
 
@@ -27,6 +30,8 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   activeFileName,
   onSave,
   onLoad,
+  onRename,
+  onDelete,
   onClose,
 }) => {
   const [fileNameInputValue, setFileNameInputValue] = useState('');
@@ -50,6 +55,15 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
       .catch((error: Error) => setSavingStatus(error));
   };
 
+  const handleRenameClicked = (oldFileName: string) => {
+    const newFileName = prompt('Enter new name:', oldFileName);
+    if (newFileName && newFileName !== oldFileName) onRename(oldFileName, newFileName);
+  };
+
+  const handleDeleteClicked = (fileName: string) => {
+    if (confirm('Delete?')) onDelete(fileName);
+  };
+
   return <Modal
     size="xl"
     opened={opened}
@@ -64,17 +78,27 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
           <th>Name</th>
           <th style={{ width: '12ch' }}>Size</th>
           <th style={{ width: '24ch' }}>Modified</th>
+          <th style={{ width: '10ch' }}></th>
         </tr>
         </thead>
         <tbody>
-          {sortedFileList.map((file) => <tr
-            key={file.name}
-            style={{ cursor: interactionMode === 'load' ? 'pointer' : 'unset' }}
-            onClick={interactionMode === 'load' ? () => onLoad(file.name) : undefined}
-          >
-            <td>{file.name}</td>
+          {sortedFileList.map((file) => <tr key={file.name} className="FileIoModal--file-row">
+            <td
+              style={{ cursor: interactionMode === 'load' ? 'pointer' : 'unset' }}
+              onClick={interactionMode === 'load' ? () => onLoad(file.name) : undefined}
+            >{file.name}</td>
             <td>{prettyBytes(file.size)}</td>
             <td>{prettyDate(file.modifiedTime)}</td>
+            <td>
+              <Group spacing="xs" position="right" className="FileIoModal--file-actions">
+                <ActionIcon onClick={() => handleRenameClicked(file.name)}>
+                  <IconEdit size={18} />
+                </ActionIcon>
+                <ActionIcon onClick={() => handleDeleteClicked(file.name)} color="red">
+                  <IconTrash size={18} />
+                </ActionIcon>
+              </Group>
+            </td>
           </tr>)}
         </tbody>
       </Table>

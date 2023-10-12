@@ -1,0 +1,7 @@
+.FileIoModal--file-actions {
+  visibility: hidden;
+}
+
+.FileIoModal--file-row:hover .FileIoModal--file-actions {
+  visibility: visible;
+}

@@ -3,10 +3,12 @@ import { useDisclosure } from '@mantine/hooks';
 import useUiState from '../useUiState';
 import { LoadContentState } from 'npbloom-core';
 import {
+  deleteFile,
   FileWithMetadata,
   getFileMetadataList,
   loadContentStateFromFile,
   openFileDatabase,
+  renameFile,
   saveContentStateToFile
 } from './fileIoImpl';
 import FileIoModal from './FileIoModal';
@@ -19,14 +21,16 @@ const useFileIo = () => {
   const [interactionMode, setInteractionMode] = useState<'save' | 'load'>('load');
   const [activeFileName, setActiveFileName] = useState<string>();
 
+  const refreshFileList = () => {
+    if (db.current) getFileMetadataList(db.current).then(setFileList);
+    else openFileDatabase().then(it => {
+      db.current = it;
+      getFileMetadataList(db.current).then(setFileList);
+    });
+  };
+
   useEffect(() => {
-    if (fileIoModalOpened) {
-      if (db.current) getFileMetadataList(db.current).then(setFileList);
-      else openFileDatabase().then(it => {
-        db.current = it;
-        getFileMetadataList(db.current).then(setFileList);
-      });
-    }
+    if (fileIoModalOpened) refreshFileList();
   }, [fileIoModalOpened]);
 
   const openFileSaveModal = () => {
@@ -39,22 +43,32 @@ const useFileIo = () => {
     openFileIoModal();
   };
 
+  const assertDbConnected = (fn: (db: IDBDatabase) => Promise<void>): Promise<void> =>
+    !db.current ? new Promise((_, reject) => reject(new Error('File database not connected')))
+      : fn(db.current);
+
   const handleSave = (fileName: string): Promise<void> =>
-    !db.current ? new Promise((_, reject) => reject(Error('File database not connected')))
-      : saveContentStateToFile(db.current, state.contentState.current, fileName)
+    assertDbConnected(db =>
+      saveContentStateToFile(db, state.contentState.current, fileName)
         .then(() => {
           setActiveFileName(fileName);
           closeFileIoModal();
-        });
+        }));
 
   const handleLoad = (fileName: string): Promise<void> =>
-    !db.current ? new Promise((_, reject) => reject(Error('File database not connected')))
-      : loadContentStateFromFile(db.current, fileName)
+    assertDbConnected(db =>
+      loadContentStateFromFile(db, fileName)
         .then(contentState => {
           setActiveFileName(fileName);
           dispatch(new LoadContentState(contentState))
           closeFileIoModal();
-        });
+        }));
+
+  const handleRename = (oldFileName: string, newFileName: string): Promise<void> =>
+    assertDbConnected(db => renameFile(db, oldFileName, newFileName).then(refreshFileList));
+
+  const handleDelete = (fileName: string): Promise<void> =>
+    assertDbConnected(db => deleteFile(db, fileName).then(refreshFileList));
 
   const saveOrSaveAs = () => activeFileName ? handleSave(activeFileName) : openFileSaveModal();
 
@@ -65,6 +79,8 @@ const useFileIo = () => {
     activeFileName={activeFileName}
     onSave={handleSave}
     onLoad={handleLoad}
+    onRename={handleRename}
+    onDelete={handleDelete}
     onClose={closeFileIoModal}
   />;
 
