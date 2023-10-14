@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.0"
 }
 
-group = "net.yuvsstuff"
+group = "space.yuvalinguist"
 version = "0.5"
 
 repositories {
