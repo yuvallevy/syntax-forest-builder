@@ -52,6 +52,15 @@ export const openFileDatabase = (): Promise<IDBDatabase> => new Promise((resolve
   openRequest.onerror = () => reject(openRequest.error);
 });
 
+const fileExists = (db: IDBDatabase, fileName: string): Promise<boolean> =>
+  new Promise((resolve, reject) => {
+    const fileExistenceCheckRequest = db.transaction(FILE_METADATA_STORE_NAME)
+      .objectStore(FILE_METADATA_STORE_NAME)
+      .count(fileName);
+    fileExistenceCheckRequest.onsuccess = event => resolve((event.currentTarget as IDBRequest<number>).result > 0);
+    fileExistenceCheckRequest.onerror = () => reject(fileExistenceCheckRequest.error);
+  });
+
 /**
  * Returns a promise resolving to a list of files stored in the IndexedDB with their metadata.
  */
@@ -117,9 +126,14 @@ export const loadContentStateFromFile = (db: IDBDatabase, fileName: string): Pro
   loadFileRaw(db, fileName).then(contentStateFromFileContents);
 
 export const renameFile = (db: IDBDatabase, oldFileName: string, newFileName: string): Promise<[void, void]> =>
-  loadFileRaw(db, oldFileName)
-    .then(rawContents => saveFileRaw(db, rawContents, newFileName))
-    .then(() => deleteFile(db, oldFileName));
+  new Promise((resolve, reject) =>
+    fileExists(db, newFileName).then(alreadyExists => {
+      if (alreadyExists) reject(new Error(`A file named '${newFileName}' already exists`));
+      else loadFileRaw(db, oldFileName)
+        .then(rawContents => saveFileRaw(db, rawContents, newFileName))
+        .then(() => deleteFile(db, oldFileName))
+        .then(resolve).catch(reject);
+    }));
 
 export const deleteFile = (db: IDBDatabase, fileName: string): Promise<[void, void]> => {
   const transaction = db.transaction([FILE_CONTENT_STORE_NAME, FILE_METADATA_STORE_NAME], 'readwrite');

@@ -2,6 +2,10 @@
   visibility: hidden;
 }
 
+.FileIoModal--file-row .FileIoModal--new-file-name-input {
+  padding: 0;
+}
+
 .FileIoModal--file-row:hover .FileIoModal--file-actions {
   visibility: visible;
 }

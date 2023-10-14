@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActionIcon, Button, Group, Modal, ScrollArea, Table, Text, TextInput } from '@mantine/core';
-import { IconDeviceFloppy, IconEdit, IconTrash } from '@tabler/icons-react';
+import { ActionIcon, Button, Group, Modal, Popover, ScrollArea, Table, Text, TextInput } from '@mantine/core';
+import { useInputState } from '@mantine/hooks';
+import { IconCheck, IconDeviceFloppy, IconEdit, IconTrash, IconX } from '@tabler/icons-react';
 import { FileWithMetadata } from './fileIoImpl';
 import prettyBytes from 'pretty-bytes';
 import './FileIoModal.scss';
@@ -38,6 +39,11 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   const fileNameInputRef = useRef<HTMLInputElement>(null);
   const [savingStatus, setSavingStatus] = useState<'idle' | 'loading' | 'success' | Error>('idle');
 
+  const [renamingFile, setRenamingFile] = useState<string>();
+  const [newFileName, setNewFileName] = useInputState<string>('');
+  const newFileNameInputRef = useRef<HTMLInputElement>(null);
+  const [renamingStatus, setRenamingStatus] = useState<Error>();
+
   const sortedFileList = useMemo(() => fileList.sort(compareFileNames), [fileList]);
 
   useEffect(() => {
@@ -49,20 +55,33 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   useEffect(() => setFileNameInputValue(activeFileName ?? ''), [activeFileName]);
 
   const handleSaveClicked = (event: React.FormEvent) => {
+    setRenamingStatus(undefined);
     event.preventDefault();
     onSave(fileNameInputValue)
       .then(() => setSavingStatus('success'))
       .catch((error: Error) => setSavingStatus(error));
   };
 
-  const handleRenameClicked = (oldFileName: string) => {
-    const newFileName = prompt('Enter new name:', oldFileName);
-    if (newFileName && newFileName !== oldFileName) onRename(oldFileName, newFileName);
+  const handleRename = (oldFileName: string, newFileName: string) => {
+    setRenamingStatus(undefined);
+    if (newFileName && newFileName !== oldFileName) onRename(oldFileName, newFileName)
+      .then(closeNewFileNamePrompt)
+      .catch(setRenamingStatus);
+    else closeNewFileNamePrompt();
   };
 
-  const handleDeleteClicked = (fileName: string) => {
-    if (confirm('Delete?')) onDelete(fileName);
+  const openNewFileNamePrompt = (oldFileName: string) => {
+    setRenamingFile(renamingFile === oldFileName ? undefined : oldFileName);
+    setNewFileName(oldFileName);
+    setRenamingStatus(undefined);
+    setTimeout(() => newFileNameInputRef.current?.focus(), 20);
   };
+
+  const closeNewFileNamePrompt = () => {
+    setRenamingFile(undefined);
+    setNewFileName(undefined);
+    setRenamingStatus(undefined);
+  }
 
   return <Modal
     size="xl"
@@ -85,19 +104,50 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
           {sortedFileList.map((file) => <tr key={file.name} className="FileIoModal--file-row">
             <td
               style={{ cursor: interactionMode === 'load' ? 'pointer' : 'unset' }}
-              onClick={interactionMode === 'load' ? () => onLoad(file.name) : undefined}
-            >{file.name}</td>
+              onClick={interactionMode === 'load'
+                ? ((event) => event.currentTarget === event.target ? onLoad(file.name) : undefined)
+                : undefined}
+            >
+              {renamingFile === file.name
+                ? <form onSubmit={(event) => { event.preventDefault(); handleRename(file.name, newFileName); }}>
+                  <Popover opened={!!renamingStatus} position="bottom-start" withArrow offset={0}>
+                    <Popover.Target>
+                      <TextInput ref={newFileNameInputRef} classNames={{ root: "FileIoModal--new-file-name-input" }} p="xs" value={newFileName} onInput={setNewFileName} />
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <Text color="red">{renamingStatus?.message}</Text>
+                    </Popover.Dropdown>
+                  </Popover>
+                </form>
+                : file.name}
+            </td>
             <td>{prettyBytes(file.size)}</td>
             <td>{prettyDate(file.modifiedTime)}</td>
             <td>
-              <Group spacing="xs" position="right" className="FileIoModal--file-actions">
-                <ActionIcon onClick={() => handleRenameClicked(file.name)}>
-                  <IconEdit size={18} />
-                </ActionIcon>
-                <ActionIcon onClick={() => handleDeleteClicked(file.name)} color="red">
-                  <IconTrash size={18} />
-                </ActionIcon>
-              </Group>
+              {renamingFile
+                ? <Group spacing="xs" position="right" className="FileIoModal--file-actions">
+                  <ActionIcon variant="gradient" onClick={() => handleRename(file.name, newFileName)}>
+                    <IconCheck size={18} />
+                  </ActionIcon>
+                  <ActionIcon onClick={closeNewFileNamePrompt}>
+                    <IconX size={18} />
+                  </ActionIcon>
+                </Group>
+                : <Group spacing="xs" position="right" className="FileIoModal--file-actions">
+                  <ActionIcon onClick={() => openNewFileNamePrompt(file.name)}>
+                    <IconEdit size={18} />
+                  </ActionIcon>
+                  <Popover position="left" withArrow>
+                    <Popover.Target>
+                      <ActionIcon color="red">
+                        <IconTrash size={18} />
+                      </ActionIcon>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <Button size="sm" p="xs" color="red" onClick={() => onDelete(file.name)}>Click to confirm</Button>
+                    </Popover.Dropdown>
+                  </Popover>
+                </Group>}
             </td>
           </tr>)}
         </tbody>
