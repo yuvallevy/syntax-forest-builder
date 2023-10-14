@@ -1,9 +1,10 @@
 plugins {
     kotlin("multiplatform") version "1.9.0"
     kotlin("plugin.serialization") version "1.9.0"
+    id("maven-publish")
 }
 
-group = "space.yuvalinguist"
+group = "space.yuvalinguist.npbloom"
 version = "0.5"
 
 repositories {
