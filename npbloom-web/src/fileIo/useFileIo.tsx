@@ -21,16 +21,15 @@ const useFileIo = () => {
   const [interactionMode, setInteractionMode] = useState<'save' | 'load'>('load');
   const [activeFileName, setActiveFileName] = useState<string>();
 
-  const refreshFileList = () => {
-    if (db.current) getFileMetadataList(db.current).then(setFileList);
-    else openFileDatabase().then(it => {
-      db.current = it;
-      getFileMetadataList(db.current).then(setFileList);
-    });
+  const refreshFileList = async () => {
+    if (!db.current) {
+      db.current = await openFileDatabase();
+    }
+    setFileList(await getFileMetadataList(db.current));
   };
 
   useEffect(() => {
-    if (fileIoModalOpened) refreshFileList();
+    if (fileIoModalOpened) void refreshFileList();
   }, [fileIoModalOpened]);
 
   const openFileSaveModal = () => {
@@ -48,27 +47,31 @@ const useFileIo = () => {
       : fn(db.current);
 
   const handleSave = (fileName: string): Promise<void> =>
-    assertDbConnected(db =>
-      saveContentStateToFile(db, state.contentState.current, fileName)
-        .then(() => {
-          setActiveFileName(fileName);
-          closeFileIoModal();
-        }));
+    assertDbConnected(async db => {
+      await saveContentStateToFile(db, state.contentState.current, fileName);
+      setActiveFileName(fileName);
+      closeFileIoModal();
+    });
 
   const handleLoad = (fileName: string): Promise<void> =>
-    assertDbConnected(db =>
-      loadContentStateFromFile(db, fileName)
-        .then(contentState => {
-          setActiveFileName(fileName);
-          dispatch(new LoadContentState(contentState))
-          closeFileIoModal();
-        }));
+    assertDbConnected(async db => {
+      const contentState = await loadContentStateFromFile(db, fileName);
+      setActiveFileName(fileName);
+      dispatch(new LoadContentState(contentState));
+      closeFileIoModal();
+    });
 
   const handleRename = (oldFileName: string, newFileName: string): Promise<void> =>
-    assertDbConnected(db => renameFile(db, oldFileName, newFileName).then(refreshFileList));
+    assertDbConnected(async db => {
+      await renameFile(db, oldFileName, newFileName);
+      await refreshFileList();
+    });
 
   const handleDelete = (fileName: string): Promise<void> =>
-    assertDbConnected(db => deleteFile(db, fileName).then(refreshFileList));
+    assertDbConnected(async db => {
+      await deleteFile(db, fileName);
+      await refreshFileList();
+    });
 
   const saveOrSaveAs = () => activeFileName ? handleSave(activeFileName) : openFileSaveModal();
 

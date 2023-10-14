@@ -122,18 +122,14 @@ export const saveContentStateToFile = (
  * Retrieves the content of a file stored in the IndexedDB by name,
  * and returns a promise resolving to the reconstructed ContentState object.
  */
-export const loadContentStateFromFile = (db: IDBDatabase, fileName: string): Promise<ContentState> =>
-  loadFileRaw(db, fileName).then(contentStateFromFileContents);
+export const loadContentStateFromFile = async (db: IDBDatabase, fileName: string): Promise<ContentState> =>
+  contentStateFromFileContents(await loadFileRaw(db, fileName));
 
-export const renameFile = (db: IDBDatabase, oldFileName: string, newFileName: string): Promise<[void, void]> =>
-  new Promise((resolve, reject) =>
-    fileExists(db, newFileName).then(alreadyExists => {
-      if (alreadyExists) reject(new Error(`A file named '${newFileName}' already exists`));
-      else loadFileRaw(db, oldFileName)
-        .then(rawContents => saveFileRaw(db, rawContents, newFileName))
-        .then(() => deleteFile(db, oldFileName))
-        .then(resolve).catch(reject);
-    }));
+export const renameFile = async (db: IDBDatabase, oldFileName: string, newFileName: string): Promise<[void, void]> => {
+  if (await fileExists(db, newFileName)) throw new Error(`A file named '${newFileName}' already exists`);
+  await saveFileRaw(db, await loadFileRaw(db, oldFileName), newFileName);
+  return await deleteFile(db, oldFileName);
+};
 
 export const deleteFile = (db: IDBDatabase, fileName: string): Promise<[void, void]> => {
   const transaction = db.transaction([FILE_CONTENT_STORE_NAME, FILE_METADATA_STORE_NAME], 'readwrite');
