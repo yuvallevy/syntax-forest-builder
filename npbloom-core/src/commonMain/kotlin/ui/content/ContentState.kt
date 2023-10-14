@@ -11,34 +11,21 @@ import insertAt
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import removeAt
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 private typealias PlotIndex = Int
 
 @JsExport
 @Serializable
 data class ContentState(
-    @SerialName("p") val plots: Array<UnpositionedPlot>
+    @SerialName("p") @JsName("plotsAsKtList") val plots: List<UnpositionedPlot>
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class.js != other::class.js) return false
-
-        other as ContentState
-
-        if (!plots.contentEquals(other.plots)) return false
-
-        return true
-    }
-
-    override fun hashCode() = plots.contentHashCode()
-
-    override fun toString() =
-        """ContentState(
-    plots = arrayOf(${plots.joinToString()})
-)"""
+    @JsName("plots") val plotsAsArray get() = plots.toTypedArray()
 }
 
-private val initialState = ContentState(arrayOf(UnpositionedPlot()))
+private val initialState = ContentState(listOf(UnpositionedPlot()))
 
 internal sealed interface ContentOrHistoryAction
 

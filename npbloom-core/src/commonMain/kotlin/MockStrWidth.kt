@@ -1,5 +1,8 @@
 @file:OptIn(ExperimentalJsExport::class)
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
 // Basic mapping of letter to width, for testing purposes only
 private val charWidths: Map<Char, Double> = mapOf(
     ' ' to 4.0,

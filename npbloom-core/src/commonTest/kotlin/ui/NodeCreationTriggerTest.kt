@@ -5,7 +5,7 @@ import content.StringSlice
 import content.positioned.*
 import mockStrWidth
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class NodeCreationTriggerTest {
     private val positionedTree = PositionedTree(
@@ -22,8 +22,8 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersNoSelectionNoNodes() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(15.5, -20.0),
                     topLeft = CoordsInTree(-0.5, -48.0),
@@ -48,8 +48,8 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersNoSelectionEmptyHead() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(42.0, -20.0),
                     topLeft = CoordsInTree(26.0, -48.0),
@@ -74,28 +74,28 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersNoSelectionSomeNodes() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(54.0, -42.0),
                     topLeft = CoordsInTree(38.0, -70.0),
                     bottomRight = CoordsInTree(70.0, -22.0),
                     childIds = setOf("aF3BLs"),
-                    childPositions = arrayOf(CoordsInTree(54.0, -2.0))
+                    childPositions = listOf(CoordsInTree(54.0, -2.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(101.0, -60.0),
                     topLeft = CoordsInTree(85.0, -88.0),
                     bottomRight = CoordsInTree(117.0, -40.0),
                     childIds = setOf("X9M"),
-                    childPositions = arrayOf(CoordsInTree(101.0, -20.0))
+                    childPositions = listOf(CoordsInTree(101.0, -20.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(77.5, -60.0),
                     topLeft = CoordsInTree(61.5, -88.0),
                     bottomRight = CoordsInTree(93.5, -40.0),
                     childIds = setOf("aF3BLs", "X9M"),
-                    childPositions = arrayOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
+                    childPositions = listOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
                 ),
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(15.5, -20.0),
@@ -109,28 +109,28 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersSliceSelectionSomeNodes() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(54.0, -42.0),
                     topLeft = CoordsInTree(38.0, -70.0),
                     bottomRight = CoordsInTree(70.0, -22.0),
                     childIds = setOf("aF3BLs"),
-                    childPositions = arrayOf(CoordsInTree(54.0, -2.0))
+                    childPositions = listOf(CoordsInTree(54.0, -2.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(101.0, -60.0),
                     topLeft = CoordsInTree(85.0, -88.0),
                     bottomRight = CoordsInTree(117.0, -40.0),
                     childIds = setOf("X9M"),
-                    childPositions = arrayOf(CoordsInTree(101.0, -20.0))
+                    childPositions = listOf(CoordsInTree(101.0, -20.0))
                 ),
                 BranchingNodeCreationTrigger(
                     origin = CoordsInTree(77.5, -60.0),
                     topLeft = CoordsInTree(61.5, -88.0),
                     bottomRight = CoordsInTree(93.5, -40.0),
                     childIds = setOf("aF3BLs", "X9M"),
-                    childPositions = arrayOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
+                    childPositions = listOf(CoordsInTree(54.0, -2.0), CoordsInTree(101.0, -20.0))
                 ),
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(23.5, -20.0),
@@ -144,8 +144,8 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersSliceSelectionIsPhrase() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(101.0, -20.0),
                     topLeft = CoordsInTree(85.0, -48.0),
@@ -166,8 +166,8 @@ class NodeCreationTriggerTest {
 
     @Test
     fun getNodeCreationTriggersSliceSelectionIsWordAndSpace() =
-        assertContentEquals(
-            arrayOf(
+        assertEquals(
+            listOf(
                 TerminalNodeCreationTrigger(
                     origin = CoordsInTree(15.5, -20.0),
                     topLeft = CoordsInTree(-0.5, -48.0),

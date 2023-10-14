@@ -77,7 +77,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       event.currentTarget.blur();
       if (state.selection instanceof SliceSelectionInPlot &&
         unpositionedPlot.tree(state.selection.treeId)
-          .getNodeIdsAssignedToSliceAsArray(state.selection.slice).length === 0) {
+          .getNodeIdsAssignedToSlice(state.selection.slice).length === 0) {
         addNode();
       } else {
         selectParentNodes();

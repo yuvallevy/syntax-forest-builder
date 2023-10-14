@@ -11,6 +11,7 @@ repositories {
 }
 
 kotlin {
+    jvm()
     js(IR) {
         useEsModules()
         browser()

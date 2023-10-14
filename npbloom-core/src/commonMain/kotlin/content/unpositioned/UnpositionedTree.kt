@@ -6,6 +6,9 @@ import NoSuchNodeException
 import content.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
 @Serializable
@@ -17,7 +20,7 @@ data class UnpositionedTree(
 ) : TreeBase {
     internal val nodeIds get() = nodes.ids
 
-    val nodesAsArray get() = nodes.toTypedArray()
+    val nodesAsArray get() = nodes.toJsArray()
 
     val nodeCount get() = nodes.size
 
@@ -70,7 +73,7 @@ data class UnpositionedTree(
      * Transforms all nodes in the given tree using the given transform function.
      */
     internal fun transformAllNodes(transformFunc: NodeTransformFunc): UnpositionedTree =
-        copy(nodes = EntitySet(*nodes.map(transformFunc)))
+        copy(nodes = EntitySet(nodes.map(transformFunc)))
 
     /**
      * Deletes the nodes with the given IDs from the given tree.
@@ -117,7 +120,8 @@ data class UnpositionedTree(
             if (node is UnpositionedBranchingNode) node.children else emptySet()
         }.toSet()
 
-    internal fun getNodeIdsAssignedToSlice(slice: StringSlice): Set<Id> =
+    @JsName("getNodeIdsAssignedToSliceAsKtSet")
+    fun getNodeIdsAssignedToSlice(slice: StringSlice): Set<Id> =
         // If the slice is of length 0 (as in a zero-length selection),
         if (slice.isZeroLength)
         // check whether it is within the node slice or at either of its boundaries
@@ -125,6 +129,7 @@ data class UnpositionedTree(
         // otherwise use a simple overlap check where adjacent slices are not counted as overlapping
         else filterNodeIdsByNode { node -> node is UnpositionedTerminalNode && slice overlapsWith node.slice }
 
+    @JsName("getNodeIdsAssignedToSlice")
     fun getNodeIdsAssignedToSliceAsArray(slice: StringSlice): Array<Id> =
         getNodeIdsAssignedToSlice(slice).toTypedArray()
 }

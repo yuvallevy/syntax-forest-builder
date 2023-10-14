@@ -7,6 +7,9 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.cbor.*
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @OptIn(ExperimentalStdlibApi::class)
 private val magicNumber = "59b10011f04e5700".hexToByteArray()

@@ -4,6 +4,8 @@ package content.unpositioned
 
 import content.serializers.TreeCoordsOffsetSerializer
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 typealias DTreeX = Double
 typealias DTreeY = Double

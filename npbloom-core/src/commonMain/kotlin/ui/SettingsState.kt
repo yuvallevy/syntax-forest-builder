@@ -2,6 +2,9 @@
 
 package ui
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
 @JsExport
 sealed interface SettingsAction {
     val key: String

@@ -120,12 +120,12 @@ class PositioningTest {
 
     @Test
     fun sortNodesByXCoord() {
-        assertContentEquals(
-            arrayOf("a", "b"),
+        assertEquals(
+            listOf("a", "b"),
             sortNodesByXCoord(::mockStrWidth, treeWithBranchingNodes, setOf("b", "a"))
         )
-        assertContentEquals(
-            arrayOf("a", "c"),
+        assertEquals(
+            listOf("a", "c"),
             sortNodesByXCoord(::mockStrWidth, treeWithBranchingNodes, setOf("a", "c"))
         )
     }

@@ -8,6 +8,8 @@ import content.positioned.StrWidthFunc
 import content.positioned.sortNodesByXCoord
 import content.unpositioned.*
 import ui.content.*
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 private typealias PlotIndex = Int
 

@@ -4,6 +4,8 @@ package content.unpositioned
 
 import content.serializers.PlotCoordsOffsetSerializer
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 typealias DPlotX = Double
 typealias DPlotY = Double

@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class ContentStateTest {
     private val testInitialState = ContentState(
-        plots = arrayOf(
+        plots = listOf(
             UnpositionedPlot(
                 trees = EntitySet(
                     UnpositionedTree(
@@ -52,7 +52,7 @@ class ContentStateTest {
 
     private val testInitialContentState = initialContentState.copy(
         current = testInitialState,
-        undoStack = arrayOf(
+        undoStack = listOf(
             PlotChanged(
                 1,
                 testInitialState.plots[1],
@@ -77,12 +77,12 @@ class ContentStateTest {
         action: ContentOrHistoryAction,
         current: ContentState,
         newUndoableAction: ContentChange? = null,
-        undoStack: Array<ContentChange> = testInitialContentState.undoStack,
-        redoStack: Array<ContentChange> = testInitialContentState.redoStack,
+        undoStack: List<ContentChange> = testInitialContentState.undoStack,
+        redoStack: List<ContentChange> = testInitialContentState.redoStack,
     ) = assertEquals(
         testInitialContentState.copy(
             current = current,
-            undoStack = if (newUndoableAction != null) arrayOf(newUndoableAction) + undoStack else undoStack,
+            undoStack = if (newUndoableAction != null) listOf(newUndoableAction) + undoStack else undoStack,
             redoStack = redoStack,
         ),
         contentReducer(testInitialContentState, action)
@@ -100,7 +100,7 @@ class ContentStateTest {
     fun deletePlot() =
         assertActionResult(
             action = DeletePlot(1),
-            current = ContentState(plots = arrayOf(testInitialState.plots[0])),
+            current = ContentState(plots = listOf(testInitialState.plots[0])),
             newUndoableAction = PlotDeleted(plotIndex = 1, removedPlot = testInitialState.plots[1]),
         )
 
@@ -108,7 +108,7 @@ class ContentStateTest {
     fun resetPlot() =
         assertActionResult(
             action = ResetPlot(0),
-            current = ContentState(plots = arrayOf(UnpositionedPlot(), testInitialState.plots[1])),
+            current = ContentState(plots = listOf(UnpositionedPlot(), testInitialState.plots[1])),
             newUndoableAction = PlotChanged(plotIndex = 0, old = testInitialState.plots[0], new = UnpositionedPlot()),
         )
 
@@ -117,7 +117,7 @@ class ContentStateTest {
         assertActionResult(
             action = InsertNode(1, "aa", InsertedBranchingNode("c", "NP", null, setOf("a"))),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     testInitialState.plots[0],
                     UnpositionedPlot(
                         trees = EntitySet(
@@ -158,7 +158,7 @@ class ContentStateTest {
         assertActionResult(
             action = DeleteNodes(0, setOf(NodeIndicatorInPlot("aa", "b"), NodeIndicatorInPlot("zz", "x"))),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -261,7 +261,7 @@ class ContentStateTest {
         assertActionResult(
             action = AdoptNodes(0, "zz", "x", setOf("y")),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -327,7 +327,7 @@ class ContentStateTest {
         assertActionResult(
             action = DisownNodes(0, "zz", "w", setOf("x")),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -425,7 +425,7 @@ class ContentStateTest {
         assertActionResult(
             action = MoveNodes(0, setOf(NodeIndicatorInPlot("aa", "a")), TreeCoordsOffset(1.0, -4.0)),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -537,7 +537,7 @@ class ContentStateTest {
                 setOf(NodeIndicatorInPlot("aa", "b"), NodeIndicatorInPlot("zz", "w"))
             ),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -646,7 +646,7 @@ class ContentStateTest {
         assertActionResult(
             action = SetNodeLabel(0, NodeIndicatorInPlot("aa", "a"), "NP"),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -717,7 +717,7 @@ class ContentStateTest {
         assertActionResult(
             action = SetTriangle(0, setOf(NodeIndicatorInPlot("aa", "b")), triangle = true),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -826,7 +826,7 @@ class ContentStateTest {
         assertActionResult(
             action = SetSentence(0, "aa", "tee state", StringSlice(2, 2)),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -897,7 +897,7 @@ class ContentStateTest {
         assertActionResult(
             action = AddTree(0, "zz", PlotCoordsOffset(105.0, 88.0)),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(
@@ -952,7 +952,7 @@ class ContentStateTest {
         assertActionResult(
             action = DeleteTree(0, "aa"),
             current = ContentState(
-                plots = arrayOf(
+                plots = listOf(
                     UnpositionedPlot(
                         trees = EntitySet(
                             UnpositionedTree(

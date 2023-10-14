@@ -6,6 +6,8 @@ import content.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable

@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 
 class SaveLoadTest {
     private val content = ContentState(
-        arrayOf(
+        listOf(
             UnpositionedPlot(
                 trees = EntitySet(
                     UnpositionedTree(

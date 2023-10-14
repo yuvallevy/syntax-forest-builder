@@ -2,6 +2,9 @@
 
 package content
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
 typealias NodeLabel = String
 
 @JsExport

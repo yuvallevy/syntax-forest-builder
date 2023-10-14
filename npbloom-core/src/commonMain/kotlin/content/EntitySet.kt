@@ -4,6 +4,9 @@ package content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 /**
  * Wrapper around a set of objects that have an `id` field (all types of trees and nodes).
@@ -27,7 +30,7 @@ data class EntitySet<T : WithId> internal constructor(
     internal val ids = entities.map { it.id }.toSet()
     internal val size = entities.size
 
-    internal fun toTypedArray() = entities.toTypedArray()
+    internal fun toJsArray() = entities.toJsArray()
 
     internal operator fun contains(id: Id) = id in internalIdMap
     operator fun get(id: Id) = internalIdMap[id]
@@ -41,10 +44,6 @@ data class EntitySet<T : WithId> internal constructor(
         entities.filterNot { newItems.any { newNode -> it.id == newNode.id } }.toSet() + newItems
     )
 
-    internal operator fun plus(newItems: Array<T>) = EntitySet(
-        entities.filterNot { newItems.any { newNode -> it.id == newNode.id } }.toSet() + newItems
-    )
-
     internal fun isEmpty() = entities.isEmpty()
     internal fun isNotEmpty() = entities.isNotEmpty()
 
@@ -54,8 +53,11 @@ data class EntitySet<T : WithId> internal constructor(
 
     internal inline fun filter(predicate: (T) -> Boolean) = EntitySet(entities.filter(predicate))
     internal inline fun find(predicate: (T) -> Boolean) = entities.find(predicate)
-    internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = entities.flatMap(transform).toTypedArray()
-    fun <R> map(transform: (T) -> R) = entities.map(transform).toTypedArray()
+    internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = entities.flatMap(transform)
+    @Suppress("NON_EXPORTABLE_TYPE") @JsName("mapAsKtList") fun <R> map(transform: (T) -> R) = entities.map(transform)
+    @JsName("map") fun <R> mapAsArray(transform: (T) -> R) = entities.map(transform).toJsArray()
     internal inline fun <U : WithId> mapToNewEntitySet(transform: (T) -> U) = EntitySet(entities.map(transform))
     internal inline fun <R : Comparable<R>> minOf(selector: (T) -> R) = entities.minOf(selector)
 }
+
+internal expect fun <T> Collection<T>.toJsArray(): Array<T>
