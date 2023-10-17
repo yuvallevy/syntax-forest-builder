@@ -4,10 +4,14 @@ import { SetAutoFormatSubscript, SetLiveStringWidth } from 'npbloom-core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import SettingsStateContext from "../../SettingsStateContext";
+import useHotkeys from '@reecelucas/react-use-hotkeys';
 
 const Settings: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const { settingsState, settingsDispatch } = useContext(SettingsStateContext);
+
+  useHotkeys(['Control+,', 'Meta+,'], event => { event.preventDefault(); open(); },
+    { ignoredElementWhitelist: ['INPUT'] });
 
   return <>
     <Button
