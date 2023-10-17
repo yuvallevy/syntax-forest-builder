@@ -82,9 +82,11 @@ const UiRoot = () => {
 
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
 
-  useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); });
+  useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
+    { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); });
+  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); },
+    { ignoredElementWhitelist: ['INPUT'] });
 
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
     if (state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 1) {
