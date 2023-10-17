@@ -78,9 +78,11 @@ const UiRoot = () => {
 
   useHotkeys(['Backspace', 'Delete'], deleteNode);
 
-  useHotkeys(['Control+z', 'Meta+z'], event => { event.preventDefault(); undo(); });
+  useHotkeys(['Control+z', 'Meta+z'], event => { event.preventDefault(); undo(); },
+    { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); });
+  useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); },
+    { ignoredElementWhitelist: ['INPUT'] });
 
   useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
     { ignoredElementWhitelist: ['INPUT'] });

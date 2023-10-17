@@ -2,8 +2,8 @@ import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, PositionedTree,
-  Redo, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence,
-  SliceSelectionInPlot, StringSlice, Undo
+  RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence, SliceSelectionInPlot,
+  StringSlice
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -44,8 +44,6 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   const setNodeSlice = (newSlice: StringSlice) => dispatch(new SetSelectedNodeSlice(newSlice));
   const selectParentNodes = () => dispatch(new SelectParentNodes());
   const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
-  const undo = () => dispatch(new Undo());
-  const redo = () => dispatch(new Redo());
 
   const handleSliceSelect = (slice: StringSlice) => {
     if (state.selectionAction === NodeSelectionAction.Adopt) {
@@ -100,12 +98,6 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       }
     } else if ((event.key === 'Backspace' || event.key === 'Delete') && event.currentTarget.value === '') {
       removeAndDeselectTree(treeId);
-    } else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      undo();
-    } else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      redo();
     }
   };
 
