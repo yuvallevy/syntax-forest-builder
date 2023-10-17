@@ -24,6 +24,12 @@ private fun getWordRange(sentence: Sentence, position: Int): StringSlice {
 }
 
 /**
+ * Spreads a zero-length slice to cover the entire word.
+ */
+fun spreadSlice(slice: StringSlice, sentence: Sentence) =
+    if (slice.isZeroLength) getWordRange(sentence, slice.start) else slice
+
+/**
  * Returns the definition for a new node based on the current selection.
  * If the selection is a slice of length 0, expands it to span the word where the cursor currently is,
  * using the given sentence.
@@ -32,8 +38,7 @@ internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sen
     when (selection) {
         is SliceSelectionInPlot -> {
             // A slice of the sentence is selected
-            val sliceAfterSpread =
-                if (selection.slice.isZeroLength) getWordRange(sentence, selection.slice.start) else selection.slice
+            val sliceAfterSpread = spreadSlice(selection.slice, sentence)
             InsertedTerminalNode(
                 newNodeId, "", null, sliceAfterSpread,
                 triangle = sliceAfterSpread crossesWordBoundaryIn sentence

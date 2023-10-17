@@ -1,8 +1,9 @@
 import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
-  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionInPlot, PositionedTree, Redo, RemoveTree,
-  SelectionInPlot, SelectParentNodes, SetSelection, SetSentence, SliceSelectionInPlot, StringSlice, Undo
+  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, PositionedTree,
+  Redo, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence,
+  SliceSelectionInPlot, StringSlice, Undo
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -35,15 +36,30 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   const { state, dispatch } = useUiState();
   const { settingsState } = useContext(SettingsStateContext);
 
+  const sentenceInputRef = useRef<HTMLInputElement>(null);
+
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
+  const setNodeSlice = (newSlice: StringSlice) => dispatch(new SetSelectedNodeSlice(newSlice));
   const selectParentNodes = () => dispatch(new SelectParentNodes());
   const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
-  const handleSliceSelect = (slice: StringSlice) => setSelection(new SliceSelectionInPlot(treeId, slice));
+  const handleSliceSelect = (slice: StringSlice) => {
+    if (state.selectionAction === NodeSelectionAction.Adopt) {
+      setNodeSlice(slice);
+      // Reduce the selection to a zero-length slice,
+      // so that after the input is blurred the selection can't be accidentally dragged
+      sentenceInputRef.current?.setSelectionRange(sentenceInputRef.current.selectionEnd,
+        sentenceInputRef.current.selectionEnd);
+      // Blur the text field immediately to indicate that no slice actually becomes selected
+      sentenceInputRef.current?.blur();
+    } else {
+      setSelection(new SliceSelectionInPlot(treeId, slice));
+    }
+  };
 
   const removeAndDeselectTree = (treeId: Id) => {
     dispatch(new RemoveTree(treeId));
@@ -100,6 +116,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   return <input
     type="text"
     id={treeId}
+    ref={sentenceInputRef}
     value={tree.sentence}
     className={'SentenceView--input' + (className ? ` ${className}` : '')}
     style={{

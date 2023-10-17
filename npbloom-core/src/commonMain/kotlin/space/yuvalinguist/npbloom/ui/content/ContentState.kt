@@ -68,6 +68,13 @@ internal data class SetNodeLabel(
     val newLabel: String
 ) : ContentAction
 
+internal data class SetNodeSlice(
+    val plotIndex: PlotIndex,
+    val nodeIndicator: NodeIndicatorInPlot,
+    val newSlice: StringSlice,
+    val triangle: Boolean,
+) : ContentAction
+
 internal data class SetTriangle(
     val plotIndex: PlotIndex,
     val nodeIndicators: Set<NodeIndicatorInPlot>,
@@ -143,6 +150,15 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
         state.plots[action.plotIndex].tree(action.nodeIndicator.treeId),
         state.plots[action.plotIndex].tree(action.nodeIndicator.treeId)
             .transformNode(action.nodeIndicator.nodeId) { it.withLabel(action.newLabel) }
+    )
+
+    is SetNodeSlice -> TreeChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex].tree(action.nodeIndicator.treeId),
+        state.plots[action.plotIndex].tree(action.nodeIndicator.treeId)
+            .transformNode(action.nodeIndicator.nodeId) {
+                UnpositionedTerminalNode(it.id, it.label, slice = action.newSlice, triangle = action.triangle)
+            }
     )
 
     is SetTriangle -> PlotChanged(

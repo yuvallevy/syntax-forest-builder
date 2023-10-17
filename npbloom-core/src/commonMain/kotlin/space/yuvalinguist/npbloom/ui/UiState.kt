@@ -41,6 +41,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class DeleteSelectedNodes : UiAction
 @JsExport class AdoptNodesBySelection(val adoptedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
 @JsExport class DisownNodesBySelection(val disownedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
+@JsExport class SetSelectedNodeSlice(val newSlice: StringSlice) : UiAction
 @JsExport class MoveSelectedNodes(val dx: Double, val dy: Double) : UiAction
 @JsExport class ResetSelectedNodePositions : UiAction
 @JsExport class ToggleTriangle : UiAction
@@ -318,6 +319,27 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         state.selection.nodeIndicators.single().nodeId,
                         action.disownedNodeIndicators.filter { it.treeId == selectedTreeId }.map { it.nodeId }.toSet()
                     ),
+                ),
+                selectionAction = NodeSelectionAction.Select,
+            )
+        }
+
+        is SetSelectedNodeSlice -> {
+            if (
+                state.selection !is NodeSelectionInPlot ||  // no nodes selected
+                state.selection.nodeIndicators.size != 1 ||  // multiple nodes selected
+                selectedTreeId == null  // could not figure out tree ID for some other reason
+            ) return state
+            val sentence = activePlot.tree(selectedTreeId).sentence
+            val newSliceAfterSpread = spreadSlice(action.newSlice, sentence)
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, SetNodeSlice(
+                        state.activePlotIndex,
+                        state.selection.nodeIndicators.single(),
+                        newSliceAfterSpread,
+                        newSliceAfterSpread crossesWordBoundaryIn sentence
+                    )
                 ),
                 selectionAction = NodeSelectionAction.Select,
             )
