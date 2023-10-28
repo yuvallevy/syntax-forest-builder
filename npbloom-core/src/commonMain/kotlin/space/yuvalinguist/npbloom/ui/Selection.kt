@@ -19,7 +19,7 @@ sealed interface SelectionInPlot
 data object NoSelectionInPlot : SelectionInPlot
 
 @JsExport
-data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) : SelectionInPlot {
+data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot>) : SelectionInPlot {
     init {
         if (nodeIndicators.isEmpty()) error("Empty NodeSelectionInPlot - should not happen")
     }
