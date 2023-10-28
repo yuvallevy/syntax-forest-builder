@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
-  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, PositionedTree,
+  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionAction, NoSelectionInPlot, PositionedTree,
   RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence, SliceSelectionInPlot,
   StringSlice
 } from 'npbloom-core';
@@ -61,7 +61,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
 
   const removeAndDeselectTree = (treeId: Id) => {
     dispatch(new RemoveTree(treeId));
-    setSelection(NodeSelectionInPlot.Companion.fromArray([]));
+    setSelection(NoSelectionInPlot.getInstance());
   };
 
   const handleSentenceBlur = (event: React.FocusEvent<HTMLInputElement>) => {

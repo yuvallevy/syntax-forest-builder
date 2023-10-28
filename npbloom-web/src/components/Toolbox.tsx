@@ -1,6 +1,6 @@
 import {
-  AddNodeBySelection, DeleteSelectedNodes, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, Redo,
-  ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo, UnpositionedTerminalNode
+  AddNodeBySelection, DeleteSelectedNodes, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, NoSelectionInPlot,
+  Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
@@ -26,8 +26,8 @@ type ToolboxItem = {
 const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
 
-  const nothingSelected = state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 0;
-  const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot) || state.selection.nodeIndicatorsAsArray.length === 0;
+  const nothingSelected = state.selection === NoSelectionInPlot.getInstance();
+  const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>

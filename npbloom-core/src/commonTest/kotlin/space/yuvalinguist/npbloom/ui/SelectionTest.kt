@@ -46,9 +46,11 @@ class SelectionTest {
     @Test
     fun setNewSelection() =
         assertEquals(
-            setOf(
-                NodeIndicatorInPlot("j1w", "GK91"),
-                NodeIndicatorInPlot("83g", "07f7"),
+            NodeSelectionInPlot(
+                setOf(
+                    NodeIndicatorInPlot("j1w", "GK91"),
+                    NodeIndicatorInPlot("83g", "07f7"),
+                ),
             ),
             applySelection(
                 NodeSelectionMode.SetSelection,
@@ -61,9 +63,22 @@ class SelectionTest {
         )
 
     @Test
+    fun setNewSelectionToEmpty() =
+        assertEquals(
+            NoSelectionInPlot,
+            applySelection(
+                NodeSelectionMode.SetSelection,
+                emptySet(),
+                emptySet(),
+            )
+        )
+
+    @Test
     fun setNewSelectionInsteadOfExisting() =
         assertEquals(
-            setOf(NodeIndicatorInPlot("j1w", "GK91")),
+            NodeSelectionInPlot(
+                setOf(NodeIndicatorInPlot("j1w", "GK91")),
+            ),
             applySelection(
                 NodeSelectionMode.SetSelection,
                 setOf(NodeIndicatorInPlot("j1w", "GK91")),
@@ -77,9 +92,11 @@ class SelectionTest {
     @Test
     fun addToEmptySelection() =
         assertEquals(
-            setOf(
-                NodeIndicatorInPlot("j1w", "GK91"),
-                NodeIndicatorInPlot("83g", "07f7"),
+            NodeSelectionInPlot(
+                setOf(
+                    NodeIndicatorInPlot("j1w", "GK91"),
+                    NodeIndicatorInPlot("83g", "07f7"),
+                ),
             ),
             applySelection(
                 NodeSelectionMode.AddToSelection,
@@ -94,10 +111,12 @@ class SelectionTest {
     @Test
     fun addToExistingSelection() =
         assertEquals(
-            setOf(
-                NodeIndicatorInPlot("m7R3yc", "AwtAG6y"),
-                NodeIndicatorInPlot("sS6", "t68q"),
-                NodeIndicatorInPlot("j1w", "GK91"),
+            NodeSelectionInPlot(
+                setOf(
+                    NodeIndicatorInPlot("m7R3yc", "AwtAG6y"),
+                    NodeIndicatorInPlot("sS6", "t68q"),
+                    NodeIndicatorInPlot("j1w", "GK91"),
+                ),
             ),
             applySelection(
                 NodeSelectionMode.AddToSelection,
@@ -140,7 +159,7 @@ class SelectionTest {
     @Test
     fun pruneSelectionAfterAllSelectedNodesDeleted() =
         assertEquals(
-            NodeSelectionInPlot(emptySet()),
+            NoSelectionInPlot,
             pruneSelection(
                 NodeSelectionInPlot(
                     setOf(NodeIndicatorInPlot("YC38BV4q", "c97Tes"), NodeIndicatorInPlot("YC38BV4q", "O5Jowkc"))

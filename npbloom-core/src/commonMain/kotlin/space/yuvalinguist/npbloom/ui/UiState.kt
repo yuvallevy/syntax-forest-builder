@@ -65,22 +65,22 @@ data class UiState(
 val initialUiState = UiState(
     activePlotIndex = 0,
     contentState = initialContentState,
-    selection = NodeSelectionInPlot(),
+    selection = NoSelectionInPlot,
     selectionAction = NodeSelectionAction.Select,
     editedNodeIndicator = null,
 )
 
-private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): NodeSelectionInPlot =
+private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): SelectionInPlot =
     when (selection) {
-        is SliceSelectionInPlot -> NodeSelectionInPlot(
-            activePlot.tree(selection.treeId).getNodeIdsAssignedToSlice(selection.slice)
-                .map { nodeId -> NodeIndicatorInPlot(selection.treeId, nodeId) }.toSet()
-        )
+        is SliceSelectionInPlot -> activePlot.tree(selection.treeId).getNodeIdsAssignedToSlice(selection.slice)
+            .map { nodeId -> NodeIndicatorInPlot(selection.treeId, nodeId) }.asSelectionInPlot()
 
         is NodeSelectionInPlot -> when {
             selection.nodeIndicators.isEmpty() -> selection
-            else -> NodeSelectionInPlot(activePlot.getParentNodeIds(selection.nodeIndicators))
+            else -> activePlot.getParentNodeIds(selection.nodeIndicators).asSelectionInPlot()
         }
+
+        else -> selection
     }
 
 @JsExport
@@ -97,7 +97,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
         is SetActivePlotIndex -> {
             return state.copy(
                 activePlotIndex = action.newPlotIndex,
-                selection = NodeSelectionInPlot(),
+                selection = NoSelectionInPlot,
                 selectionAction = NodeSelectionAction.Select,
                 editedNodeIndicator = null,
             )
@@ -107,7 +107,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return state.copy(
                 contentState = contentReducer(state.contentState, AddPlot),
                 activePlotIndex = state.contentState.current.plots.size,
-                selection = NodeSelectionInPlot(),
+                selection = NoSelectionInPlot,
                 selectionAction = NodeSelectionAction.Select,
                 editedNodeIndicator = null,
             )
@@ -125,7 +125,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return state.copy(
                 contentState = newContentState,
                 activePlotIndex = newActivePlotIndex,
-                selection = NodeSelectionInPlot(),
+                selection = NoSelectionInPlot,
                 selectionAction = NodeSelectionAction.Select,
                 editedNodeIndicator = null,
             )
@@ -140,6 +140,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is SelectParentNodes -> {
             val parentSelection = selectParentNodes(activePlot, state.selection)
+            if (parentSelection !is NodeSelectionInPlot) return state
             return state.copy(
                 selection = parentSelection,
                 editedNodeIndicator = if (state.editedNodeIndicator != null) parentSelection.nodeIndicators.toList()[0]
@@ -275,11 +276,11 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     state.contentState,
                     DeleteNodes(state.activePlotIndex, state.selection.nodeIndicators)
                 ),
-                selection = NodeSelectionInPlot(
+                selection =
                     // Currently selected nodes are about to be deleted, so they should not be selected after deletion
                     // (this can happen when two deleted nodes are parent and child)
-                    activePlot.getChildNodeIds(state.selection.nodeIndicators) - state.selection.nodeIndicators,
-                ),
+                    (activePlot.getChildNodeIds(state.selection.nodeIndicators) - state.selection.nodeIndicators)
+                        .asSelectionInPlot(),
                 selectionAction = NodeSelectionAction.Select,
             )
         }

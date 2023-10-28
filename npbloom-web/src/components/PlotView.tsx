@@ -2,8 +2,8 @@ import { useContext, useMemo, useState } from 'react';
 import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, ClientCoordsOffset, CoordsInClient,
   DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes, NodeIndicatorInPlot, NodeSelectionAction,
-  NodeSelectionInPlot, NodeSelectionMode, PlotCoordsOffset, PositionedNode, PositionedPlot, PositionedTree,
-  RectInClient, SelectionInPlot, SetSelection
+  NodeSelectionInPlot, NodeSelectionMode, NoSelectionInPlot, PlotCoordsOffset, PositionedNode, PositionedPlot,
+  PositionedTree, RectInClient, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -19,8 +19,7 @@ const PlotView: React.FC = () => {
   const { state, dispatch } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
 
-  const nothingSelected = state.selection instanceof NodeSelectionInPlot &&
-    state.selection.nodeIndicatorsAsArray.length === 0;
+  const nothingSelected = state.selection === NoSelectionInPlot.getInstance();
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const { editedNodeIndicator } = state;
@@ -66,14 +65,13 @@ const PlotView: React.FC = () => {
   const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes(nodeIndicators)
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes(nodeIndicators)
-      : setSelection(NodeSelectionInPlot.Companion.fromArray(
-        applySelection(mode, nodeIndicators, selectedNodeIndicators)));
+      : setSelection(applySelection(mode, nodeIndicators, selectedNodeIndicators));
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
       addTreeAndFocus(new PlotCoordsOffset(event.clientX, event.clientY));
     } else {
-      setSelection(NodeSelectionInPlot.Companion.fromArray([]));
+      setSelection(NoSelectionInPlot.getInstance());
     }
   };
 

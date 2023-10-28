@@ -171,7 +171,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
-      : setSelection(NodeSelectionInPlot.Companion.fromArray(applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators)));
+      : setSelection(applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators));
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
     if (trigger instanceof BranchingNodeCreationTrigger) {

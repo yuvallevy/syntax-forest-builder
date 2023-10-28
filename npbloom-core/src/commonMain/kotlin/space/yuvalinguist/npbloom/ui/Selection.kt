@@ -16,17 +16,27 @@ import kotlin.js.JsName
 sealed interface SelectionInPlot
 
 @JsExport
-data class NodeSelectionInPlot internal constructor(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) :
-    SelectionInPlot {
-    val nodeIndicatorsAsArray = nodeIndicators.toTypedArray()
+data object NoSelectionInPlot : SelectionInPlot
 
-    companion object {
-        fun fromArray(nodeIndicatorArray: Array<NodeIndicatorInPlot>) = NodeSelectionInPlot(nodeIndicatorArray.toSet())
+@JsExport
+data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot> = emptySet()) : SelectionInPlot {
+    init {
+        if (nodeIndicators.isEmpty()) error("Empty NodeSelectionInPlot - should not happen")
     }
+
+    val nodeIndicatorsAsArray = nodeIndicators.toTypedArray()
 }
 
 @JsExport
 data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : SelectionInPlot
+
+/**
+ * If there are any node indicators in this collection, returns a NodeSelectionInPlot object consisting of them.
+ * Otherwise, returns a NoSelectionInPlot object.
+ * Use this instead of instantiating NodeIndicatorInPlot directly when it is unknown whether the collection is empty.
+ */
+internal fun Collection<NodeIndicatorInPlot>.asSelectionInPlot() =
+    if (isEmpty()) NoSelectionInPlot else NodeSelectionInPlot(toSet())
 
 @JsExport
 enum class NodeSelectionAction { Select, Adopt, Disown }
@@ -39,18 +49,19 @@ fun applySelection(
     mode: NodeSelectionMode,
     newNodeIndicators: Set<NodeIndicatorInPlot>,
     existingNodeIndicators: Set<NodeIndicatorInPlot> = emptySet(),
-): Set<NodeIndicatorInPlot> = when (mode) {
+): SelectionInPlot = when (mode) {
     NodeSelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
     NodeSelectionMode.SetSelection -> newNodeIndicators
-}
+}.asSelectionInPlot()
 
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.
  */
 internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot): SelectionInPlot =
     when (selection) {
-        is SliceSelectionInPlot -> if (selection.treeId in plot) selection else NodeSelectionInPlot(emptySet())
-        is NodeSelectionInPlot -> NodeSelectionInPlot(selection.nodeIndicators.filter { it in plot }.toSet())
+        NoSelectionInPlot -> NoSelectionInPlot
+        is SliceSelectionInPlot -> if (selection.treeId in plot) selection else NoSelectionInPlot
+        is NodeSelectionInPlot -> selection.nodeIndicators.filter { it in plot }.asSelectionInPlot()
     }
 
 @JsExport

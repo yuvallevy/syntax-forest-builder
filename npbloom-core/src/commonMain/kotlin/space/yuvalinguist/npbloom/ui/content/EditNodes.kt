@@ -50,6 +50,8 @@ internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sen
             val selectedNodeIds = selection.nodeIndicators.map { it.nodeId }.toSet()
             InsertedBranchingNode(newNodeId, "", null, selectedNodeIds)
         }
+
+        else -> error("Cannot create a new node from this selection ($selection)")
     }
 
 /**
