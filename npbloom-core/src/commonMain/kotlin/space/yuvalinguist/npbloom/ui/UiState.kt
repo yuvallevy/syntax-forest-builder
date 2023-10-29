@@ -216,6 +216,8 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
         }
 
         is SetSelectionAction -> {
+            if (state.selectionAction === EntitySelectionAction.SelectTree)
+                return state.copy(selection = NoSelectionInPlot, selectionAction = action.selectionAction)
             return state.copy(selectionAction = action.selectionAction)
         }
 
