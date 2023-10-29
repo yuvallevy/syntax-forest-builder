@@ -83,6 +83,17 @@ data class UnpositionedPlot internal constructor(
                 trees[treeId]!!.deleteNodes(nodeIds)
             }.values
         )
+
+    /**
+     * Transforms the trees with the given IDs in the given plot using the given transform function.
+     */
+    internal fun transformTrees(treeIds: Set<Id>, transformFunc: TreeTransformFunc): UnpositionedPlot =
+        copy(trees = trees.transformTrees(treeIds, transformFunc))
+
+    /**
+     * Deletes the trees with the given IDs from the given plot.
+     */
+    internal fun deleteTrees(treeIds: Set<Id>) = copy(trees = trees.deleteTrees(treeIds))
 }
 
 /**

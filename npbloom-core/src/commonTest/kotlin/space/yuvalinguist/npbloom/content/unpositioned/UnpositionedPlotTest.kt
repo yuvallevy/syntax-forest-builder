@@ -291,4 +291,60 @@ class UnpositionedPlotTest {
             )
         )
     )
+
+    @Test
+    fun transformTrees() = assertEquals(
+        UnpositionedPlot(
+            trees = EntitySet(
+                UnpositionedTree(
+                    id = "cleo",
+                    sentence = "Cleo laughed.",
+                    nodes = EntitySet(
+                        UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                        UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n1")),
+                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    ),
+                    offset = PlotCoordsOffset.ZERO,
+                ),
+                UnpositionedTree(
+                    id = "alex",
+                    sentence = "Alex baked cookies.",
+                    nodes = EntitySet(
+                        UnpositionedBranchingNode("s2", "S", TreeCoordsOffset(0.0, 5.0), setOf("np2a", "vp2")),
+                        UnpositionedBranchingNode("np2a", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n2")),
+                        UnpositionedTerminalNode("n2", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedBranchingNode("vp2", "VP", TreeCoordsOffset(0.0, 0.0), setOf("v2", "np2b")),
+                        UnpositionedTerminalNode("v2", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 10), false),
+                        UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18),
+                            false),
+                    ),
+                    offset = PlotCoordsOffset(200.0, 40.0),
+                ),
+            ),
+        ),
+        plot.transformTrees(setOf("alex")) {
+            it.changeOffset(PlotCoordsOffset(200.0, 40.0))
+        }
+    )
+
+    @Test
+    fun deleteTrees() = assertEquals(
+        UnpositionedPlot(
+            trees = EntitySet(
+                UnpositionedTree(
+                    id = "cleo",
+                    sentence = "Cleo laughed.",
+                    nodes = EntitySet(
+                        UnpositionedBranchingNode("s1", "S", TreeCoordsOffset(0.0, 5.0), setOf("np1", "vp1")),
+                        UnpositionedBranchingNode("np1", "NP", TreeCoordsOffset(0.0, 0.0), setOf("n1")),
+                        UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
+                        UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
+                    ),
+                    offset = PlotCoordsOffset(0.0, 0.0),
+                ),
+            ),
+        ),
+        plot.deleteTrees(setOf("alex"))
+    )
 }

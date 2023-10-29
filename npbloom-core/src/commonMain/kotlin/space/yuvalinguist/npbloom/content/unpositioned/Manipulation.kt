@@ -3,6 +3,7 @@ package space.yuvalinguist.npbloom.content.unpositioned
 import space.yuvalinguist.npbloom.content.*
 
 typealias NodeTransformFunc = (oldNode: UnpositionedNode) -> UnpositionedNode
+typealias TreeTransformFunc = (oldTree: UnpositionedTree) -> UnpositionedTree
 
 sealed interface InsertedNode : NodeBase {
     override val label: NodeLabel
@@ -102,3 +103,15 @@ internal fun EntitySet<UnpositionedNode>.deleteNodes(nodeIds: Set<Id>): EntitySe
     val filteredNodes = filter { it.id !in nodeIds }
     return filteredNodes.mapToNewEntitySet { unassignAsChildren(nodeIds, it) }
 }
+
+internal fun EntitySet<UnpositionedTree>.transformTrees(
+    treeIds: Set<Id>,
+    transformFunc: TreeTransformFunc,
+): EntitySet<UnpositionedTree> =
+    treeIds.fold(this) { transformedTrees, treeId ->
+        if (treeId in this) transformedTrees + transformFunc(this[treeId]!!)
+        else transformedTrees
+    }
+
+internal fun EntitySet<UnpositionedTree>.deleteTrees(treeIds: Set<Id>): EntitySet<UnpositionedTree> =
+    if (treeIds.isEmpty() || isEmpty()) this else filter { it.id !in treeIds }
