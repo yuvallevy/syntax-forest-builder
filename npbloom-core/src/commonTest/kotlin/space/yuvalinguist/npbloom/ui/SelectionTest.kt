@@ -44,7 +44,7 @@ class SelectionTest {
     )
 
     @Test
-    fun setNewSelection() =
+    fun setNewNodeSelection() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(
@@ -52,8 +52,8 @@ class SelectionTest {
                     NodeIndicatorInPlot("83g", "07f7"),
                 ),
             ),
-            applySelection(
-                NodeSelectionMode.SetSelection,
+            applyNodeSelection(
+                EntitySelectionMode.SetSelection,
                 setOf(
                     NodeIndicatorInPlot("j1w", "GK91"),
                     NodeIndicatorInPlot("83g", "07f7"),
@@ -63,24 +63,24 @@ class SelectionTest {
         )
 
     @Test
-    fun setNewSelectionToEmpty() =
+    fun setNewNodeSelectionToEmpty() =
         assertEquals(
             NoSelectionInPlot,
-            applySelection(
-                NodeSelectionMode.SetSelection,
+            applyNodeSelection(
+                EntitySelectionMode.SetSelection,
                 emptySet(),
                 emptySet(),
             )
         )
 
     @Test
-    fun setNewSelectionInsteadOfExisting() =
+    fun setNewNodeSelectionInsteadOfExisting() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(NodeIndicatorInPlot("j1w", "GK91")),
             ),
-            applySelection(
-                NodeSelectionMode.SetSelection,
+            applyNodeSelection(
+                EntitySelectionMode.SetSelection,
                 setOf(NodeIndicatorInPlot("j1w", "GK91")),
                 setOf(
                     NodeIndicatorInPlot("m7R3yc", "AwtAG6y"),
@@ -90,7 +90,7 @@ class SelectionTest {
         )
 
     @Test
-    fun addToEmptySelection() =
+    fun addToEmptyNodeSelection() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(
@@ -98,8 +98,8 @@ class SelectionTest {
                     NodeIndicatorInPlot("83g", "07f7"),
                 ),
             ),
-            applySelection(
-                NodeSelectionMode.AddToSelection,
+            applyNodeSelection(
+                EntitySelectionMode.AddToSelection,
                 setOf(
                     NodeIndicatorInPlot("j1w", "GK91"),
                     NodeIndicatorInPlot("83g", "07f7"),
@@ -109,7 +109,7 @@ class SelectionTest {
         )
 
     @Test
-    fun addToExistingSelection() =
+    fun addToExistingNodeSelection() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(
@@ -118,8 +118,8 @@ class SelectionTest {
                     NodeIndicatorInPlot("j1w", "GK91"),
                 ),
             ),
-            applySelection(
-                NodeSelectionMode.AddToSelection,
+            applyNodeSelection(
+                EntitySelectionMode.AddToSelection,
                 setOf(NodeIndicatorInPlot("j1w", "GK91")),
                 setOf(
                     NodeIndicatorInPlot("m7R3yc", "AwtAG6y"),
@@ -129,7 +129,42 @@ class SelectionTest {
         )
 
     @Test
-    fun pruneSelectionAfterNothingDeleted() =
+    fun setNewTreeSelection() =
+        assertEquals(
+            TreeSelectionInPlot(setOf("j1w", "83g")),
+            applyTreeSelection(EntitySelectionMode.SetSelection, setOf("j1w", "83g"), emptySet())
+        )
+
+    @Test
+    fun setNewTreeSelectionToEmpty() =
+        assertEquals(
+            NoSelectionInPlot,
+            applyTreeSelection(EntitySelectionMode.SetSelection, emptySet(), emptySet())
+        )
+
+    @Test
+    fun setNewTreeSelectionInsteadOfExisting() =
+        assertEquals(
+            TreeSelectionInPlot(setOf("j1w")),
+            applyTreeSelection(EntitySelectionMode.SetSelection, setOf("j1w"), setOf("m7R3yc", "sS6"))
+        )
+
+    @Test
+    fun addToEmptyTreeSelection() =
+        assertEquals(
+            TreeSelectionInPlot(setOf("j1w", "83g")),
+            applyTreeSelection(EntitySelectionMode.AddToSelection, setOf("j1w", "83g"), emptySet())
+        )
+
+    @Test
+    fun addToExistingTreeSelection() =
+        assertEquals(
+            TreeSelectionInPlot(setOf("m7R3yc", "sS6", "j1w")),
+            applyTreeSelection(EntitySelectionMode.AddToSelection, setOf("j1w"), setOf("m7R3yc", "sS6"))
+        )
+
+    @Test
+    fun pruneNodeSelectionAfterNothingDeleted() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"), NodeIndicatorInPlot("YC38BV4q", "aF3BLs"))
@@ -143,7 +178,7 @@ class SelectionTest {
         )
 
     @Test
-    fun pruneSelectionAfterOneNodeDeleted() =
+    fun pruneNodeSelectionAfterOneNodeDeleted() =
         assertEquals(
             NodeSelectionInPlot(
                 setOf(NodeIndicatorInPlot("YC38BV4q", "kgzt"))
@@ -157,7 +192,7 @@ class SelectionTest {
         )
 
     @Test
-    fun pruneSelectionAfterAllSelectedNodesDeleted() =
+    fun pruneNodeSelectionAfterAllSelectedNodesDeleted() =
         assertEquals(
             NoSelectionInPlot,
             pruneSelection(

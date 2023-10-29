@@ -28,6 +28,15 @@ data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot>) : S
 }
 
 @JsExport
+data class TreeSelectionInPlot(val treeIds: Set<Id>) : SelectionInPlot {
+    init {
+        if (treeIds.isEmpty()) error("Empty TreeSelectionInPlot - should not happen")
+    }
+
+    val treeIdsAsArray = treeIds.toTypedArray()
+}
+
+@JsExport
 data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : SelectionInPlot
 
 /**
@@ -38,21 +47,39 @@ data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : Select
 internal fun Collection<NodeIndicatorInPlot>.asSelectionInPlot() =
     if (isEmpty()) NoSelectionInPlot else NodeSelectionInPlot(toSet())
 
+/**
+ * If there are any tree IDs in this collection, returns a TreeSelectionInPlot object consisting of them.
+ * Otherwise, returns a NoSelectionInPlot object.
+ * Use this instead of instantiating TreeIndicatorInPlot directly when it is unknown whether the collection is empty.
+ */
+internal fun Collection<Id>.asTreeSelectionInPlot() =
+    if (isEmpty()) NoSelectionInPlot else TreeSelectionInPlot(toSet())
+
 @JsExport
 enum class NodeSelectionAction { Select, Adopt, Disown }
 
 @JsExport
-enum class NodeSelectionMode { SetSelection, AddToSelection }
+enum class EntitySelectionMode { SetSelection, AddToSelection }
 
-@JsName("applySelectionByKtSets")
-fun applySelection(
-    mode: NodeSelectionMode,
+@JsName("applyNodeSelectionByKtSets")
+fun applyNodeSelection(
+    mode: EntitySelectionMode,
     newNodeIndicators: Set<NodeIndicatorInPlot>,
     existingNodeIndicators: Set<NodeIndicatorInPlot> = emptySet(),
 ): SelectionInPlot = when (mode) {
-    NodeSelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
-    NodeSelectionMode.SetSelection -> newNodeIndicators
+    EntitySelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
+    EntitySelectionMode.SetSelection -> newNodeIndicators
 }.asSelectionInPlot()
+
+@JsName("applyTreeSelectionByKtSets")
+fun applyTreeSelection(
+    mode: EntitySelectionMode,
+    newTreeIds: Set<Id>,
+    existingTreeIds: Set<Id> = emptySet(),
+): SelectionInPlot = when (mode) {
+    EntitySelectionMode.AddToSelection -> existingTreeIds + newTreeIds
+    EntitySelectionMode.SetSelection -> newTreeIds
+}.asTreeSelectionInPlot()
 
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.
@@ -62,6 +89,7 @@ internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot):
         NoSelectionInPlot -> NoSelectionInPlot
         is SliceSelectionInPlot -> if (selection.treeId in plot) selection else NoSelectionInPlot
         is NodeSelectionInPlot -> selection.nodeIndicators.filter { it in plot }.asSelectionInPlot()
+        is TreeSelectionInPlot -> selection.treeIds.filter { it in plot }.asTreeSelectionInPlot()
     }
 
 @JsExport
