@@ -59,6 +59,12 @@ internal data class MoveNodes(
     val offsetD: TreeCoordsOffset
 ) : ContentAction
 
+internal data class MoveTrees(
+    val plotIndex: PlotIndex,
+    val treeIds: Set<Id>,
+    val offsetD: PlotCoordsOffset
+) : ContentAction
+
 internal data class ResetNodePositions(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) :
     ContentAction
 
@@ -137,6 +143,12 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
         action.plotIndex,
         state.plots[action.plotIndex],
         state.plots[action.plotIndex].transformNodes(action.nodeIndicators) { it.changeOffset(action.offsetD) }
+    )
+
+    is MoveTrees -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].transformTrees(action.treeIds) { it.changeOffset(action.offsetD) }
     )
 
     is ResetNodePositions -> PlotChanged(

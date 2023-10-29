@@ -530,6 +530,91 @@ class ContentStateTest {
         )
 
     @Test
+    fun moveTrees() =
+        assertActionResult(
+            action = MoveTrees(0, setOf("zz"), PlotCoordsOffset(40.0, 80.0)),
+            current = ContentState(
+                plots = listOf(
+                    UnpositionedPlot(
+                        trees = EntitySet(
+                            UnpositionedTree(
+                                id = "aa",
+                                sentence = "tree state",
+                                nodes = EntitySet(
+                                    UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+                                    UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10)),
+                                ),
+                                offset = PlotCoordsOffset.ZERO,
+                            ),
+                            UnpositionedTree(
+                                id = "zz",
+                                sentence = "nodes rock",
+                                nodes = EntitySet(
+                                    UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
+                                    UnpositionedTerminalNode("x", "N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5)),
+                                    UnpositionedTerminalNode("y", "V", TreeCoordsOffset.ZERO, StringSlice(6, 10)),
+                                ),
+                                offset = PlotCoordsOffset(100.0, 80.0),
+                            ),
+                        ),
+                    ),
+                    testInitialState.plots[1],
+                ),
+            ),
+            newUndoableAction = PlotChanged(
+                plotIndex = 0,
+                old = testInitialState.plots[0],
+                new = UnpositionedPlot(
+                    trees = EntitySet(
+                        UnpositionedTree(
+                            id = "aa",
+                            sentence = "tree state",
+                            nodes = EntitySet(
+                                UnpositionedTerminalNode(
+                                    "a",
+                                    "N",
+                                    TreeCoordsOffset(0.0, 0.0),
+                                    StringSlice(0, 4),
+                                    false
+                                ),
+                                UnpositionedTerminalNode(
+                                    "b",
+                                    "N",
+                                    TreeCoordsOffset(1.0, 10.0),
+                                    StringSlice(5, 10),
+                                    false
+                                ),
+                            ),
+                            offset = PlotCoordsOffset(0.0, 0.0),
+                        ),
+                        UnpositionedTree(
+                            id = "zz",
+                            sentence = "nodes rock",
+                            nodes = EntitySet(
+                                UnpositionedBranchingNode("w", "NP", TreeCoordsOffset(-1.0, 5.0), setOf("x")),
+                                UnpositionedTerminalNode(
+                                    "x",
+                                    "N",
+                                    TreeCoordsOffset(1.0, 8.0),
+                                    StringSlice(0, 5),
+                                    false
+                                ),
+                                UnpositionedTerminalNode(
+                                    "y",
+                                    "V",
+                                    TreeCoordsOffset(0.0, 0.0),
+                                    StringSlice(6, 10),
+                                    false
+                                ),
+                            ),
+                            offset = PlotCoordsOffset(100.0, 80.0),
+                        ),
+                    )
+                )
+            ),
+        )
+
+    @Test
     fun resetNodePositions() =
         assertActionResult(
             action = ResetNodePositions(

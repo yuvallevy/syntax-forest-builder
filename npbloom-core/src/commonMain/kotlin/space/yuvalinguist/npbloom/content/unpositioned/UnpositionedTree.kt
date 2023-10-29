@@ -34,6 +34,8 @@ data class UnpositionedTree(
 
     internal fun removeNode(nodeId: Id) = copy(nodes = nodes - nodeId)
 
+    internal fun changeOffset(offsetD: PlotCoordsOffset) = copy(offset = offset + offsetD)
+
     fun anyNodes(predicate: (node: UnpositionedNode) -> Boolean) = nodes.any(predicate)
 
     /**

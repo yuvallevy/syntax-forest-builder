@@ -43,6 +43,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class DisownNodesBySelection(val disownedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
 @JsExport class SetSelectedNodeSlice(val newSlice: StringSlice) : UiAction
 @JsExport class MoveSelectedNodes(val dx: Double, val dy: Double) : UiAction
+@JsExport class MoveSelectedTrees(val dx: Double, val dy: Double) : UiAction
 @JsExport class ResetSelectedNodePositions : UiAction
 @JsExport class ToggleTriangle : UiAction
 @JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
@@ -354,6 +355,19 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         state.activePlotIndex,
                         state.selection.nodeIndicators,
                         TreeCoordsOffset(action.dx, action.dy),
+                    )
+                ),
+            )
+        }
+
+        is MoveSelectedTrees -> {
+            if (state.selection !is TreeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState, MoveTrees(
+                        state.activePlotIndex,
+                        state.selection.treeIds,
+                        PlotCoordsOffset(action.dx, action.dy),
                     )
                 ),
             )
