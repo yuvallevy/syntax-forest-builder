@@ -257,6 +257,81 @@ class ContentStateTest {
         )
 
     @Test
+    fun deleteTrees() =
+        assertActionResult(
+            action = DeleteTrees(0, setOf("aa")),
+            current = ContentState(
+                plots = listOf(
+                    UnpositionedPlot(
+                        trees = EntitySet(
+                            UnpositionedTree(
+                                id = "zz",
+                                sentence = "nodes rock",
+                                nodes = EntitySet(
+                                    UnpositionedBranchingNode(
+                                        "w",
+                                        "NP",
+                                        TreeCoordsOffset(-1.0, 5.0),
+                                        setOf("x"),
+                                    ),
+                                    UnpositionedTerminalNode(
+                                        "x",
+                                        "N",
+                                        TreeCoordsOffset(1.0, 8.0),
+                                        StringSlice(0, 5),
+                                    ),
+                                    UnpositionedTerminalNode(
+                                        "y",
+                                        "V",
+                                        TreeCoordsOffset(0.0, 0.0),
+                                        StringSlice(6, 10),
+                                        false
+                                    ),
+                                ),
+                                offset = PlotCoordsOffset(60.0, 0.0),
+                            ),
+                        )
+                    ),
+                    testInitialState.plots[1],
+                )
+            ),
+            newUndoableAction = PlotChanged(
+                plotIndex = 0,
+                old = testInitialState.plots[0],
+                new = UnpositionedPlot(
+                    trees = EntitySet(
+                        UnpositionedTree(
+                            id = "zz",
+                            sentence = "nodes rock",
+                            nodes = EntitySet(
+                                UnpositionedBranchingNode(
+                                    "w",
+                                    "NP",
+                                    TreeCoordsOffset(-1.0, 5.0),
+                                    setOf("x"),
+                                ),
+                                UnpositionedTerminalNode(
+                                    "x",
+                                    "N",
+                                    TreeCoordsOffset(1.0, 8.0),
+                                    StringSlice(0, 5),
+                                ),
+                                UnpositionedTerminalNode(
+                                    "y",
+                                    "V",
+                                    TreeCoordsOffset(0.0, 0.0),
+                                    StringSlice(6, 10),
+                                    false
+                                ),
+                            ),
+                            offset = PlotCoordsOffset(60.0, 0.0),
+                        ),
+                    )
+                )
+            ),
+        )
+
+    @Test
     fun adoptNodes() =
         assertActionResult(
             action = AdoptNodes(0, "zz", "x", setOf("y")),
