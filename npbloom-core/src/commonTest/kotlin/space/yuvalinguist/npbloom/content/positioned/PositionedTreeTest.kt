@@ -102,4 +102,11 @@ class PositionedTreeTest {
         assertTrue(treeWithoutVPNodeAndConnections.isSliceUnassigned(StringSlice(5, 10)))
         assertFalse(treeWithoutVPNodeAndConnections.isSliceUnassigned(StringSlice(3, 6)))
     }
+
+    @Test
+    fun measureTreeHeight() {
+        assertEquals(80.0, tree.height)
+        assertEquals(60.0, treeWithoutSNode.height)
+        assertEquals(0.0, tree.copy(nodes = EntitySet()).height)
+    }
 }

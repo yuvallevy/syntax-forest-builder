@@ -1,9 +1,9 @@
 import { useContext, useMemo, useState } from 'react';
 import {
-  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applySelection, ClientCoordsOffset, CoordsInClient,
-  DisownNodesBySelection, generateTreeId, isNodeInRect, MoveSelectedNodes, NodeIndicatorInPlot, NodeSelectionAction,
-  NodeSelectionInPlot, NodeSelectionMode, NoSelectionInPlot, PlotCoordsOffset, PositionedNode, PositionedPlot,
-  PositionedTree, RectInClient, SelectionInPlot, SetSelection
+  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
+  DisownNodesBySelection, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes, MoveSelectedTrees,
+  NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedNode,
+  PositionedPlot, PositionedTree, RectInClient, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -31,6 +31,7 @@ const PlotView: React.FC = () => {
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
   const moveNodes = (dx: number, dy: number) => dispatch(new MoveSelectedNodes(dx, dy));
+  const moveTrees = (dx: number, dy: number) => dispatch(new MoveSelectedTrees(dx, dy));
   const adoptNodes = (adoptedNodeIndicators: NodeIndicatorInPlot[]) =>
     dispatch(new AdoptNodesBySelection(adoptedNodeIndicators));
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
@@ -38,7 +39,7 @@ const PlotView: React.FC = () => {
 
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
   const [dragEndCoords, setDragEndCoords] = useState<CoordsInClient | undefined>();
-  const [mouseInteractionMode, setMouseInteractionMode] = useState<'idle' | 'selecting' | 'draggingNodes'>('idle');
+  const [mouseInteractionMode, setMouseInteractionMode] = useState<'idle' | 'selecting' | 'draggingNodes' | 'draggingTrees'>('idle');
 
   const selectionBoxTopLeft: CoordsInClient | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? new CoordsInClient(
     Math.min(dragStartCoords.clientX, dragEndCoords.clientX),
@@ -62,10 +63,10 @@ const PlotView: React.FC = () => {
       (document.querySelector(`input#${newTreeId}`) as (HTMLInputElement | null))?.focus(), 50);
   };
 
-  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
+  const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: EntitySelectionMode = EntitySelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes(nodeIndicators)
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes(nodeIndicators)
-      : setSelection(applySelection(mode, nodeIndicators, selectedNodeIndicators));
+      : setSelection(applyNodeSelection(mode, nodeIndicators, selectedNodeIndicators));
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
@@ -97,9 +98,11 @@ const PlotView: React.FC = () => {
       const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight).toRectInPlot();
       const nodeInRectPredicate = (tree: PositionedTree, node: PositionedNode) => isNodeInRect(tree, node, rectInPlot);
       const newSelectedNodes = plot.filterNodeIndicatorsAsArray(nodeInRectPredicate);
-      handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? NodeSelectionMode.AddToSelection : NodeSelectionMode.SetSelection);
+      handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       moveNodes(dragOffset.dClientX, dragOffset.dClientY);
+    } else if (dragOffset && mouseInteractionMode === 'draggingTrees') {
+      moveTrees(dragOffset.dClientX, dragOffset.dClientY);
     } else if (dragStartCoords && event.currentTarget === event.target) {
       handlePlotClick(event);
     }
@@ -115,7 +118,16 @@ const PlotView: React.FC = () => {
     }
   };
 
-  const plotViewCursor = mouseInteractionMode === 'draggingNodes' && dragOffset ? 'move' : 'crosshair';
+  const handleTreeMouseDown = (event: React.MouseEvent<SVGElement>) => {
+    if (event.buttons === PRIMARY_MOUSE_BUTTON) {
+      setMouseInteractionMode('draggingTrees');
+      setDragStartCoords(new CoordsInClient(event.clientX, event.clientY));
+    }
+  };
+
+  const plotViewCursor =
+    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset
+      ? 'move' : 'crosshair';
 
   return <>
     <svg
@@ -133,7 +145,9 @@ const PlotView: React.FC = () => {
           treeId={tree.id}
           tree={tree}
           nodeDragOffset={mouseInteractionMode === 'draggingNodes' ? dragOffset : undefined}
+          treeDragOffset={mouseInteractionMode === 'draggingTrees' ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}
+          onTreeMouseDown={handleTreeMouseDown}
         />)}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView--selection-box"

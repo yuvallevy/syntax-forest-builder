@@ -17,6 +17,8 @@ data class PositionedTree(
 ) : TreeBase {
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 
+    val height = if (nodes.isEmpty()) 0.0 else -nodes.minOf { it.position.treeY }
+
     internal operator fun contains(nodeId: Id) = nodeId in nodes
 
     /**

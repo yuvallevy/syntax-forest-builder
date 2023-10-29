@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import {
-  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applySelection,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySet, generateNodeId,
-  getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionAction,
-  NodeSelectionInPlot, NodeSelectionMode, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
-  PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger
+  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection,
+  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySelectionMode, EntitySet,
+  generateNodeId, getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot,
+  NodeSelectionAction, NodeSelectionInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
+  PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger,
+  TreeSelectionInPlot
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -19,6 +20,8 @@ const NODE_AREA_HEIGHT = 20;
 const NODE_AREA_RELATIVE_X = -(NODE_AREA_WIDTH / 2);
 const NODE_AREA_RELATIVE_Y = -18.5;
 
+const TREE_AREA_PADDING = 12;
+
 interface NodeCreationTriggerClickZoneProps {
   trigger: NodeCreationTrigger;
   onClick?: () => void;
@@ -28,7 +31,9 @@ interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
   nodeDragOffset?: ClientCoordsOffset;
+  treeDragOffset?: ClientCoordsOffset;
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
+  onTreeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: EntitySet<PositionedNode>): React.ReactNode[] =>
@@ -61,7 +66,7 @@ const renderNode = (
   selectedNodeIds: Id[],
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
-  onSelect?: (id: Id, mode: NodeSelectionMode) => void,
+  onSelect?: (id: Id, mode: EntitySelectionMode) => void,
   onEditStart?: () => void,
 ): React.ReactNode[] => [
   <g
@@ -69,7 +74,7 @@ const renderNode = (
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
       + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')}
     onMouseDown={event => {
-      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? NodeSelectionMode.AddToSelection : NodeSelectionMode.SetSelection);
+      onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
       onMouseDown && onMouseDown(event);
     }}
     onDoubleClick={onEditStart}
@@ -94,7 +99,7 @@ const renderNode = (
   </g>,
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
     key={`${nodeId}-ghost`}
-    className="TreeView--node--ghost"
+    className="TreeView--ghost"
     x={node.position.treeX + NODE_AREA_RELATIVE_X + nodeDragOffset.dClientX}
     y={node.position.treeY + NODE_AREA_RELATIVE_Y + nodeDragOffset.dClientY}
     width={NODE_AREA_WIDTH}
@@ -152,11 +157,14 @@ const TreeView: React.FC<TreeViewProps> = ({
   treeId,
   tree,
   nodeDragOffset,
+  treeDragOffset,
   onNodeMouseDown,
+  onTreeMouseDown,
 }) => {
   const { state, dispatch } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
 
+  const selectedTreeIds = state.selection instanceof TreeSelectionInPlot ? state.selection.treeIdsAsArray : [];
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
@@ -168,10 +176,13 @@ const TreeView: React.FC<TreeViewProps> = ({
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
     dispatch(new DisownNodesBySelection(disownedNodeIndicators));
 
-  const handleSingleNodeSelect = (nodeId: Id, mode: NodeSelectionMode = NodeSelectionMode.SetSelection) =>
+  const handleSingleNodeSelect = (nodeId: Id, mode: EntitySelectionMode = EntitySelectionMode.SetSelection) =>
     state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes([new NodeIndicatorInPlot(treeId, nodeId)])
       : state.selectionAction === NodeSelectionAction.Disown ? disownNodes([new NodeIndicatorInPlot(treeId, nodeId)])
-      : setSelection(applySelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators));
+      : setSelection(applyNodeSelection(mode, [new NodeIndicatorInPlot(treeId, nodeId)], selectedNodeIndicators));
+
+  const handleSingleTreeSelect = (treeId: Id, mode: EntitySelectionMode = EntitySelectionMode.SetSelection) =>
+    setSelection(applyTreeSelection(mode, [treeId], selectedTreeIds));
 
   const handleNodeCreationTriggerClick = (trigger: NodeCreationTrigger) => {
     if (trigger instanceof BranchingNodeCreationTrigger) {
@@ -197,6 +208,28 @@ const TreeView: React.FC<TreeViewProps> = ({
     {tree.nodes.map(node =>
       renderNode(node.id, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
         startEditing))}
+    <rect
+      x={-TREE_AREA_PADDING}
+      y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
+      width={tree.width + TREE_AREA_PADDING * 2}
+      height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2}
+      rx={3}
+      ry={3}
+      onMouseDown={event => {
+        handleSingleTreeSelect(treeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
+        onTreeMouseDown && onTreeMouseDown(event);
+      }}
+      className={'TreeView--tree-area' + (selectedTreeIds.includes(treeId) ? ' TreeView--tree-area--selected' : '')}
+    />
+    {treeDragOffset && selectedTreeIds.includes(treeId) && <rect
+      className="TreeView--ghost"
+      x={-TREE_AREA_PADDING + treeDragOffset.dClientX}
+      y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY}
+      width={tree.width + TREE_AREA_PADDING * 2}
+      height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2}
+      rx={3}
+      ry={3}
+    />}
   </g>;
 };
 
