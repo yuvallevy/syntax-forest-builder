@@ -56,7 +56,7 @@ internal fun Collection<Id>.asTreeSelectionInPlot() =
     if (isEmpty()) NoSelectionInPlot else TreeSelectionInPlot(toSet())
 
 @JsExport
-enum class NodeSelectionAction { Select, Adopt, Disown }
+enum class EntitySelectionAction { SelectNode, SelectTree, Adopt, Disown }
 
 @JsExport
 enum class EntitySelectionMode { SetSelection, AddToSelection }

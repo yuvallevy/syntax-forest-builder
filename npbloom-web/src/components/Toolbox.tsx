@@ -1,6 +1,7 @@
 import {
-  AddNodeBySelection, DeleteSelectedNodes, generateNodeId, NodeSelectionAction, NodeSelectionInPlot, NoSelectionInPlot,
-  Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo, UnpositionedTerminalNode
+  AddNodeBySelection, DeleteSelectedNodes, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
+  NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo,
+  UnpositionedTerminalNode
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
@@ -10,7 +11,7 @@ import { useRef, useState } from 'react';
 import './Toolbox.scss';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey';
 import { useOs } from '@mantine/hooks';
-import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './icons';
+import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSelectionMode } from './icons';
 import useUiState from '../useUiState';
 
 type ToolboxItem = {
@@ -26,6 +27,7 @@ type ToolboxItem = {
 const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
 
+  const noTreesInPlot = state.contentState.current.plots[state.activePlotIndex].treeCount === 0;
   const nothingSelected = state.selection === NoSelectionInPlot.getInstance();
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
@@ -42,9 +44,11 @@ const Toolbox: React.FC = () => {
     wasEditing && setTimeout(startEditing, 50);  // Hack to restore focus to edited node when clicking the triangle button.
   };
   const toggleAdoptMode = () => dispatch(new SetSelectionAction(
-    state.selectionAction === NodeSelectionAction.Adopt ? NodeSelectionAction.Select : NodeSelectionAction.Adopt));
+    state.selectionAction === EntitySelectionAction.Adopt ? EntitySelectionAction.SelectNode : EntitySelectionAction.Adopt));
   const toggleDisownMode = () => dispatch(new SetSelectionAction(
-    state.selectionAction === NodeSelectionAction.Disown ? NodeSelectionAction.Select : NodeSelectionAction.Disown));
+    state.selectionAction === EntitySelectionAction.Disown ? EntitySelectionAction.SelectNode : EntitySelectionAction.Disown));
+  const toggleTreeSelectMode = () => dispatch(new SetSelectionAction(
+    state.selectionAction === EntitySelectionAction.SelectTree ? EntitySelectionAction.SelectNode : EntitySelectionAction.SelectTree));
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
@@ -90,13 +94,16 @@ const Toolbox: React.FC = () => {
       description: 'Toggle triangle connectors for the selected terminal nodes.'
     },
     { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === NodeSelectionAction.Adopt ? 'on' : 'off',
+      toggleState: state.selectionAction === EntitySelectionAction.Adopt ? 'on' : 'off',
       description: 'Adopt one or more nodes as children of the selected node.' },
     { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === NodeSelectionAction.Disown ? 'on' : 'off',
+      toggleState: state.selectionAction === EntitySelectionAction.Disown ? 'on' : 'off',
       description: 'Disown one or more children of the selected node.' },
     { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
       description: 'Relocate the selected nodes to their original positions.' },
+    { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
+      toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
+      description: 'Select entire trees instead of individual nodes.' },
   ];
 
   return <div className="Toolbox--container">

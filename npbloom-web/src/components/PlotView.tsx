@@ -1,8 +1,8 @@
 import { useContext, useMemo, useState } from 'react';
 import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
-  DisownNodesBySelection, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes, MoveSelectedTrees,
-  NodeIndicatorInPlot, NodeSelectionAction, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedNode,
+  DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes,
+  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedNode,
   PositionedPlot, PositionedTree, RectInClient, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
@@ -64,8 +64,8 @@ const PlotView: React.FC = () => {
   };
 
   const handleNodesSelect = (nodeIndicators: NodeIndicatorInPlot[], mode: EntitySelectionMode = EntitySelectionMode.SetSelection) =>
-    state.selectionAction === NodeSelectionAction.Adopt ? adoptNodes(nodeIndicators)
-      : state.selectionAction === NodeSelectionAction.Disown ? disownNodes(nodeIndicators)
+    state.selectionAction === EntitySelectionAction.Adopt ? adoptNodes(nodeIndicators)
+      : state.selectionAction === EntitySelectionAction.Disown ? disownNodes(nodeIndicators)
       : setSelection(applyNodeSelection(mode, nodeIndicators, selectedNodeIndicators));
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {

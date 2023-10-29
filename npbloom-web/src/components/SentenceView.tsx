@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
-  AddNodeBySelection, formatSubscriptInString, generateNodeId, NodeSelectionAction, NoSelectionInPlot, PositionedTree,
+  AddNodeBySelection, EntitySelectionAction, formatSubscriptInString, generateNodeId, NoSelectionInPlot, PositionedTree,
   RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence, SliceSelectionInPlot,
   StringSlice
 } from 'npbloom-core';
@@ -46,7 +46,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
 
   const handleSliceSelect = (slice: StringSlice) => {
-    if (state.selectionAction === NodeSelectionAction.Adopt) {
+    if (state.selectionAction === EntitySelectionAction.Adopt) {
       setNodeSlice(slice);
       // Reduce the selection to a zero-length slice,
       // so that after the input is blurred the selection can't be accidentally dragged

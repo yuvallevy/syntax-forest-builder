@@ -28,7 +28,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class StartEditing : UiAction
 @JsExport class StopEditing : UiAction
 @JsExport class SetEditedNodeLabel(val newLabel: NodeLabel) : UiAction
-@JsExport class SetSelectionAction(val selectionAction: NodeSelectionAction) : UiAction
+@JsExport class SetSelectionAction(val selectionAction: EntitySelectionAction) : UiAction
 @JsExport class AddNodeBySelection(val newNodeId: Id) : UiAction
 @JsExport class AddBranchingNodeByTarget(val treeId: Id, val newNodeId: Id, val targetChildIds: Array<Id>) : UiAction
 @JsExport class AddTerminalNodeByTarget(
@@ -58,7 +58,7 @@ data class UiState(
     val contentState: UndoableContentState,
     val activePlotIndex: PlotIndex,
     val selection: SelectionInPlot,
-    val selectionAction: NodeSelectionAction,
+    val selectionAction: EntitySelectionAction,
     val editedNodeIndicator: NodeIndicatorInPlot?,
 )
 
@@ -67,7 +67,7 @@ val initialUiState = UiState(
     activePlotIndex = 0,
     contentState = initialContentState,
     selection = NoSelectionInPlot,
-    selectionAction = NodeSelectionAction.Select,
+    selectionAction = EntitySelectionAction.SelectNode,
     editedNodeIndicator = null,
 )
 
@@ -99,7 +99,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return state.copy(
                 activePlotIndex = action.newPlotIndex,
                 selection = NoSelectionInPlot,
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = null,
             )
         }
@@ -109,7 +109,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 contentState = contentReducer(state.contentState, AddPlot),
                 activePlotIndex = state.contentState.current.plots.size,
                 selection = NoSelectionInPlot,
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = null,
             )
         }
@@ -127,7 +127,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 contentState = newContentState,
                 activePlotIndex = newActivePlotIndex,
                 selection = NoSelectionInPlot,
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = null,
             )
         }
@@ -135,7 +135,9 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
         is SetSelection -> {
             return state.copy(
                 selection = action.newSelection,
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction =
+                if (state.selectionAction == EntitySelectionAction.SelectTree) EntitySelectionAction.SelectTree
+                else EntitySelectionAction.SelectNode,
             )
         }
 
@@ -195,7 +197,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return if (state.selection !is NodeSelectionInPlot || state.selection.nodeIndicators.size != 1) state
             else state.copy(
                 editedNodeIndicator = state.selection.nodeIndicators.single(),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -233,7 +235,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = newNodeIndicator,
             )
         }
@@ -249,7 +251,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = newNodeIndicator,
             )
         }
@@ -265,7 +267,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     )
                 ),
                 selection = NodeSelectionInPlot(setOf(newNodeIndicator)),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = newNodeIndicator,
             )
         }
@@ -282,7 +284,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     // (this can happen when two deleted nodes are parent and child)
                     (activePlot.getChildNodeIds(state.selection.nodeIndicators) - state.selection.nodeIndicators)
                         .asSelectionInPlot(),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -302,7 +304,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         action.adoptedNodeIndicators.filter { it.treeId == selectedTreeId }.map { it.nodeId }.toSet()
                     ),
                 ),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -322,7 +324,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         action.disownedNodeIndicators.filter { it.treeId == selectedTreeId }.map { it.nodeId }.toSet()
                     ),
                 ),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -343,7 +345,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         newSliceAfterSpread crossesWordBoundaryIn sentence
                     )
                 ),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -426,7 +428,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         action.offset,
                     )
                 ),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
@@ -438,7 +440,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         action.treeId,
                     )
                 ),
-                selectionAction = NodeSelectionAction.Select,
+                selectionAction = EntitySelectionAction.SelectNode,
             )
         }
 
