@@ -1,7 +1,7 @@
 import {
   AddNodeBySelection, DeleteSelectedNodes, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
-  NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, ToggleTriangle, Undo,
-  UnpositionedTerminalNode
+  NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, StartEditing, TreeSelectionInPlot,
+  ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
@@ -28,7 +28,8 @@ const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
 
   const noTreesInPlot = state.contentState.current.plots[state.activePlotIndex].treeCount === 0;
-  const nothingSelected = state.selection === NoSelectionInPlot.getInstance();
+  const noNodesOrSliceSelected = state.selection === NoSelectionInPlot.getInstance() ||
+    state.selection instanceof TreeSelectionInPlot;
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
@@ -81,7 +82,7 @@ const Toolbox: React.FC = () => {
       description: 'Undo the last action.' },
     { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl-Y',
       description: 'Redo the last undone action.' },
-    { title: 'Add', icon: IconPlus, action: addNode, disabled: nothingSelected, hotkey: 'Up',
+    { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected, hotkey: 'Up',
       description: 'Add a new parent node for the selected text or nodes.' },
     { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected, hotkey: 'Backspace',
       description: 'Delete the selected nodes.' },
