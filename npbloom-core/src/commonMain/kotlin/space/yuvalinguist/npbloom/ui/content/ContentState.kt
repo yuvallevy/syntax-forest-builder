@@ -39,6 +39,7 @@ internal data class DeletePlot(val plotIndex: PlotIndex) : ContentAction
 internal data class ResetPlot(val plotIndex: PlotIndex) : ContentAction
 internal data class InsertNode(val plotIndex: PlotIndex, val treeId: Id, val newNode: InsertedNode) : ContentAction
 internal data class DeleteNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+internal data class DeleteTrees(val plotIndex: PlotIndex, val treeIds: Set<Id>) : ContentAction
 internal data class AdoptNodes(
     val plotIndex: PlotIndex,
     val treeId: Id,
@@ -125,6 +126,12 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
         action.plotIndex,
         state.plots[action.plotIndex],
         state.plots[action.plotIndex].deleteNodes(action.nodeIndicators)
+    )
+
+    is DeleteTrees -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].deleteTrees(action.treeIds)
     )
 
     is AdoptNodes -> TreeChanged(

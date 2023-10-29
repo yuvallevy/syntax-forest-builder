@@ -1,5 +1,5 @@
 import {
-  AddNodeBySelection, DeleteSelectedNodes, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
+  AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
   TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
@@ -34,6 +34,7 @@ const Toolbox: React.FC = () => {
     state.contentState.current.plots[state.activePlotIndex]
       .tree((state.selection as SliceSelectionInPlot).treeId).sentence === '';
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
+  const noTreesSelected = !(state.selection instanceof TreeSelectionInPlot);
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>
@@ -41,7 +42,7 @@ const Toolbox: React.FC = () => {
 
   const startEditing = () => dispatch(new StartEditing());
   const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
-  const deleteNode = () => dispatch(new DeleteSelectedNodes());
+  const deleteEntities = () => dispatch(new DeleteSelectedEntities());
   const resetNodePositions = () => dispatch(new ResetSelectedNodePositions());
   const toggleTriangle = (wasEditing: boolean) => {
     dispatch(new ToggleTriangle());
@@ -87,8 +88,9 @@ const Toolbox: React.FC = () => {
       description: 'Redo the last undone action.' },
     { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty, hotkey: 'Up',
       description: 'Add a new parent node for the selected text or nodes.' },
-    { title: 'Delete', icon: IconTrash, action: deleteNode, disabled: noNodesSelected, hotkey: 'Backspace',
-      description: 'Delete the selected nodes.' },
+    { title: 'Delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
+      hotkey: 'Backspace', description: 'Delete the selected ' +
+        (state.selection instanceof TreeSelectionInPlot ? 'trees' : 'nodes') + '.' },
     { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
       toggleState: state.editedNodeIndicator ? 'on' : 'off', description: 'Edit the selected node.' },
     { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),

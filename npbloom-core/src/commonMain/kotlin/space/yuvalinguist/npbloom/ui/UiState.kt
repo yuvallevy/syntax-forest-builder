@@ -38,7 +38,7 @@ enum class ChildNodeSide { Left, Right, Center }
     val triangle: Boolean
 ) : UiAction
 
-@JsExport class DeleteSelectedNodes : UiAction
+@JsExport class DeleteSelectedEntities : UiAction
 @JsExport class AdoptNodesBySelection(val adoptedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
 @JsExport class DisownNodesBySelection(val disownedNodeIndicators: Array<NodeIndicatorInPlot>) : UiAction
 @JsExport class SetSelectedNodeSlice(val newSlice: StringSlice) : UiAction
@@ -274,20 +274,32 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             )
         }
 
-        is DeleteSelectedNodes -> {
-            if (state.selection !is NodeSelectionInPlot) return state
-            return state.copy(
-                contentState = contentReducer(
-                    state.contentState,
-                    DeleteNodes(state.activePlotIndex, state.selection.nodeIndicators)
-                ),
-                selection =
+        is DeleteSelectedEntities -> {
+            return when (state.selection) {
+                is NodeSelectionInPlot -> state.copy(
+                    contentState = contentReducer(
+                        state.contentState,
+                        DeleteNodes(state.activePlotIndex, state.selection.nodeIndicators)
+                    ),
+                    selection =
                     // Currently selected nodes are about to be deleted, so they should not be selected after deletion
                     // (this can happen when two deleted nodes are parent and child)
                     (activePlot.getChildNodeIds(state.selection.nodeIndicators) - state.selection.nodeIndicators)
                         .asSelectionInPlot(),
-                selectionAction = EntitySelectionAction.SelectNode,
-            )
+                    selectionAction = EntitySelectionAction.SelectNode,
+                )
+
+                is TreeSelectionInPlot -> state.copy(
+                    contentState = contentReducer(
+                        state.contentState,
+                        DeleteTrees(state.activePlotIndex, state.selection.treeIds)
+                    ),
+                    selection = NoSelectionInPlot,
+                    selectionAction = EntitySelectionAction.SelectTree,
+                )
+
+                else -> state
+            }
         }
 
         is AdoptNodesBySelection -> {

@@ -5,7 +5,7 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  AddNodeBySelection, ChildNodeSide, DeleteSelectedNodes, generateNodeId, NodeSelectionInPlot, Redo, SelectChildNode,
+  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, generateNodeId, NodeSelectionInPlot, Redo, SelectChildNode,
   SelectParentNodes, StartEditing, StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
@@ -40,7 +40,7 @@ const UiRoot = () => {
   const selectCenterChildNode = () => dispatch(new SelectChildNode(ChildNodeSide.Center));
   const startEditing = () => dispatch(new StartEditing());
   const addNode = () => dispatch(new AddNodeBySelection(generateNodeId()));
-  const deleteNode = () => dispatch(new DeleteSelectedNodes());
+  const deleteEntities = () => dispatch(new DeleteSelectedEntities());
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
@@ -76,7 +76,7 @@ const UiRoot = () => {
 
   useHotkeys(['Enter', 'F2'], startEditing);
 
-  useHotkeys(['Backspace', 'Delete'], deleteNode);
+  useHotkeys(['Backspace', 'Delete'], deleteEntities);
 
   useHotkeys(['Control+z', 'Meta+z'], event => { event.preventDefault(); undo(); },
     { ignoredElementWhitelist: ['INPUT'] });
