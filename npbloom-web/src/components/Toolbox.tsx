@@ -21,6 +21,7 @@ type ToolboxItem = {
   disabled?: boolean;
   toggleState?: 'on' | 'off' | 'indeterminate';
   hotkey?: string;
+  hotkeyHold?: boolean;
   description: string;
 };
 
@@ -109,7 +110,7 @@ const Toolbox: React.FC = () => {
       description: 'Relocate the selected nodes to their original positions.' },
     { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
-      description: 'Select entire trees instead of individual nodes.' },
+      hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
   ];
 
   return <div className="Toolbox--container">
@@ -150,7 +151,8 @@ const Toolbox: React.FC = () => {
     >
       <div className="Toolbox--tool-title">
         {hoveredItem.title}
-        {hoveredItem.hotkey && ` (${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
+        {hoveredItem.hotkey &&
+          ` (${hoveredItem.hotkeyHold ? 'hold ' : ''}${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
       </div>
       <div>{hoveredItem.description}</div>
     </Paper>}

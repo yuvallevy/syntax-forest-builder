@@ -5,8 +5,9 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, generateNodeId, NodeSelectionInPlot, Redo, SelectChildNode,
-  SelectParentNodes, StartEditing, StringSlice, UnpositionedBranchingNode, UnpositionedTerminalNode, Undo
+  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
+  Redo, SelectChildNode, SelectParentNodes, SetSelectionAction, StartEditing, StringSlice, TreeSelectionInPlot, Undo,
+  UnpositionedBranchingNode, UnpositionedTerminalNode
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -20,6 +21,7 @@ import useUiState from './useUiState';
 import useFileIo from './fileIo/useFileIo';
 import { useOs } from '@mantine/hooks';
 import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
+import useHeldHotkey from './useHeldHotkey';
 
 const UiRoot = () => {
   const { state, dispatch } = useUiState();
@@ -96,6 +98,12 @@ const UiRoot = () => {
                        // This seems unreliable. TODO: test cross-browser and on different computers
     }
   });
+
+  useHeldHotkey('Alt',
+    () => dispatch(new SetSelectionAction(EntitySelectionAction.SelectTree)),
+    () => !(state.selection instanceof TreeSelectionInPlot)
+        && dispatch(new SetSelectionAction(EntitySelectionAction.SelectNode))
+  );
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <PlotView />

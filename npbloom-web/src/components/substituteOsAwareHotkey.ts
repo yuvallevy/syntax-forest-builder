@@ -13,6 +13,7 @@ const keyRenderings: Map<OS, [string, string][]> = new Map([
     ['Shift-', '\u21e7'],
     ['Ctrl-', '\u2318'],  // Cmd used on macOS, hence last
     ['Up', '\u2191'],
+    ['Alt', '\u2325'],  // when not modifying another key
     ['Enter', '\u23ce'],
     ['Backspace', '\u232b'],
   ]],
