@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Group, Modal, Stack } from '@mantine/core';
 import { SetAutoFormatSubscript, SetLiveStringWidth } from 'npbloom-core';
 import { useDisclosure } from '@mantine/hooks';
@@ -7,6 +8,8 @@ import SettingsStateContext from "../../SettingsStateContext";
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 
 const Settings: React.FC = () => {
+  const { t } = useTranslation();
+
   const [opened, { open, close }] = useDisclosure(false);
   const { settingsState, settingsDispatch } = useContext(SettingsStateContext);
 
@@ -19,23 +22,23 @@ const Settings: React.FC = () => {
       size="xs"
       onClick={open}
     >
-      <IconAdjustmentsHorizontal stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; Settings
+      <IconAdjustmentsHorizontal stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; {t('mainMenu.settings.title')}
     </Button>
     <Modal centered title="Settings" size="lg" opened={opened} onClose={close}>
       <Stack>
         <Checkbox
-          label="Format brackets/parentheses as subscript"
-          description="When this is enabled, letters and numbers in parentheses or brackets such as (i) and [i] will automatically be rendered as subscript. (Does not work on all letters)"
+          label={t('settings.items.autoFormatBracketsAsSubscript.title')}
+          description={t('settings.items.autoFormatBracketsAsSubscript.description')}
           checked={settingsState.autoFormatSubscript}
           onChange={(event) => settingsDispatch(new SetAutoFormatSubscript(event.currentTarget.checked))}
         />
         <Checkbox
-          label="Use experimental text width measurement (slightly slower, more accurate)"
+          label={t('settings.items.experimentalTextWidth.title')}
           checked={settingsState.liveStringWidth}
           onChange={(event) => settingsDispatch(new SetLiveStringWidth(event.currentTarget.checked))}
         />
         <Group position="right">
-          <Button variant="subtle" onClick={close}>Done</Button>
+          <Button variant="subtle" onClick={close}>{t('settings.buttons.done')}</Button>
         </Group>
       </Stack>
     </Modal>

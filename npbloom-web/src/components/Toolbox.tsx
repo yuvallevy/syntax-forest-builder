@@ -3,6 +3,7 @@ import {
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
   TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
+import { useTranslation } from 'react-i18next';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle, TablerIconsProps
@@ -15,17 +16,19 @@ import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSel
 import useUiState from '../useUiState';
 
 type ToolboxItem = {
-  title: string;
+  key: string;
   icon?: (props: TablerIconsProps) => JSX.Element;
   action: (event: React.UIEvent, focusEvent?: React.FocusEvent) => void;
   disabled?: boolean;
   toggleState?: 'on' | 'off' | 'indeterminate';
   hotkey?: string;
   hotkeyHold?: boolean;
-  description: string;
+  descriptionKey?: string;
 };
 
 const Toolbox: React.FC = () => {
+  const { t } = useTranslation();
+
   const { state, dispatch } = useUiState();
 
   const noTreesInPlot = state.contentState.current.plots[state.activePlotIndex].treeCount === 0;
@@ -83,34 +86,27 @@ const Toolbox: React.FC = () => {
   };
 
   const items: ToolboxItem[] = [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl-Z',
-      description: 'Undo the last action.' },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl-Y',
-      description: 'Redo the last undone action.' },
-    { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty, hotkey: 'Up',
-      description: 'Add a new parent node for the selected text or nodes.' },
-    { title: 'Delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
-      hotkey: 'Backspace', description: 'Delete the selected ' +
-        (state.selection instanceof TreeSelectionInPlot ? 'trees' : 'nodes') + '.' },
-    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
-      toggleState: state.editedNodeIndicator ? 'on' : 'off', description: 'Edit the selected node.' },
-    { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),
+    { key: 'undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl-Z' },
+    { key: 'redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl-Y' },
+    { key: 'add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty, hotkey: 'Up' },
+    { key: 'delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
+      hotkey: 'Backspace',
+      descriptionKey: state.selection instanceof TreeSelectionInPlot ? 'deleteTrees' : 'deleteNodes' },
+    { key: 'edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
+      toggleState: state.editedNodeIndicator ? 'on' : 'off' },
+    { key: 'triangle', icon: IconTriangle, ...getTriangleButtonState(),
       action: (_, focusEvent) =>
         // Terrible hack to figure out if the user was in the middle of editing a node when they clicked the button
-        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
-      description: 'Toggle triangle connectors for the selected terminal nodes.'
+        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput')
     },
-    { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === EntitySelectionAction.Adopt ? 'on' : 'off',
-      description: 'Adopt one or more nodes as children of the selected node.' },
-    { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === EntitySelectionAction.Disown ? 'on' : 'off',
-      description: 'Disown one or more children of the selected node.' },
-    { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
-      description: 'Relocate the selected nodes to their original positions.' },
-    { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
-      toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
-      hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
+    { key: 'adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
+      toggleState: state.selectionAction === EntitySelectionAction.Adopt ? 'on' : 'off' },
+    { key: 'disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
+      toggleState: state.selectionAction === EntitySelectionAction.Disown ? 'on' : 'off' },
+    { key: 'resetPosition', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected },
+    { key: 'selectTrees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
+      toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off', hotkey: 'Alt',
+      hotkeyHold: true },
   ];
 
   return <div className="Toolbox--container">
@@ -119,11 +115,11 @@ const Toolbox: React.FC = () => {
       p="xs"
       className="Toolbox--body"
     >
-      <div className="Toolbox--title">Tools</div>
+      <div className="Toolbox--title">{t('toolbox.title')}</div>
       <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
         {items.map(item =>
           <div
-            key={item.title}
+            key={item.key}
             onMouseEnter={() => setHoveredItem(item)}
             onMouseLeave={() => setHoveredItem(undefined)}
           >
@@ -138,7 +134,7 @@ const Toolbox: React.FC = () => {
             >
               {item.icon
                 ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
-                : item.title.slice(0, 2)}
+                : item.key.slice(0, 2)}
             </ActionIcon>
           </div>
         )}
@@ -150,11 +146,16 @@ const Toolbox: React.FC = () => {
       className="Toolbox--tool-info"
     >
       <div className="Toolbox--tool-title">
-        {hoveredItem.title}
-        {hoveredItem.hotkey &&
-          ` (${hoveredItem.hotkeyHold ? 'hold ' : ''}${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
+        {t(`toolbox.items.${hoveredItem.key}.title`)}
+        {hoveredItem.hotkey && (
+          hoveredItem.hotkeyHold
+            ? ` (${t('toolbox.tooltips.hotkeyHold', { hotkey: substituteOsAwareHotkey(hoveredItem.hotkey, os) })})`
+            : <> (<bdo dir="ltr">{substituteOsAwareHotkey(hoveredItem.hotkey, os)}</bdo>)</>
+        )}
       </div>
-      <div>{hoveredItem.description}</div>
+      <div>{hoveredItem.descriptionKey
+        ? t(`toolbox.items.${hoveredItem.key}.descriptions.${hoveredItem.descriptionKey}`)
+        : t(`toolbox.items.${hoveredItem.key}.description`)}</div>
     </Paper>}
   </div>;
 };

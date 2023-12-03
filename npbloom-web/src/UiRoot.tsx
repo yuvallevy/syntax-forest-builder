@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
 import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
 import theme from './theme';
@@ -24,6 +25,8 @@ import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';
 
 const UiRoot = () => {
+  const { t } = useTranslation();
+
   const { state, dispatch } = useUiState();
   const { selection, activePlotIndex } = state;
 
@@ -112,7 +115,7 @@ const UiRoot = () => {
       <Menu shadow="md" withArrow position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
         <Menu.Target>
           <Button variant="subtle" size="xs">
-            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; File
+            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; {t('mainMenu.file.title')}
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
@@ -121,21 +124,21 @@ const UiRoot = () => {
             rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-O', os)}</Text>}
             onClick={openFileLoadModal}
           >
-            Open...
+            {t('mainMenu.file.items.open')}...
           </Menu.Item>
           <Menu.Item
             icon={<IconDeviceFloppy size={14} />}
             rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
             onClick={saveOrSaveAs}
           >
-            Save{activeFileName ? '' : '...'}
+            {t('mainMenu.file.items.save')}{activeFileName ? '' : '...'}
           </Menu.Item>
           <Menu.Item disabled={!activeFileName} onClick={openFileSaveModal}>
-            Save As...
+            {t('mainMenu.file.items.saveAs')}...
           </Menu.Item>
           {activeFileName && <><Menu.Divider />
           <Menu.Item disabled>
-            Currently open file:<br />{activeFileName}
+            {t('mainMenu.file.items.currentlyOpenFile')}<br />{activeFileName}
           </Menu.Item></>}
         </Menu.Dropdown>
       </Menu>

@@ -1,9 +1,12 @@
+import { useTranslation } from 'react-i18next';
 import { Anchor, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Logo from './npbloom-logo.svg';
 
 const AboutButton = () => {
+  const { t } = useTranslation();
+
   const [opened, { open, close }] = useDisclosure(false);
 
   return <>
@@ -12,7 +15,7 @@ const AboutButton = () => {
       size="xs"
       onClick={open}
     >
-      <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; About
+      <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; {t('mainMenu.about.title')}
     </Button>
     <Modal opened={opened} onClose={close} title="About" centered size="lg">
       <div style={{ textAlign: 'center' }}>
