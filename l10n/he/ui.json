@@ -1,0 +1,97 @@
+{
+  "toolbox": {
+    "title": "כלים",
+    "items": {
+      "undo": {
+        "title": "ביטול",
+        "description": "מבטל את הפעולה האחרונה."
+      },
+      "redo": {
+        "title": "ביצוע חוזר",
+        "description": "מבצע מחדש את הפעולה האחרונה שבוטלה."
+      },
+      "add": {
+        "title": "הוספה",
+        "description": "מוסיף צומת אב חדש לטקסט המסומן או לצמתים המסומנים."
+      },
+      "delete": {
+        "title": "מחיקה",
+        "descriptions": {
+          "deleteNodes": "מוחק את הצמתים המסומנים.",
+          "deleteTrees": "מוחק את העצים המסומנים."
+        }
+      },
+      "edit": {
+        "title": "עריכה",
+        "description": "עורך את הצומת המסומן."
+      },
+      "triangle": {
+        "title": "משולש",
+        "description": "מפעיל או מבטל חיבור משולש עבור הצמתים הסופיים המסומנים."
+      },
+      "adopt": {
+        "title": "אימוץ",
+        "description": "מאמץ צומת אחד או יותר כצאצאים ישירים של הצומת המסומן."
+      },
+      "disown": {
+        "title": "נישול",
+        "description": "מנתק את הקשר בין הצומת המסומן ואחד או יותר מצאצאיו הישירים."
+      },
+      "resetPosition": {
+        "title": "איפוס מיקום",
+        "description": "מחזיר את הצמתים המסומנים למיקום המקורי שלהם."
+      },
+      "selectTrees": {
+        "title": "סימון עצים",
+        "description": "מסמן עצים שלמים במקום צמתים נפרדים."
+      }
+    },
+    "tooltips": {
+      "hotkeyHold": "החזקת {{hotkey}} לחוץ"
+    }
+  },
+  "mainMenu": {
+    "file": {
+      "title": "קובץ",
+      "items": {
+        "open": "פתיחה",
+        "save": "שמירה",
+        "saveAs": "שמירה בשם",
+        "currentlyOpenFile": "הקובץ הפתוח כעת:"
+      }
+    },
+    "settings": {
+      "title": "הגדרות"
+    },
+    "about": {
+      "title": "אודות"
+    }
+  },
+  "fileIo": {
+    "list": {
+      "name": "שם",
+      "size": "גודל",
+      "modified": "תאריך שינוי"
+    },
+    "labels": {
+      "fileName": "שמירה כ:"
+    },
+    "buttons": {
+      "save": "שמירה"
+    }
+  },
+  "settings": {
+    "items": {
+      "autoFormatBracketsAsSubscript": {
+        "title": "הפיכה אוטומטית של סוגריים לציון תחתי",
+        "description": "כשהמצב הזה מופעל, אותיות ומספרים בסוגריים כמו (i) או [i] יוצגו אוטומטית כציון תחתי. (לא עובד על כל האותיות)"
+      },
+      "experimentalTextWidth": {
+        "title": "שיטה נסיונית למיקום צמתים (מדויקת יותר, קצת יותר איטית)"
+      }
+    },
+    "buttons": {
+      "done": "סיום"
+    }
+  }
+}
