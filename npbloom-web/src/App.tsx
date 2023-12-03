@@ -5,6 +5,7 @@ import strWidthByChars from './strWidth/strWidthByChars';
 import strWidthByMeasure from './strWidth/strWidthByMeasure';
 import UiStateContext from './UiStateContext';
 import UiRoot from './UiRoot';
+import useAutoHtmlDirection from './useAutoHtmlDirection';
 
 const uiReducer = (state: UiState, action: UiAction) => uiReducerWithoutStrWidth(state, action, strWidthByChars);
 const uiReducerLiveStrWidth = (state: UiState, action: UiAction) =>
@@ -15,6 +16,8 @@ const App: React.FC = () => {
   const [state, dispatch] =
     useReducer(settingsState.liveStringWidth ? uiReducerLiveStrWidth : uiReducer, initialUiState.get());
   const strWidth = settingsState.liveStringWidth ? strWidthByMeasure : strWidthByChars;
+
+  useAutoHtmlDirection();
 
   return (
     <SettingsStateContext.Provider value={{ settingsState, settingsDispatch, strWidth }}>
