@@ -133,14 +133,14 @@ const UiRoot = () => {
         <Menu.Dropdown>
           <Menu.Item
             icon={<IconFolder size={14} />}
-            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-O', os)}</Text>}
+            rightSection={<Text color="dimmed" dir="ltr">{substituteOsAwareHotkey('Ctrl-O', os)}</Text>}
             onClick={openFileLoadModal}
           >
             {t('mainMenu.file.items.open')}...
           </Menu.Item>
           <Menu.Item
             icon={<IconDeviceFloppy size={14} />}
-            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
+            rightSection={<Text color="dimmed" dir="ltr">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
             onClick={saveOrSaveAs}
           >
             {t('mainMenu.file.items.save')}{activeFileName ? '' : '...'}
