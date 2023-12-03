@@ -1,0 +1,97 @@
+{
+  "toolbox": {
+    "title": "Tools",
+    "items": {
+      "undo": {
+        "title": "Undo",
+        "description": "Undo the last action."
+      },
+      "redo": {
+        "title": "Redo",
+        "description": "Redo the last undone action."
+      },
+      "add": {
+        "title": "Add",
+        "description": "Add a new parent node for the selected text or nodes."
+      },
+      "delete": {
+        "title": "Delete",
+        "descriptions": {
+          "deleteNodes": "Delete the selected nodes.",
+          "deleteTrees": "Delete the selected trees."
+        }
+      },
+      "edit": {
+        "title": "Edit",
+        "description": "Edit the selected node."
+      },
+      "triangle": {
+        "title": "Triangle",
+        "description": "Toggle triangle connectors for the selected terminal nodes."
+      },
+      "adopt": {
+        "title": "Adopt",
+        "description": "Adopt one or more nodes as children of the selected node."
+      },
+      "disown": {
+        "title": "Disown",
+        "description": "Disown one or more children of the selected node."
+      },
+      "resetPosition": {
+        "title": "Reset position",
+        "description": "Relocate the selected nodes to their original positions."
+      },
+      "selectTrees": {
+        "title": "Select trees",
+        "description": "Select entire trees instead of individual nodes."
+      }
+    },
+    "tooltips": {
+      "hotkeyHold": "hold {{hotkey}}"
+    }
+  },
+  "mainMenu": {
+    "file": {
+      "title": "File",
+      "items": {
+        "open": "Open",
+        "save": "Save",
+        "saveAs": "Save As",
+        "currentlyOpenFile": "Currently open file:"
+      }
+    },
+    "settings": {
+      "title": "Settings"
+    },
+    "about": {
+      "title": "About"
+    }
+  },
+  "fileIo": {
+    "list": {
+      "name": "Name",
+      "size": "Size",
+      "modified": "Modified"
+    },
+    "labels": {
+      "fileName": "Save as:"
+    },
+    "buttons": {
+      "save": "Save"
+    }
+  },
+  "settings": {
+    "items": {
+      "autoFormatBracketsAsSubscript": {
+        "title": "Format brackets/parentheses as subscript",
+        "description": "When this is enabled, letters and numbers in parentheses or brackets such as (i) and [i] will automatically be rendered as subscript. (Does not work on all letters)"
+      },
+      "experimentalTextWidth": {
+        "title": "Use experimental node positioning method (slightly slower, more accurate)"
+      }
+    },
+    "buttons": {
+      "done": "Done"
+    }
+  }
+}
