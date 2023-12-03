@@ -68,7 +68,11 @@
     }
   },
   "fileIo": {
-    "list": {
+    "title": {
+      "save": "Save",
+      "open": "Open"
+    },
+    "listHeaders": {
       "name": "Name",
       "size": "Size",
       "modified": "Modified"

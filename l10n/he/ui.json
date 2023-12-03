@@ -68,7 +68,11 @@
     }
   },
   "fileIo": {
-    "list": {
+    "title": {
+      "save": "שמירה",
+      "open": "פתיחה"
+    },
+    "listHeaders": {
       "name": "שם",
       "size": "גודל",
       "modified": "תאריך שינוי"

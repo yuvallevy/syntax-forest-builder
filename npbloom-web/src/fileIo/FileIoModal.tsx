@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import prettyDate from './prettyDate';
 import { ActionIcon, Button, Group, Modal, Popover, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { useInputState } from '@mantine/hooks';
 import { IconCheck, IconDeviceFloppy, IconEdit, IconTrash, IconX } from '@tabler/icons-react';
@@ -18,11 +20,8 @@ interface FileIoModalProps {
   onClose: () => void;
 }
 
-const compareFileNames = (file1: FileWithMetadata, file2: FileWithMetadata) =>
-  Intl.Collator().compare(file1.name, file2.name);
-
-const prettyDate = (date: Date) =>
-  (date.getDay() === new Date().getDay()) ? `Today, ${date.toLocaleTimeString()}` : date.toLocaleString();
+const compareFileNames = (locale: string) => (file1: FileWithMetadata, file2: FileWithMetadata) =>
+  Intl.Collator(locale).compare(file1.name, file2.name);
 
 const FileIoModal: React.FC<FileIoModalProps> = ({
   opened,
@@ -35,6 +34,8 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   onDelete,
   onClose,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const [fileNameInputValue, setFileNameInputValue] = useState('');
   const fileNameInputRef = useRef<HTMLInputElement>(null);
   const [savingStatus, setSavingStatus] = useState<'idle' | 'loading' | 'success' | Error>('idle');
@@ -44,7 +45,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   const newFileNameInputRef = useRef<HTMLInputElement>(null);
   const [renamingStatus, setRenamingStatus] = useState<Error>();
 
-  const sortedFileList = useMemo(() => fileList.sort(compareFileNames), [fileList]);
+  const sortedFileList = useMemo(() => fileList.sort(compareFileNames(i18n.language)), [fileList, i18n.language]);
 
   useEffect(() => {
     if (opened) {
@@ -86,7 +87,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   return <Modal
     size="xl"
     opened={opened}
-    title={interactionMode === 'load' ? 'Open' : 'Save'}
+    title={interactionMode === 'load' ? t('fileIo.title.open') : t('fileIo.title.save')}
     centered
     onClose={onClose}
   >
@@ -94,9 +95,9 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
       <Table highlightOnHover={interactionMode === 'load'}>
         <thead>
         <tr>
-          <th>Name</th>
-          <th style={{ width: '12ch' }}>Size</th>
-          <th style={{ width: '24ch' }}>Modified</th>
+          <th>{t('fileIo.listHeaders.name')}</th>
+          <th style={{ width: '12ch' }}>{t('fileIo.listHeaders.size')}</th>
+          <th style={{ width: '24ch' }}>{t('fileIo.listHeaders.modified')}</th>
           <th style={{ width: '10ch' }}></th>
         </tr>
         </thead>
@@ -121,8 +122,8 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
                 </form>
                 : file.name}
             </td>
-            <td>{prettyBytes(file.size)}</td>
-            <td>{prettyDate(file.modifiedTime)}</td>
+            <td><bdo dir="ltr">{prettyBytes(file.size, { locale: i18n.language })}</bdo></td>
+            <td>{prettyDate(file.modifiedTime, i18n.language)}</td>
             <td>
               {renamingFile
                 ? <Group spacing="xs" position="right" className="FileIoModal--file-actions">
