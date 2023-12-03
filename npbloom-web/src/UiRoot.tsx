@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
+import { Button, createEmotionCache, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
 import theme from './theme';
 import './App.scss';
@@ -24,8 +25,14 @@ import { useOs } from '@mantine/hooks';
 import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';
 
+const rtlCache = createEmotionCache({
+  key: 'mantine-rtl',
+  stylisPlugins: [rtlPlugin],
+});
+
 const UiRoot = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir();
 
   const { state, dispatch } = useUiState();
   const { selection, activePlotIndex } = state;
@@ -108,7 +115,12 @@ const UiRoot = () => {
         && dispatch(new SetSelectionAction(EntitySelectionAction.SelectNode))
   );
 
-  return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
+  return <MantineProvider
+    withGlobalStyles
+    withNormalizeCSS
+    emotionCache={dir === 'rtl' ? rtlCache : undefined}
+    theme={{ ...theme, dir }}
+  >
     <PlotView />
     <Toolbox />
     <Flex align="center" sx={{ position: 'fixed', left: '0.75rem', right: '0.75rem', top: '0.75rem' }}>

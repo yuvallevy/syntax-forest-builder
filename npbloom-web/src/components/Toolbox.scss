@@ -8,6 +8,13 @@
   align-items: flex-start;
 }
 
+html[dir=rtl] {
+  .Toolbox--container {
+    right: 0;
+    left: unset;
+  }
+}
+
 .Toolbox--body {
   flex-shrink: 0;
 }
