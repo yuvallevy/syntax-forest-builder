@@ -81,7 +81,8 @@
       "fileName": "Save as:"
     },
     "buttons": {
-      "save": "Save"
+      "save": "Save",
+      "confirmDelete": "Click to confirm"
     }
   },
   "settings": {

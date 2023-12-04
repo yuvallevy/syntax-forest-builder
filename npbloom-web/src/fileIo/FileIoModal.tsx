@@ -145,7 +145,9 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
                       </ActionIcon>
                     </Popover.Target>
                     <Popover.Dropdown>
-                      <Button size="sm" p="xs" color="red" onClick={() => onDelete(file.name)}>Click to confirm</Button>
+                      <Button size="sm" p="xs" color="red" onClick={() => onDelete(file.name)}>
+                        {t('fileIo.buttons.confirmDelete')}
+                      </Button>
                     </Popover.Dropdown>
                   </Popover>
                 </Group>}
@@ -157,7 +159,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
     {interactionMode === 'save' && <>
       <form onSubmit={handleSaveClicked}>
         <Group>
-          <label htmlFor="filename">Save as:</label>
+          <label htmlFor="filename">{t('fileIo.labels.fileName')}</label>
           <TextInput
             ref={fileNameInputRef}
             id="filename"
@@ -167,7 +169,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
             onChange={(event) => setFileNameInputValue(event.currentTarget.value)}
           />
           <Button type="submit" disabled={savingStatus === 'loading' || fileNameInputValue.trim() === ''}>
-            <IconDeviceFloppy stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>&nbsp; Save
+            <IconDeviceFloppy stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>&nbsp; {t('fileIo.buttons.save')}
           </Button>
         </Group>
       </form>

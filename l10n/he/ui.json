@@ -81,7 +81,8 @@
       "fileName": "שמירה כ:"
     },
     "buttons": {
-      "save": "שמירה"
+      "save": "שמירה",
+      "confirmDelete": "אישור מחיקה"
     }
   },
   "settings": {
