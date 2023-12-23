@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode,
-  EntitySet, generateNodeId, getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger,
-  NodeIndicatorInPlot, NodeSelectionInPlot, PositionedBranchingNode, PositionedNode, PositionedTerminalNode,
-  PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger,
-  TreeSelectionInPlot
+  BranchingNodeCreationTrigger, ClientCoordsOffset, coordsInPlotToCoordsInClient, DisownNodesBySelection,
+  EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId, getNodeCreationTriggers,
+  isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot, PositionedBranchingNode,
+  PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot,
+  StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -192,8 +192,10 @@ const TreeView: React.FC<TreeViewProps> = ({
     }
   };
 
+  const treePositionInClient = coordsInPlotToCoordsInClient(tree.position, state.panZoomState);
+
   return <g id={`tree-${treeId}`}
-            style={{ transform: `translate(${tree.position.plotX}px, ${tree.position.plotY}px)` }}>
+            style={{ transform: `translate(${treePositionInClient.clientX}px, ${treePositionInClient.clientY}px)` }}>
     {getNodeCreationTriggers(
       tree,
       strWidth,

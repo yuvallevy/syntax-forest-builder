@@ -1,9 +1,9 @@
 import React, { useContext, useRef } from 'react';
 import { Id, Sentence } from '../types';
 import {
-  AddNodeBySelection, EntitySelectionAction, formatSubscriptInString, generateNodeId, NoSelectionInPlot, PositionedTree,
-  RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection, SetSentence, SliceSelectionInPlot,
-  StringSlice
+  AddNodeBySelection, coordsInPlotToCoordsInClient, EntitySelectionAction, formatSubscriptInString, generateNodeId,
+  NoSelectionInPlot, PositionedTree, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection,
+  SetSentence, SliceSelectionInPlot, StringSlice
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -105,6 +105,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
 
+  const treePositionInClient = coordsInPlotToCoordsInClient(tree.position, state.panZoomState);
+
   return <input
     type="text"
     id={treeId}
@@ -112,8 +114,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     value={tree.sentence}
     className={'SentenceView--input' + (className ? ` ${className}` : '')}
     style={{
-      left: tree.position.plotX,
-      top: tree.position.plotY,
+      left: treePositionInClient.clientX,
+      top: treePositionInClient.clientY,
       width: tree.sentence.length === 0 ? EMPTY_SENTENCE_WIDTH : tree.width + EXTRA_SENTENCE_WIDTH,
     }}
     placeholder="Type a sentence..."

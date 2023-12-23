@@ -2,8 +2,8 @@ import { useContext, useMemo, useState } from 'react';
 import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
   DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes,
-  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedNode,
-  PositionedPlot, PositionedTree, RectInClient, SelectionInPlot, SetSelection
+  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedPlot,
+  RectInClient, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -95,9 +95,9 @@ const PlotView: React.FC = () => {
 
   const handlePlotMouseUp = (event: React.MouseEvent<SVGElement>) => {
     if (selectionBoxTopLeft && selectionBoxBottomRight) {
-      const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight).toRectInPlot();
-      const nodeInRectPredicate = (tree: PositionedTree, node: PositionedNode) => isNodeInRect(tree, node, rectInPlot);
-      const newSelectedNodes = plot.filterNodeIndicatorsAsArray(nodeInRectPredicate);
+      const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight)
+        .toRectInPlot(state.panZoomState);
+      const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
       handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       moveNodes(dragOffset.dClientX, dragOffset.dClientY);
