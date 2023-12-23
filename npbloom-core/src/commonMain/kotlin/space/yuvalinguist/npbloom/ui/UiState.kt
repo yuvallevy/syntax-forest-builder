@@ -60,6 +60,7 @@ data class UiState(
     val selection: SelectionInPlot,
     val selectionAction: EntitySelectionAction,
     val editedNodeIndicator: NodeIndicatorInPlot?,
+    val panZoomState: PanZoomState,
 )
 
 @JsExport
@@ -69,6 +70,7 @@ val initialUiState = UiState(
     selection = NoSelectionInPlot,
     selectionAction = EntitySelectionAction.SelectNode,
     editedNodeIndicator = null,
+    panZoomState = PanZoomState(ClientCoordsOffset(0.0, 0.0), 1.0)
 )
 
 private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): SelectionInPlot =
