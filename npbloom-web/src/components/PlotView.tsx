@@ -2,7 +2,7 @@ import { useContext, useMemo, useState } from 'react';
 import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
   DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes,
-  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, PlotCoordsOffset, PositionedPlot,
+  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PlotCoordsOffset, PositionedPlot,
   RectInClient, SelectionInPlot, SetSelection
 } from 'npbloom-core';
 import TreeView from './TreeView';
@@ -39,7 +39,8 @@ const PlotView: React.FC = () => {
 
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
   const [dragEndCoords, setDragEndCoords] = useState<CoordsInClient | undefined>();
-  const [mouseInteractionMode, setMouseInteractionMode] = useState<'idle' | 'selecting' | 'draggingNodes' | 'draggingTrees'>('idle');
+  const [mouseInteractionMode, setMouseInteractionMode] =
+    useState<'idle' | 'selecting' | 'panning' | 'draggingNodes' | 'draggingTrees'>('idle');
 
   const selectionBoxTopLeft: CoordsInClient | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? new CoordsInClient(
     Math.min(dragStartCoords.clientX, dragEndCoords.clientX),
@@ -77,19 +78,23 @@ const PlotView: React.FC = () => {
   };
 
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
-    if (event.currentTarget === event.target) {  // Only start a selection box from an empty area
+    if (event.currentTarget === event.target && !event.shiftKey) {  // Only start a selection box from an empty area
       setMouseInteractionMode('selecting');
       setDragStartCoords(new CoordsInClient(event.clientX, event.clientY));
+    } else if (event.shiftKey) {
+      setMouseInteractionMode('panning');
     }
   };
 
   const handlePlotMouseMove = (event: React.MouseEvent<SVGElement>) => {
-    if (event.buttons === PRIMARY_MOUSE_BUTTON && dragStartCoords) {
+    if (event.buttons === PRIMARY_MOUSE_BUTTON && !event.shiftKey && dragStartCoords) {
       const xDistToDragStart = Math.abs(dragStartCoords?.clientX - event.clientX);
       const yDistToDragStart = Math.abs(dragStartCoords?.clientY - event.clientY);
       if (dragEndCoords || xDistToDragStart > MINIMUM_DRAG_DISTANCE || yDistToDragStart > MINIMUM_DRAG_DISTANCE) {
         setDragEndCoords(new CoordsInClient(event.clientX, event.clientY));
       }
+    } else if (event.buttons === PRIMARY_MOUSE_BUTTON && mouseInteractionMode === 'panning') {
+      dispatch(new Pan(new ClientCoordsOffset(event.movementX, event.movementY)));
     }
   };
 
@@ -126,8 +131,9 @@ const PlotView: React.FC = () => {
   };
 
   const plotViewCursor =
-    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset
-      ? 'move' : 'crosshair';
+    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset ? 'move'
+      : (mouseInteractionMode === 'panning') ? 'grabbing'
+        : 'crosshair';
 
   return <>
     <svg
