@@ -44,7 +44,8 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   const { state, dispatch } = useUiState();
 
   const editedNodeObject = tree.node(nodeId);
-  const nodePositionOnPlot = coordsInPlotToCoordsInClient(calculateNodeCenterOnPlot(tree, editedNodeObject));
+  const nodePositionInClient =
+    coordsInPlotToCoordsInClient(calculateNodeCenterOnPlot(tree, editedNodeObject), state.panZoomState);
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
@@ -79,7 +80,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   return <LabelNodeEditorInput
     key={`editable-node-${nodeId}`}
     value={inputValue}
-    baseCoords={nodePositionOnPlot}
+    baseCoords={nodePositionInClient}
     onInput={setInputValue}
     onBlur={handleNodeEditorBlur}
     onKeyDown={handleNodeEditorKeyDown}
