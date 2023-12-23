@@ -9,6 +9,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CoordsTest {
+    private val defaultPanZoomState = PanZoomState(ClientCoordsOffset(0.0, 0.0), 1.0)
+    private val panZoomStateWithPan = defaultPanZoomState.copy(panOffset = ClientCoordsOffset(9.1, -44.0))
+    private val panZoomStateWithZoom = defaultPanZoomState.copy(zoomLevel = 2.5)
+    private val panZoomStateWithBoth = PanZoomState(ClientCoordsOffset(-6.0, 10.5), 0.5)
+
     private val positionedPlot = PositionedPlot(
         trees = EntitySet(
             PositionedTree(
@@ -31,17 +36,67 @@ class CoordsTest {
     )
 
     @Test
-    fun clientCoordsToPlotCoords() =
+    fun clientCoordsToPlotCoordsAtDefaultPanZoom() {
         assertEquals(
             CoordsInPlot(-32.0, 50.0),
-            CoordsInClient(-32.0, 50.0).toCoordsInPlot()
+            CoordsInClient(-32.0, 50.0).toCoordsInPlot(defaultPanZoomState)
+        )
+    }
+
+    @Test
+    fun clientCoordsToPlotCoordsPanned() {
+        assertEquals(
+            CoordsInPlot(-22.9, 6.0),
+            CoordsInClient(-32.0, 50.0).toCoordsInPlot(panZoomStateWithPan)
+        )
+    }
+
+    @Test
+    fun clientCoordsToPlotCoordsZoomed() {
+        assertEquals(
+            CoordsInPlot(-12.8, 20.0),
+            CoordsInClient(-32.0, 50.0).toCoordsInPlot(panZoomStateWithZoom)
+        )
+    }
+
+    @Test
+    fun clientCoordsToPlotCoordsPannedAndZoomed() {
+        assertEquals(
+            CoordsInPlot(-70.0, 110.5),
+            CoordsInClient(-32.0, 50.0).toCoordsInPlot(panZoomStateWithBoth)
+        )
+    }
+
+    @Test
+    fun clientRectToPlotRectAtDefaultPanZoom() =
+        assertEquals(
+            RectInPlot(CoordsInPlot(-28.0, 45.0), CoordsInPlot(-48.0, 90.0)),
+            RectInClient(CoordsInClient(-28.0, 45.0), CoordsInClient(-48.0, 90.0))
+                .toRectInPlot(defaultPanZoomState)
         )
 
     @Test
-    fun clientRectToPlotRect() =
+    fun clientRectToPlotRectPanned() =
         assertEquals(
-            RectInPlot(CoordsInPlot(-28.0, 45.0), CoordsInPlot(-48.0, 90.0)),
-            RectInClient(CoordsInClient(-28.0, 45.0), CoordsInClient(-48.0, 90.0)).toRectInPlot()
+            RectInPlot(CoordsInPlot(-18.9, 1.0), CoordsInPlot(-38.9, 46.0)),
+            RectInClient(CoordsInClient(-28.0, 45.0), CoordsInClient(-48.0, 90.0))
+                .toRectInPlot(panZoomStateWithPan)
+        )
+
+    @Test
+    fun clientRectToPlotRectZoomed() =
+        assertEquals(
+            RectInPlot(CoordsInPlot(-11.2, 18.0), CoordsInPlot(-19.2, 36.0)),
+            RectInClient(CoordsInClient(-28.0, 45.0), CoordsInClient(-48.0, 90.0))
+                .toRectInPlot(panZoomStateWithZoom)
+        )
+
+    @Test
+    fun clientRectToPlotRectPannedAndZoomed() =
+        assertEquals(
+            RectInPlot(CoordsInPlot(-62.0, 100.5), CoordsInPlot(-102.0, 190.5)),
+            RectInClient(CoordsInClient(-28.0, 45.0), CoordsInClient(-48.0, 90.0))
+                .toRectInPlot(panZoomStateWithBoth)
         )
 
     @Test
@@ -53,10 +108,31 @@ class CoordsTest {
         assertFalse(CoordsInPlot(-32.0, 40.0) in RectInPlot(CoordsInPlot(-48.0, 55.0), CoordsInPlot(-28.0, 90.0)))
 
     @Test
-    fun coordsInPlotToCoordsInClient() =
+    fun coordsInPlotToCoordsInClientAtDefaultPanZoom() =
         assertEquals(
             CoordsInClient(-32.0, 50.0),
-            CoordsInPlot(-32.0, 50.0).toCoordsInClient()
+            CoordsInPlot(-32.0, 50.0).toCoordsInClient(defaultPanZoomState)
+        )
+
+    @Test
+    fun coordsInPlotToCoordsInClientPanned() =
+        assertEquals(
+            CoordsInClient(-41.1, 94.0),
+            CoordsInPlot(-32.0, 50.0).toCoordsInClient(panZoomStateWithPan)
+        )
+
+    @Test
+    fun coordsInPlotToCoordsInClientZoomed() =
+        assertEquals(
+            CoordsInClient(-80.0, 125.0),
+            CoordsInPlot(-32.0, 50.0).toCoordsInClient(panZoomStateWithZoom)
+        )
+
+    @Test
+    fun coordsInPlotToCoordsInClientPannedAndZoomed() =
+        assertEquals(
+            CoordsInClient(-13.0, 19.75),
+            CoordsInPlot(-32.0, 50.0).toCoordsInClient(panZoomStateWithBoth)
         )
 
     @Test

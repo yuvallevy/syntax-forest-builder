@@ -14,19 +14,25 @@ typealias ClientY = Double
 typealias DClientX = Double
 typealias DClientY = Double
 
-// Calculate plot coords from client coords & vice versa, when they're different (when zoom and/or pan are implemented)
-
 @JsExport
 data class CoordsInClient(val clientX: ClientX, val clientY: ClientY) {
-    fun toCoordsInPlot() = CoordsInPlot(clientX, clientY)
+    fun toCoordsInPlot(panZoomState: PanZoomState): CoordsInPlot =
+        CoordsInPlot(
+            clientX / panZoomState.zoomLevel + panZoomState.panOffset.dClientX,
+            clientY / panZoomState.zoomLevel + panZoomState.panOffset.dClientY
+        )
 }
 
 @JsExport
-data class ClientCoordsOffset(val dClientX: DClientX, val dClientY: DClientY)
+data class ClientCoordsOffset(val dClientX: DClientX, val dClientY: DClientY) {
+    operator fun minus(clientCoordsOffset: ClientCoordsOffset) =
+        ClientCoordsOffset(dClientX - clientCoordsOffset.dClientX, dClientY - clientCoordsOffset.dClientY)
+}
 
 @JsExport
 data class RectInClient(val topLeft: CoordsInClient, val bottomRight: CoordsInClient) {
-    fun toRectInPlot() = RectInPlot(topLeft.toCoordsInPlot(), bottomRight.toCoordsInPlot())
+    fun toRectInPlot(panZoomState: PanZoomState) =
+        RectInPlot(topLeft.toCoordsInPlot(panZoomState), bottomRight.toCoordsInPlot(panZoomState))
 }
 
 @JsExport
@@ -41,7 +47,11 @@ data class RectInPlot(val topLeft: CoordsInPlot, val bottomRight: CoordsInPlot) 
 
 @JsExport
 @JsName("coordsInPlotToCoordsInClient")
-fun CoordsInPlot.toCoordsInClient() = CoordsInClient(plotX, plotY)
+fun CoordsInPlot.toCoordsInClient(panZoomState: PanZoomState) =
+    CoordsInClient(
+        (plotX - panZoomState.panOffset.dClientX) * panZoomState.zoomLevel,
+        (plotY - panZoomState.panOffset.dClientY) * panZoomState.zoomLevel
+    )
 
 /**
  * Returns the center coordinate of the given node in the given tree with respect to its containing plot.
