@@ -52,6 +52,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
 @JsExport class LoadContentState(val contentState: ContentState) : UiAction
+@JsExport class Pan(val clientCoordsOffset: ClientCoordsOffset) : UiAction
 
 @JsExport
 data class UiState(
@@ -476,5 +477,12 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return initialUiState.copy(
                 contentState = initialContentState.copy(current = action.contentState)
             )
+
+        is Pan -> {
+            return state.copy(
+                panZoomState =
+                state.panZoomState.copy(panOffset = state.panZoomState.panOffset - action.clientCoordsOffset)
+            )
+        }
     }
 }
