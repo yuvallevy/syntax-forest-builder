@@ -3,7 +3,7 @@ import {
   AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
   DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes,
   MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PlotCoordsOffset, PositionedPlot,
-  RectInClient, SelectionInPlot, SetSelection
+  RectInClient, SelectionInPlot, SetSelection, Zoom
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -130,6 +130,17 @@ const PlotView: React.FC = () => {
     }
   };
 
+  const handlePlotWheel = (event: React.WheelEvent<SVGElement>) => {
+    if (event.ctrlKey || event.metaKey) {
+      const relativeZoomFactor = 1 - event.deltaY / 100;
+      dispatch(new Zoom(relativeZoomFactor, new CoordsInClient(event.clientX, event.clientY)));
+    } else if (event.shiftKey) {  // Horizontal pan, for devices with a vertical-only scroll wheel (most mice)
+      dispatch(new Pan(new ClientCoordsOffset(-event.deltaY, 0)));
+    } else {
+      dispatch(new Pan(new ClientCoordsOffset(-event.deltaX, -event.deltaY)));
+    }
+  };
+
   const plotViewCursor =
     (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset ? 'move'
       : (mouseInteractionMode === 'panning') ? 'grabbing'
@@ -144,6 +155,7 @@ const PlotView: React.FC = () => {
       onMouseDown={handlePlotMouseDown}
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
+      onWheel={handlePlotWheel}
     >
       {plot.trees.map(tree =>
         <TreeView

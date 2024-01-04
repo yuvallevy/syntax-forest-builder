@@ -9,6 +9,8 @@ import './SentenceView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
 
+const SENTENCE_FONT_SIZE_PX = 16;
+
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
 const EMPTY_SENTENCE_WIDTH = 120;
 
@@ -116,7 +118,10 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     style={{
       left: treePositionInClient.clientX,
       top: treePositionInClient.clientY,
-      width: tree.sentence.length === 0 ? EMPTY_SENTENCE_WIDTH : tree.width + EXTRA_SENTENCE_WIDTH,
+      fontSize: SENTENCE_FONT_SIZE_PX * state.panZoomState.zoomLevel,
+      width: tree.sentence.length === 0
+        ? (EMPTY_SENTENCE_WIDTH * state.panZoomState.zoomLevel)
+        : (tree.width + EXTRA_SENTENCE_WIDTH) * state.panZoomState.zoomLevel,
     }}
     placeholder="Type a sentence..."
     onBlur={handleSentenceBlur}

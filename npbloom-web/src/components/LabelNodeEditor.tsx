@@ -9,7 +9,8 @@ import useUiState from '../useUiState';
 
 interface LabelNodeEditorInputProps {
   value: string;
-  baseCoords: CoordsInClient,
+  baseCoords: CoordsInClient;
+  fontSize: number;
   onInput: (inputValue: string) => void;
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -23,6 +24,7 @@ interface LabelNodeEditorProps {
 const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   value,
   baseCoords,
+  fontSize,
   onInput,
   onBlur,
   onKeyDown,
@@ -31,12 +33,13 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   className="LabelNodeEditorInput"
   value={value}
   autoFocus
-  style={{ left: baseCoords.clientX, top: baseCoords.clientY }}
+  style={{ left: baseCoords.clientX, top: baseCoords.clientY, fontSize }}
   onInput={e => onInput(e.currentTarget.value)}
   onBlur={onBlur}
   onKeyDown={onKeyDown}
 />;
 
+const NODE_FONT_SIZE_PX = 16;
 const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   tree,
   nodeId,
@@ -46,6 +49,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
   const editedNodeObject = tree.node(nodeId);
   const nodePositionInClient =
     coordsInPlotToCoordsInClient(calculateNodeCenterOnPlot(tree, editedNodeObject), state.panZoomState);
+  const nodeFontSize = NODE_FONT_SIZE_PX * state.panZoomState.zoomLevel;
   const [inputValue, setInputValue] = useState<string>(editedNodeObject.label);
 
   const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
@@ -81,6 +85,7 @@ const LabelNodeEditor: React.FC<LabelNodeEditorProps> = ({
     key={`editable-node-${nodeId}`}
     value={inputValue}
     baseCoords={nodePositionInClient}
+    fontSize={nodeFontSize}
     onInput={setInputValue}
     onBlur={handleNodeEditorBlur}
     onKeyDown={handleNodeEditorKeyDown}

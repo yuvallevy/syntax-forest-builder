@@ -195,7 +195,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   const treePositionInClient = coordsInPlotToCoordsInClient(tree.position, state.panZoomState);
 
   return <g id={`tree-${treeId}`}
-            style={{ transform: `translate(${treePositionInClient.clientX}px, ${treePositionInClient.clientY}px)` }}>
+            style={{ transform: `translate(${treePositionInClient.clientX}px, ${treePositionInClient.clientY}px) scale(${state.panZoomState.zoomLevel})` }}>
     {getNodeCreationTriggers(
       tree,
       strWidth,
