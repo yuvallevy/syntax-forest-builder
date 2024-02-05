@@ -72,7 +72,7 @@ val initialUiState = UiState(
     selection = NoSelectionInPlot,
     selectionAction = EntitySelectionAction.SelectNode,
     editedNodeIndicator = null,
-    panZoomState = PanZoomState(ClientCoordsOffset(0.0, 0.0), 1.0)
+    panZoomState = PanZoomState(PlotCoordsOffset(0.0, 0.0), 1.0)
 )
 
 private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): SelectionInPlot =
@@ -480,16 +480,11 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             )
 
         is Pan -> {
-            return state.copy(
-                panZoomState =
-                state.panZoomState.copy(panOffset = state.panZoomState.panOffset - action.clientCoordsOffset)
-            )
+            return state.copy(panZoomState = state.panZoomState.panBy(action.clientCoordsOffset))
         }
 
         is Zoom -> {
-            return state.copy(
-                panZoomState = state.panZoomState.copy(zoomLevel = state.panZoomState.zoomLevel * action.relativeFactor)
-            )
+            return state.copy(panZoomState = state.panZoomState.zoom(action.relativeFactor, action.focus.toOffset()))
         }
     }
 }

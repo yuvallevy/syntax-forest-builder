@@ -5,6 +5,7 @@ package space.yuvalinguist.npbloom.ui
 import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.positioned.PositionedNode
 import space.yuvalinguist.npbloom.content.positioned.PositionedTree
+import space.yuvalinguist.npbloom.content.unpositioned.PlotCoordsOffset
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -16,17 +17,37 @@ typealias DClientY = Double
 
 @JsExport
 data class CoordsInClient(val clientX: ClientX, val clientY: ClientY) {
+    internal operator fun plus(clientCoordsOffset: ClientCoordsOffset) =
+        CoordsInClient(clientX + clientCoordsOffset.dClientX, clientY + clientCoordsOffset.dClientY)
+
+    internal operator fun minus(clientCoordsOffset: ClientCoordsOffset) =
+        CoordsInClient(clientX - clientCoordsOffset.dClientX, clientY - clientCoordsOffset.dClientY)
+
     fun toCoordsInPlot(panZoomState: PanZoomState): CoordsInPlot =
         CoordsInPlot(
-            clientX / panZoomState.zoomLevel + panZoomState.panOffset.dClientX,
-            clientY / panZoomState.zoomLevel + panZoomState.panOffset.dClientY
+            clientX / panZoomState.zoomLevel + panZoomState.viewPositionInPlot.dPlotX,
+            clientY / panZoomState.zoomLevel + panZoomState.viewPositionInPlot.dPlotY
         )
+
+    fun toOffset() = ClientCoordsOffset(clientX, clientY)
 }
 
 @JsExport
 data class ClientCoordsOffset(val dClientX: DClientX, val dClientY: DClientY) {
+    operator fun plus(clientCoordsOffset: ClientCoordsOffset) =
+        ClientCoordsOffset(dClientX + clientCoordsOffset.dClientX, dClientY + clientCoordsOffset.dClientY)
+
     operator fun minus(clientCoordsOffset: ClientCoordsOffset) =
         ClientCoordsOffset(dClientX - clientCoordsOffset.dClientX, dClientY - clientCoordsOffset.dClientY)
+
+    operator fun times(factor: Double) =
+        ClientCoordsOffset(dClientX * factor, dClientY * factor)
+
+    operator fun div(factor: Double) =
+        ClientCoordsOffset(dClientX / factor, dClientY / factor)
+
+    fun toPlotCoordsOffset(panZoomState: PanZoomState) =
+        PlotCoordsOffset(dClientX / panZoomState.zoomLevel, dClientY / panZoomState.zoomLevel)
 }
 
 @JsExport
@@ -49,9 +70,14 @@ data class RectInPlot(val topLeft: CoordsInPlot, val bottomRight: CoordsInPlot) 
 @JsName("coordsInPlotToCoordsInClient")
 fun CoordsInPlot.toCoordsInClient(panZoomState: PanZoomState) =
     CoordsInClient(
-        (plotX - panZoomState.panOffset.dClientX) * panZoomState.zoomLevel,
-        (plotY - panZoomState.panOffset.dClientY) * panZoomState.zoomLevel
+        (plotX - panZoomState.viewPositionInPlot.dPlotX) * panZoomState.zoomLevel,
+        (plotY - panZoomState.viewPositionInPlot.dPlotY) * panZoomState.zoomLevel
     )
+
+@JsExport
+@JsName("plotCoordsOffsetToClientCoordsOffset")
+fun PlotCoordsOffset.toClientCoordsOffset(panZoomState: PanZoomState) =
+    ClientCoordsOffset(dPlotX * panZoomState.zoomLevel, dPlotY * panZoomState.zoomLevel)
 
 /**
  * Returns the center coordinate of the given node in the given tree with respect to its containing plot.

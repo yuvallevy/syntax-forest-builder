@@ -3,16 +3,17 @@ package space.yuvalinguist.npbloom.ui
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.positioned.*
+import space.yuvalinguist.npbloom.content.unpositioned.PlotCoordsOffset
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CoordsTest {
-    private val defaultPanZoomState = PanZoomState(ClientCoordsOffset(0.0, 0.0), 1.0)
-    private val panZoomStateWithPan = defaultPanZoomState.copy(panOffset = ClientCoordsOffset(9.1, -44.0))
+    private val defaultPanZoomState = PanZoomState(PlotCoordsOffset(0.0, 0.0), 1.0)
+    private val panZoomStateWithPan = defaultPanZoomState.copy(viewPositionInPlot = PlotCoordsOffset(9.1, -44.0))
     private val panZoomStateWithZoom = defaultPanZoomState.copy(zoomLevel = 2.5)
-    private val panZoomStateWithBoth = PanZoomState(ClientCoordsOffset(-6.0, 10.5), 0.5)
+    private val panZoomStateWithBoth = PanZoomState(PlotCoordsOffset(-6.0, 10.5), 0.5)
 
     private val positionedPlot = PositionedPlot(
         trees = EntitySet(
