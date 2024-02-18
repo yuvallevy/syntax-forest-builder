@@ -1,9 +1,9 @@
 import { useContext, useMemo, useState } from 'react';
 import {
-  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInClient,
-  DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect, MoveSelectedNodes,
-  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PlotCoordsOffset, PositionedPlot,
-  RectInClient, SelectionInPlot, SetSelection, Zoom
+  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInPlot,
+  CoordsInClient, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect,
+  MoveSelectedNodes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan,
+  PositionedPlot, RectInClient, SelectionInPlot, SetSelection, Zoom
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
@@ -57,7 +57,7 @@ const PlotView: React.FC = () => {
     dragEndCoords.clientY - dragStartCoords.clientY,
   ) : undefined;
 
-  const addTreeAndFocus = (position: PlotCoordsOffset) => {
+  const addTreeAndFocus = (position: CoordsInPlot) => {
     const newTreeId = generateTreeId();
     dispatch(new AddTree(newTreeId, position));
     setTimeout(() =>
@@ -71,7 +71,7 @@ const PlotView: React.FC = () => {
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
-      addTreeAndFocus(new PlotCoordsOffset(event.clientX, event.clientY));
+      addTreeAndFocus(new CoordsInClient(event.clientX, event.clientY).toCoordsInPlot(state.panZoomState));
     } else {
       setSelection(NoSelectionInPlot.getInstance());
     }
