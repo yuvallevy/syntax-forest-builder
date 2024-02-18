@@ -2,6 +2,7 @@ package space.yuvalinguist.npbloom.ui.content
 
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.StringSlice
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.unpositioned.*
 import space.yuvalinguist.npbloom.ui.SliceSelectionInPlot
 import kotlin.test.Test
@@ -18,7 +19,7 @@ class EditNodesTest {
             UnpositionedTerminalNode("term3", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(8, 14), true),
             UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term3")),
         ),
-        PlotCoordsOffset(0.0, 0.0),
+        CoordsInPlot(0.0, 0.0),
     )
 
     @Test

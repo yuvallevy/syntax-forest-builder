@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.yuvalinguist.npbloom.changeAt
 import space.yuvalinguist.npbloom.content.*
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.unpositioned.*
 import space.yuvalinguist.npbloom.history.UndoRedoHistory
 import space.yuvalinguist.npbloom.history.UndoableActionBase
@@ -95,7 +96,7 @@ internal data class SetSentence(
     val oldSelectedSlice: StringSlice
 ) : ContentAction
 
-internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val offset: PlotCoordsOffset) : ContentAction
+internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val coordsInPlot: CoordsInPlot) : ContentAction
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
 @JsExport
@@ -155,7 +156,7 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
     is MoveTrees -> PlotChanged(
         action.plotIndex,
         state.plots[action.plotIndex],
-        state.plots[action.plotIndex].transformTrees(action.treeIds) { it.changeOffset(action.offsetD) }
+        state.plots[action.plotIndex].transformTrees(action.treeIds) { it.changePosition(action.offsetD) }
     )
 
     is ResetNodePositions -> PlotChanged(
@@ -195,7 +196,7 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
             .handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)
     )
 
-    is AddTree -> TreeAdded(action.plotIndex, UnpositionedTree(action.newTreeId, "", EntitySet(), action.offset))
+    is AddTree -> TreeAdded(action.plotIndex, UnpositionedTree(action.newTreeId, "", EntitySet(), action.coordsInPlot))
     is DeleteTree -> TreeDeleted(action.plotIndex, state.plots[action.plotIndex].tree(action.treeId))
 }
 

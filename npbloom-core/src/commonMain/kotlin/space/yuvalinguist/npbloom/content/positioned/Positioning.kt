@@ -182,7 +182,7 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
         id = tree.id,
         sentence = tree.sentence,
         nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
-        position = CoordsInPlot(tree.offset.dPlotX, tree.offset.dPlotY),
+        position = CoordsInPlot(tree.coordsInPlot.plotX, tree.coordsInPlot.plotY),
         width = strWidthFunc(tree.sentence),
     )
 

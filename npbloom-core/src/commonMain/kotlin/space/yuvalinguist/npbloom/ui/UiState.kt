@@ -4,9 +4,11 @@
 package space.yuvalinguist.npbloom.ui
 
 import space.yuvalinguist.npbloom.content.*
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.positioned.StrWidthFunc
 import space.yuvalinguist.npbloom.content.positioned.sortNodesByXCoord
 import space.yuvalinguist.npbloom.content.unpositioned.*
+import space.yuvalinguist.npbloom.mockStrWidth
 import space.yuvalinguist.npbloom.ui.content.*
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -47,7 +49,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class ResetSelectedNodePositions : UiAction
 @JsExport class ToggleTriangle : UiAction
 @JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
-@JsExport class AddTree(val newTreeId: Id, val offset: PlotCoordsOffset) : UiAction
+@JsExport class AddTree(val newTreeId: Id, val coordsInPlot: CoordsInPlot) : UiAction
 @JsExport class RemoveTree(val treeId: Id) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
@@ -443,7 +445,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     state.contentState, AddTree(
                         state.activePlotIndex,
                         action.newTreeId,
-                        action.offset,
+                        action.coordsInPlot,
                     )
                 ),
                 selectionAction = EntitySelectionAction.SelectNode,

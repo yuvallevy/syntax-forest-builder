@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.yuvalinguist.npbloom.NoSuchNodeException
 import space.yuvalinguist.npbloom.content.*
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -16,7 +17,7 @@ data class UnpositionedTree(
     @SerialName("i") override val id: Id,
     @SerialName("s") override val sentence: Sentence,
     @SerialName("n") val nodes: EntitySet<UnpositionedNode>,
-    @SerialName("o") val offset: PlotCoordsOffset = PlotCoordsOffset.ZERO,
+    @SerialName("o") val coordsInPlot: CoordsInPlot = CoordsInPlot.ZERO,
 ) : TreeBase {
     internal val nodeIds get() = nodes.ids
 
@@ -34,7 +35,7 @@ data class UnpositionedTree(
 
     internal fun removeNode(nodeId: Id) = copy(nodes = nodes - nodeId)
 
-    internal fun changeOffset(offsetD: PlotCoordsOffset) = copy(offset = offset + offsetD)
+    internal fun changePosition(offsetD: PlotCoordsOffset) = copy(coordsInPlot = coordsInPlot + offsetD)
 
     fun anyNodes(predicate: (node: UnpositionedNode) -> Boolean) = nodes.any(predicate)
 

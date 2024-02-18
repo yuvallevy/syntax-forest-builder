@@ -117,6 +117,6 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
  *   This is used to determine how exactly node ranges should change.
  */
 internal fun UnpositionedTree.handleLocalSentenceChange(newSentence: Sentence, oldSelection: StringSlice) =
-    UnpositionedTree(id, newSentence, nodes, offset).transformAllNodes {
+    UnpositionedTree(id, newSentence, nodes, coordsInPlot).transformAllNodes {
         it.shiftNodeSliceAfterChange(oldSelection, newSentence.length - sentence.length)
     }

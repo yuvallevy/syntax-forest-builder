@@ -3,6 +3,7 @@ package space.yuvalinguist.npbloom.content.unpositioned
 import space.yuvalinguist.npbloom.NoSuchNodeException
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.StringSlice
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import kotlin.test.*
 
 class UnpositionedTreeTest {
@@ -15,7 +16,7 @@ class UnpositionedTreeTest {
             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithoutTopLevelTerminalNode = UnpositionedTree(
@@ -26,7 +27,7 @@ class UnpositionedTreeTest {
             UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithoutTopLevelBranchingNode = UnpositionedTree(
@@ -37,7 +38,7 @@ class UnpositionedTreeTest {
             UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithStrandedNode = UnpositionedTree(
@@ -52,7 +53,7 @@ class UnpositionedTreeTest {
             UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
             UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14)),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithNodeMissingBranches = UnpositionedTree(
@@ -67,7 +68,7 @@ class UnpositionedTreeTest {
             UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15)),
             UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithTerminalBecomingBranching = UnpositionedTree(
@@ -81,7 +82,7 @@ class UnpositionedTreeTest {
             UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
             UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     @Test
@@ -92,7 +93,7 @@ class UnpositionedTreeTest {
     fun nodeCountZero() =
         assertEquals(
             0,
-            UnpositionedTree(id = "L18", sentence = "", nodes = EntitySet(), offset = PlotCoordsOffset.ZERO).nodeCount
+            UnpositionedTree(id = "L18", sentence = "", nodes = EntitySet(), coordsInPlot = CoordsInPlot.ZERO).nodeCount
         )
 
     @Test
@@ -110,7 +111,7 @@ class UnpositionedTreeTest {
                 id = "zif",
                 sentence = "",
                 nodes = EntitySet(),
-                offset = PlotCoordsOffset.ZERO
+                coordsInPlot = CoordsInPlot.ZERO
             ).hasNodes
         )
 
@@ -147,7 +148,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.setNode(
                 UnpositionedTerminalNode("term1", "NP", TreeCoordsOffset.ZERO, StringSlice(0, 4), true)
@@ -164,7 +165,7 @@ class UnpositionedTreeTest {
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.removeNode("term1")
         )
@@ -233,7 +234,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("new", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelTerminalNode.insertNode(
                 InsertedTerminalNode("new", "V", null, StringSlice(5, 11), false)
@@ -252,7 +253,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("new", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelTerminalNode.insertNode(
                 InsertedTerminalNode("new", "VP", null, StringSlice(5, 11), true)
@@ -271,7 +272,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedBranchingNode("new", "VP", TreeCoordsOffset.ZERO, setOf("term2")),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.insertNode(
                 InsertedBranchingNode("new", "VP", null, setOf("term2"))
@@ -290,7 +291,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedBranchingNode("new", "S", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithoutTopLevelBranchingNode.insertNode(
                 InsertedBranchingNode("new", "S", null, setOf("branch1", "term2"))
@@ -310,7 +311,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedBranchingNode("new", "N'", TreeCoordsOffset.ZERO, setOf("term1")),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.insertNode(
                 InsertedBranchingNode("new", "N'", "branch1", setOf("term1"))
@@ -330,7 +331,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedBranchingNode("new", "?", TreeCoordsOffset.ZERO, setOf("branch1")),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.insertNode(
                 InsertedBranchingNode("new", "?", "top", setOf("branch1"))
@@ -350,7 +351,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedBranchingNode("new", "?", TreeCoordsOffset.ZERO, setOf("branch1", "term2")),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.insertNode(
                 InsertedBranchingNode("new", "?", "top", setOf("branch1", "term2"))
@@ -369,7 +370,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.transformNode("branch1") { it.withLabel("test") }
         )
@@ -386,7 +387,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), true),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.transformNodes(setOf("term1", "term2")) {
                 if (it is UnpositionedTerminalNode) it.copy(triangle = true)
@@ -409,7 +410,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
                     UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithNodeMissingBranches.adoptNodes("branch2", setOf("term3"))
         )
@@ -429,7 +430,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithTerminalBecomingBranching.adoptNodes("shapeshifter", setOf("term2"))
         )
@@ -448,7 +449,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithStrandedNode.adoptNodes("stranded", setOf("term2"))
         )
@@ -469,7 +470,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term3", "Conj", TreeCoordsOffset.ZERO, StringSlice(12, 15), false),
                     UnpositionedTerminalNode("term4", "VP", TreeCoordsOffset.ZERO, StringSlice(16, 22), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithNodeMissingBranches.adoptNodes("branch2", setOf("term3", "term4"))
         )
@@ -489,7 +490,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedTerminalNode("term3", "AdvP", TreeCoordsOffset.ZERO, StringSlice(12, 20), true),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithTerminalBecomingBranching.adoptNodes("shapeshifter", setOf("term2", "term3"))
         )
@@ -508,7 +509,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                     UnpositionedTerminalNode("term3", "N", TreeCoordsOffset.ZERO, StringSlice(12, 14), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             treeWithStrandedNode.adoptNodes("stranded", setOf("term2", "term3"))
         )
@@ -525,7 +526,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.disownNodes("top", setOf("branch1"))
         )
@@ -546,7 +547,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.disownNodes("branch1", setOf("term1"))
         )
@@ -569,7 +570,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.disownNodes("top", setOf("branch1", "term2"))
         )
@@ -586,7 +587,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.adoptNodes("branch1", setOf("term2"))
         )
@@ -607,7 +608,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "test", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "test", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.transformAllNodes { it.withLabel("test") }
         )
@@ -623,7 +624,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("top"))
         )
@@ -639,7 +640,7 @@ class UnpositionedTreeTest {
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("branch1"))
         )
@@ -655,7 +656,7 @@ class UnpositionedTreeTest {
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("term2"))
         )
@@ -670,7 +671,7 @@ class UnpositionedTreeTest {
                     UnpositionedBranchingNode("branch1", "NP", TreeCoordsOffset.ZERO, setOf("term1")),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("top", "term2"))
         )
@@ -689,7 +690,7 @@ class UnpositionedTreeTest {
                     ),
                     UnpositionedTerminalNode("term2", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 11), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("top", "term1"))
         )
@@ -708,7 +709,7 @@ class UnpositionedTreeTest {
                         )
                     ),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("term1", "term2"))
         )
@@ -729,7 +730,7 @@ class UnpositionedTreeTest {
                     ),
                     UnpositionedTerminalNode("term1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4), false),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             tree.deleteNodes(setOf("branch1", "term2"))
         )

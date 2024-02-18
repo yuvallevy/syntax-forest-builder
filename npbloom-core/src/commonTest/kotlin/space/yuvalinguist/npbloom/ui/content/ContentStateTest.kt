@@ -3,6 +3,7 @@ package space.yuvalinguist.npbloom.ui.content
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.NodeIndicatorInPlot
 import space.yuvalinguist.npbloom.content.StringSlice
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.unpositioned.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,7 +20,7 @@ class ContentStateTest {
                             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
                             UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10)),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                     UnpositionedTree(
                         id = "zz",
@@ -29,7 +30,7 @@ class ContentStateTest {
                             UnpositionedTerminalNode("x", "N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5)),
                             UnpositionedTerminalNode("y", "V", TreeCoordsOffset.ZERO, StringSlice(6, 10)),
                         ),
-                        offset = PlotCoordsOffset(60.0, 0.0),
+                        coordsInPlot = CoordsInPlot(60.0, 0.0),
                     ),
                 ),
             ),
@@ -43,7 +44,7 @@ class ContentStateTest {
                             UnpositionedTerminalNode("b", "VP", TreeCoordsOffset(1.0, 10.0), StringSlice(7, 13),
                                 triangle = true),
                         ),
-                        offset = PlotCoordsOffset(20.0, 10.0),
+                        coordsInPlot = CoordsInPlot(20.0, 10.0),
                     ),
                 ),
             ),
@@ -65,7 +66,7 @@ class ContentStateTest {
                                 UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -5.0), StringSlice(0, 6)),
                                 testInitialState.plots[1].tree("aa").node("b"),
                             ),
-                            offset = PlotCoordsOffset(20.0, 10.0),
+                            coordsInPlot = CoordsInPlot(20.0, 10.0),
                         ),
                     ),
                 ),
@@ -131,7 +132,7 @@ class ContentStateTest {
                                         StringSlice(7, 13), true),
                                     UnpositionedBranchingNode("c", "NP", TreeCoordsOffset(0.0, 0.0), setOf("a")),
                                 ),
-                                offset = PlotCoordsOffset(20.0, 10.0),
+                                coordsInPlot = CoordsInPlot(20.0, 10.0),
                             ),
                         ),
                     ),
@@ -148,7 +149,7 @@ class ContentStateTest {
                         UnpositionedTerminalNode("b", "VP", TreeCoordsOffset(1.0, 10.0), StringSlice(7, 13), true),
                         UnpositionedBranchingNode("c", "NP", TreeCoordsOffset(0.0, 0.0), setOf("a")),
                     ),
-                    offset = PlotCoordsOffset(20.0, 10.0),
+                    coordsInPlot = CoordsInPlot(20.0, 10.0),
                 )
             ),
         )
@@ -173,7 +174,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -199,7 +200,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -223,7 +224,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(0.0, 0.0),
+                            coordsInPlot = CoordsInPlot(0.0, 0.0),
                         ),
                         UnpositionedTree(
                             id = "zz",
@@ -249,7 +250,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(60.0, 0.0),
+                            coordsInPlot = CoordsInPlot(60.0, 0.0),
                         ),
                     )
                 )
@@ -288,7 +289,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -324,7 +325,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(60.0, 0.0),
+                            coordsInPlot = CoordsInPlot(60.0, 0.0),
                         ),
                     )
                 )
@@ -358,7 +359,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -374,7 +375,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -392,7 +393,7 @@ class ContentStateTest {
                         UnpositionedBranchingNode("x", "N", TreeCoordsOffset(0.0, 0.0), setOf("y")),
                         UnpositionedTerminalNode("y", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(6, 10), false),
                     ),
-                    offset = PlotCoordsOffset(60.0, 0.0),
+                    coordsInPlot = CoordsInPlot(60.0, 0.0),
                 )
             )
         )
@@ -424,7 +425,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -459,7 +460,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -490,7 +491,7 @@ class ContentStateTest {
                         UnpositionedTerminalNode("x", "N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5), false),
                         UnpositionedTerminalNode("y", "V", TreeCoordsOffset(0.0, 0.0), StringSlice(6, 10), false),
                     ),
-                    offset = PlotCoordsOffset(60.0, 0.0),
+                    coordsInPlot = CoordsInPlot(60.0, 0.0),
                 )
             ),
         )
@@ -522,7 +523,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -544,7 +545,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -575,7 +576,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(0.0, 0.0),
+                            coordsInPlot = CoordsInPlot(0.0, 0.0),
                         ),
                         UnpositionedTree(
                             id = "zz",
@@ -597,7 +598,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(60.0, 0.0),
+                            coordsInPlot = CoordsInPlot(60.0, 0.0),
                         ),
                     )
                 )
@@ -619,7 +620,7 @@ class ContentStateTest {
                                     UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
                                     UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10)),
                                 ),
-                                offset = PlotCoordsOffset.ZERO,
+                                coordsInPlot = CoordsInPlot.ZERO,
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -629,7 +630,7 @@ class ContentStateTest {
                                     UnpositionedTerminalNode("x", "N", TreeCoordsOffset(1.0, 8.0), StringSlice(0, 5)),
                                     UnpositionedTerminalNode("y", "V", TreeCoordsOffset.ZERO, StringSlice(6, 10)),
                                 ),
-                                offset = PlotCoordsOffset(100.0, 80.0),
+                                coordsInPlot = CoordsInPlot(100.0, 80.0),
                             ),
                         ),
                     ),
@@ -660,7 +661,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(0.0, 0.0),
+                            coordsInPlot = CoordsInPlot(0.0, 0.0),
                         ),
                         UnpositionedTree(
                             id = "zz",
@@ -682,7 +683,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(100.0, 80.0),
+                            coordsInPlot = CoordsInPlot(100.0, 80.0),
                         ),
                     )
                 )
@@ -719,7 +720,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -741,7 +742,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -772,7 +773,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(0.0, 0.0),
+                            coordsInPlot = CoordsInPlot(0.0, 0.0),
                         ),
                         UnpositionedTree(
                             id = "zz",
@@ -794,7 +795,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(60.0, 0.0),
+                            coordsInPlot = CoordsInPlot(60.0, 0.0),
                         ),
                     )
                 )
@@ -828,7 +829,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -850,7 +851,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -867,7 +868,7 @@ class ContentStateTest {
                         UnpositionedTerminalNode("a", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(5, 10), false),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 )
             ),
         )
@@ -899,7 +900,7 @@ class ContentStateTest {
                                         true
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -921,7 +922,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -952,7 +953,7 @@ class ContentStateTest {
                                     true
                                 ),
                             ),
-                            offset = PlotCoordsOffset(0.0, 0.0),
+                            coordsInPlot = CoordsInPlot(0.0, 0.0),
                         ),
                         UnpositionedTree(
                             id = "zz",
@@ -974,7 +975,7 @@ class ContentStateTest {
                                     false
                                 ),
                             ),
-                            offset = PlotCoordsOffset(60.0, 0.0),
+                            coordsInPlot = CoordsInPlot(60.0, 0.0),
                         ),
                     )
                 )
@@ -1008,7 +1009,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -1030,7 +1031,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -1047,7 +1048,7 @@ class ContentStateTest {
                         UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 3), false),
                         UnpositionedTerminalNode("b", "N", TreeCoordsOffset(1.0, 10.0), StringSlice(4, 9), false),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 )
             )
         )
@@ -1055,7 +1056,7 @@ class ContentStateTest {
     @Test
     fun addTree() =
         assertActionResult(
-            action = AddTree(0, "zz", PlotCoordsOffset(105.0, 88.0)),
+            action = AddTree(0, "zz", CoordsInPlot(105.0, 88.0)),
             current = ContentState(
                 plots = listOf(
                     UnpositionedPlot(
@@ -1079,7 +1080,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(0.0, 0.0),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
                             ),
                             UnpositionedTree(
                                 id = "zz",
@@ -1087,7 +1088,7 @@ class ContentStateTest {
                                 nodes = EntitySet(
 
                                 ),
-                                offset = PlotCoordsOffset(105.0, 88.0),
+                                coordsInPlot = CoordsInPlot(105.0, 88.0),
                             ),
                         )
                     ),
@@ -1102,7 +1103,7 @@ class ContentStateTest {
                     nodes = EntitySet(
 
                     ),
-                    offset = PlotCoordsOffset(105.0, 88.0),
+                    coordsInPlot = CoordsInPlot(105.0, 88.0),
                 )
             ),
         )
@@ -1135,7 +1136,7 @@ class ContentStateTest {
                                         false
                                     ),
                                 ),
-                                offset = PlotCoordsOffset(60.0, 0.0),
+                                coordsInPlot = CoordsInPlot(60.0, 0.0),
                             ),
                         )
                     ),
@@ -1156,7 +1157,7 @@ class ContentStateTest {
                             false
                         ),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 )
             ),
         )

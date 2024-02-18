@@ -4,6 +4,7 @@ import space.yuvalinguist.npbloom.NoSuchTreeException
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.NodeIndicatorInPlot
 import space.yuvalinguist.npbloom.content.StringSlice
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import kotlin.test.*
 
 class UnpositionedPlotTest {
@@ -18,7 +19,7 @@ class UnpositionedPlotTest {
                     UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
                     UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             UnpositionedTree(
                 id = "alex",
@@ -31,7 +32,7 @@ class UnpositionedPlotTest {
                     UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                     UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
         ),
     )
@@ -66,7 +67,7 @@ class UnpositionedPlotTest {
                     UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                     UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                 ),
-                offset = PlotCoordsOffset.ZERO,
+                coordsInPlot = CoordsInPlot.ZERO,
             ),
             plot.tree("alex")
         )
@@ -108,7 +109,7 @@ class UnpositionedPlotTest {
                             UnpositionedTerminalNode("n1", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
                             UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 12)),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                     UnpositionedTree(
                         id = "alex",
@@ -121,7 +122,7 @@ class UnpositionedPlotTest {
                             UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                             UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                 ),
             ),
@@ -137,7 +138,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                         UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                     ),
-                    offset = PlotCoordsOffset.ZERO,
+                    coordsInPlot = CoordsInPlot.ZERO,
                 )
             )
         )
@@ -158,7 +159,7 @@ class UnpositionedPlotTest {
                             UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                             UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                 ),
             ),
@@ -232,7 +233,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
-                    offset = PlotCoordsOffset.ZERO,
+                    coordsInPlot = CoordsInPlot.ZERO,
                 ),
                 UnpositionedTree(
                     id = "alex",
@@ -246,7 +247,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18),
                             false),
                     ),
-                    offset = PlotCoordsOffset.ZERO,
+                    coordsInPlot = CoordsInPlot.ZERO,
                 ),
             ),
         ),
@@ -266,7 +267,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 ),
                 UnpositionedTree(
                     id = "alex",
@@ -279,7 +280,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18),
                             false),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 ),
             ),
         ),
@@ -305,7 +306,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
-                    offset = PlotCoordsOffset.ZERO,
+                    coordsInPlot = CoordsInPlot.ZERO,
                 ),
                 UnpositionedTree(
                     id = "alex",
@@ -319,12 +320,12 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset(0.0, 0.0), StringSlice(11, 18),
                             false),
                     ),
-                    offset = PlotCoordsOffset(200.0, 40.0),
+                    coordsInPlot = CoordsInPlot(200.0, 40.0),
                 ),
             ),
         ),
         plot.transformTrees(setOf("alex")) {
-            it.changeOffset(PlotCoordsOffset(200.0, 40.0))
+            it.changePosition(PlotCoordsOffset(200.0, 40.0))
         }
     )
 
@@ -341,7 +342,7 @@ class UnpositionedPlotTest {
                         UnpositionedTerminalNode("n1", "N", TreeCoordsOffset(0.0, 0.0), StringSlice(0, 4), false),
                         UnpositionedTerminalNode("vp1", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(5, 12), false),
                     ),
-                    offset = PlotCoordsOffset(0.0, 0.0),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
                 ),
             ),
         ),

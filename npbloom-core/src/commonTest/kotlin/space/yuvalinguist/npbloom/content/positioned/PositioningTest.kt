@@ -16,7 +16,7 @@ class PositioningTest {
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithTriangleNodes = UnpositionedTree(
@@ -26,7 +26,7 @@ class PositioningTest {
             UnpositionedTerminalNode("a", "N", TreeCoordsOffset(0.0, -10.0), StringSlice(0, 4)),
             UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithStrandedNodes = UnpositionedTree(
@@ -35,7 +35,7 @@ class PositioningTest {
         nodes = EntitySet(
             UnpositionedFormerlyBranchingNode("c", "S", TreeCoordsOffset.ZERO, treeWithTerminalNodes.nodes),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithBranchingNodes = UnpositionedTree(
@@ -46,7 +46,7 @@ class PositioningTest {
             UnpositionedTerminalNode("b", "V", TreeCoordsOffset(5.0, 0.0), StringSlice(5, 10)),
             UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithBranchingAndTriangleNodes = UnpositionedTree(
@@ -57,7 +57,7 @@ class PositioningTest {
             UnpositionedTerminalNode("b", "VP", TreeCoordsOffset.ZERO, StringSlice(5, 17), true),
             UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     private val treeWithVerticallyAlignedNode = UnpositionedTree(
@@ -69,7 +69,7 @@ class PositioningTest {
             UnpositionedBranchingNode("b", "VP", TreeCoordsOffset.ZERO, setOf("d")),
             UnpositionedBranchingNode("c", "S", TreeCoordsOffset.ZERO, setOf("a", "b")),
         ),
-        offset = PlotCoordsOffset.ZERO,
+        coordsInPlot = CoordsInPlot.ZERO,
     )
 
     @Test

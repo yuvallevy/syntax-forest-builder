@@ -3,6 +3,7 @@ package space.yuvalinguist.npbloom.ui.content
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.YAlignMode
+import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.unpositioned.*
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -28,7 +29,7 @@ class SaveLoadTest {
                                 yAlignMode = YAlignMode.Top
                             ),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                     UnpositionedTree(
                         id = "alex",
@@ -41,7 +42,7 @@ class SaveLoadTest {
                             UnpositionedTerminalNode("v2", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                             UnpositionedTerminalNode("np2b", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18)),
                         ),
-                        offset = PlotCoordsOffset.ZERO,
+                        coordsInPlot = CoordsInPlot.ZERO,
                     ),
                 ),
             )

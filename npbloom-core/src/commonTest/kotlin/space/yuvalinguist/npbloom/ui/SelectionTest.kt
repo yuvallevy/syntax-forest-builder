@@ -21,7 +21,7 @@ class SelectionTest {
                     UnpositionedTerminalNode("aF3BLs", "V", TreeCoordsOffset.ZERO, StringSlice(5, 10)),
                     UnpositionedTerminalNode("X9M", "NP", TreeCoordsOffset.ZERO, StringSlice(11, 18), triangle = true),
                 ),
-                offset = PlotCoordsOffset(30.0, -10.0),
+                coordsInPlot = CoordsInPlot(30.0, -10.0),
             )
         )
     )
