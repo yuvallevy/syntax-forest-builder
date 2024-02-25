@@ -8,6 +8,7 @@ import {
 import TreeView from './TreeView';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
+import ZoomControl from "./ZoomControl.tsx";
 import './PlotView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
@@ -187,6 +188,7 @@ const PlotView: React.FC = () => {
       tree={plot.tree(editedNodeIndicator.treeId)}
       nodeId={editedNodeIndicator.nodeId}
     />}
+    <ZoomControl />
   </>;
 };
 
