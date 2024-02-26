@@ -62,4 +62,20 @@ class PanZoomStateTest {
         assertEquals(relativeZoomFactor, newPanZoomState.zoomLevel)
         assertEquals(PlotCoordsOffset(1.5, 3.25), newPanZoomState.viewPositionInPlot)
     }
+
+    @Test
+    fun setZoomLevelFocusedOnOrigin() {
+        val newPanZoomState = initialPanZoomState.setZoomLevel(2.0, originInClient)
+        assertEquals(2.0, newPanZoomState.zoomLevel)
+        assertEquals(originInPlot, newPanZoomState.viewPositionInPlot)
+    }
+
+    @Test
+    fun setZoomLevelFocusedOnArbitrary() {
+        val focusInClient = ClientCoordsOffset(2.0, 1.0)
+        val panZoomState = PanZoomState(originInPlot, 1.0)
+        val newPanZoomState = panZoomState.setZoomLevel(4.0, focusInClient)
+        assertEquals(4.0, newPanZoomState.zoomLevel)
+        assertEquals(PlotCoordsOffset(1.5, 0.75), newPanZoomState.viewPositionInPlot)
+    }
 }
