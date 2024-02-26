@@ -13,9 +13,16 @@ data class PanZoomState(val viewPositionInPlot: PlotCoordsOffset, val zoomLevel:
     fun panBy(relativePanOffset: ClientCoordsOffset) =
         copy(viewPositionInPlot = viewPositionInPlot - relativePanOffset.toPlotCoordsOffset(this))
 
-    fun zoom(relativeFactor: Double, focusInClient: ClientCoordsOffset): PanZoomState {
+    fun zoomBy(relativeFactor: Double, focusInClient: ClientCoordsOffset): PanZoomState {
         val focusInPlot = focusInClient.toPlotCoordsOffset(this)
         val newZoomLevel = zoomLevel * relativeFactor
+        val newViewPositionInPlot = viewPositionInPlot + focusInPlot - focusInPlot / relativeFactor
+        return copy(viewPositionInPlot = newViewPositionInPlot, zoomLevel = newZoomLevel)
+    }
+
+    fun setZoomLevel(newZoomLevel: Double, focusInClient: ClientCoordsOffset): PanZoomState {
+        val focusInPlot = focusInClient.toPlotCoordsOffset(this)
+        val relativeFactor = newZoomLevel / zoomLevel
         val newViewPositionInPlot = viewPositionInPlot + focusInPlot - focusInPlot / relativeFactor
         return copy(viewPositionInPlot = newViewPositionInPlot, zoomLevel = newZoomLevel)
     }

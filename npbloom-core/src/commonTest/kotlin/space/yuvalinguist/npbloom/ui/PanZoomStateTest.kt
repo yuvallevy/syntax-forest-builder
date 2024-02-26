@@ -30,7 +30,7 @@ class PanZoomStateTest {
 
     @Test
     fun zoomInFrom100FocusedOnOrigin() {
-        val newPanZoomState = initialPanZoomState.zoom(2.0, originInClient)
+        val newPanZoomState = initialPanZoomState.zoomBy(2.0, originInClient)
         assertEquals(2.0, newPanZoomState.zoomLevel)
         assertEquals(originInPlot, newPanZoomState.viewPositionInPlot)
     }
@@ -38,7 +38,7 @@ class PanZoomStateTest {
     @Test
     fun zoomInFrom200FocusedOnOrigin() {
         val panZoomState = PanZoomState(originInPlot, 2.0)
-        val newPanZoomState = panZoomState.zoom(2.0, originInClient)
+        val newPanZoomState = panZoomState.zoomBy(2.0, originInClient)
         assertEquals(4.0, newPanZoomState.zoomLevel)
         assertEquals(originInPlot, newPanZoomState.viewPositionInPlot)
     }
@@ -48,7 +48,7 @@ class PanZoomStateTest {
         val focusInClient = ClientCoordsOffset(2.0, 1.0)
         val panZoomState = PanZoomState(originInPlot, 1.0)
         val relativeZoomFactor = 4.0 / 3.0
-        val newPanZoomState = panZoomState.zoom(relativeZoomFactor, focusInClient)
+        val newPanZoomState = panZoomState.zoomBy(relativeZoomFactor, focusInClient)
         assertEquals(relativeZoomFactor, newPanZoomState.zoomLevel)
         assertEquals(PlotCoordsOffset(0.5, 0.25), newPanZoomState.viewPositionInPlot)
     }
@@ -58,7 +58,7 @@ class PanZoomStateTest {
         val focusInClient = ClientCoordsOffset(2.0, 1.0)
         val panZoomState = PanZoomState(PlotCoordsOffset(1.0, 3.0), 1.0)
         val relativeZoomFactor = 4.0 / 3.0
-        val newPanZoomState = panZoomState.zoom(relativeZoomFactor, focusInClient)
+        val newPanZoomState = panZoomState.zoomBy(relativeZoomFactor, focusInClient)
         assertEquals(relativeZoomFactor, newPanZoomState.zoomLevel)
         assertEquals(PlotCoordsOffset(1.5, 3.25), newPanZoomState.viewPositionInPlot)
     }
