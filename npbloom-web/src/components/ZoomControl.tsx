@@ -12,9 +12,9 @@ const ZoomControl: React.FC = () => {
     { minimumFractionDigits: 0, maximumFractionDigits: 0, style: 'percent' });
 
   return <div className="ZoomControl">
-    <Menu shadow="md" withArrow position="top-start">
+    <Menu shadow="md" position="top-end">
       <Menu.Target>
-        <Button variant="white" size="xs">
+        <Button variant="white" color="gray" size="xs">
           Zoom: {currentZoomLevelStr}
         </Button>
       </Menu.Target>
