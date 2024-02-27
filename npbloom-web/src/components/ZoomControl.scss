@@ -5,3 +5,10 @@
   width: auto;
   z-index: 100;
 }
+
+html[dir=rtl] {
+  .ZoomControl {
+    right: unset;
+    left: 2rem;
+  }
+}

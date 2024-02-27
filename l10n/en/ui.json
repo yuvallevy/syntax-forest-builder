@@ -98,5 +98,10 @@
     "buttons": {
       "done": "Done"
     }
+  },
+  "zoom": {
+    "button": "Zoom",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out"
   }
 }

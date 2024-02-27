@@ -1,4 +1,5 @@
 import useUiState from '../useUiState.ts';
+import { useTranslation } from 'react-i18next';
 import { CoordsInClient, SetZoomLevel, Zoom } from 'npbloom-core';
 import { Button, Menu } from '@mantine/core';
 import './ZoomControl.scss';
@@ -10,6 +11,7 @@ const zoomLevelToString = (zoomLevel: number) =>
 
 const ZoomControl: React.FC = () => {
   const { state, dispatch } = useUiState();
+  const { t } = useTranslation();
 
   const currentZoomLevelStr = zoomLevelToString(state.panZoomState.zoomLevel);
 
@@ -17,7 +19,7 @@ const ZoomControl: React.FC = () => {
     <Menu shadow="md" position="top-end">
       <Menu.Target>
         <Button variant="white" color="gray" size="xs">
-          Zoom: {currentZoomLevelStr}
+          {t('zoom.button')}: {currentZoomLevelStr}
         </Button>
       </Menu.Target>
 
@@ -32,12 +34,12 @@ const ZoomControl: React.FC = () => {
         <Menu.Item
           onClick={() => dispatch(new Zoom(1.25, screenCenterCoords()))}
         >
-          Zoom In
+          {t('zoom.zoomIn')}
         </Menu.Item>
         <Menu.Item
           onClick={() => dispatch(new Zoom(0.8, screenCenterCoords()))}
         >
-          Zoom Out
+          {t('zoom.zoomOut')}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>
