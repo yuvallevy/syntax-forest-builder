@@ -3,15 +3,21 @@
 }
 
 .PlotSelector--tab-button--selected {
-  padding-right: 2.75em;
+  // NB: this gets overridden by Mantine's RTL styles, hence the !important hack
+  // Have not yet figured out how to change the order in which the styles are applied
+  padding-inline-end: 2.75em !important;
 }
 
 .PlotSelector--tab-right-button {
-  position: absolute;
+  position: absolute !important;  // See note above re: !important
   right: 0.5em;
   top: 0;
   bottom: 0;
   margin-top: auto;
   margin-bottom: auto;
   z-index: 100;
+  html[dir=rtl] & {
+    left: 0.5em;
+    right: unset;
+  }
 }
