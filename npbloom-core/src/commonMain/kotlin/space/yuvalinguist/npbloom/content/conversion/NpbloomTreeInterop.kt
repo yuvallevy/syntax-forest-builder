@@ -25,7 +25,14 @@ fun TopDownTreeNode.toUnpositionedTree(): UnpositionedTree {
                 val sliceStart = sentence.length + wordSeparator.length
                 val sliceEndExclusive = sliceStart + node.content.length
                 sentence.append(wordSeparator + node.content)
-                nodes.add(UnpositionedTerminalNode(id, node.label, slice = StringSlice(sliceStart, sliceEndExclusive)))
+                nodes.add(
+                    UnpositionedTerminalNode(
+                        id,
+                        node.label,
+                        slice = StringSlice(sliceStart, sliceEndExclusive),
+                        triangle = node.triangle,
+                    )
+                )
             }
 
             is TopDownTreeBranchingNode -> {
