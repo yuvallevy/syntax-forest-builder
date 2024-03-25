@@ -1054,7 +1054,7 @@ class ContentStateTest {
         )
 
     @Test
-    fun addTree() =
+    fun addTreeWithoutContent() =
         assertActionResult(
             action = AddTree(0, "zz", CoordsInPlot(105.0, 88.0)),
             current = ContentState(
@@ -1105,6 +1105,148 @@ class ContentStateTest {
                     ),
                     coordsInPlot = CoordsInPlot(105.0, 88.0),
                 )
+            ),
+        )
+
+    @Test
+    fun addTreeWithContent() =
+        assertActionResult(
+            action = AddTree(0, "zz", CoordsInPlot(105.0, 88.0), "nodes rock",
+                EntitySet(
+                    UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                    UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                    UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                    UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                    UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                ),
+            ),
+            current = ContentState(
+                plots = listOf(
+                    UnpositionedPlot(
+                        trees = EntitySet(
+                            UnpositionedTree(
+                                id = "aa",
+                                sentence = "tree state",
+                                nodes = EntitySet(
+                                    UnpositionedTerminalNode(
+                                        "a",
+                                        "N",
+                                        TreeCoordsOffset(0.0, 0.0),
+                                        StringSlice(0, 4),
+                                        false
+                                    ),
+                                    UnpositionedTerminalNode(
+                                        "b",
+                                        "N",
+                                        TreeCoordsOffset(1.0, 10.0),
+                                        StringSlice(5, 10),
+                                        false
+                                    ),
+                                ),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
+                            ),
+                            UnpositionedTree(
+                                id = "zz",
+                                sentence = "nodes rock",
+                                nodes = EntitySet(
+                                    UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                                    UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                                    UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                                    UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                                    UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                                ),
+                                coordsInPlot = CoordsInPlot(105.0, 88.0),
+                            ),
+                        ),
+                    ),
+                    testInitialState.plots[1],
+                ),
+            ),
+            newUndoableAction =
+            TreeAdded(
+                plotIndex = 0, newTree = UnpositionedTree(
+                    id = "zz",
+                    sentence = "nodes rock",
+                    nodes = EntitySet(
+                        UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                        UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                        UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                        UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                        UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                    ),
+                    coordsInPlot = CoordsInPlot(105.0, 88.0),
+                ),
+            ),
+        )
+
+    @Test
+    fun setTreeContent() =
+        assertActionResult(
+            action = SetTreeContent(0, "aa", "nodes rock",
+                EntitySet(
+                    UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                    UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                    UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                    UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                    UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                ),
+            ),
+            current = ContentState(
+                plots = listOf(
+                    UnpositionedPlot(
+                        trees = EntitySet(
+                            UnpositionedTree(
+                                id = "aa",
+                                sentence = "nodes rock",
+                                nodes = EntitySet(
+                                    UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                                    UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                                    UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                                    UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                                    UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                                ),
+                                coordsInPlot = CoordsInPlot(0.0, 0.0),
+                            ),
+                            testInitialState.plots[0].trees["zz"]!!,
+                        ),
+                    ),
+                    testInitialState.plots[1],
+                ),
+            ),
+            newUndoableAction =
+            TreeChanged(
+                plotIndex = 0, old = UnpositionedTree(
+                    id = "aa",
+                    sentence = "tree state",
+                    nodes = EntitySet(
+                        UnpositionedTerminalNode(
+                            "a",
+                            "N",
+                            TreeCoordsOffset(0.0, 0.0),
+                            StringSlice(0, 4),
+                            false
+                        ),
+                        UnpositionedTerminalNode(
+                            "b",
+                            "N",
+                            TreeCoordsOffset(1.0, 10.0),
+                            StringSlice(5, 10),
+                            false
+                        ),
+                    ),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
+                ), new = UnpositionedTree(
+                    id = "aa",
+                    sentence = "nodes rock",
+                    nodes = EntitySet(
+                        UnpositionedTerminalNode("x", "N", slice = StringSlice(0, 5)),
+                        UnpositionedTerminalNode("y", "V", slice = StringSlice(6, 10)),
+                        UnpositionedBranchingNode("w", "NP", children = setOf("x")),
+                        UnpositionedBranchingNode("z", "VP", children = setOf("y")),
+                        UnpositionedBranchingNode("a", "S", children = setOf("w", "z")),
+                    ),
+                    coordsInPlot = CoordsInPlot(0.0, 0.0),
+                ),
             ),
         )
 
