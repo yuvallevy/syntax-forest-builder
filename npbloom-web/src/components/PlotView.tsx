@@ -1,8 +1,8 @@
 import { useContext, useMemo, useState } from 'react';
 import {
-  AddTree, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset, CoordsInPlot,
-  CoordsInClient, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId, isNodeInRect,
-  MoveSelectedNodes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan,
+  AddTree, AddTreeFromLbn, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset,
+  CoordsInPlot, CoordsInClient, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId,
+  isNodeInRect, MoveSelectedNodes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan,
   PositionedPlot, RectInClient, SelectionInPlot, SetSelection, Zoom
 } from 'npbloom-core';
 import TreeView from './TreeView';
@@ -142,6 +142,17 @@ const PlotView: React.FC = () => {
     }
   };
 
+  const preventDefaultDragEvent = (event: React.DragEvent<SVGElement>) => event.preventDefault();
+
+  const handleDrop = (event: React.DragEvent<SVGElement>) => {
+    event.preventDefault();
+    const text = event.dataTransfer.getData('text/plain');
+    if (text.startsWith('[') && text.endsWith(']')) {
+      event.preventDefault();
+      dispatch(new AddTreeFromLbn(new CoordsInClient(event.clientX, event.clientY), text));
+    }
+  };
+
   const plotViewCursor =
     (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset ? 'move'
       : (mouseInteractionMode === 'panning') ? 'grabbing'
@@ -157,6 +168,9 @@ const PlotView: React.FC = () => {
       onMouseMove={handlePlotMouseMove}
       onMouseUp={handlePlotMouseUp}
       onWheel={handlePlotWheel}
+      onDragEnter={preventDefaultDragEvent}
+      onDragOver={preventDefaultDragEvent}
+      onDrop={handleDrop}
     >
       {plot.trees.map(tree =>
         <TreeView

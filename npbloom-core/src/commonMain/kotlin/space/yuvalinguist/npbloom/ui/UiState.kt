@@ -52,7 +52,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
 @JsExport class AddTree(val newTreeId: Id, val coordsInPlot: CoordsInPlot) : UiAction
 @JsExport class RemoveTree(val treeId: Id) : UiAction
-@JsExport class AddTreeFromLbn(val coordsInPlot: CoordsInPlot, val lbn: String) : UiAction
+@JsExport class AddTreeFromLbn(val coordsInClient: CoordsInClient, val lbn: String) : UiAction
 @JsExport class SetTreeFromLbn(val treeId: Id, val lbn: String) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
@@ -473,7 +473,13 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
             return state.copy(
                 contentState = contentReducer(
                     state.contentState,
-                    AddTree(state.activePlotIndex, generateTreeId(), action.coordsInPlot, sentence, nodes)
+                    AddTree(
+                        state.activePlotIndex,
+                        generateTreeId(),
+                        action.coordsInClient.toCoordsInPlot(state.panZoomState),
+                        sentence,
+                        nodes,
+                    )
                 ),
                 selection = NoSelectionInPlot,
             )
