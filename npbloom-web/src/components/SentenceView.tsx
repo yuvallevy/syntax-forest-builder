@@ -3,7 +3,7 @@ import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, coordsInPlotToCoordsInClient, EntitySelectionAction, formatSubscriptInString, generateNodeId,
   NoSelectionInPlot, PositionedTree, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection,
-  SetSentence, SliceSelectionInPlot, StringSlice
+  SetSentence, SetTreeFromLbn, SliceSelectionInPlot, StringSlice
 } from 'npbloom-core';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
@@ -103,6 +103,14 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }
   };
 
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = event.clipboardData.getData('text/plain');
+    if (text.startsWith('[') && text.endsWith(']')) {
+      event.preventDefault();
+      dispatch(new SetTreeFromLbn(treeId, text));
+    }
+  };
+
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
@@ -133,6 +141,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       oldSelection.current = getSelectionSlice(e.currentTarget);
     }}
     onKeyDown={handleSentenceKeyDown}
+    onPaste={handlePaste}
   />;
 };
 

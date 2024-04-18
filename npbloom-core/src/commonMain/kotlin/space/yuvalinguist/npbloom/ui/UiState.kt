@@ -4,11 +4,12 @@
 package space.yuvalinguist.npbloom.ui
 
 import space.yuvalinguist.npbloom.content.*
+import space.yuvalinguist.npbloom.content.conversion.parseLbn
+import space.yuvalinguist.npbloom.content.conversion.toUnpositionedTree
 import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.positioned.StrWidthFunc
 import space.yuvalinguist.npbloom.content.positioned.sortNodesByXCoord
 import space.yuvalinguist.npbloom.content.unpositioned.*
-import space.yuvalinguist.npbloom.mockStrWidth
 import space.yuvalinguist.npbloom.ui.content.*
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -51,6 +52,8 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
 @JsExport class AddTree(val newTreeId: Id, val coordsInPlot: CoordsInPlot) : UiAction
 @JsExport class RemoveTree(val treeId: Id) : UiAction
+@JsExport class AddTreeFromLbn(val coordsInClient: CoordsInClient, val lbn: String) : UiAction
+@JsExport class SetTreeFromLbn(val treeId: Id, val lbn: String) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
 @JsExport class LoadContentState(val contentState: ContentState) : UiAction
@@ -462,6 +465,34 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     )
                 ),
                 selectionAction = EntitySelectionAction.SelectNode,
+            )
+        }
+
+        is AddTreeFromLbn -> {
+            val (_, sentence, nodes) = parseLbn(action.lbn).toUnpositionedTree()
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    AddTree(
+                        state.activePlotIndex,
+                        generateTreeId(),
+                        action.coordsInClient.toCoordsInPlot(state.panZoomState),
+                        sentence,
+                        nodes,
+                    )
+                ),
+                selection = NoSelectionInPlot,
+            )
+        }
+
+        is SetTreeFromLbn -> {
+            val (_, sentence, nodes) = parseLbn(action.lbn).toUnpositionedTree()
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    SetTreeContent(state.activePlotIndex, action.treeId, sentence, nodes)
+                ),
+                selection = NoSelectionInPlot,
             )
         }
 
