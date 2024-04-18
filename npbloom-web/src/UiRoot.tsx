@@ -14,6 +14,7 @@ import useHotkeys from '@reecelucas/react-use-hotkeys';
 import Settings from './components/meta/Settings';
 import Toolbox from './components/Toolbox';
 import AboutButton from './components/meta/AboutButton';
+import NewVersionModal from './components/meta/NewVersionModal.tsx';
 import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
@@ -151,6 +152,7 @@ const UiRoot = () => {
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
     {fileIoModalComponent}
+    <NewVersionModal />
   </MantineProvider>;
 }
 
