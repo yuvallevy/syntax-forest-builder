@@ -1,4 +1,7 @@
 ## Alpha
+### 0.6 (2024-04-18)
+* Zoom in/out and pan around the view using the scroll wheel, trackpad or Shift+drag.
+* Paste labelled bracket notation into the input field, or drag an expression onto an empty spot, to spawn a new tree.
 ### 0.5 (2023-10-04)
 * Rewrote core functionality in Kotlin to make writing this a little more fun. (Pun intended)
 * Added the long-overdue save/load function.
