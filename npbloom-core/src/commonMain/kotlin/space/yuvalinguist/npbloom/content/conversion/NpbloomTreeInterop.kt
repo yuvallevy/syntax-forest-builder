@@ -1,14 +1,16 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package space.yuvalinguist.npbloom.content.conversion
 
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.Id
 import space.yuvalinguist.npbloom.content.StringSlice
-import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedBranchingNode
-import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedNode
-import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedTerminalNode
-import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedTree
+import space.yuvalinguist.npbloom.content.unpositioned.*
 import space.yuvalinguist.npbloom.ui.content.generateNodeId
 import space.yuvalinguist.npbloom.ui.content.generateTreeId
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 private const val WORD_SEPARATOR = "   "  // This will be used to separate words in the resulting tree
 
@@ -55,3 +57,37 @@ fun TopDownTreeNode.toNodeList(): List<TopDownTreeNode> {
     collectNodes()
     return nodes.toList()
 }
+
+private fun UnpositionedTree.toTopDownTreeNode(nodeId: Id): TopDownTreeNode =
+    when (val node = nodes[nodeId]!!) {
+        is UnpositionedTerminalNode -> TopDownTreeTerminalNode(
+            node.label,
+            node.slice.contentInString(sentence),
+            node.triangle,
+        )
+
+        is UnpositionedBranchingNode -> TopDownTreeBranchingNode(
+            node.label,
+            node.children.map { childId ->
+                nodes[childId]
+                    ?.let { toTopDownTreeNode(childId) }
+                    ?: throw IllegalStateException("Child node with ID $childId not found")
+            }
+        )
+
+        else -> TopDownTreeTerminalNode(node.label, content = " ", triangle = false)
+    }
+
+fun UnpositionedTree.toTopDownTree(): TopDownTreeNode {
+    // Find the root node, which is the node for which...
+    val root = nodes.find { node ->
+        // ...there is no branching node that has it as a child
+        nodes.none { otherNode ->
+            otherNode is UnpositionedBranchingNode && otherNode.children.contains(node.id)
+        }
+    } ?: throw IllegalStateException("No root node found in tree")
+    return toTopDownTreeNode(root.id)
+}
+
+@JsExport
+fun treeToLbn(unpositionedTree: UnpositionedTree) = unpositionedTree.toTopDownTree().toLabelledBracketNotation()

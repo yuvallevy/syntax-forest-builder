@@ -1,8 +1,10 @@
 package space.yuvalinguist.npbloom.content.conversion
 
+import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedBranchingNode
 import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedTerminalNode
+import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedTree
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,6 +15,24 @@ class NpbloomTreeInteropTest {
         listOf(
             TopDownTreeTerminalNode("D", "A", false),
             TopDownTreeTerminalNode("N", "dog", false),
+        ),
+    )
+
+    private val unpositionedTreeWithTopLevelTerminalNode = UnpositionedTree(
+        id = "0",
+        sentence = "Alice",
+        nodes = EntitySet(
+            UnpositionedTerminalNode("1", "N", slice = StringSlice(0, 5), triangle = false),
+        ),
+    )
+
+    private val unpositionedTreeWithBranchingNode = UnpositionedTree(
+        id = "0",
+        sentence = "A   dog",
+        nodes = EntitySet(
+            UnpositionedTerminalNode("1", "D", slice = StringSlice(0, 1), triangle = false),
+            UnpositionedTerminalNode("2", "N", slice = StringSlice(4, 7), triangle = false),
+            UnpositionedBranchingNode("3", "NP", children = setOf("1", "2")),
         ),
     )
 
@@ -38,5 +58,15 @@ class NpbloomTreeInteropTest {
             listOf(StringSlice(0, 1), StringSlice(4, 7), null),
             tree.nodes.map { (it as? UnpositionedTerminalNode)?.slice })
         assertEquals("A   dog", tree.sentence)
+    }
+
+    @Test
+    fun topLevelTerminalNodeToTopDownTreeNode() {
+        assertEquals(topLevelTerminalNode, unpositionedTreeWithTopLevelTerminalNode.toTopDownTree())
+    }
+
+    @Test
+    fun branchingNodeToTopDownTreeNode() {
+        assertEquals(branchingNode, unpositionedTreeWithBranchingNode.toTopDownTree())
     }
 }
