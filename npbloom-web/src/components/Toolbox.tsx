@@ -1,11 +1,12 @@
 import {
-  AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
+  AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, treeToLbn, generateNodeId, NodeSelectionInPlot,
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
   TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
-  IconArrowBackUp, IconArrowForwardUp, IconPencil, IconPlus, IconTrash, IconTriangle, TablerIconsProps
+  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconPencil, IconPlus, IconTrash, IconTriangle,
+  TablerIconsProps
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import './Toolbox.scss';
@@ -55,6 +56,13 @@ const Toolbox: React.FC = () => {
     state.selectionAction === EntitySelectionAction.Disown ? EntitySelectionAction.SelectNode : EntitySelectionAction.Disown));
   const toggleTreeSelectMode = () => dispatch(new SetSelectionAction(
     state.selectionAction === EntitySelectionAction.SelectTree ? EntitySelectionAction.SelectNode : EntitySelectionAction.SelectTree));
+  const exportToLbn = () => {
+    const trees = state.selection instanceof TreeSelectionInPlot
+      ? state.selection.treeIdsAsArray.map(treeId => state.contentState.current.plots[state.activePlotIndex].tree(treeId))
+      : [state.contentState.current.plots[state.activePlotIndex].tree((state.selection as NodeSelectionInPlot).nodeIndicators[0].treeId)];
+    const lbn = trees.map(tree => treeToLbn(tree)).join('\n');
+    console.log(lbn);
+  };
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
@@ -111,6 +119,8 @@ const Toolbox: React.FC = () => {
     { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
+    { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToLbn,
+      disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' }
   ];
 
   return <div className="Toolbox--container">
