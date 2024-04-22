@@ -14,6 +14,7 @@ import substituteOsAwareHotkey from './substituteOsAwareHotkey';
 import { useOs } from '@mantine/hooks';
 import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSelectionMode } from './icons';
 import useUiState from '../useUiState';
+import useTextOutputModal from './useTextOutputModal.tsx';
 
 type ToolboxItem = {
   title: string;
@@ -28,6 +29,8 @@ type ToolboxItem = {
 
 const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
+
+  const { textOutputModalComponent, openTextOutputModal } = useTextOutputModal();
 
   const noTreesInPlot = state.contentState.current.plots[state.activePlotIndex].treeCount === 0;
   const noNodesOrSliceSelected = state.selection === NoSelectionInPlot.getInstance() ||
@@ -61,7 +64,7 @@ const Toolbox: React.FC = () => {
       ? state.selection.treeIdsAsArray.map(treeId => state.contentState.current.plots[state.activePlotIndex].tree(treeId))
       : [state.contentState.current.plots[state.activePlotIndex].tree((state.selection as NodeSelectionInPlot).nodeIndicators[0].treeId)];
     const lbn = trees.map(tree => treeToLbn(tree)).join('\n');
-    console.log(lbn);
+    openTextOutputModal(lbn);
   };
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
@@ -166,6 +169,7 @@ const Toolbox: React.FC = () => {
       </div>
       <div>{hoveredItem.description}</div>
     </Paper>}
+    {textOutputModalComponent}
   </div>;
 };
 
