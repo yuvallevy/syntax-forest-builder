@@ -68,7 +68,7 @@ private fun UnpositionedTree.toTopDownTreeNode(nodeId: Id): TopDownTreeNode =
 
         is UnpositionedBranchingNode -> TopDownTreeBranchingNode(
             node.label,
-            node.children.map { childId ->
+            node.children.sortedBy { childId -> findSliceStart(childId) }.map { childId ->
                 nodes[childId]
                     ?.let { toTopDownTreeNode(childId) }
                     ?: throw IllegalStateException("Child node with ID $childId not found")

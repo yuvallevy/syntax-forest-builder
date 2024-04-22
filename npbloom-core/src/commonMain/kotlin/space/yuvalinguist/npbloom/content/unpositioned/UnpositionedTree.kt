@@ -135,4 +135,8 @@ data class UnpositionedTree(
     @JsName("getNodeIdsAssignedToSlice")
     fun getNodeIdsAssignedToSliceAsArray(slice: StringSlice): Array<Id> =
         getNodeIdsAssignedToSlice(slice).toTypedArray()
+
+    internal fun findSliceStart(nodeId: Id): SliceStart? =
+        (nodes[nodeId] as? UnpositionedTerminalNode)?.slice?.start
+            ?: (nodes[nodeId] as? UnpositionedBranchingNode)?.children?.mapNotNull { findSliceStart(it) }?.minOrNull()
 }

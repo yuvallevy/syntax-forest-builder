@@ -36,6 +36,16 @@ class NpbloomTreeInteropTest {
         ),
     )
 
+    private val unpositionedTreeWithBranchingNodeReversed = UnpositionedTree(
+        id = "0",
+        sentence = "A   dog",
+        nodes = EntitySet(
+            UnpositionedTerminalNode("1", "N", slice = StringSlice(4, 7), triangle = false),
+            UnpositionedTerminalNode("2", "D", slice = StringSlice(0, 1), triangle = false),
+            UnpositionedBranchingNode("3", "NP", children = setOf("1", "2")),
+        ),
+    )
+
     @Test
     fun topLevelTerminalNodeToUnpositionedTree() {
         val tree = topLevelTerminalNode.toUnpositionedTree()
@@ -68,5 +78,10 @@ class NpbloomTreeInteropTest {
     @Test
     fun branchingNodeToTopDownTreeNode() {
         assertEquals(branchingNode, unpositionedTreeWithBranchingNode.toTopDownTree())
+    }
+
+    @Test
+    fun branchingNodeToTopDownTreeNodeReversed() {
+        assertEquals(branchingNode, unpositionedTreeWithBranchingNodeReversed.toTopDownTree())
     }
 }
