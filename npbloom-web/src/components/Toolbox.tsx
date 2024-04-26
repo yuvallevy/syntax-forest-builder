@@ -1,5 +1,5 @@
 import {
-  AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, treeToLbn, generateNodeId, NodeSelectionInPlot,
+  AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
   TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
@@ -59,12 +59,11 @@ const Toolbox: React.FC = () => {
     state.selectionAction === EntitySelectionAction.Disown ? EntitySelectionAction.SelectNode : EntitySelectionAction.Disown));
   const toggleTreeSelectMode = () => dispatch(new SetSelectionAction(
     state.selectionAction === EntitySelectionAction.SelectTree ? EntitySelectionAction.SelectNode : EntitySelectionAction.SelectTree));
-  const exportToLbn = () => {
+  const exportToText = () => {
     const trees = state.selection instanceof TreeSelectionInPlot
       ? state.selection.treeIdsAsArray.map(treeId => state.contentState.current.plots[state.activePlotIndex].tree(treeId))
       : [state.contentState.current.plots[state.activePlotIndex].tree((state.selection as NodeSelectionInPlot).nodeIndicators[0].treeId)];
-    const lbn = trees.map(tree => treeToLbn(tree)).join('\n');
-    openTextOutputModal(lbn);
+    openTextOutputModal(trees);
   };
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
@@ -122,7 +121,7 @@ const Toolbox: React.FC = () => {
     { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
-    { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToLbn,
+    { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' }
   ];
 

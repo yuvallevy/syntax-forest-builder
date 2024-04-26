@@ -1,26 +1,29 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { treeToLbn, UnpositionedTree } from 'npbloom-core';
 import { Button, Group, Modal, Textarea } from '@mantine/core';
 import './TextOutputModal.scss';
 
 interface TextOutputModalProps {
   isOpen: boolean;
   onClose: () => void;
-  text: string;
+  trees: UnpositionedTree[];
 }
 
 const TextOutputModal: React.FC<TextOutputModalProps> = ({
   isOpen,
   onClose,
-  text,
+  trees,
 }) => {
+  const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isOpen) {
+      setText(trees.map(tree => treeToLbn(tree)).join('\n\n'));
       textareaRef.current?.focus();
       textareaRef.current?.select();
     }
-  }, [isOpen]);
+  }, [trees, isOpen]);
 
   const handleCopy = () => {
     if (navigator.clipboard) {
@@ -32,7 +35,7 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
   };
 
   return (
-    <Modal centered title="Output" size="lg" opened={isOpen} onClose={onClose}>
+    <Modal centered title="Export to text" size="lg" opened={isOpen} onClose={onClose}>
       <Textarea
         value={text}
         ref={textareaRef}
