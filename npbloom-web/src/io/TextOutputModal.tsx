@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Button, Group, Modal, Textarea } from '@mantine/core';
+import './TextOutputModal.scss';
 
 interface TextOutputModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
         ref={textareaRef}
         readOnly
         minRows={10}
-        sx={{ fontFamily: 'monospace' }}
+        className="TextOutputModal--textarea"
         mb="1rem"
       />
       <Group position="apart">
