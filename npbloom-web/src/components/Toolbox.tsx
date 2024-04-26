@@ -14,7 +14,7 @@ import substituteOsAwareHotkey from './substituteOsAwareHotkey';
 import { useOs } from '@mantine/hooks';
 import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSelectionMode } from './icons';
 import useUiState from '../useUiState';
-import useTextOutputModal from './useTextOutputModal.tsx';
+import useTextOutputModal from '../io/useTextOutputModal';
 
 type ToolboxItem = {
   title: string;

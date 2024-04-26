@@ -19,7 +19,7 @@ import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
-import useFileIo from './fileIo/useFileIo';
+import useFileIo from './io/useFileIo';
 import { useOs } from '@mantine/hooks';
 import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, Group, Modal, Textarea } from '@mantine/core';
 
 interface TextOutputModalProps {
@@ -48,22 +48,4 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
   );
 };
 
-const useTextOutputModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [text, setText] = useState('');
-
-  const openTextOutputModal = (text: string) => {
-    setText(text);
-    setIsOpen(true);
-  };
-
-  const closeTextOutputModal = () => {
-    setIsOpen(false);
-  };
-
-  const textOutputModalComponent = <TextOutputModal isOpen={isOpen} onClose={closeTextOutputModal} text={text} />;
-
-  return { textOutputModalComponent, openTextOutputModal, closeTextOutputModal };
-};
-
-export default useTextOutputModal;
+export default TextOutputModal;
