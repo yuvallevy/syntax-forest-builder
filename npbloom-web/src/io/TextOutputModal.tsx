@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { treeToLbn, UnpositionedTree } from 'npbloom-core';
-import { Button, Group, Modal, Textarea } from '@mantine/core';
+import { Button, Group, Menu, Modal, Textarea } from '@mantine/core';
+import { IconExternalLink } from '@tabler/icons-react';
 import './TextOutputModal.scss';
 
 interface TextOutputModalProps {
   isOpen: boolean;
   onClose: () => void;
   trees: UnpositionedTree[];
+}
+
+const generateMshangCaPermalink = (text: string) => {
+  const encodedText = encodeURIComponent(text);
+  return `https://mshang.ca/syntree/?i=${encodedText}`;
 }
 
 const TextOutputModal: React.FC<TextOutputModalProps> = ({
@@ -16,6 +22,8 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
 }) => {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const mshangCaPermalink = trees.length === 1 ? generateMshangCaPermalink(text) : undefined;
 
   useEffect(() => {
     if (isOpen) {
@@ -45,7 +53,21 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
         mb="1rem"
       />
       <Group position="apart">
-        <Button variant="default" onClick={handleCopy}>Copy to clipboard</Button>
+        <Group>
+          <Button variant="default" onClick={handleCopy}>Copy to clipboard</Button>
+          <Menu shadow="md" position="bottom-start">
+            <Menu.Target>
+              <Button variant="default" disabled={!mshangCaPermalink}>
+                <IconExternalLink stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; Open in...
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item component="a" href={mshangCaPermalink} target="_blank" rel="noopener noreferrer">
+                Miles Shang's Syntax Tree Generator
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
         <Button variant="filled" onClick={onClose}>Done</Button>
       </Group>
     </Modal>
