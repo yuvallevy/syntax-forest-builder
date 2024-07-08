@@ -54,6 +54,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class RemoveTree(val treeId: Id) : UiAction
 @JsExport class AddTreeFromLbn(val coordsInClient: CoordsInClient, val lbn: String) : UiAction
 @JsExport class SetTreeFromLbn(val treeId: Id, val lbn: String) : UiAction
+@JsExport class SetTree(val treeId: Id, val tree: UnpositionedTree) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
 @JsExport class LoadContentState(val contentState: ContentState) : UiAction
@@ -487,6 +488,17 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is SetTreeFromLbn -> {
             val (_, sentence, nodes) = parseLbn(action.lbn).toUnpositionedTree()
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    SetTreeContent(state.activePlotIndex, action.treeId, sentence, nodes)
+                ),
+                selection = NoSelectionInPlot,
+            )
+        }
+
+        is SetTree -> {
+            val (_, sentence, nodes) = action.tree
             return state.copy(
                 contentState = contentReducer(
                     state.contentState,

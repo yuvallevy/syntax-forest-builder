@@ -5,7 +5,7 @@ import {
 } from 'npbloom-core';
 import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
-  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconPencil, IconPlus, IconTrash, IconTriangle,
+  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconCopy, IconPencil, IconPlus, IconTrash, IconTriangle,
   TablerIconsProps
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
@@ -15,6 +15,8 @@ import { useOs } from '@mantine/hooks';
 import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSelectionMode } from './icons';
 import useUiState from '../useUiState';
 import useTextOutputModal from '../io/useTextOutputModal';
+import useHotkeys from '@reecelucas/react-use-hotkeys';
+import { copyTreeToClipboard } from '../io/clipboardIo';
 
 type ToolboxItem = {
   title: string;
@@ -40,6 +42,8 @@ const Toolbox: React.FC = () => {
       .tree((state.selection as SliceSelectionInPlot).treeId).sentence === '';
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
   const noTreesSelected = !(state.selection instanceof TreeSelectionInPlot);
+  const oneTreeSelected = state.selection instanceof TreeSelectionInPlot &&
+    state.selection.treeIdsAsArray.length === 1;
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeObjects = selectedNodeIndicators.map(({ treeId, nodeId }) =>
@@ -65,8 +69,20 @@ const Toolbox: React.FC = () => {
       : [state.contentState.current.plots[state.activePlotIndex].tree((state.selection as NodeSelectionInPlot).nodeIndicators[0].treeId)];
     openTextOutputModal(trees);
   };
+  const copySelectedTree = () => {
+    const selectedTreeId = (state.selection as TreeSelectionInPlot).treeIdsAsArray[0];
+    const selectedTree = state.contentState.current.plots[state.activePlotIndex].tree(selectedTreeId);
+    copyTreeToClipboard(selectedTree).then(() => console.log('Tree copied to clipboard.'));
+  }
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
+
+  useHotkeys(['Control+Shift+c', 'Meta+Shift+c'], event => {
+    if (oneTreeSelected) {
+      event.preventDefault();
+      copySelectedTree();
+    }
+  });
 
   const os = useOs();
 
@@ -122,7 +138,10 @@ const Toolbox: React.FC = () => {
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
-      disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' }
+      disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
+    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-Shift-C', disabled: !oneTreeSelected,
+      description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
+        substituteOsAwareHotkey('Ctrl-V', os) + '.' }
   ];
 
   return <div className="Toolbox--container">
@@ -166,7 +185,7 @@ const Toolbox: React.FC = () => {
         {hoveredItem.hotkey &&
           ` (${hoveredItem.hotkeyHold ? 'hold ' : ''}${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
       </div>
-      <div>{hoveredItem.description}</div>
+      <div style={{ whiteSpace: 'pre-wrap' }}>{hoveredItem.description}</div>
     </Paper>}
     {textOutputModalComponent}
   </div>;

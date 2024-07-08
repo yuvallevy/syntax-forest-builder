@@ -3,8 +3,9 @@ import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, coordsInPlotToCoordsInClient, EntitySelectionAction, formatSubscriptInString, generateNodeId,
   NoSelectionInPlot, PositionedTree, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection,
-  SetSentence, SetTreeFromLbn, SliceSelectionInPlot, StringSlice
+  SetSentence, SetTree, SetTreeFromLbn, SliceSelectionInPlot, StringSlice
 } from 'npbloom-core';
+import { extractTreeFromClipboardData } from '../io/clipboardIo';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
@@ -103,11 +104,21 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }
   };
 
-  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = async (event: React.ClipboardEvent<HTMLInputElement>) => {
     const text = event.clipboardData.getData('text/plain');
-    if (text.startsWith('[') && text.endsWith(']')) {
+    if (!text) return;
+
+    // Check if the clipboard contains a tree blob
+    try {
+      const tree = await extractTreeFromClipboardData(text);
       event.preventDefault();
-      dispatch(new SetTreeFromLbn(treeId, text));
+      dispatch(new SetTree(treeId, tree));
+    } catch (e) {
+      // If not, check if it contains labelled bracket notation
+      if (text.startsWith('[') && text.endsWith(']')) {
+        event.preventDefault();
+        dispatch(new SetTreeFromLbn(treeId, text));
+      }
     }
   };
 
