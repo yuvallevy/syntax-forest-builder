@@ -12,6 +12,7 @@ import ZoomControl from "./ZoomControl.tsx";
 import './PlotView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
+import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
@@ -72,7 +73,7 @@ const PlotView: React.FC = () => {
 
   const handlePlotClick = (event: React.MouseEvent<SVGElement>) => {
     if (nothingSelected) {
-      addTreeAndFocus(new CoordsInClient(event.clientX, event.clientY).toCoordsInPlot(state.panZoomState));
+      addTreeAndFocus(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y).toCoordsInPlot(state.panZoomState));
     } else {
       setSelection(NoSelectionInPlot.getInstance());
     }
@@ -81,7 +82,7 @@ const PlotView: React.FC = () => {
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.currentTarget === event.target && !event.shiftKey) {  // Only start a selection box from an empty area
       setMouseInteractionMode('selecting');
-      setDragStartCoords(new CoordsInClient(event.clientX, event.clientY));
+      setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     } else if (event.shiftKey) {
       setMouseInteractionMode('panning');
     }
@@ -92,7 +93,7 @@ const PlotView: React.FC = () => {
       const xDistToDragStart = Math.abs(dragStartCoords?.clientX - event.clientX);
       const yDistToDragStart = Math.abs(dragStartCoords?.clientY - event.clientY);
       if (dragEndCoords || xDistToDragStart > MINIMUM_DRAG_DISTANCE || yDistToDragStart > MINIMUM_DRAG_DISTANCE) {
-        setDragEndCoords(new CoordsInClient(event.clientX, event.clientY));
+        setDragEndCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
       }
     } else if (event.buttons === PRIMARY_MOUSE_BUTTON && mouseInteractionMode === 'panning') {
       dispatch(new Pan(new ClientCoordsOffset(event.movementX, event.movementY)));
@@ -120,14 +121,14 @@ const PlotView: React.FC = () => {
   const handleNodeMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
       setMouseInteractionMode('draggingNodes');
-      setDragStartCoords(new CoordsInClient(event.clientX, event.clientY));
+      setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     }
   };
 
   const handleTreeMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
       setMouseInteractionMode('draggingTrees');
-      setDragStartCoords(new CoordsInClient(event.clientX, event.clientY));
+      setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     }
   };
 

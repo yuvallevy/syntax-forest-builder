@@ -1,9 +1,10 @@
 import { PlotIndex } from '../types';
 import { AddPlot, DeletePlot, SetActivePlotIndex } from 'npbloom-core';
-import { ActionIcon, Menu, Paper, Tabs, Tooltip } from '@mantine/core';
+import { ActionIcon, Footer, Menu, Tabs, Tooltip } from '@mantine/core';
 import { IconDotsVertical, IconFile, IconFilePlus, IconTrash, IconTree, IconTrees } from '@tabler/icons-react';
 import './PlotSelector.scss';
 import useUiState from '../useUiState';
+import { PLOT_SELECTOR_HEIGHT } from '../uiDimensions';
 
 const PlotSelector: React.FC = () => {
   const { state, dispatch } = useUiState();
@@ -15,7 +16,7 @@ const PlotSelector: React.FC = () => {
   const addPlot = () => dispatch(new AddPlot());
   const deletePlot = (plotIndex: PlotIndex) => dispatch(new DeletePlot(plotIndex));
 
-  return <Paper sx={{ position: 'fixed', left: 0, right: 0, bottom: 0 }}>
+  return <Footer height={PLOT_SELECTOR_HEIGHT} p={0} withBorder={false}>
     <Tabs value={activePlotIndex.toString()} onTabChange={newValue => setActivePlotIndex(Number(newValue))} inverted>
       <Tabs.List>
         {plots.map((plot, index) => {
@@ -51,7 +52,7 @@ const PlotSelector: React.FC = () => {
         </Tooltip>
       </Tabs.List>
     </Tabs>
-  </Paper>;
+  </Footer>;
 };
 
 export default PlotSelector;

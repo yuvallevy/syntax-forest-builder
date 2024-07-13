@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
-import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
+import { AppShell, Button, Flex, Header, MantineProvider, Menu, Space, Text } from '@mantine/core';
+import { IconDeviceFloppy, IconFolder } from '@tabler/icons-react';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -23,6 +23,8 @@ import useFileIo from './io/useFileIo';
 import { useOs } from '@mantine/hooks';
 import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';
+import { MAIN_MENU_HEIGHT } from './uiDimensions.ts';
+import './UiRoot.scss';
 
 const UiRoot = () => {
   const { state, dispatch } = useUiState();
@@ -106,14 +108,12 @@ const UiRoot = () => {
         && dispatch(new SetSelectionAction(EntitySelectionAction.SelectNode))
   );
 
-  return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-    <PlotView />
-    <Toolbox />
-    <Flex align="center" sx={{ position: 'fixed', left: '0.75rem', right: '0.75rem', top: '0.75rem' }}>
-      <Menu shadow="md" withArrow position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
+  const mainMenu = <Header height={MAIN_MENU_HEIGHT}>
+    <Flex align="stretch" className="MainMenu">
+      <Menu shadow="md" offset={0} position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
         <Menu.Target>
           <Button variant="subtle" size="xs">
-            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; File
+            File
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
@@ -144,7 +144,17 @@ const UiRoot = () => {
       <Settings />
       <AboutButton />
     </Flex>
-    <PlotSelector />
+  </Header>;
+
+  return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
+    <AppShell
+      header={mainMenu}
+      navbar={<Toolbox />}
+      footer={<PlotSelector />}
+      padding={0}
+    >
+      <PlotView />
+    </AppShell>
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}
     /> : activePlot.isEmpty && <PlotPlaceholder
