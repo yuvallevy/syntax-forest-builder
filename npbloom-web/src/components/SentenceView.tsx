@@ -105,6 +105,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       if (event.currentTarget.value === '') {
         removeAndDeselectTree(treeId);
       } else {
+        event.currentTarget.setSelectionRange(0, 0);
+        setSelection(NoSelectionInPlot.getInstance());
         event.currentTarget.blur();
       }
     }
