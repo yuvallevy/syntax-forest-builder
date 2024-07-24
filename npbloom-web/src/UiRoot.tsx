@@ -5,9 +5,9 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
-  Redo, SelectChildNode, SelectParentNodes, SetSelectionAction, StartEditing, StringSlice, TreeSelectionInPlot, Undo,
-  UnpositionedBranchingNode, UnpositionedTerminalNode
+  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NoSelectionInPlot,
+  NodeSelectionInPlot, Redo, SelectChildNode, SelectParentNodes, SetSelection, SetSelectionAction, StartEditing,
+  StringSlice, TreeSelectionInPlot, Undo, UnpositionedBranchingNode, UnpositionedTerminalNode
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -80,6 +80,12 @@ const UiRoot = () => {
   useHotkeys(['Enter', 'F2'], startEditing);
 
   useHotkeys(['Backspace', 'Delete'], deleteEntities);
+
+  useHotkeys(['Escape'], () => {
+    if (state.selection !== NoSelectionInPlot.getInstance()) {
+      dispatch(new SetSelection(NoSelectionInPlot.getInstance()));
+    }
+  })
 
   useHotkeys(['Control+z', 'Meta+z'], event => { event.preventDefault(); undo(); },
     { ignoredElementWhitelist: ['INPUT'] });

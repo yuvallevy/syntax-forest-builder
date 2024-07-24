@@ -101,6 +101,12 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       }
     } else if ((event.key === 'Backspace' || event.key === 'Delete') && event.currentTarget.value === '') {
       removeAndDeselectTree(treeId);
+    } else if (event.key === 'Escape' || event.key === 'Enter') {
+      if (event.currentTarget.value === '') {
+        removeAndDeselectTree(treeId);
+      } else {
+        event.currentTarget.blur();
+      }
     }
   };
 
