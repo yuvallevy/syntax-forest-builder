@@ -18,7 +18,7 @@ const ZoomControl: React.FC = () => {
   return <div className="ZoomControl">
     <Menu shadow="md" position="top-end">
       <Menu.Target>
-        <Button variant="white" color="gray" size="xs">
+        <Button variant="white" color="gray" size="sm">
           {t('zoom.button')}: {currentZoomLevelStr}
         </Button>
       </Menu.Target>

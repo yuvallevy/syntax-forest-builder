@@ -96,7 +96,21 @@ internal data class SetSentence(
     val oldSelectedSlice: StringSlice
 ) : ContentAction
 
-internal data class AddTree(val plotIndex: PlotIndex, val newTreeId: Id, val coordsInPlot: CoordsInPlot) : ContentAction
+internal data class AddTree(
+    val plotIndex: PlotIndex,
+    val newTreeId: Id,
+    val coordsInPlot: CoordsInPlot,
+    val sentence: Sentence = "",
+    val nodes: EntitySet<UnpositionedNode> = EntitySet(),
+) : ContentAction
+
+internal data class SetTreeContent(
+    val plotIndex: PlotIndex,
+    val treeId: Id,
+    val sentence: Sentence,
+    val nodes: EntitySet<UnpositionedNode>,
+) : ContentAction
+
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
 
 @JsExport
@@ -196,7 +210,17 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
             .handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)
     )
 
-    is AddTree -> TreeAdded(action.plotIndex, UnpositionedTree(action.newTreeId, "", EntitySet(), action.coordsInPlot))
+    is AddTree -> TreeAdded(
+        action.plotIndex,
+        UnpositionedTree(action.newTreeId, action.sentence, action.nodes, action.coordsInPlot)
+    )
+
+    is SetTreeContent -> TreeChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex].tree(action.treeId),
+        state.plots[action.plotIndex].tree(action.treeId).copy(sentence = action.sentence, nodes = action.nodes)
+    )
+
     is DeleteTree -> TreeDeleted(action.plotIndex, state.plots[action.plotIndex].tree(action.treeId))
 }
 

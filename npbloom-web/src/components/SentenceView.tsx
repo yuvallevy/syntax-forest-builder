@@ -3,11 +3,13 @@ import { Id, Sentence } from '../types';
 import {
   AddNodeBySelection, coordsInPlotToCoordsInClient, EntitySelectionAction, formatSubscriptInString, generateNodeId,
   NoSelectionInPlot, PositionedTree, RemoveTree, SelectionInPlot, SelectParentNodes, SetSelectedNodeSlice, SetSelection,
-  SetSentence, SliceSelectionInPlot, StringSlice
+  SetSentence, SetTree, SetTreeFromLbn, SliceSelectionInPlot, StringSlice
 } from 'npbloom-core';
+import { extractTreeFromClipboardData } from '../io/clipboardIo';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
+import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const SENTENCE_FONT_SIZE_PX = 16;
 
@@ -103,6 +105,24 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     }
   };
 
+  const handlePaste = async (event: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = event.clipboardData.getData('text/plain');
+    if (!text) return;
+
+    // Check if the clipboard contains a tree blob
+    try {
+      const tree = await extractTreeFromClipboardData(text);
+      event.preventDefault();
+      dispatch(new SetTree(treeId, tree));
+    } catch (e) {
+      // If not, check if it contains labelled bracket notation
+      if (text.startsWith('[') && text.endsWith(']')) {
+        event.preventDefault();
+        dispatch(new SetTreeFromLbn(treeId, text));
+      }
+    }
+  };
+
   // Keep track of the previous selection so we can report it whenever a change is made
   // (the input event only carries information about the *new* selection, hence this hack)
   const oldSelection = useRef<StringSlice | null>(null);
@@ -116,8 +136,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     value={tree.sentence}
     className={'SentenceView--input' + (className ? ` ${className}` : '')}
     style={{
-      left: treePositionInClient.clientX,
-      top: treePositionInClient.clientY,
+      left: treePositionInClient.clientX + SVG_X,
+      top: treePositionInClient.clientY + SVG_Y,
       fontSize: SENTENCE_FONT_SIZE_PX * state.panZoomState.zoomLevel,
       width: tree.sentence.length === 0
         ? (EMPTY_SENTENCE_WIDTH * state.panZoomState.zoomLevel)
@@ -133,6 +153,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       oldSelection.current = getSelectionSlice(e.currentTarget);
     }}
     onKeyDown={handleSentenceKeyDown}
+    onPaste={handlePaste}
   />;
 };
 

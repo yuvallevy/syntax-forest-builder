@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import prettyDate from './prettyDate';
 import { ActionIcon, Button, Group, Modal, Popover, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { useInputState } from '@mantine/hooks';
-import { IconCheck, IconDeviceFloppy, IconEdit, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconEdit, IconTrash, IconX } from '@tabler/icons-react';
 import { FileWithMetadata } from './fileIoImpl';
 import prettyBytes from 'pretty-bytes';
 import './FileIoModal.scss';
@@ -145,7 +145,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
                       </ActionIcon>
                     </Popover.Target>
                     <Popover.Dropdown>
-                      <Button size="sm" p="xs" color="red" onClick={() => onDelete(file.name)}>
+                      <Button size="sm" p="sm" color="red" onClick={() => onDelete(file.name)}>
                         {t('fileIo.buttons.confirmDelete')}
                       </Button>
                     </Popover.Dropdown>
@@ -169,7 +169,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
             onChange={(event) => setFileNameInputValue(event.currentTarget.value)}
           />
           <Button type="submit" disabled={savingStatus === 'loading' || fileNameInputValue.trim() === ''}>
-            <IconDeviceFloppy stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>&nbsp; {t('fileIo.buttons.save')}
+            {t('fileIo.buttons.save')}
           </Button>
         </Group>
       </form>

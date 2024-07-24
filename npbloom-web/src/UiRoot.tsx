@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, createEmotionCache, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
+import { AppShell, Button, createEmotionCache, Flex, Header, MantineProvider, Menu, Space, Text } from '@mantine/core';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconFolder } from '@tabler/icons-react';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -16,14 +16,17 @@ import useHotkeys from '@reecelucas/react-use-hotkeys';
 import Settings from './components/meta/Settings';
 import Toolbox from './components/Toolbox';
 import AboutButton from './components/meta/AboutButton';
+import NewVersionModal from './components/meta/NewVersionModal.tsx';
 import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
-import useFileIo from './fileIo/useFileIo';
+import useFileIo from './io/useFileIo';
 import { useOs } from '@mantine/hooks';
 import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';
+import { MAIN_MENU_HEIGHT } from './uiDimensions.ts';
+import './UiRoot.scss';
 
 const rtlCache = createEmotionCache({
   key: 'mantine-rtl',
@@ -115,19 +118,12 @@ const UiRoot = () => {
         && dispatch(new SetSelectionAction(EntitySelectionAction.SelectNode))
   );
 
-  return <MantineProvider
-    withGlobalStyles
-    withNormalizeCSS
-    emotionCache={dir === 'rtl' ? rtlCache : undefined}
-    theme={{ ...theme, dir }}
-  >
-    <PlotView />
-    <Toolbox />
-    <Flex align="center" sx={{ position: 'fixed', left: '0.75rem', right: '0.75rem', top: '0.75rem' }}>
-      <Menu shadow="md" withArrow position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
+  const mainMenu = <Header height={MAIN_MENU_HEIGHT}>
+    <Flex align="stretch" className="MainMenu">
+      <Menu shadow="md" offset={0} position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
         <Menu.Target>
-          <Button variant="subtle" size="xs">
-            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; {t('mainMenu.file.title')}
+          <Button variant="subtle" size="sm">
+            {t('mainMenu.file.title')}
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
@@ -158,7 +154,22 @@ const UiRoot = () => {
       <Settings />
       <AboutButton />
     </Flex>
-    <PlotSelector />
+  </Header>;
+
+  return <MantineProvider
+    withGlobalStyles
+    withNormalizeCSS
+    emotionCache={dir === 'rtl' ? rtlCache : undefined}
+    theme={{ ...theme, dir }}
+  >
+    <AppShell
+      header={mainMenu}
+      navbar={<Toolbox />}
+      footer={<PlotSelector />}
+      padding={0}
+    >
+      <PlotView />
+    </AppShell>
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}
     /> : activePlot.isEmpty && <PlotPlaceholder
@@ -166,6 +177,7 @@ const UiRoot = () => {
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
     {fileIoModalComponent}
+    <NewVersionModal />
   </MantineProvider>;
 }
 

@@ -6,6 +6,7 @@ import {
 import { useState } from 'react';
 import './LabelNodeEditor.scss';
 import useUiState from '../useUiState';
+import { SVG_X, SVG_Y } from '../uiDimensions';
 
 interface LabelNodeEditorInputProps {
   value: string;
@@ -33,7 +34,7 @@ const LabelNodeEditorInput: React.FC<LabelNodeEditorInputProps> = ({
   className="LabelNodeEditorInput"
   value={value}
   autoFocus
-  style={{ left: baseCoords.clientX, top: baseCoords.clientY, fontSize }}
+  style={{ left: baseCoords.clientX + SVG_X, top: baseCoords.clientY + SVG_Y, fontSize }}
   onInput={e => onInput(e.currentTarget.value)}
   onBlur={onBlur}
   onKeyDown={onKeyDown}

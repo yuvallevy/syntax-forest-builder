@@ -1,6 +1,6 @@
 {
   "short_name": "NPBloom",
-  "name": "NPBloom Syntax Tree Builder",
+  "name": "NPBloom",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#087f5b",
   "background_color": "#ffffff"
 }

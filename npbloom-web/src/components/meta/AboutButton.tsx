@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Anchor, Button, Modal } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Logo from './npbloom-logo.svg';
@@ -9,10 +10,16 @@ const AboutButton = () => {
 
   const [opened, { open, close }] = useDisclosure(false);
 
+  // Only show the email address after a delay so scrapers have to work extra hard to pick it up
+  const [contactEmailAddress, setContactEmailAddress] = useState('');
+  useEffect(() => {
+    setTimeout(() => setContactEmailAddress(window.atob('eXV2YWxAeXV2YWxpbmd1aXN0LnNwYWNl')), 2000);
+  }, []);
+
   return <>
     <Button
       variant="subtle"
-      size="xs"
+      size="sm"
       onClick={open}
     >
       <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; {t('mainMenu.about.title')}
@@ -44,6 +51,9 @@ const AboutButton = () => {
         </Anchor>. See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main" target="_blank" rel="noopener noreferrer">
           GitHub
         </Anchor> for full source code.
+      </p>
+      <p>
+        For feedback, bug reports, or feature requests, please contact me at <b>{contactEmailAddress}</b>.
       </p>
       {import.meta.env.VITE_BUILD_TIMESTAMP && <p><small>Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</small></p>}
     </Modal>
