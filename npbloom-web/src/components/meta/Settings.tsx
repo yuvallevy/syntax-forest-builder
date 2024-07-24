@@ -16,7 +16,7 @@ const Settings: React.FC = () => {
   return <>
     <Button
       variant="subtle"
-      size="xs"
+      size="sm"
       onClick={open}
     >
       <IconAdjustmentsHorizontal stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; Settings
@@ -35,7 +35,7 @@ const Settings: React.FC = () => {
           onChange={(event) => settingsDispatch(new SetLiveStringWidth(event.currentTarget.checked))}
         />
         <Group position="right">
-          <Button variant="subtle" onClick={close}>Done</Button>
+          <Button variant="filled" onClick={close}>Done</Button>
         </Group>
       </Stack>
     </Modal>

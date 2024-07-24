@@ -17,15 +17,21 @@ const PlotSelector: React.FC = () => {
   const deletePlot = (plotIndex: PlotIndex) => dispatch(new DeletePlot(plotIndex));
 
   return <Footer height={PLOT_SELECTOR_HEIGHT} p={0} withBorder={false}>
-    <Tabs value={activePlotIndex.toString()} onTabChange={newValue => setActivePlotIndex(Number(newValue))} inverted>
-      <Tabs.List>
+    <Tabs
+      value={activePlotIndex.toString()}
+      onTabChange={newValue => setActivePlotIndex(Number(newValue))}
+      inverted
+      className="PlotSelector--tabs"
+    >
+      <Tabs.List className="PlotSelector--tabs-list">
         {plots.map((plot, index) => {
           const IconComponent = plot.isEmpty ? IconFile : plot.treeCount === 1 ? IconTree : IconTrees;
           return <div className="PlotSelector--tab-container" key={index}>
             <Tabs.Tab
               value={index.toString()}
+              p="md"
               icon={<IconComponent size={13} />}
-              className={index === activePlotIndex ? 'PlotSelector--tab-button--selected' : ''}
+              className={'PlotSelector--tab-button' + (index === activePlotIndex ? ' PlotSelector--tab-button--selected' : '')}
             >
               Plot {index + 1}
             </Tabs.Tab>
@@ -46,6 +52,7 @@ const PlotSelector: React.FC = () => {
         <Tooltip label="New plot">
           <Tabs.Tab
             value="newPlot"
+            p="md"
             onClick={addPlot}
             icon={<IconFilePlus size={13} />}
           />

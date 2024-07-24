@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { treeToLbn, UnpositionedTree } from 'npbloom-core';
-import { Button, Group, Menu, Modal, Textarea } from '@mantine/core';
+import { Button, Group, Menu, Modal, Textarea, useMantineTheme } from '@mantine/core';
 import { IconExternalLink } from '@tabler/icons-react';
 import './TextOutputModal.scss';
 
@@ -24,6 +24,8 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const mshangCaPermalink = trees.length === 1 ? generateMshangCaPermalink(text) : undefined;
+
+  const theme = useMantineTheme();
 
   useEffect(() => {
     if (isOpen) {
@@ -50,7 +52,7 @@ const TextOutputModal: React.FC<TextOutputModalProps> = ({
         readOnly
         minRows={10}
         className="TextOutputModal--textarea"
-        mb="1rem"
+        mb={theme.spacing.md}
       />
       <Group position="apart">
         <Group>

@@ -112,7 +112,7 @@ const UiRoot = () => {
     <Flex align="stretch" className="MainMenu">
       <Menu shadow="md" offset={0} position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
         <Menu.Target>
-          <Button variant="subtle" size="xs">
+          <Button variant="subtle" size="sm">
             File
           </Button>
         </Menu.Target>
