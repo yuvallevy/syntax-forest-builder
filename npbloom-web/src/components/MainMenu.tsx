@@ -58,14 +58,13 @@ const MainMenu: React.FC = () => {
             offset={0}
             position="top-start"
             transitionProps={{ transition: 'scale-y' }}
-            width={'18ch'}
           >
             <Menu.Target>
               <Button variant="subtle" size="sm">
                 {sectionName}
               </Button>
             </Menu.Target>
-            <Menu.Dropdown>
+            <Menu.Dropdown sx={{ minWidth: '18ch' }}>
               {sectionGroups.map((groupItems, groupIndex) => <Fragment key={groupIndex}>
                 {groupItems.map((item, itemIndex) =>
                   item.hidden ? null : <Menu.Item
