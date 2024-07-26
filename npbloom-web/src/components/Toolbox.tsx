@@ -78,7 +78,7 @@ const Toolbox: React.FC = () => {
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
-  useHotkeys(['Control+Shift+c', 'Meta+Shift+c'], event => {
+  useHotkeys(['Control+c', 'Meta+c'], event => {
     if (oneTreeSelected) {
       event.preventDefault();
       copySelectedTree();
@@ -140,7 +140,7 @@ const Toolbox: React.FC = () => {
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
-    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-Shift-C', disabled: !oneTreeSelected,
+    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-C', disabled: !oneTreeSelected,
       description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
         substituteOsAwareHotkey('Ctrl-V', os) + '.' }
   ];
