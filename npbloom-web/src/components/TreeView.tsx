@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, coordsInPlotToCoordsInClient, DisownNodesBySelection,
-  EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId, getNodeCreationTriggers,
-  isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot, PositionedBranchingNode,
-  PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot,
-  StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
+  BranchingNodeCreationTrigger, calculateNodeCenterInTree, ClientCoordsOffset, coordsInPlotToCoordsInClient,
+  DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId,
+  getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot,
+  PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection,
+  SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -59,11 +59,24 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 
+const renderNodeMarking = (nodeId: Id, node: PositionedNode): React.ReactNode => {
+  const nodeCenter = calculateNodeCenterInTree(node);
+
+  return <circle
+    key={`${nodeId}-marker`}
+    className="TreeView--marker"
+    cx={nodeCenter.treeX}
+    cy={nodeCenter.treeY}
+    r={20}
+  />;
+};
+
 const renderNode = (
   nodeId: Id,
   node: PositionedNode,
   allNodes: EntitySet<PositionedNode>,
   selectedNodeIds: Id[],
+  markedNodeIds: Id[],
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
   onSelect?: (id: Id, mode: EntitySelectionMode) => void,
@@ -109,6 +122,7 @@ const renderNode = (
   />,
   node instanceof PositionedTerminalNode && renderTriangleConnection(nodeId, node),
   node instanceof PositionedBranchingNode && renderChildNodeConnections(node, allNodes),
+  markedNodeIds.includes(nodeId) && renderNodeMarking(nodeId, node),
 ];
 
 const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({ trigger, onClick }) =>
@@ -168,6 +182,9 @@ const TreeView: React.FC<TreeViewProps> = ({
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
+  const markedNodeIndicators = state.objectMarkings instanceof NodeSelectionInPlot
+    ? state.objectMarkings.nodeIndicatorsAsArray : [];
+  const markedNodeIds = markedNodeIndicators.map(({ nodeId }) => nodeId);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
   const startEditing = () => dispatch(new StartEditing());
@@ -208,8 +225,8 @@ const TreeView: React.FC<TreeViewProps> = ({
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
     {tree.nodes.map(node =>
-      renderNode(node.id, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
-        startEditing))}
+      renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, nodeDragOffset, onNodeMouseDown,
+        handleSingleNodeSelect, startEditing))}
     {state.selectionAction === EntitySelectionAction.SelectTree && <>
       <rect
         x={-TREE_AREA_PADDING}
