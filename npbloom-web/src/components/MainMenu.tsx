@@ -4,6 +4,8 @@ import { useOs } from '@mantine/hooks';
 import { IconDeviceFloppy, IconFolder, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
+import { MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot } from 'npbloom-core';
+import useUiState from '../useUiState.ts';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
 import AboutButton from './meta/AboutButton';
@@ -25,9 +27,22 @@ type MenuSection = MenuItemGroup[];
 type NamedMenuSection = [string, MenuSection];
 
 const MainMenu: React.FC = () => {
+  const { state, dispatch } = useUiState();
+
   const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal, saveOrSaveAs } = useFileIo();
 
   const os = useOs();
+
+  const oneNodeSelected = state.selection instanceof NodeSelectionInPlot &&
+    state.selection.nodeIndicatorsAsArray.length === 1;
+
+  const markCCommandingNodes = () => {
+    if (oneNodeSelected) dispatch(new MarkCCommandingNodes());
+  }
+
+  const markCCommandedNodes = () => {
+    if (oneNodeSelected) dispatch(new MarkCCommandedNodes());
+  }
 
   useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
     { ignoredElementWhitelist: ['INPUT'] });
@@ -44,6 +59,12 @@ const MainMenu: React.FC = () => {
       ],
       [
         { label: activeFileName ? `Currently open file:\n${activeFileName}` : '', disabled: true, hidden: !activeFileName },
+      ],
+    ]],
+    ['Mark', [
+      [
+        { label: 'C-commanding nodes', disabled: !oneNodeSelected, action: markCCommandingNodes },
+        { label: 'C-commanded nodes', disabled: !oneNodeSelected, action: markCCommandedNodes },
       ],
     ]],
   ]
