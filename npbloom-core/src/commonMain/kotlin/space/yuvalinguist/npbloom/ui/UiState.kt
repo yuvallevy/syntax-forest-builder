@@ -61,6 +61,8 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class Pan(val clientCoordsOffset: ClientCoordsOffset) : UiAction
 @JsExport class Zoom(val relativeFactor: Double, val focus: CoordsInClient) : UiAction
 @JsExport class SetZoomLevel(val newZoomLevel: Double, val focus: CoordsInClient) : UiAction
+@JsExport class MarkCCommandingNodes : UiAction
+@JsExport class MarkCCommandedNodes : UiAction
 
 @JsExport
 data class UiState(
@@ -68,6 +70,7 @@ data class UiState(
     val activePlotIndex: PlotIndex,
     val selection: SelectionInPlot,
     val selectionAction: EntitySelectionAction,
+    val objectMarkings: SelectionInPlot = NoSelectionInPlot,
     val editedNodeIndicator: NodeIndicatorInPlot?,
     val panZoomState: PanZoomState,
 )
@@ -535,6 +538,26 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is SetZoomLevel -> {
             return state.copy(panZoomState = state.panZoomState.setZoomLevel(action.newZoomLevel, action.focus.toOffset()))
+        }
+
+        is MarkCCommandingNodes -> {
+            return state.copy(objectMarkings = (state.selection as? NodeSelectionInPlot)
+                ?.nodeIndicators?.singleOrNull()
+                ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandingNodeIds(it.nodeId) }
+                ?.takeIf { it.isNotEmpty() }
+                ?.map { nodeId -> NodeIndicatorInPlot(selectedTreeId!!, nodeId) }
+                ?.let { NodeSelectionInPlot(it.toSet()) }
+                ?: NoSelectionInPlot)
+        }
+
+        is MarkCCommandedNodes -> {
+            return state.copy(objectMarkings = (state.selection as? NodeSelectionInPlot)
+                ?.nodeIndicators?.singleOrNull()
+                ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandedNodeIds(it.nodeId) }
+                ?.takeIf { it.isNotEmpty() }
+                ?.map { nodeId -> NodeIndicatorInPlot(selectedTreeId!!, nodeId) }
+                ?.let { NodeSelectionInPlot(it.toSet()) }
+                ?: NoSelectionInPlot)
         }
     }
 }
