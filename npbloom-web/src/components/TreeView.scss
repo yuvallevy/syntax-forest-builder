@@ -24,22 +24,26 @@
   animation: marching-ants .75s linear infinite;
 }
 
+.TreeView--node--marked rect {
+  fill: #fa3;
+  fill-opacity: 0.5;
+  stroke: #fa3;
+  stroke-dasharray: none;
+  stroke-width: 1;
+  animation: none;
+}
+
+.TreeView--node--marked:hover rect {
+  fill: #f90;
+  stroke: #f90;
+}
+
 .TreeView--ghost {
   fill: none;
   stroke: #444;
   stroke-dasharray: 4 4;
   stroke-width: 1;
   opacity: 0.6;
-}
-
-.TreeView--marker {
-  fill: transparent;
-  stroke: #275;
-  stroke-width: 2;
-  pointer-events: none;
-  stroke-dasharray: 140;
-  stroke-dashoffset: 140;
-  animation: draw 0.4s ease forwards;
 }
 
 @keyframes draw {

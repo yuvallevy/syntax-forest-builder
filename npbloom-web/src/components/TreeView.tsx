@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import {
   AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection,
-  BranchingNodeCreationTrigger, calculateNodeCenterInTree, ClientCoordsOffset, coordsInPlotToCoordsInClient,
-  DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId,
-  getNodeCreationTriggers, isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot,
-  PositionedBranchingNode, PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection,
-  SliceSelectionInPlot, StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
+  BranchingNodeCreationTrigger, ClientCoordsOffset, coordsInPlotToCoordsInClient, DisownNodesBySelection,
+  EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId, getNodeCreationTriggers,
+  isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot, PositionedBranchingNode,
+  PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot,
+  StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -59,18 +59,6 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 
-const renderNodeMarking = (nodeId: Id, node: PositionedNode): React.ReactNode => {
-  const nodeCenter = calculateNodeCenterInTree(node);
-
-  return <circle
-    key={`${nodeId}-marker`}
-    className="TreeView--marker"
-    cx={nodeCenter.treeX}
-    cy={nodeCenter.treeY}
-    r={20}
-  />;
-};
-
 const renderNode = (
   nodeId: Id,
   node: PositionedNode,
@@ -85,7 +73,8 @@ const renderNode = (
   <g
     key={nodeId}
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
-      + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')}
+      + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')
+      + (markedNodeIds.includes(nodeId) ? ' TreeView--node--marked' : '')}
     onMouseDown={event => {
       onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
       onMouseDown && onMouseDown(event);
@@ -122,7 +111,6 @@ const renderNode = (
   />,
   node instanceof PositionedTerminalNode && renderTriangleConnection(nodeId, node),
   node instanceof PositionedBranchingNode && renderChildNodeConnections(node, allNodes),
-  markedNodeIds.includes(nodeId) && renderNodeMarking(nodeId, node),
 ];
 
 const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({ trigger, onClick }) =>
