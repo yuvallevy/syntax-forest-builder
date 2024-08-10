@@ -4,7 +4,8 @@ import { useOs } from '@mantine/hooks';
 import { IconDeviceFloppy, IconFolder, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot } from 'npbloom-core';
+import { MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot, RemoveRelationMarkingsInSelectedTree,
+  RemoveAllRelationMarkings } from 'npbloom-core';
 import useUiState from '../useUiState.ts';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
@@ -66,6 +67,12 @@ const MainMenu: React.FC = () => {
         { label: 'C-commanding nodes', disabled: !oneNodeSelected, action: markCCommandingNodes },
         { label: 'C-commanded nodes', disabled: !oneNodeSelected, action: markCCommandedNodes },
       ],
+      [
+        { label: 'Clear relation markings in selected tree',
+          action: () => dispatch(new RemoveRelationMarkingsInSelectedTree()) },
+        { label: 'Clear all relation markings',
+          action: () => dispatch(new RemoveAllRelationMarkings()) },
+      ]
     ]],
   ]
 

@@ -63,6 +63,8 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetZoomLevel(val newZoomLevel: Double, val focus: CoordsInClient) : UiAction
 @JsExport class MarkCCommandingNodes : UiAction
 @JsExport class MarkCCommandedNodes : UiAction
+@JsExport class RemoveRelationMarkingsInSelectedTree : UiAction
+@JsExport class RemoveAllRelationMarkings : UiAction
 
 @JsExport
 data class UiState(
@@ -564,6 +566,17 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 cCommandedNodeIndicators.toSet(),
                 (state.objectMarkings as? NodeSelectionInPlot)?.nodeIndicators ?: emptySet())
             )
+        }
+
+        is RemoveRelationMarkingsInSelectedTree -> {
+            return state.copy(
+                objectMarkings = (state.objectMarkings as? NodeSelectionInPlot)
+                    ?.filterNot { it.treeId == selectedTreeId } ?: NoSelectionInPlot
+            )
+        }
+
+        is RemoveAllRelationMarkings -> {
+            return state.copy(objectMarkings = NoSelectionInPlot)
         }
     }
 }

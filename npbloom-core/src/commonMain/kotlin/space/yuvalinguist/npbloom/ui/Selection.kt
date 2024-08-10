@@ -24,6 +24,10 @@ data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot>) : S
         if (nodeIndicators.isEmpty()) error("Empty NodeSelectionInPlot - should not happen")
     }
 
+    fun filter(predicate: (NodeIndicatorInPlot) -> Boolean) = nodeIndicators.filter(predicate).asSelectionInPlot()
+
+    fun filterNot(predicate: (NodeIndicatorInPlot) -> Boolean) = nodeIndicators.filterNot(predicate).asSelectionInPlot()
+
     val nodeIndicatorsAsArray = nodeIndicators.toTypedArray()
 }
 
