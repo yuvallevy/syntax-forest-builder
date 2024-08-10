@@ -541,23 +541,29 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
         }
 
         is MarkCCommandingNodes -> {
-            return state.copy(objectMarkings = (state.selection as? NodeSelectionInPlot)
+            val cCommandingNodeIndicators = (state.selection as? NodeSelectionInPlot)
                 ?.nodeIndicators?.singleOrNull()
                 ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandingNodeIds(it.nodeId) }
-                ?.takeIf { it.isNotEmpty() }
-                ?.map { nodeId -> NodeIndicatorInPlot(selectedTreeId!!, nodeId) }
-                ?.let { NodeSelectionInPlot(it.toSet()) }
-                ?: NoSelectionInPlot)
+                ?.map { NodeIndicatorInPlot(selectedTreeId!!, it) }
+                ?: emptyList()
+            return state.copy(objectMarkings = applyNodeSelection(
+                EntitySelectionMode.ReplaceSelectionInTree,
+                cCommandingNodeIndicators.toSet(),
+                (state.objectMarkings as? NodeSelectionInPlot)?.nodeIndicators ?: emptySet())
+            )
         }
 
         is MarkCCommandedNodes -> {
-            return state.copy(objectMarkings = (state.selection as? NodeSelectionInPlot)
+            val cCommandedNodeIndicators = (state.selection as? NodeSelectionInPlot)
                 ?.nodeIndicators?.singleOrNull()
                 ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandedNodeIds(it.nodeId) }
-                ?.takeIf { it.isNotEmpty() }
-                ?.map { nodeId -> NodeIndicatorInPlot(selectedTreeId!!, nodeId) }
-                ?.let { NodeSelectionInPlot(it.toSet()) }
-                ?: NoSelectionInPlot)
+                ?.map { NodeIndicatorInPlot(selectedTreeId!!, it) }
+                ?: emptyList()
+            return state.copy(objectMarkings = applyNodeSelection(
+                EntitySelectionMode.ReplaceSelectionInTree,
+                cCommandedNodeIndicators.toSet(),
+                (state.objectMarkings as? NodeSelectionInPlot)?.nodeIndicators ?: emptySet())
+            )
         }
     }
 }
