@@ -57,7 +57,14 @@ const SentenceView: React.FC<SentenceViewProps> = ({
         sentenceInputRef.current.selectionEnd);
       // Blur the text field immediately to indicate that no slice actually becomes selected
       sentenceInputRef.current?.blur();
-    } else {
+    } else if (!(
+      // This check is needed to fix a weird bug where the selection gets set a second time when Backspace is pressed
+      // if the input field is AND has always been empty
+      // (if the input field has previously contained text, the bug doesn't occur)
+      slice.isZeroLength &&
+      oldSelection.current?.isZeroLength &&
+      sentenceInputRef.current?.value === ''
+    )) {
       setSelection(new SliceSelectionInPlot(treeId, slice));
     }
   };
@@ -151,6 +158,11 @@ const SentenceView: React.FC<SentenceViewProps> = ({
         : (tree.width + EXTRA_SENTENCE_WIDTH) * state.panZoomState.zoomLevel,
     }}
     placeholder="Type a sentence..."
+    onFocus={e => {
+      const slice = getSelectionSlice(e.currentTarget);
+      if (slice) handleSliceSelect(slice);
+      oldSelection.current = getSelectionSlice(e.currentTarget);
+    }}
     onBlur={handleSentenceBlur}
     onInput={e => handleSentenceChange(e.currentTarget, e.currentTarget.value,
       oldSelection.current || new StringSlice(e.currentTarget.value.length, e.currentTarget.value.length))}
