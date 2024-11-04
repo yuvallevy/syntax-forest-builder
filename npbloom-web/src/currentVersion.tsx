@@ -1,7 +1,7 @@
-export const currentVersion: string = '0.6';
+export const currentVersion: string = '0.7';
 
 export const changesFromPreviousVersion: (string | JSX.Element)[] = [
-  'Zoom in/out and pan around the view using the scroll wheel, trackpad or Shift+drag.',
-  'Paste labelled bracket notation into the input field, or drag an expression onto an empty spot, to spawn a new tree.',
-  'Use the new [...] button to export the current tree to labelled bracket notation.',
+  'New design! Different parts of the interface are now more clearly separated and docked to the sides.',
+  'Added a "Mark" menu to mark nodes with certain relations to the selected node.',
+  'Fixed weird bug on some browsers where the program would crash when a tree was added and immediately deleted.',
 ];
