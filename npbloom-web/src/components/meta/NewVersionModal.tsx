@@ -20,6 +20,9 @@ const NewVersionModal = () => {
       }
       // Update the last version in the local storage
       localStorage.setItem('nb_lastVersion', currentVersion);
+    } else if (!lastVersion) {
+      // If there is no last version in the local storage, this is the first time the user is using the app
+      localStorage.setItem('nb_lastVersion', currentVersion);
     }
   }, [open]);
 
