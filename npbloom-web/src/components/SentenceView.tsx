@@ -9,6 +9,7 @@ import { extractTreeFromClipboardData } from '../io/clipboardIo';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
+import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const SENTENCE_FONT_SIZE_PX = 16;
 
@@ -150,8 +151,8 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     value={tree.sentence}
     className={'SentenceView--input' + (className ? ` ${className}` : '')}
     style={{
-      left: treePositionInClient.clientX,
-      top: treePositionInClient.clientY,
+      left: treePositionInClient.clientX + SVG_X,
+      top: treePositionInClient.clientY + SVG_Y,
       fontSize: SENTENCE_FONT_SIZE_PX * state.panZoomState.zoomLevel,
       width: tree.sentence.length === 0
         ? (EMPTY_SENTENCE_WIDTH * state.panZoomState.zoomLevel)

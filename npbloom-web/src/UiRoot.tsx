@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Button, Flex, MantineProvider, Menu, Space, Text } from '@mantine/core';
-import { IconDeviceFloppy, IconFiles, IconFolder } from '@tabler/icons-react';
+import { AppShell, MantineProvider } from '@mantine/core';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -11,27 +10,21 @@ import {
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import Settings from './components/meta/Settings';
+import MainMenu from './components/MainMenu';
 import Toolbox from './components/Toolbox';
-import AboutButton from './components/meta/AboutButton';
 import NewVersionModal from './components/meta/NewVersionModal.tsx';
 import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
-import useFileIo from './io/useFileIo';
-import { useOs } from '@mantine/hooks';
-import substituteOsAwareHotkey from './components/substituteOsAwareHotkey';
 import useHeldHotkey from './useHeldHotkey';
+import './UiRoot.scss';
 
 const UiRoot = () => {
   const { state, dispatch } = useUiState();
   const { selection, activePlotIndex } = state;
 
-  const os = useOs();
-
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
-  const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal, saveOrSaveAs } = useFileIo();
 
   const selectedNodeIndicators = selection instanceof NodeSelectionInPlot ? selection.nodeIndicatorsAsArray : [];
 
@@ -93,12 +86,6 @@ const UiRoot = () => {
   useHotkeys(['Control+y', 'Meta+y'], event => { event.preventDefault(); redo(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
-    { ignoredElementWhitelist: ['INPUT'] });
-
-  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); },
-    { ignoredElementWhitelist: ['INPUT'] });
-
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
     if (state.selection instanceof NodeSelectionInPlot && state.selection.nodeIndicatorsAsArray.length === 1) {
       startEditing();  // For some reason the key press passes right through to the newly-created input.
@@ -113,51 +100,20 @@ const UiRoot = () => {
   );
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-    <PlotView />
-    <Toolbox />
-    <Flex align="center" sx={{ position: 'fixed', left: '0.75rem', right: '0.75rem', top: '0.75rem' }}>
-      <Menu shadow="md" withArrow position="top-start" transitionProps={{ transition: 'scale-y' }} width={'18ch'}>
-        <Menu.Target>
-          <Button variant="subtle" size="xs">
-            <IconFiles stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; File
-          </Button>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item
-            icon={<IconFolder size={14} />}
-            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-O', os)}</Text>}
-            onClick={openFileLoadModal}
-          >
-            Open...
-          </Menu.Item>
-          <Menu.Item
-            icon={<IconDeviceFloppy size={14} />}
-            rightSection={<Text color="dimmed">{substituteOsAwareHotkey('Ctrl-S', os)}</Text>}
-            onClick={saveOrSaveAs}
-          >
-            Save{activeFileName ? '' : '...'}
-          </Menu.Item>
-          <Menu.Item disabled={!activeFileName} onClick={openFileSaveModal}>
-            Save As...
-          </Menu.Item>
-          {activeFileName && <><Menu.Divider />
-          <Menu.Item disabled>
-            Currently open file:<br />{activeFileName}
-          </Menu.Item></>}
-        </Menu.Dropdown>
-      </Menu>
-      <Space style={{ flexGrow: 1 }} />
-      <Settings />
-      <AboutButton />
-    </Flex>
-    <PlotSelector />
+    <AppShell
+      header={<MainMenu />}
+      navbar={<Toolbox />}
+      footer={<PlotSelector />}
+      padding={0}
+    >
+      <PlotView />
+    </AppShell>
     {beginnersGuideActive ? <BeginnersGuide
       onComplete={() => setBeginnersGuideActive(false)}
     /> : activePlot.isEmpty && <PlotPlaceholder
       showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
       onDemoRequest={() => setBeginnersGuideActive(true)}
     />}
-    {fileIoModalComponent}
     <NewVersionModal />
   </MantineProvider>;
 }

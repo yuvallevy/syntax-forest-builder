@@ -53,6 +53,16 @@ data class UnpositionedTree(
         }
 
     /**
+     * Returns whether ancestorNodeId dominates descendantNodeId in the tree.
+     */
+    private fun dominates(ancestorNodeId: Id, descendantNodeId: Id): Boolean =
+        (node(ancestorNodeId) as? UnpositionedBranchingNode)
+            ?.let {
+                it.children.contains(descendantNodeId) ||
+                        it.children.any { childId -> dominates(childId, descendantNodeId) }
+            } ?: false
+
+    /**
      * Inserts the given node into the tree, assigning it the given ID.
      */
     internal fun insertNode(node: InsertedNode): UnpositionedTree =
@@ -122,6 +132,39 @@ data class UnpositionedTree(
             val node = nodes[nodeId]
             if (node is UnpositionedBranchingNode) node.children else emptySet()
         }.toSet()
+
+    /**
+     * Finds the ID of the first (lowest) ancestor of the given node that has more than one child.
+     * If the node has no such ancestor, returns null.
+     */
+    private fun getFirstMultiBranchingAncestorId(nodeId: Id): Id? =
+        getParentNodeIds(setOf(nodeId)).singleOrNull()
+            ?.let { parentId ->
+                val parent = node(parentId) as UnpositionedBranchingNode
+                if (parent.children.size > 1) parentId
+                else getFirstMultiBranchingAncestorId(parentId)
+            }
+
+    /**
+     * Returns whether cCommandingNodeId c-commands cCommandedNodeId in the tree.
+     * This is true if:
+     * 1. Neither node dominates the other.
+     * 2. The first ancestor of cCommandingNodeId that has more than one child dominates cCommandedNodeId.
+     */
+    private fun cCommands(cCommandingNodeId: Id, cCommandedNodeId: Id): Boolean =
+        cCommandingNodeId != cCommandedNodeId &&
+                !dominates(cCommandingNodeId, cCommandedNodeId) && !dominates(cCommandedNodeId, cCommandingNodeId) &&
+                getFirstMultiBranchingAncestorId(cCommandingNodeId)?.let { dominates(it, cCommandedNodeId) } == true
+
+    /**
+     * Returns the set of IDs of nodes that c-command the node with the given ID.
+     */
+    internal fun getCCommandingNodeIds(nodeId: Id): Set<Id> = filterNodeIdsByNode { cCommands(it.id, nodeId) }
+
+    /**
+     * Returns the set of IDs of nodes that the node with the given ID c-commands.
+     */
+    internal fun getCCommandedNodeIds(nodeId: Id): Set<Id> = filterNodeIdsByNode { cCommands(nodeId, it.id) }
 
     @JsName("getNodeIdsAssignedToSliceAsKtSet")
     fun getNodeIdsAssignedToSlice(slice: StringSlice): Set<Id> =

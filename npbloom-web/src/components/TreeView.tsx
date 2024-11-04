@@ -64,6 +64,7 @@ const renderNode = (
   node: PositionedNode,
   allNodes: EntitySet<PositionedNode>,
   selectedNodeIds: Id[],
+  markedNodeIds: Id[],
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
   onSelect?: (id: Id, mode: EntitySelectionMode) => void,
@@ -72,7 +73,8 @@ const renderNode = (
   <g
     key={nodeId}
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
-      + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')}
+      + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')
+      + (markedNodeIds.includes(nodeId) ? ' TreeView--node--marked' : '')}
     onMouseDown={event => {
       onSelect && onSelect(nodeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
       onMouseDown && onMouseDown(event);
@@ -168,6 +170,9 @@ const TreeView: React.FC<TreeViewProps> = ({
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
     ? state.selection.nodeIndicatorsAsArray : [];
   const selectedNodeIds = selectedNodeIndicators.map(({ nodeId }) => nodeId);
+  const markedNodeIndicators = state.objectMarkings instanceof NodeSelectionInPlot
+    ? state.objectMarkings.nodeIndicatorsAsArray : [];
+  const markedNodeIds = markedNodeIndicators.map(({ nodeId }) => nodeId);
 
   const setSelection = (newSelection: SelectionInPlot) => dispatch(new SetSelection(newSelection));
   const startEditing = () => dispatch(new StartEditing());
@@ -208,8 +213,8 @@ const TreeView: React.FC<TreeViewProps> = ({
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
     {tree.nodes.map(node =>
-      renderNode(node.id, node, tree.nodes, selectedNodeIds, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect,
-        startEditing))}
+      renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, nodeDragOffset, onNodeMouseDown,
+        handleSingleNodeSelect, startEditing))}
     {state.selectionAction === EntitySelectionAction.SelectTree && <>
       <rect
         x={-TREE_AREA_PADDING}

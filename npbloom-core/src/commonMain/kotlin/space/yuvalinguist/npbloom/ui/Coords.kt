@@ -3,6 +3,7 @@
 package space.yuvalinguist.npbloom.ui
 
 import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
+import space.yuvalinguist.npbloom.content.positioned.CoordsInTree
 import space.yuvalinguist.npbloom.content.positioned.PositionedNode
 import space.yuvalinguist.npbloom.content.positioned.PositionedTree
 import space.yuvalinguist.npbloom.content.unpositioned.PlotCoordsOffset
@@ -79,9 +80,19 @@ fun CoordsInPlot.toCoordsInClient(panZoomState: PanZoomState) =
 fun PlotCoordsOffset.toClientCoordsOffset(panZoomState: PanZoomState) =
     ClientCoordsOffset(dPlotX * panZoomState.zoomLevel, dPlotY * panZoomState.zoomLevel)
 
+private const val NODE_BOTTOM_TO_CENTER_DISTANCE = 9
+
+/**
+ * Returns the center coordinate of the given node in the given tree with respect to its containing tree.
+ */
+@JsExport
+fun calculateNodeCenterInTree(node: PositionedNode) =
+    CoordsInTree(node.position.treeX, node.position.treeY - NODE_BOTTOM_TO_CENTER_DISTANCE)
+
 /**
  * Returns the center coordinate of the given node in the given tree with respect to its containing plot.
  */
 @JsExport
 fun calculateNodeCenterOnPlot(tree: PositionedTree, node: PositionedNode) =
-    CoordsInPlot(tree.position.plotX + node.position.treeX, tree.position.plotY + node.position.treeY - 9)
+    CoordsInPlot(tree.position.plotX + node.position.treeX,
+        tree.position.plotY + node.position.treeY - NODE_BOTTOM_TO_CENTER_DISTANCE)

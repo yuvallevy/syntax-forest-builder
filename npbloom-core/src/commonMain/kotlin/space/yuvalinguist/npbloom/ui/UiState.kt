@@ -61,6 +61,10 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class Pan(val clientCoordsOffset: ClientCoordsOffset) : UiAction
 @JsExport class Zoom(val relativeFactor: Double, val focus: CoordsInClient) : UiAction
 @JsExport class SetZoomLevel(val newZoomLevel: Double, val focus: CoordsInClient) : UiAction
+@JsExport class MarkCCommandingNodes : UiAction
+@JsExport class MarkCCommandedNodes : UiAction
+@JsExport class RemoveRelationMarkingsInSelectedTree : UiAction
+@JsExport class RemoveAllRelationMarkings : UiAction
 
 @JsExport
 data class UiState(
@@ -68,6 +72,7 @@ data class UiState(
     val activePlotIndex: PlotIndex,
     val selection: SelectionInPlot,
     val selectionAction: EntitySelectionAction,
+    val objectMarkings: SelectionInPlot = NoSelectionInPlot,
     val editedNodeIndicator: NodeIndicatorInPlot?,
     val panZoomState: PanZoomState,
 )
@@ -535,6 +540,43 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is SetZoomLevel -> {
             return state.copy(panZoomState = state.panZoomState.setZoomLevel(action.newZoomLevel, action.focus.toOffset()))
+        }
+
+        is MarkCCommandingNodes -> {
+            val cCommandingNodeIndicators = (state.selection as? NodeSelectionInPlot)
+                ?.nodeIndicators?.singleOrNull()
+                ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandingNodeIds(it.nodeId) }
+                ?.map { NodeIndicatorInPlot(selectedTreeId!!, it) }
+                ?: emptyList()
+            return state.copy(objectMarkings = applyNodeSelection(
+                EntitySelectionMode.ReplaceSelectionInTree,
+                cCommandingNodeIndicators.toSet(),
+                (state.objectMarkings as? NodeSelectionInPlot)?.nodeIndicators ?: emptySet())
+            )
+        }
+
+        is MarkCCommandedNodes -> {
+            val cCommandedNodeIndicators = (state.selection as? NodeSelectionInPlot)
+                ?.nodeIndicators?.singleOrNull()
+                ?.let { activePlot.trees[selectedTreeId!!]?.getCCommandedNodeIds(it.nodeId) }
+                ?.map { NodeIndicatorInPlot(selectedTreeId!!, it) }
+                ?: emptyList()
+            return state.copy(objectMarkings = applyNodeSelection(
+                EntitySelectionMode.ReplaceSelectionInTree,
+                cCommandedNodeIndicators.toSet(),
+                (state.objectMarkings as? NodeSelectionInPlot)?.nodeIndicators ?: emptySet())
+            )
+        }
+
+        is RemoveRelationMarkingsInSelectedTree -> {
+            return state.copy(
+                objectMarkings = (state.objectMarkings as? NodeSelectionInPlot)
+                    ?.filterNot { it.treeId == selectedTreeId } ?: NoSelectionInPlot
+            )
+        }
+
+        is RemoveAllRelationMarkings -> {
+            return state.copy(objectMarkings = NoSelectionInPlot)
         }
     }
 }

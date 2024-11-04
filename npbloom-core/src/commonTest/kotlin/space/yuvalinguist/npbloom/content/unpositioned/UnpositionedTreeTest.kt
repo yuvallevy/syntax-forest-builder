@@ -207,6 +207,38 @@ class UnpositionedTreeTest {
         assertEquals(setOf("branch1"), tree.getParentNodeIds(setOf("top", "term1")))
 
     @Test
+    fun noCCommandingNodeIdsForNode() =
+        assertEquals(emptySet(), tree.getCCommandingNodeIds("top"))
+
+    @Test
+    fun oneCCommandingNodeIdForNode() =
+        assertEquals(setOf("term2"), tree.getCCommandingNodeIds("branch1"))
+
+    @Test
+    fun oneCCommandingNodeIdForNodeThroughSingleChildNode() =
+        assertEquals(setOf("term2"), tree.getCCommandingNodeIds("term1"))
+
+    @Test
+    fun twoCCommandingNodeIdsForNode() =
+        assertEquals(setOf("branch1", "term1"), tree.getCCommandingNodeIds("term2"))
+
+    @Test
+    fun noCCommandedNodeIdsForNode() =
+        assertEquals(emptySet(), tree.getCCommandedNodeIds("top"))
+
+    @Test
+    fun oneCCommandedNodeIdForNode() =
+        assertEquals(setOf("term2"), tree.getCCommandedNodeIds("branch1"))
+
+    @Test
+    fun oneCCommandedNodeIdForNodeThroughSingleChildNode() =
+        assertEquals(setOf("term2"), tree.getCCommandedNodeIds("term1"))
+
+    @Test
+    fun twoCCommandedNodeIdsForNode() =
+        assertEquals(setOf("branch1", "term1"), tree.getCCommandedNodeIds("term2"))
+
+    @Test
     fun sliceTerminalId() =
         assertEquals(setOf("term2"), tree.getNodeIdsAssignedToSlice(StringSlice(5, 11)))
 

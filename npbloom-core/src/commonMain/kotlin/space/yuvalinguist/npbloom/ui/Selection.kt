@@ -24,6 +24,10 @@ data class NodeSelectionInPlot(val nodeIndicators: Set<NodeIndicatorInPlot>) : S
         if (nodeIndicators.isEmpty()) error("Empty NodeSelectionInPlot - should not happen")
     }
 
+    fun filter(predicate: (NodeIndicatorInPlot) -> Boolean) = nodeIndicators.filter(predicate).asSelectionInPlot()
+
+    fun filterNot(predicate: (NodeIndicatorInPlot) -> Boolean) = nodeIndicators.filterNot(predicate).asSelectionInPlot()
+
     val nodeIndicatorsAsArray = nodeIndicators.toTypedArray()
 }
 
@@ -59,7 +63,7 @@ internal fun Collection<Id>.asTreeSelectionInPlot() =
 enum class EntitySelectionAction { SelectNode, SelectTree, Adopt, Disown }
 
 @JsExport
-enum class EntitySelectionMode { SetSelection, AddToSelection }
+enum class EntitySelectionMode { SetSelection, AddToSelection, ReplaceSelectionInTree }
 
 @JsName("applyNodeSelectionByKtSets")
 fun applyNodeSelection(
@@ -69,6 +73,10 @@ fun applyNodeSelection(
 ): SelectionInPlot = when (mode) {
     EntitySelectionMode.AddToSelection -> existingNodeIndicators + newNodeIndicators
     EntitySelectionMode.SetSelection -> newNodeIndicators
+    EntitySelectionMode.ReplaceSelectionInTree -> {
+        val affectedTrees = newNodeIndicators.map { it.treeId }.toSet()
+        existingNodeIndicators.filterNot { it.treeId in affectedTrees } + newNodeIndicators
+    }
 }.asSelectionInPlot()
 
 @JsName("applyTreeSelectionByKtSets")
@@ -79,6 +87,7 @@ fun applyTreeSelection(
 ): SelectionInPlot = when (mode) {
     EntitySelectionMode.AddToSelection -> existingTreeIds + newTreeIds
     EntitySelectionMode.SetSelection -> newTreeIds
+    EntitySelectionMode.ReplaceSelectionInTree -> existingTreeIds + newTreeIds
 }.asTreeSelectionInPlot()
 
 /**

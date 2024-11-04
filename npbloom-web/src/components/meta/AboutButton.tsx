@@ -16,7 +16,7 @@ const AboutButton = () => {
   return <>
     <Button
       variant="subtle"
-      size="xs"
+      size="sm"
       onClick={open}
     >
       <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; About

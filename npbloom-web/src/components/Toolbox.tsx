@@ -3,7 +3,7 @@ import {
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
   TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
 } from 'npbloom-core';
-import { ActionIcon, Paper, SimpleGrid, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Paper, Navbar, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconCopy, IconPencil, IconPlus, IconTrash, IconTriangle,
   TablerIconsProps
@@ -17,6 +17,7 @@ import useUiState from '../useUiState';
 import useTextOutputModal from '../io/useTextOutputModal';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { copyTreeToClipboard } from '../io/clipboardIo';
+import { TOOLBOX_WIDTH } from '../uiDimensions';
 
 type ToolboxItem = {
   title: string;
@@ -77,7 +78,7 @@ const Toolbox: React.FC = () => {
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
-  useHotkeys(['Control+Shift+c', 'Meta+Shift+c'], event => {
+  useHotkeys(['Control+c', 'Meta+c'], event => {
     if (oneTreeSelected) {
       event.preventDefault();
       copySelectedTree();
@@ -139,19 +140,14 @@ const Toolbox: React.FC = () => {
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
-    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-Shift-C', disabled: !oneTreeSelected,
+    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-C', disabled: !oneTreeSelected,
       description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
         substituteOsAwareHotkey('Ctrl-V', os) + '.' }
   ];
 
-  return <div className="Toolbox--container">
-    <Paper
-      shadow="sm"
-      p="xs"
-      className="Toolbox--body"
-    >
-      <div className="Toolbox--title">Tools</div>
-      <SimpleGrid cols={2} spacing={2} verticalSpacing={2}>
+  return <><Navbar width={{ base: TOOLBOX_WIDTH }} p={4} sx={{ zIndex: 90 }}>
+    <Navbar.Section sx={{ display: 'flex', justifyContent: 'center' }}>
+      <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
         {items.map(item =>
           <div
             key={item.title}
@@ -174,21 +170,22 @@ const Toolbox: React.FC = () => {
           </div>
         )}
       </SimpleGrid>
-    </Paper>
-    {hoveredItem && <Paper
-      shadow="sm"
-      p="sm"
-      className="Toolbox--tool-info"
-    >
-      <div className="Toolbox--tool-title">
-        {hoveredItem.title}
-        {hoveredItem.hotkey &&
-          ` (${hoveredItem.hotkeyHold ? 'hold ' : ''}${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
-      </div>
-      <div style={{ whiteSpace: 'pre-wrap' }}>{hoveredItem.description}</div>
-    </Paper>}
+    </Navbar.Section>
     {textOutputModalComponent}
-  </div>;
+  </Navbar>
+  {hoveredItem && <Paper
+    shadow="sm"
+    p="sm"
+    className="Toolbox--tool-info"
+  >
+    <div className="Toolbox--tool-title">
+      {hoveredItem.title}
+      {hoveredItem.hotkey &&
+        ` (${hoveredItem.hotkeyHold ? 'hold ' : ''}${substituteOsAwareHotkey(hoveredItem.hotkey, os)})`}
+    </div>
+    <div style={{ whiteSpace: 'pre-wrap' }}>{hoveredItem.description}</div>
+  </Paper>}
+  </>;
 };
 
 export default Toolbox;
