@@ -34,6 +34,8 @@ const globalTheme: MantineThemeOverride = {
     lg: rem(12),
     xl: rem(16),
   },
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Helvetica",' +
+    '"Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif',
 };
 
 const sizes = {
