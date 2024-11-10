@@ -2,6 +2,7 @@ import { Anchor, Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { currentVersion } from '../../currentVersion.tsx';
 import Logo from './npbloom-logo.svg';
 
 const AboutButton = () => {
@@ -23,7 +24,7 @@ const AboutButton = () => {
     </Button>
     <Modal opened={opened} onClose={close} title="About" centered size="lg">
       <div style={{ textAlign: 'center' }}>
-        <img src={Logo} height={120} alt="NPBloom logo" />
+        <img src={Logo} height={120} alt="NPBloom logo"/>
       </div>
       <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
         using an in-browser point-and-click interface.</p>
@@ -52,7 +53,10 @@ const AboutButton = () => {
       <p>
         For feedback, bug reports, or feature requests, please contact me at <b>{contactEmailAddress}</b>.
       </p>
-      {import.meta.env.VITE_BUILD_TIMESTAMP && <p><small>Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</small></p>}
+      <p><small>
+        Version {currentVersion}.
+        {import.meta.env.VITE_BUILD_TIMESTAMP && <> Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</>}
+      </small></p>
     </Modal>
   </>;
 };
