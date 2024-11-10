@@ -1,4 +1,6 @@
 ## Alpha
+### 0.7.1 (2024-11-10)
+* Fixed bug that caused corresponding nodes in copied and pasted trees to be linked.
 ### 0.7 (2024-11-03)
 * New design! Different parts of the interface are now more clearly separated and docked to the sides.
 * Added a "Mark" menu to mark nodes with certain relations to the selected node.
