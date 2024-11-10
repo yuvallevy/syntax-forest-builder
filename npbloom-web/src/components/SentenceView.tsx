@@ -128,7 +128,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
     try {
       const tree = await extractTreeFromClipboardData(text);
       event.preventDefault();
-      dispatch(new SetTree(treeId, tree));
+      dispatch(new SetTree(treeId, tree.regenerateNodeIds()));
     } catch (e) {
       // If not, check if it contains labelled bracket notation
       if (text.startsWith('[') && text.endsWith(']')) {

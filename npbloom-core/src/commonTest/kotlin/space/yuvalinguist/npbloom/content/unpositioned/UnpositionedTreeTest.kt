@@ -791,4 +791,11 @@ class UnpositionedTreeTest {
         val treeAfterChange = tree.deleteNodes(setOf("branch1"))
         assertNotSame(treeAfterChange.nodes["top"], tree.nodes["top"])
     }
+
+    @Test
+    fun regenerateNodeIds() {
+        val newTree = tree.regenerateNodeIds()
+        assertNotEquals(tree.nodeIds, newTree.nodeIds)
+        assertEquals(tree.nodeIds.size, newTree.nodeIds.size)  // Same number of distinct IDs
+    }
 }

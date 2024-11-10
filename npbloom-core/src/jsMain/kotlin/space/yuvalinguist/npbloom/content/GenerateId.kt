@@ -1,4 +1,4 @@
-package space.yuvalinguist.npbloom.ui.content
+package space.yuvalinguist.npbloom.content
 
 import kotlin.js.Date
 

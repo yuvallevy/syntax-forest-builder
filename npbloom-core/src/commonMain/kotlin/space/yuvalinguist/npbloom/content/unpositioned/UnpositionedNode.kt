@@ -13,6 +13,7 @@ import kotlin.js.JsExport
 @Serializable
 sealed interface UnpositionedNode : NodeBase {
     val offset: TreeCoordsOffset
+    fun withId(newId: Id): UnpositionedNode
     fun withLabel(newLabel: NodeLabel): UnpositionedNode
     fun withOffset(newOffset: TreeCoordsOffset): UnpositionedNode
     fun changeOffset(offsetD: TreeCoordsOffset) = withOffset(offset + offsetD)
@@ -30,6 +31,8 @@ data class UnpositionedBranchingNode internal constructor(
 ) : UnpositionedNode {
     @Transient val childrenAsArray = children.toTypedArray()
 
+    override fun withId(newId: Id) = copy(id = newId)
+
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
@@ -46,6 +49,8 @@ data class UnpositionedTerminalNode internal constructor(
     @SerialName("^") val triangle: Boolean = false,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedNode {
+    override fun withId(newId: Id) = copy(id = newId)
+
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
@@ -64,6 +69,8 @@ data class UnpositionedPlainStrandedNode internal constructor(
     @SerialName("o") override val offset: TreeCoordsOffset = TreeCoordsOffset.ZERO,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedStrandedNode {
+    override fun withId(newId: Id) = copy(id = newId)
+
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
@@ -80,6 +87,8 @@ data class UnpositionedFormerlyTerminalNode internal constructor(
     @SerialName("^") val formerlyTriangle: Boolean,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedStrandedNode {
+    override fun withId(newId: Id) = copy(id = newId)
+
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)
@@ -95,6 +104,8 @@ data class UnpositionedFormerlyBranchingNode internal constructor(
     @SerialName("Y") internal val formerDescendants: EntitySet<UnpositionedNode>,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedStrandedNode {
+    override fun withId(newId: Id) = copy(id = newId)
+
     override fun withLabel(newLabel: NodeLabel) = copy(label = newLabel)
 
     override fun withOffset(newOffset: TreeCoordsOffset) = copy(offset = newOffset)

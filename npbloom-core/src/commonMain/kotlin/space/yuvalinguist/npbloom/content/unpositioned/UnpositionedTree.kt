@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import space.yuvalinguist.npbloom.NoSuchNodeException
 import space.yuvalinguist.npbloom.content.*
 import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
+import space.yuvalinguist.npbloom.content.generateNodeId
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -182,4 +183,13 @@ data class UnpositionedTree(
     internal fun findSliceStart(nodeId: Id): SliceStart? =
         (nodes[nodeId] as? UnpositionedTerminalNode)?.slice?.start
             ?: (nodes[nodeId] as? UnpositionedBranchingNode)?.children?.mapNotNull { findSliceStart(it) }?.minOrNull()
+
+    fun regenerateNodeIds(): UnpositionedTree {
+        val newNodeIds = nodeIds.associateWith { generateNodeId() }
+        return transformAllNodes {
+            if (it is UnpositionedBranchingNode)
+                it.withId(newNodeIds.getValue(it.id)).copy(children = it.children.map(newNodeIds::getValue).toSet())
+            else it.withId(newNodeIds.getValue(it.id))
+        }
+    }
 }

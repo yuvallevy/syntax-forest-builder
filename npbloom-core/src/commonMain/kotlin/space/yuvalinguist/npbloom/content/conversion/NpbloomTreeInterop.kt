@@ -6,11 +6,10 @@ import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.Id
 import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.unpositioned.*
-import space.yuvalinguist.npbloom.ui.content.generateNodeId
-import space.yuvalinguist.npbloom.ui.content.generateTreeId
+import space.yuvalinguist.npbloom.content.generateNodeId
+import space.yuvalinguist.npbloom.content.generateTreeId
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
-import kotlin.js.JsName
 
 private const val WORD_SEPARATOR = "   "  // This will be used to separate words in the resulting tree
 
