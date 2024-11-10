@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "space.yuvalinguist.npbloom"
-version = "0.5"
+version = "0.7"
 
 repositories {
     mavenCentral()
