@@ -1,4 +1,7 @@
 ## Alpha
+### 0.7.2 (2024-11-11)
+* Added pretty rendering for bar notation and subscripts in node labels.
+  On by default, can be turned off via Settings. (tnx Amit Benalal for requesting)
 ### 0.7.1 (2024-11-10)
 * Fixed bug that caused corresponding nodes in copied and pasted trees to be linked.
 ### 0.7 (2024-11-03)
