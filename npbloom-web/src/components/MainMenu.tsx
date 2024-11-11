@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Button, Flex, Header, Menu, Space, Text } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
-import { IconDeviceFloppy, IconFolder, TablerIconsProps } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconFileExport, IconFileImport, IconFolder, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot, RemoveRelationMarkingsInSelectedTree,
@@ -11,6 +11,7 @@ import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
 import AboutButton from './meta/AboutButton';
 import useFileIo from '../io/useFileIo';
+import useSystemFileIo from '../io/useSystemFileIo.tsx';
 
 type MenuItem = {
   label: string;
@@ -31,6 +32,7 @@ const MainMenu: React.FC = () => {
   const { state, dispatch } = useUiState();
 
   const { fileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal, saveOrSaveAs } = useFileIo();
+  const { openSystemFileLoadModal, openSystemFileSaveModal } = useSystemFileIo();
 
   const os = useOs();
 
@@ -56,10 +58,14 @@ const MainMenu: React.FC = () => {
       [
         { label: 'Open...', icon: IconFolder, hotkey: 'Ctrl-O', action: openFileLoadModal },
         { label: activeFileName ? 'Save' : 'Save...', icon: IconDeviceFloppy, hotkey: 'Ctrl-S', action: saveOrSaveAs },
-        { label: 'Save As...', disabled: !activeFileName, action: openFileSaveModal },
+        { label: 'Save as...', disabled: !activeFileName, action: openFileSaveModal },
       ],
       [
         { label: activeFileName ? `Currently open file:\n${activeFileName}` : '', disabled: true, hidden: !activeFileName },
+      ],
+      [
+        { label: 'Import forest (experimental)...', icon: IconFileImport, action: openSystemFileLoadModal },
+        { label: 'Export forest (experimental)...', icon: IconFileExport, action: openSystemFileSaveModal },
       ],
     ]],
     ['Mark', [

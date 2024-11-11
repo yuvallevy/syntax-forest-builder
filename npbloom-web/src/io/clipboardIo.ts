@@ -37,7 +37,6 @@ const hexStringToInt8Array = (hexString: string) => {
  * If the browser supports the Clipboard API, it will be used. Otherwise, a textarea will be temporarily added to the
  * document to copy the text using the deprecated document.execCommand method.
  */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 const copyInt8ArrayToClipboard = async (data: Int8Array): Promise<void> => {
   const hexString = int8ArrayToHexString(data);
   if (navigator.clipboard) {
