@@ -1,11 +1,34 @@
 import React, { useContext } from 'react';
 import {
-  AddBranchingNodeByTarget, AddTerminalNodeByTarget, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection,
-  BranchingNodeCreationTrigger, ClientCoordsOffset, coordsInPlotToCoordsInClient, DisownNodesBySelection,
-  EntitySelectionAction, EntitySelectionMode, EntitySet, generateNodeId, getNodeCreationTriggers,
-  isPositionedNodeTopLevel, NodeCreationTrigger, NodeIndicatorInPlot, NodeSelectionInPlot, PositionedBranchingNode,
-  PositionedNode, PositionedTerminalNode, PositionedTree, SelectionInPlot, SetSelection, SliceSelectionInPlot,
-  StartEditing, TerminalNodeCreationTrigger, TreeSelectionInPlot
+  AddBranchingNodeByTarget,
+  AddTerminalNodeByTarget,
+  AdoptNodesBySelection,
+  applyNodeSelection,
+  applyTreeSelection,
+  BranchingNodeCreationTrigger,
+  ClientCoordsOffset,
+  coordsInPlotToCoordsInClient,
+  DisownNodesBySelection,
+  EntitySelectionAction,
+  EntitySelectionMode,
+  EntitySet,
+  formatSubscriptInString,
+  generateNodeId,
+  getNodeCreationTriggers,
+  isPositionedNodeTopLevel,
+  NodeCreationTrigger,
+  NodeIndicatorInPlot,
+  NodeSelectionInPlot,
+  PositionedBranchingNode,
+  PositionedNode,
+  PositionedTerminalNode,
+  PositionedTree,
+  SelectionInPlot,
+  SetSelection,
+  SliceSelectionInPlot,
+  StartEditing,
+  TerminalNodeCreationTrigger,
+  TreeSelectionInPlot,
 } from 'npbloom-core';
 import { Id } from '../types';
 import './TreeView.scss';
@@ -34,6 +57,11 @@ interface TreeViewProps {
   treeDragOffset?: ClientCoordsOffset;
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
   onTreeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
+}
+
+const prettyNodeLabel = (rawNodeLabel: string): string => {
+  // Replace apostrophes with combining macrons after single letters
+  return (formatSubscriptInString(rawNodeLabel) || rawNodeLabel).replace(/^([a-zA-Z])'/g, `$1\u0304`);
 }
 
 const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: EntitySet<PositionedNode>): React.ReactNode[] =>
@@ -65,6 +93,7 @@ const renderNode = (
   allNodes: EntitySet<PositionedNode>,
   selectedNodeIds: Id[],
   markedNodeIds: Id[],
+  prettyNodeLabels: boolean,
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
   onSelect?: (id: Id, mode: EntitySelectionMode) => void,
@@ -96,7 +125,7 @@ const renderNode = (
       textAnchor="middle"
       dominantBaseline="text-after-edge"
     >
-      {node.label || '?'}
+      {(prettyNodeLabels ? prettyNodeLabel(node.label) : node.label) || '?'}
     </text>}
   </g>,
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
@@ -164,7 +193,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   onTreeMouseDown,
 }) => {
   const { state, dispatch } = useUiState();
-  const { strWidth } = useContext(SettingsStateContext);
+  const { settingsState, strWidth } = useContext(SettingsStateContext);
 
   const selectedTreeIds = state.selection instanceof TreeSelectionInPlot ? state.selection.treeIdsAsArray : [];
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
@@ -213,8 +242,8 @@ const TreeView: React.FC<TreeViewProps> = ({
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
     {tree.nodes.map(node =>
-      renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, nodeDragOffset, onNodeMouseDown,
-        handleSingleNodeSelect, startEditing))}
+      renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, settingsState.prettyNodeLabels,
+        nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect, startEditing))}
     {state.selectionAction === EntitySelectionAction.SelectTree && <>
       <rect
         x={-TREE_AREA_PADDING}
