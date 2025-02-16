@@ -116,6 +116,17 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
     return UnpositionedTerminalNode(id, label, offset, newSlice, triangle)
 }
 
+private fun UnpositionedTree.shiftStrikethroughsAfterChange(oldSelection: StringSlice, shiftBy: Int): UnpositionedTree {
+    if (strikethroughs.isEmpty() || shiftBy == 0) return this
+
+    val newStrikethroughs = strikethroughs.map { slice ->
+        if (slice.endExclusive < oldSelection.start) slice
+        else slice.shiftAfterChange(oldSelection, shiftBy)
+    }
+
+    return UnpositionedTree(id, sentence, nodes, newStrikethroughs, coordsInPlot)
+}
+
 /**
  * Responds to a change in the sentence associated with the given tree,
  * adapting existing nodes to the change if any exist.
@@ -124,6 +135,8 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
  *   This is used to determine how exactly node ranges should change.
  */
 internal fun UnpositionedTree.handleLocalSentenceChange(newSentence: Sentence, oldSelection: StringSlice) =
-    UnpositionedTree(id, newSentence, nodes, coordsInPlot).transformAllNodes {
-        it.shiftNodeSliceAfterChange(oldSelection, newSentence.length - sentence.length)
-    }
+    UnpositionedTree(id, newSentence, nodes, strikethroughs, coordsInPlot)
+        .shiftStrikethroughsAfterChange(oldSelection, newSentence.length - sentence.length)
+        .transformAllNodes {
+            it.shiftNodeSliceAfterChange(oldSelection, newSentence.length - sentence.length)
+        }
