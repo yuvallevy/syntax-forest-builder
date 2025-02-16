@@ -1,4 +1,8 @@
 ## Alpha
+### 0.7.3 (2025-02-16)
+* Added simple strikethrough functionality.
+  Select any part of a sentence and click the Strikethrough button on the toolbox to draw a line through it.
+  (tnx Amit Benalal for requesting)
 ### 0.7.2 (2024-11-11)
 * Added pretty rendering for bar notation and subscripts in node labels.
   On by default, can be turned off via Settings. (tnx Amit Benalal for requesting)
