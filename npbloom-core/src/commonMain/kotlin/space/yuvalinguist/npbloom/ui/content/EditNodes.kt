@@ -55,10 +55,53 @@ internal fun newNodeFromSelection(newNodeId: Id, selection: SelectionInPlot, sen
     }
 
 /**
- * Shifts the slice associated with a node by the given number of characters,
+ * Shifts and/or resizes the slice by the given number of characters in response to a change in the sentence,
  * based on the kind of selection made and the operation done on it.
  * Node slices will not expand when adding characters, but may contract when removing characters.
  */
+private fun StringSlice.shiftAfterChange(oldSelection: StringSlice, shiftBy: Int): StringSlice {
+    if (shiftBy == 0) return this
+
+    var (newStart, newEnd) = this
+    if (oldSelection.isZeroLength) {  // No selection, just a cursor
+        when {
+            oldSelection.start == start -> {  // Cursor was at the beginning of the slice
+                newEnd += shiftBy
+                if (shiftBy > 0) {  // If adding, move the slice forward; if removing, contract it
+                    newStart += shiftBy
+                }
+            }
+
+            oldSelection.start == endExclusive -> {  // Cursor was at the end of the slice
+                if (shiftBy < 0) {  // If removing, contract the slice
+                    newEnd += shiftBy
+                }
+            }
+
+            oldSelection.start < start -> {  // Cursor was before the slice
+                newStart += shiftBy
+                newEnd += shiftBy
+            }
+
+            oldSelection.start in (start + 1) until endExclusive -> {  // Cursor was in the middle of the slice
+                newEnd += shiftBy
+            }
+        }
+    } else {  // A selection spanning at least one character was made
+        when {
+            overlapsWith(oldSelection) -> {
+                return StringSlice(oldSelection.start, oldSelection.start)
+            }
+
+            oldSelection.start < start -> {  // Selection was before the slice
+                newStart += shiftBy
+                newEnd += shiftBy
+            }
+        }
+    }
+    return StringSlice(newStart, newEnd)
+}
+
 private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice, shiftBy: Int): UnpositionedNode {
     if (                                         // If:
         this !is UnpositionedTerminalNode ||     // this is not a terminal node, or
@@ -66,47 +109,11 @@ private fun UnpositionedNode.shiftNodeSliceAfterChange(oldSelection: StringSlice
         slice.endExclusive < oldSelection.start  // the selection was entirely after the node, then
     ) return this                                // no change is necessary
 
-    var (newNodeSliceStart, newNodeSliceEnd) = slice
-    if (oldSelection.isZeroLength) {  // No selection, just a cursor
-        when {
-            oldSelection.start == slice.start -> {  // Cursor was at the beginning of the slice
-                newNodeSliceEnd += shiftBy
-                if (shiftBy > 0) {  // If adding, move the slice forward; if removing, contract it
-                    newNodeSliceStart += shiftBy
-                }
-            }
-
-            oldSelection.start == slice.endExclusive -> {  // Cursor was at the end of the slice
-                if (shiftBy < 0) {  // If removing, contract the slice
-                    newNodeSliceEnd += shiftBy
-                }
-            }
-
-            oldSelection.start < slice.start -> {  // Cursor was before the slice
-                newNodeSliceStart += shiftBy
-                newNodeSliceEnd += shiftBy
-            }
-
-            oldSelection.start in (slice.start + 1) until slice.endExclusive -> {  // Cursor was in the middle of the slice
-                newNodeSliceEnd += shiftBy
-            }
-        }
-    } else {  // A selection spanning at least one character was made
-        when {
-            slice overlapsWith oldSelection -> {
-                return UnpositionedFormerlyTerminalNode(
-                    id, label, offset, StringSlice(oldSelection.start, oldSelection.start), triangle)
-            }
-
-            oldSelection.start < slice.start -> {
-                newNodeSliceStart += shiftBy
-                newNodeSliceEnd += shiftBy
-            }
-        }
+    val newSlice = slice.shiftAfterChange(oldSelection, shiftBy)
+    if (!oldSelection.isZeroLength && slice overlapsWith oldSelection) {
+        return UnpositionedFormerlyTerminalNode(id, label, offset, newSlice, triangle)
     }
-    return UnpositionedTerminalNode(
-        id, label, offset, StringSlice(newNodeSliceStart, newNodeSliceEnd), triangle
-    )
+    return UnpositionedTerminalNode(id, label, offset, newSlice, triangle)
 }
 
 /**
