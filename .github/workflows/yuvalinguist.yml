@@ -32,7 +32,7 @@ jobs:
         build-root-directory: npbloom-core
 
     - name: Upload core build
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4.6.0
       with:
         name: core-build-artifact
         path: npbloom-core/build/dist/js/productionLibrary
@@ -55,7 +55,7 @@ jobs:
       working-directory: npbloom-web
 
     - name: Download core build
-      uses: actions/download-artifact@v3.0.2
+      uses: actions/download-artifact@v4.1.8
       with:
         name: core-build-artifact
         path: npbloom-web/node_modules/npbloom-core
@@ -65,7 +65,7 @@ jobs:
       working-directory: npbloom-web
 
     - name: Upload web build
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4.6.0
       with:
         name: web-build-artifact
         path: npbloom-web/dist
@@ -77,7 +77,7 @@ jobs:
 
     steps:
     - name: Download web build
-      uses: actions/download-artifact@v3.0.2
+      uses: actions/download-artifact@v4.1.8
       with:
         name: web-build-artifact
         path: npbloom-web-dist
