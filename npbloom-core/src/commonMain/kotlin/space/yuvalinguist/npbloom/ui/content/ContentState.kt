@@ -96,6 +96,13 @@ internal data class SetSentence(
     val oldSelectedSlice: StringSlice
 ) : ContentAction
 
+internal data class SetSliceStrikethrough(
+    val plotIndex: PlotIndex,
+    val treeId: Id,
+    val slice: StringSlice,
+    val strikethrough: Boolean
+) : ContentAction
+
 internal data class AddTree(
     val plotIndex: PlotIndex,
     val newTreeId: Id,
@@ -210,9 +217,19 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
             .handleLocalSentenceChange(action.newSentence, action.oldSelectedSlice)
     )
 
+    is SetSliceStrikethrough -> TreeChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex].tree(action.treeId),
+        state.plots[action.plotIndex].tree(action.treeId).let { tree ->
+            tree.copy(strikethroughs =
+                if (action.strikethrough) tree.strikethroughs + action.slice
+                else tree.strikethroughs.flatMap { it - action.slice })
+        }
+    )
+
     is AddTree -> TreeAdded(
         action.plotIndex,
-        UnpositionedTree(action.newTreeId, action.sentence, action.nodes, action.coordsInPlot)
+        UnpositionedTree(action.newTreeId, action.sentence, action.nodes, coordsInPlot = action.coordsInPlot)
     )
 
     is SetTreeContent -> TreeChanged(

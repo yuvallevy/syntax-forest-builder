@@ -25,6 +25,8 @@ data class UnpositionedTree(
 
     val nodesAsArray get() = nodes.toJsArray()
 
+    val strikethroughsAsArray get() = strikethroughs.toTypedArray()
+
     val nodeCount get() = nodes.size
 
     val hasNodes get() = nodes.isNotEmpty()
