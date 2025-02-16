@@ -159,10 +159,10 @@ const Toolbox: React.FC = () => {
     { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
-    { title: 'Toggle strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
+    { title: 'Strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
       action: (_, focusEvent) =>
         toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
-      disabled: noSliceSelected, description: 'Toggle strikethrough for the selected word or part of a word.' },
+      disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
     { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-C', disabled: !oneTreeSelected,
