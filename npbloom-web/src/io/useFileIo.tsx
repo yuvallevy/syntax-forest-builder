@@ -55,10 +55,14 @@ const useFileIo = () => {
 
   const handleLoad = (fileName: string): Promise<void> =>
     assertDbConnected(async db => {
-      const contentState = await loadContentStateFromFile(db, fileName);
-      setActiveFileName(fileName);
-      dispatch(new LoadContentState(contentState));
-      closeFileIoModal();
+      try {
+        const contentState = await loadContentStateFromFile(db, fileName);
+        setActiveFileName(fileName);
+        dispatch(new LoadContentState(contentState));
+        closeFileIoModal();
+      } catch (error: any) {
+        alert(error.message);
+      }
     });
 
   const handleRename = (oldFileName: string, newFileName: string): Promise<void> =>
