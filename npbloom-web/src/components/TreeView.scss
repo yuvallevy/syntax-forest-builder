@@ -91,6 +91,13 @@
   display: unset;
 }
 
+.TreeView--strikethrough {
+  z-index: 1;
+  stroke: currentColor;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
 @keyframes marching-ants {
   0% {
     stroke-dashoffset: 0;

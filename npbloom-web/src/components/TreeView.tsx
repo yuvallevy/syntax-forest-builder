@@ -34,6 +34,7 @@ import { Id } from '../types';
 import './TreeView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
+import { SENTENCE_FONT_SIZE_PX } from '../uiDimensions.ts';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -228,6 +229,18 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   const treePositionInClient = coordsInPlotToCoordsInClient(tree.position, state.panZoomState);
 
+  // Strikethrough rendering
+  const strikethroughYPosition = 0.75 * SENTENCE_FONT_SIZE_PX;
+  const strikethroughLines = tree.strikethroughXRangesAsArray.map(({ treeX1, treeX2 }) =>
+    <line
+      key={`${treeX1}-${treeX2}`}
+      x1={treeX1}
+      y1={strikethroughYPosition}
+      x2={treeX2}
+      y2={strikethroughYPosition}
+      className="TreeView--strikethrough"
+    />);
+
   return <g id={`tree-${treeId}`}
             style={{ transform: `translate(${treePositionInClient.clientX}px, ${treePositionInClient.clientY}px) scale(${state.panZoomState.zoomLevel})` }}>
     {getNodeCreationTriggers(
@@ -268,6 +281,7 @@ const TreeView: React.FC<TreeViewProps> = ({
         ry={3}
       />}
     </>}
+    {strikethroughLines}
   </g>;
 };
 

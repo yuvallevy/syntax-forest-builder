@@ -57,15 +57,21 @@ internal fun determineTerminalNodePosition(
     )
 }
 
+internal fun determineStringSliceXRange(
+    strWidthFunc: StrWidthFunc,
+    sentence: Sentence,
+    slice: StringSlice,
+): TreeXRange {
+    val (widthBeforeSlice, sliceWidth) = sliceOffsetAndWidth(strWidthFunc, sentence, slice)
+    return TreeXRange(widthBeforeSlice, widthBeforeSlice + sliceWidth)
+}
+
 internal fun determineTerminalNodeTriangleRange(
     strWidthFunc: StrWidthFunc,
     sentence: Sentence,
     node: UnpositionedTerminalNode,
 ): TreeXRange? =
-    if (node.triangle) {
-        val (widthBeforeSlice, sliceWidth) = sliceOffsetAndWidth(strWidthFunc, sentence, node.slice)
-        TreeXRange(widthBeforeSlice, widthBeforeSlice + sliceWidth)
-    } else null
+    if (node.triangle) determineStringSliceXRange(strWidthFunc, sentence, node.slice) else null
 
 internal fun determineStrandedNodePosition(
     strWidthFunc: StrWidthFunc,
@@ -184,6 +190,9 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
         nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
         position = CoordsInPlot(tree.coordsInPlot.plotX, tree.coordsInPlot.plotY),
         width = strWidthFunc(tree.sentence),
+        strikethroughXRanges = tree.strikethroughs.map { slice ->
+            determineStringSliceXRange(strWidthFunc, tree.sentence, slice)
+        },
     )
 
 /**

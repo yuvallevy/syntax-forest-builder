@@ -9,9 +9,7 @@ import { extractTreeFromClipboardData } from '../io/clipboardIo';
 import './SentenceView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
-import { SVG_X, SVG_Y } from '../uiDimensions';
-
-const SENTENCE_FONT_SIZE_PX = 16;
+import { SENTENCE_FONT_SIZE_PX, SVG_X, SVG_Y } from '../uiDimensions';
 
 // A tree with no sentence will take up this width instead of 0 (or something close to 0):
 const EMPTY_SENTENCE_WIDTH = 120;
