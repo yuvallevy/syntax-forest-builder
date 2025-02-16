@@ -19,7 +19,7 @@ class EditNodesTest {
             UnpositionedTerminalNode("term3", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(8, 14), true),
             UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term3")),
         ),
-        CoordsInPlot(0.0, 0.0),
+        coordsInPlot = CoordsInPlot(0.0, 0.0),
     )
 
     @Test
