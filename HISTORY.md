@@ -1,4 +1,6 @@
 ## Alpha
+### 0.7.4 (2025-10-11)
+* Fixed bug that caused some clicks to randomly not count on certain operating systems.
 ### 0.7.3 (2025-02-16)
 * Added simple strikethrough functionality.
   Select any part of a sentence and click the Strikethrough button on the toolbox to draw a line through it.
