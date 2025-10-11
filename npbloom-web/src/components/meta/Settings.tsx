@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Button, Checkbox, Group, Modal, Stack } from '@mantine/core';
-import { SetAutoFormatSubscript, SetLiveStringWidth } from 'npbloom-core';
+import { SetAutoFormatSubscript, SetLiveStringWidth, SetPrettyNodeLabels } from 'npbloom-core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import SettingsStateContext from "../../SettingsStateContext";
@@ -24,8 +24,11 @@ const Settings: React.FC = () => {
     <Modal centered title="Settings" size="lg" opened={opened} onClose={close}>
       <Stack>
         <Checkbox
-          label="Format brackets/parentheses as subscript"
-          description="When this is enabled, letters and numbers in parentheses or brackets such as (i) and [i] will automatically be rendered as subscript. (Does not work on all letters)"
+          label="Format brackets/parentheses as subscript while typing"
+          description={<>
+            When this is enabled, letters and numbers in parentheses or brackets such as (i) and [i] will automatically be rendered as subscript.<br />
+            This does not work on all letters. This setting will not affect existing text.
+          </>}
           checked={settingsState.autoFormatSubscript}
           onChange={(event) => settingsDispatch(new SetAutoFormatSubscript(event.currentTarget.checked))}
         />
@@ -33,6 +36,11 @@ const Settings: React.FC = () => {
           label="Use experimental text width measurement (slightly slower, more accurate)"
           checked={settingsState.liveStringWidth}
           onChange={(event) => settingsDispatch(new SetLiveStringWidth(event.currentTarget.checked))}
+        />
+        <Checkbox
+          label={<>Render bar notation and subscripts in node labels (e.g. X'[16] as X&#x0304;&#x2081;&#x2086;)</>}
+          checked={settingsState.prettyNodeLabels}
+          onChange={(event) => settingsDispatch(new SetPrettyNodeLabels(event.currentTarget.checked))}
         />
         <Group position="right">
           <Button variant="filled" onClick={close}>Done</Button>

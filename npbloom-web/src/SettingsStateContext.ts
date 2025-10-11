@@ -6,6 +6,7 @@ import strWidthByMeasure from './strWidth/strWidthByMeasure';
 export const initialSettingsState = new SettingsState(
   localStorage['nb_autoFormatSubscript'] === 'true' || !localStorage['nb_autoFormatSubscript'],
   localStorage['nb_liveStringWidth'] === 'true',
+  localStorage['nb_prettyNodeLabels'] === 'true' || !localStorage['nb_prettyNodeLabels'],
 );
 
 export const settingsReducer = (state: SettingsState, action: SettingsAction) => {

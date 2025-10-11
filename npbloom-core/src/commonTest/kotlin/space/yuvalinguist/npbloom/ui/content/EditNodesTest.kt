@@ -19,7 +19,11 @@ class EditNodesTest {
             UnpositionedTerminalNode("term3", "VP", TreeCoordsOffset(0.0, 0.0), StringSlice(8, 14), true),
             UnpositionedBranchingNode("top", "S", TreeCoordsOffset(0.0, 5.0), setOf("branch1", "term3")),
         ),
-        CoordsInPlot(0.0, 0.0),
+        coordsInPlot = CoordsInPlot(0.0, 0.0),
+    )
+
+    private val treeWithStrikethrough = tree.copy(
+        strikethroughs = listOf(StringSlice(0, 3), StringSlice(8, 14)),
     )
 
     @Test
@@ -68,4 +72,17 @@ class EditNodesTest {
             if (newNode is UnpositionedTerminalNode) assertEquals(newSlice, newNode.slice)
             else if (newNode is UnpositionedFormerlyTerminalNode) assertEquals(newSlice, newNode.formerSlice)
         }
+
+    @Test
+    fun handleLocalSentenceChangeWithStrikethrough() {
+        listOf(
+            Triple("The dogs jumped.", StringSlice(7, 7), listOf(StringSlice(0, 3), StringSlice(9, 15))),
+            Triple("The dog jumpe.", StringSlice(14, 14), listOf(StringSlice(0, 3), StringSlice(8, 13))),
+            Triple("The dog jumpedd.", StringSlice(14, 14), listOf(StringSlice(0, 3), StringSlice(8, 14))),
+            Triple("Te dog jumped.", StringSlice(1, 1), listOf(StringSlice(0, 2), StringSlice(7, 13))),
+        ).forEach { (newSentence, oldSelection, newStrikethroughs) ->
+            val newTree = treeWithStrikethrough.handleLocalSentenceChange(newSentence, oldSelection)
+            assertEquals(newStrikethroughs, newTree.strikethroughs)
+        }
+    }
 }

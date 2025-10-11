@@ -14,10 +14,13 @@ data class PositionedTree(
     val nodes: EntitySet<PositionedNode>,
     val position: CoordsInPlot,
     val width: Width,
+    val strikethroughXRanges: List<TreeXRange> = emptyList(),
 ) : TreeBase {
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 
     val height = if (nodes.isEmpty()) 0.0 else -nodes.minOf { it.position.treeY }
+
+    val strikethroughXRangesAsArray get() = strikethroughXRanges.toTypedArray()
 
     internal operator fun contains(nodeId: Id) = nodeId in nodes
 

@@ -16,7 +16,11 @@ import kotlin.js.JsName
 private val forestMagicNumber = "59b10011f04e5700".hexToByteArray()
 @OptIn(ExperimentalStdlibApi::class)
 private val treeMagicNumber = "59b1001174ee0000".hexToByteArray()
-private val formatVersion = byteArrayOf(1, 0)
+
+// The format version is a 2-byte sequence that is incremented whenever the file format changes in a way that is not
+// backwards-compatible.
+private val formatVersion = byteArrayOf(1, 1)
+private val oldFormatVersions = listOf(byteArrayOf(1, 0))
 
 @JsExport
 @JsName("contentStateToFileContents")
@@ -28,10 +32,14 @@ fun ContentState.toFileContents() =
 fun UnpositionedTree.toFileContents() =
     treeMagicNumber + formatVersion + Cbor.encodeToByteArray(this)
 
+private fun formatVersionIsRecognized(fileFormatVersion: ByteArray) =
+    fileFormatVersion.contentEquals(formatVersion) || oldFormatVersions.any(fileFormatVersion::contentEquals)
+
 fun ContentState.Companion.fromFileContents(byteArray: ByteArray): ContentState {
     if (!byteArray.sliceArray(forestMagicNumber.indices).contentEquals(forestMagicNumber)) error("This is not an NPBloom file")
-    if (!byteArray.sliceArray(forestMagicNumber.size until forestMagicNumber.size + formatVersion.size)
-        .contentEquals(formatVersion)) error("Unrecognized file format version")
+    val fileFormatVersion = byteArray.sliceArray(forestMagicNumber.size until forestMagicNumber.size + formatVersion.size)
+    if (!formatVersionIsRecognized(fileFormatVersion))
+        error("Unrecognized file format version: ${fileFormatVersion.joinToString(".")}")
     try {
         return Cbor.decodeFromByteArray(
             byteArray.sliceArray(forestMagicNumber.size + formatVersion.size until byteArray.size))
@@ -42,8 +50,9 @@ fun ContentState.Companion.fromFileContents(byteArray: ByteArray): ContentState 
 
 fun UnpositionedTree.Companion.fromFileContents(byteArray: ByteArray): UnpositionedTree {
     if (!byteArray.sliceArray(treeMagicNumber.indices).contentEquals(treeMagicNumber)) error("This is not an NPBloom tree")
-    if (!byteArray.sliceArray(treeMagicNumber.size until treeMagicNumber.size + formatVersion.size)
-        .contentEquals(formatVersion)) error("Unrecognized file format version")
+    val fileFormatVersion = byteArray.sliceArray(treeMagicNumber.size until treeMagicNumber.size + formatVersion.size)
+    if (!formatVersionIsRecognized(fileFormatVersion))
+        error("Unrecognized file format version: ${fileFormatVersion.joinToString(".")}")
     try {
         return Cbor.decodeFromByteArray(
             byteArray.sliceArray(treeMagicNumber.size + formatVersion.size until byteArray.size))

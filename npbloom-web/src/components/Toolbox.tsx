@@ -1,12 +1,12 @@
 import {
   AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
   NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
-  TreeSelectionInPlot, ToggleTriangle, Undo, UnpositionedTerminalNode
+  ToggleSliceStrikethrough, ToggleTriangle, TreeSelectionInPlot, Undo, UnpositionedTerminalNode,
 } from 'npbloom-core';
 import { ActionIcon, Paper, Navbar, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
-  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconCopy, IconPencil, IconPlus, IconTrash, IconTriangle,
-  TablerIconsProps
+  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconCopy, IconPencil, IconPlus, IconStrikethrough,
+  IconTrash, IconTriangle, TablerIconsProps,
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import './Toolbox.scss';
@@ -43,6 +43,7 @@ const Toolbox: React.FC = () => {
       .tree((state.selection as SliceSelectionInPlot).treeId).sentence === '';
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
   const noTreesSelected = !(state.selection instanceof TreeSelectionInPlot);
+  const noSliceSelected = !(state.selection instanceof SliceSelectionInPlot);
   const oneTreeSelected = state.selection instanceof TreeSelectionInPlot &&
     state.selection.treeIdsAsArray.length === 1;
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
@@ -64,6 +65,10 @@ const Toolbox: React.FC = () => {
     state.selectionAction === EntitySelectionAction.Disown ? EntitySelectionAction.SelectNode : EntitySelectionAction.Disown));
   const toggleTreeSelectMode = () => dispatch(new SetSelectionAction(
     state.selectionAction === EntitySelectionAction.SelectTree ? EntitySelectionAction.SelectNode : EntitySelectionAction.SelectTree));
+  const toggleSliceStrikethrough = (wasEditing: boolean) => {
+    dispatch(new ToggleSliceStrikethrough());
+    wasEditing && setTimeout(startEditing, 50);
+  }
   const exportToText = () => {
     const trees = state.selection instanceof TreeSelectionInPlot
       ? state.selection.treeIdsAsArray.map(treeId => state.contentState.current.plots[state.activePlotIndex].tree(treeId))
@@ -109,6 +114,22 @@ const Toolbox: React.FC = () => {
     return { toggleState: 'off' };
   };
 
+  const getSliceStrikethroughToggleState = (): { toggleState: 'on' | 'off'; disabled?: boolean } => {
+    // No slice selected
+    if (noSliceSelected) return { toggleState: 'off', disabled: true };
+
+    // If there is any overlap between the selected slice and the strikethroughs of the selected nodes, the button is on
+    const selectedSlice = (state.selection as SliceSelectionInPlot).slice;
+    const selectedTreeStrikethroughs =
+      state.contentState.current.plots[state.activePlotIndex].tree(state.selection.treeId).strikethroughsAsArray;
+    return {
+      disabled: false,
+      toggleState: selectedTreeStrikethroughs.some(strikethrough =>
+        selectedSlice.overlapsWith(strikethrough)
+      ) ? 'on' : 'off',
+    };
+  };
+
   const items: ToolboxItem[] = [
     { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl-Z',
       description: 'Undo the last action.' },
@@ -138,6 +159,10 @@ const Toolbox: React.FC = () => {
     { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
       toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
       hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
+    { title: 'Strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
+      action: (_, focusEvent) =>
+        toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
+      disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
     { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-C', disabled: !oneTreeSelected,

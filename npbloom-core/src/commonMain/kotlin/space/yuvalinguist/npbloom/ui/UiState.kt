@@ -50,6 +50,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class ResetSelectedNodePositions : UiAction
 @JsExport class ToggleTriangle : UiAction
 @JsExport class SetSentence(val newSentence: Sentence, val oldSelectedSlice: StringSlice, val treeId: Id? = null) : UiAction
+@JsExport class ToggleSliceStrikethrough : UiAction
 @JsExport class AddTree(val newTreeId: Id, val coordsInPlot: CoordsInPlot) : UiAction
 @JsExport class RemoveTree(val treeId: Id) : UiAction
 @JsExport class AddTreeFromLbn(val coordsInClient: CoordsInClient, val lbn: String) : UiAction
@@ -444,6 +445,22 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                         action.treeId ?: selectedTreeId,
                         action.newSentence,
                         action.oldSelectedSlice,
+                    )
+                ),
+            )
+        }
+
+        is ToggleSliceStrikethrough -> {
+            if (selectedTreeId == null) return state
+            if (state.selection !is SliceSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    SetSliceStrikethrough(
+                        state.activePlotIndex,
+                        selectedTreeId,
+                        state.selection.slice,
+                        activePlot.tree(selectedTreeId).strikethroughs.none { it overlapsWith state.selection.slice }
                     )
                 ),
             )

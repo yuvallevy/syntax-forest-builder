@@ -18,11 +18,14 @@ data class UnpositionedTree(
     @SerialName("i") override val id: Id,
     @SerialName("s") override val sentence: Sentence,
     @SerialName("n") val nodes: EntitySet<UnpositionedNode>,
+    @SerialName("-") val strikethroughs: List<StringSlice> = emptyList(),
     @SerialName("o") val coordsInPlot: CoordsInPlot = CoordsInPlot.ZERO,
 ) : TreeBase {
     internal val nodeIds get() = nodes.ids
 
     val nodesAsArray get() = nodes.toJsArray()
+
+    val strikethroughsAsArray get() = strikethroughs.toTypedArray()
 
     val nodeCount get() = nodes.size
 
