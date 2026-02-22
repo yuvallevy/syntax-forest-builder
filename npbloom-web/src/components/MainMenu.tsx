@@ -4,8 +4,9 @@ import { useOs } from '@mantine/hooks';
 import { IconDeviceFloppy, IconFolder, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
-import { MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot, RemoveRelationMarkingsInSelectedTree,
-  RemoveAllRelationMarkings } from 'npbloom-core';
+import { FoldSelectedNodes, MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot,
+  RemoveRelationMarkingsInSelectedTree, RemoveAllRelationMarkings, UnfoldSelectedNodes, UnfoldSelectedNodesOneLevel,
+} from 'npbloom-core';
 import useUiState from '../useUiState.ts';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
@@ -34,6 +35,8 @@ const MainMenu: React.FC = () => {
 
   const os = useOs();
 
+  const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
+
   const oneNodeSelected = state.selection instanceof NodeSelectionInPlot &&
     state.selection.nodeIndicatorsAsArray.length === 1;
 
@@ -45,10 +48,22 @@ const MainMenu: React.FC = () => {
     if (oneNodeSelected) dispatch(new MarkCCommandedNodes());
   }
 
+  const foldSelectedNodes = () => dispatch(new FoldSelectedNodes());
+
+  const unfoldSelectedNodes = () => dispatch(new UnfoldSelectedNodes());
+
+  const unfoldSelectedNodesOneLevel = () => dispatch(new UnfoldSelectedNodesOneLevel());
+
   useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); },
+    { ignoredElementWhitelist: ['INPUT'] });
+
+  useHotkeys(['Control+-', 'Meta+-'], event => { event.preventDefault(); foldSelectedNodes(); },
+    { ignoredElementWhitelist: ['INPUT'] });
+
+  useHotkeys(['Control+=', 'Meta+='], event => { event.preventDefault(); unfoldSelectedNodes(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   const mainMenuElements: NamedMenuSection[] = [
@@ -62,16 +77,19 @@ const MainMenu: React.FC = () => {
         { label: activeFileName ? `Currently open file:\n${activeFileName}` : '', disabled: true, hidden: !activeFileName },
       ],
     ]],
-    ['Mark', [
+    ['View', [
       [
-        { label: 'C-commanding nodes', disabled: !oneNodeSelected, action: markCCommandingNodes },
-        { label: 'C-commanded nodes', disabled: !oneNodeSelected, action: markCCommandedNodes },
-      ],
-      [
+        { label: 'Mark C-commanding nodes', disabled: !oneNodeSelected, action: markCCommandingNodes },
+        { label: 'Mark C-commanded nodes', disabled: !oneNodeSelected, action: markCCommandedNodes },
         { label: 'Clear relation markings in selected tree',
           action: () => dispatch(new RemoveRelationMarkingsInSelectedTree()) },
         { label: 'Clear all relation markings',
           action: () => dispatch(new RemoveAllRelationMarkings()) },
+      ],
+      [
+        { label: 'Fold selected nodes', disabled: noNodesSelected, action: foldSelectedNodes, hotkey: 'Ctrl--' },
+        { label: 'Unfold selected nodes', disabled: noNodesSelected, action: unfoldSelectedNodes, hotkey: 'Ctrl-=' },
+        { label: 'Unfold selected nodes by one level', disabled: noNodesSelected, action: unfoldSelectedNodesOneLevel },
       ]
     ]],
   ]
