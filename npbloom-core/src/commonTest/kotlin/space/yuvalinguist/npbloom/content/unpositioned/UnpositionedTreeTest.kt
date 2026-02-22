@@ -798,4 +798,10 @@ class UnpositionedTreeTest {
         assertNotEquals(tree.nodeIds, newTree.nodeIds)
         assertEquals(tree.nodeIds.size, newTree.nodeIds.size)  // Same number of distinct IDs
     }
+
+    @Test
+    fun findBranchingNodeSlice() {
+        assertEquals(treeWithNodeMissingBranches.findSlice("branch1"), StringSlice(0, 4))
+        assertEquals(treeWithNodeMissingBranches.findSlice("top"), StringSlice(0, 11))
+    }
 }
