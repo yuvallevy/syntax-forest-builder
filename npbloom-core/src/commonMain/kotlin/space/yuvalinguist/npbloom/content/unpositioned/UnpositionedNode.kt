@@ -27,6 +27,7 @@ data class UnpositionedBranchingNode internal constructor(
     @SerialName("l") override val label: NodeLabel,
     @SerialName("o") override val offset: TreeCoordsOffset = TreeCoordsOffset.ZERO,
     @SerialName("Y") internal val children: Set<Id>,
+    @SerialName("+") val folded: Boolean = false,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedNode {
     @Transient val childrenAsArray = children.toTypedArray()
@@ -47,6 +48,7 @@ data class UnpositionedTerminalNode internal constructor(
     @SerialName("o") override val offset: TreeCoordsOffset = TreeCoordsOffset.ZERO,
     @SerialName("s") val slice: StringSlice,
     @SerialName("^") val triangle: Boolean = false,
+    @SerialName("+") val folded: Boolean = false,
     @SerialName("-") override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : UnpositionedNode {
     override fun withId(newId: Id) = copy(id = newId)
