@@ -84,7 +84,9 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
   node.triangle && <path
     key={`triangle-${nodeId}`}
     stroke="#000"
-    fill="none"
+    fill={node.folded
+      ? 'url(#folded-pattern)' // Folded branching node
+      : 'none'} // Natural triangle terminal node
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 

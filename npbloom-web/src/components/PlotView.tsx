@@ -175,6 +175,11 @@ const PlotView: React.FC = () => {
       onDragOver={preventDefaultDragEvent}
       onDrop={handleDrop}
     >
+      <defs>
+        <pattern id="folded-pattern" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#000" strokeWidth="1.5" />
+        </pattern>
+      </defs>
       {plot.trees.map(tree =>
         <TreeView
           key={`tree-${tree.id}`}
