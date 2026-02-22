@@ -72,6 +72,21 @@ class PositioningTest {
         coordsInPlot = CoordsInPlot.ZERO,
     )
 
+    private val treeWithFoldedBranchingNodes = UnpositionedTree(
+        id = "foldedTree",
+        sentence = "Long phrase verbs.",
+        nodes = EntitySet(
+            UnpositionedTerminalNode("a", "A", TreeCoordsOffset.ZERO, StringSlice(0, 4)),
+            UnpositionedTerminalNode("b", "N", TreeCoordsOffset.ZERO, StringSlice(5, 11)),
+            UnpositionedTerminalNode("c", "V", TreeCoordsOffset.ZERO, StringSlice(12, 17)),
+            UnpositionedBranchingNode("d", "AP", TreeCoordsOffset.ZERO, setOf("a")),
+            UnpositionedBranchingNode("e", "NP", TreeCoordsOffset.ZERO, setOf("d", "b"), folded = true),
+            UnpositionedBranchingNode("f", "VP", TreeCoordsOffset.ZERO, setOf("c")),
+            UnpositionedBranchingNode("g", "S", TreeCoordsOffset.ZERO, setOf("e", "f")),
+        ),
+        coordsInPlot = CoordsInPlot.ZERO,
+    )
+
     @Test
     fun positionTerminalNodes() {
         val result = applyNodePositionsToTree(::mockStrWidth, treeWithTerminalNodes)
@@ -102,6 +117,17 @@ class PositioningTest {
     fun positionBranchingNodesInTreeWithTriangles() {
         val result = applyNodePositionsToTree(::mockStrWidth, treeWithBranchingAndTriangleNodes)
         assertEquals(CoordsInTree(48.75, -60.0), result.node("c").position)
+    }
+
+    @Test
+    fun positionFoldedNodes() {
+        val result = applyNodePositionsToTree(::mockStrWidth, treeWithFoldedBranchingNodes)
+        // All nodes under NP should be hidden
+        val nodeLabelsInTree: Set<String> = result.nodes.map { it.label }.toSet()
+        assertEquals(setOf("S", "NP", "VP", "V"), nodeLabelsInTree) // No A, AP, N since they are under NP
+        // NP node should be a terminal node with triangle vertices matching the entire span of its descendants
+        val npNode = result.nodes.find { it.label == "NP" } as PositionedTerminalNode
+        assertEquals(TreeXRange(0.0, 79.0), npNode.triangle)
     }
 
     @Test

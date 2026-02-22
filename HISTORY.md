@@ -1,4 +1,7 @@
 ## Alpha
+### 0.7.5 (2026-02-22)
+* Added ability to fold/unfold nodes through new options in the menu and new keyboard shortcuts (Ctrl-- and Ctrl-=).
+  This is useful for large trees where irrelevant parts of the tree need to be temporarily hidden.
 ### 0.7.4 (2025-10-11)
 * Fixed bug that caused some clicks to randomly not count on certain operating systems.
 ### 0.7.3 (2025-02-16)
