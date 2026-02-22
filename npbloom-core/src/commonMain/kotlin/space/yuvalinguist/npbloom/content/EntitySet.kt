@@ -35,6 +35,8 @@ data class EntitySet<T : WithId> internal constructor(
     internal operator fun contains(id: Id) = id in internalIdMap
     operator fun get(id: Id) = internalIdMap[id]
     internal operator fun minus(id: Id) = EntitySet(entities.filterNot { it.id == id }.toSet())
+    internal operator fun minus(ids: Set<Id>) = EntitySet(entities.filterNot { it.id in ids }.toSet())
+    internal operator fun minus(entities: EntitySet<T>) = this - entities.ids
     internal operator fun plus(newItem: T) = EntitySet(
         if (newItem.id in internalIdMap) entities.filterNot { it.id == newItem.id }.toSet() + newItem
         else entities + newItem
@@ -52,6 +54,7 @@ data class EntitySet<T : WithId> internal constructor(
     internal inline fun none(predicate: (T) -> Boolean) = entities.none(predicate)
 
     internal inline fun filter(predicate: (T) -> Boolean) = EntitySet(entities.filter(predicate))
+    internal inline fun filterNot(predicate: (T) -> Boolean) = EntitySet(entities.filterNot(predicate))
     internal inline fun find(predicate: (T) -> Boolean) = entities.find(predicate)
     internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = entities.flatMap(transform)
     @Suppress("NON_EXPORTABLE_TYPE") @JsName("mapAsKtList") fun <R> map(transform: (T) -> R) = entities.map(transform)

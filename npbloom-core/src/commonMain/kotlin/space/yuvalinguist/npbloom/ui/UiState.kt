@@ -66,6 +66,9 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class MarkCCommandedNodes : UiAction
 @JsExport class RemoveRelationMarkingsInSelectedTree : UiAction
 @JsExport class RemoveAllRelationMarkings : UiAction
+@JsExport class FoldSelectedNodes : UiAction
+@JsExport class UnfoldSelectedNodes : UiAction
+@JsExport class UnfoldSelectedNodesOneLevel : UiAction
 
 @JsExport
 data class UiState(
@@ -527,6 +530,44 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     SetTreeContent(state.activePlotIndex, action.treeId, sentence, nodes)
                 ),
                 selection = NoSelectionInPlot,
+            )
+        }
+
+        is FoldSelectedNodes -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    FoldNodes(state.activePlotIndex, state.selection.nodeIndicators),
+                ),
+            )
+        }
+
+        is UnfoldSelectedNodes -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    UnfoldNodes(state.activePlotIndex, state.selection.nodeIndicators),
+                ),
+            )
+        }
+
+        is UnfoldSelectedNodesOneLevel -> {
+            if (state.selection !is NodeSelectionInPlot) return state
+            // Nodes that should be selected are all children of the selected nodes that are also branching nodes.
+            // These will become folded as a result of this action, and we want to select them so that the user can
+            // easily repeat the action and fold them further step by step.
+            val newSelectedNodes = activePlot.getChildNodeIds(state.selection.nodeIndicators).filter { childNodeIndicator ->
+                val node = activePlot.tree(childNodeIndicator.treeId).node(childNodeIndicator.nodeId)
+                node is UnpositionedBranchingNode
+            }.toSet()
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    UnfoldNodesOneLevel(state.activePlotIndex, state.selection.nodeIndicators),
+                ),
+                selection = if (newSelectedNodes.isEmpty()) NoSelectionInPlot else NodeSelectionInPlot(newSelectedNodes),
             )
         }
 
