@@ -54,23 +54,23 @@ const MainMenu: React.FC = () => {
 
   const unfoldSelectedNodesOneLevel = () => dispatch(new UnfoldSelectedNodesOneLevel());
 
-  useHotkeys(['Control+o', 'Meta+o'], event => { event.preventDefault(); openFileLoadModal(); },
+  useHotkeys(['Ctrl+O', 'Meta+O'], event => { event.preventDefault(); openFileLoadModal(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+s', 'Meta+s'], event => { event.preventDefault(); saveOrSaveAs(); },
+  useHotkeys(['Ctrl+S', 'Meta+S'], event => { event.preventDefault(); saveOrSaveAs(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+-', 'Meta+-'], event => { event.preventDefault(); foldSelectedNodes(); },
+  useHotkeys(['Ctrl+-', 'Meta+-'], event => { event.preventDefault(); foldSelectedNodes(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Control+=', 'Meta+='], event => { event.preventDefault(); unfoldSelectedNodes(); },
+  useHotkeys(['Ctrl+=', 'Meta+='], event => { event.preventDefault(); unfoldSelectedNodes(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   const mainMenuElements: NamedMenuSection[] = [
     ['File', [
       [
-        { label: 'Open...', icon: IconFolder, hotkey: 'Ctrl-O', action: openFileLoadModal },
-        { label: activeFileName ? 'Save' : 'Save...', icon: IconDeviceFloppy, hotkey: 'Ctrl-S', action: saveOrSaveAs },
+        { label: 'Open...', icon: IconFolder, hotkey: 'Ctrl+O', action: openFileLoadModal },
+        { label: activeFileName ? 'Save' : 'Save...', icon: IconDeviceFloppy, hotkey: 'Ctrl+S', action: saveOrSaveAs },
         { label: 'Save As...', disabled: !activeFileName, action: openFileSaveModal },
       ],
       [

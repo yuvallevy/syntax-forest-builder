@@ -83,7 +83,7 @@ const Toolbox: React.FC = () => {
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
 
-  useHotkeys(['Control+c', 'Meta+c'], event => {
+  useHotkeys(['Ctrl+C', 'Meta+C'], event => {
     if (oneTreeSelected) {
       event.preventDefault();
       copySelectedTree();
@@ -131,9 +131,9 @@ const Toolbox: React.FC = () => {
   };
 
   const items: ToolboxItem[] = [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl-Z',
+    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl+Z',
       description: 'Undo the last action.' },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl-Y',
+    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl+Y',
       description: 'Redo the last undone action.' },
     { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty, hotkey: 'Up',
       description: 'Add a new parent node for the selected text or nodes.' },
@@ -165,9 +165,9 @@ const Toolbox: React.FC = () => {
       disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
-    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl-C', disabled: !oneTreeSelected,
+    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
       description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
-        substituteOsAwareHotkey('Ctrl-V', os) + '.' }
+        substituteOsAwareHotkey('Ctrl+V', os) + '.' }
   ];
 
   return <><Navbar width={{ base: TOOLBOX_WIDTH }} p={4} sx={{ zIndex: 90 }}>
