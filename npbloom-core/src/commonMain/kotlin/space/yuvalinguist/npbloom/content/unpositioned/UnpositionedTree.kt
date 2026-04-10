@@ -87,6 +87,13 @@ data class UnpositionedTree(
         copy(nodes = nodes.transformNodes(nodeIds, transformFunc))
 
     /**
+     * Transforms the children of the nodes with the given IDs using the given transform function
+     * at any point in the given tree.
+     */
+    internal fun transformChildrenOfNodes(nodeIds: Set<Id>, transformFunc: NodeTransformFunc): UnpositionedTree =
+        copy(nodes = nodes.transformNodes(getChildNodeIds(nodeIds), transformFunc))
+
+    /**
      * Transforms all nodes in the given tree using the given transform function.
      */
     internal fun transformAllNodes(transformFunc: NodeTransformFunc): UnpositionedTree =
@@ -185,7 +192,18 @@ data class UnpositionedTree(
 
     internal fun findSliceStart(nodeId: Id): SliceStart? =
         (nodes[nodeId] as? UnpositionedTerminalNode)?.slice?.start
-            ?: (nodes[nodeId] as? UnpositionedBranchingNode)?.children?.mapNotNull { findSliceStart(it) }?.minOrNull()
+            ?: (nodes[nodeId] as? UnpositionedBranchingNode)?.children?.mapNotNull(::findSliceStart)?.minOrNull()
+
+    private fun findSliceEndExclusive(nodeId: Id): SliceEndExclusive? =
+        (nodes[nodeId] as? UnpositionedTerminalNode)?.slice?.endExclusive
+            ?: (nodes[nodeId] as? UnpositionedBranchingNode)?.children?.mapNotNull(::findSliceEndExclusive)?.maxOrNull()
+
+    fun findSlice(nodeId: Id): StringSlice? {
+        val start = findSliceStart(nodeId)
+        val endExclusive = findSliceEndExclusive(nodeId)
+        if (start != null && endExclusive != null) return StringSlice(start, endExclusive)
+        return null
+    }
 
     fun regenerateNodeIds(): UnpositionedTree {
         val newNodeIds = nodeIds.associateWith { generateNodeId() }

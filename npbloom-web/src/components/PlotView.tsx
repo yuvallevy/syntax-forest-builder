@@ -109,9 +109,9 @@ const PlotView: React.FC = () => {
       const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
       handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
-      moveNodes(dragOffset.dClientX, dragOffset.dClientY);
+      moveNodes(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
     } else if (dragOffset && mouseInteractionMode === 'draggingTrees') {
-      moveTrees(dragOffset.dClientX, dragOffset.dClientY);
+      moveTrees(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
     } else if (dragStartCoords && event.currentTarget === event.target) {
       handlePlotClick(event);
     }
@@ -175,6 +175,11 @@ const PlotView: React.FC = () => {
       onDragOver={preventDefaultDragEvent}
       onDrop={handleDrop}
     >
+      <defs>
+        <pattern id="folded-pattern" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#000" strokeWidth="1.5" />
+        </pattern>
+      </defs>
       {plot.trees.map(tree =>
         <TreeView
           key={`tree-${tree.id}`}

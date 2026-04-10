@@ -119,6 +119,9 @@ internal data class SetTreeContent(
 ) : ContentAction
 
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
+internal data class FoldNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+internal data class UnfoldNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
+internal data class UnfoldNodesOneLevel(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
 
 @JsExport
 sealed interface ContentChange : UndoableActionBase
@@ -239,6 +242,32 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
     )
 
     is DeleteTree -> TreeDeleted(action.plotIndex, state.plots[action.plotIndex].tree(action.treeId))
+
+    is FoldNodes -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].transformNodes(action.nodeIndicators) {
+            if (it is UnpositionedBranchingNode) it.copy(folded = true) else it
+        }
+    )
+
+    is UnfoldNodes -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].transformNodes(action.nodeIndicators) {
+            if (it is UnpositionedBranchingNode) it.copy(folded = false) else it
+        }
+    )
+
+    is UnfoldNodesOneLevel -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].transformNodes(action.nodeIndicators) {
+            if (it is UnpositionedBranchingNode) it.copy(folded = false) else it
+        }.transformChildrenOfNodes(action.nodeIndicators) {
+            if (it is UnpositionedBranchingNode) it.copy(folded = true) else it
+        }
+    )
 }
 
 private fun applyUndoableAction(state: ContentState, action: ContentChange): ContentState = when (action) {

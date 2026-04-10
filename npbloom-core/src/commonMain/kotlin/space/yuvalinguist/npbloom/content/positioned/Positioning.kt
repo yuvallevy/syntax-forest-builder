@@ -75,11 +75,11 @@ internal fun determineTerminalNodeTriangleRange(
 
 internal fun determineStrandedNodePosition(
     strWidthFunc: StrWidthFunc,
-    sentence: Sentence,
+    unpositionedTree: UnpositionedTree,
     node: UnpositionedStrandedNode
 ): CoordsInTree = when (node) {
     is UnpositionedFormerlyTerminalNode -> {  // Node was terminal - determine its position based on its slice
-        val (widthBeforeSlice, sliceWidth) = sliceOffsetAndWidth(strWidthFunc, sentence, node.formerSlice)
+        val (widthBeforeSlice, sliceWidth) = sliceOffsetAndWidth(strWidthFunc, unpositionedTree.sentence, node.formerSlice)
         CoordsInTree(
             treeX = widthBeforeSlice + (sliceWidth / 2) + node.offset.dTreeX,
             treeY = (if (node.formerlyTriangle) DEFAULT_TRIANGLE_NODE_Y else DEFAULT_TERMINAL_NODE_Y) + node.offset.dTreeY,
@@ -87,7 +87,7 @@ internal fun determineStrandedNodePosition(
     }
 
     is UnpositionedFormerlyBranchingNode -> {  // Node was branching - determine its position based on past children
-        val positionedChildNodes = applyNodePositions(node.formerDescendants, sentence, strWidthFunc)
+        val positionedChildNodes = applyNodePositions(node.formerDescendants, unpositionedTree, strWidthFunc)
         CoordsInTree(
             treeX = positionedChildNodes.map { it.position.treeX }.average() + node.offset.dTreeX,
             treeY = positionedChildNodes.minOf { it.position.treeY } + DEFAULT_NODE_LEVEL_DIFF + node.offset.dTreeY,
@@ -99,43 +99,41 @@ internal fun determineStrandedNodePosition(
 }
 
 /**
- * Returns the appropriate position for the given unpositioned node.
- */
-internal fun determineNodePosition(
-    alreadyPositionedNodes: EntitySet<PositionedNode>,
-    strWidthFunc: StrWidthFunc,
-    sentence: Sentence,
-    node: UnpositionedNode,
-): CoordsInTree = when (node) {
-    is UnpositionedBranchingNode -> determineBranchingNodePosition(alreadyPositionedNodes, node)
-    is UnpositionedTerminalNode -> determineTerminalNodePosition(strWidthFunc, sentence, node)
-    is UnpositionedStrandedNode -> determineStrandedNodePosition(strWidthFunc, sentence, node)
-}
-
-/**
  * Returns a positioned node corresponding to the given unpositioned node, based on already assigned node positions,
  * width calculation function and sentence associated with the tree.
  */
 internal fun applyNodePosition(
     alreadyPositionedNodes: EntitySet<PositionedNode>,
     strWidthFunc: StrWidthFunc,
-    sentence: Sentence,
+    unpositionedTree: UnpositionedTree,
     node: UnpositionedNode,
 ): PositionedNode = when (node) {
-    is UnpositionedBranchingNode -> PositionedBranchingNode(
-        id = node.id, label = node.label, children = node.children, yAlignMode = node.yAlignMode,
-        position = determineBranchingNodePosition(alreadyPositionedNodes, node),
-    )
+    is UnpositionedBranchingNode ->
+        // If a branching node is folded, it will be displayed as if it were a terminal node,
+        // so when positioning we simply use a terminal node as a stand-in
+        if (node.folded) {
+            val slice = unpositionedTree.findSlice(node.id) ?: throw IllegalStateException(
+                "Cannot fold ${node.label} node with ID ${node.id} because its slice cannot be determined"
+            )
+            val terminalNode = UnpositionedTerminalNode(
+                id = node.id, label = node.label, slice = slice, triangle = true, offset = node.offset,
+                folded = true, yAlignMode = node.yAlignMode,
+            )
+            applyNodePosition(alreadyPositionedNodes, strWidthFunc, unpositionedTree, terminalNode)
+        } else PositionedBranchingNode(
+            id = node.id, label = node.label, children = node.children, yAlignMode = node.yAlignMode,
+            position = determineBranchingNodePosition(alreadyPositionedNodes, node),
+        )
 
     is UnpositionedTerminalNode -> PositionedTerminalNode(
-        id = node.id, label = node.label, slice = node.slice, yAlignMode = node.yAlignMode,
-        triangle = determineTerminalNodeTriangleRange(strWidthFunc, sentence, node),
-        position = determineTerminalNodePosition(strWidthFunc, sentence, node),
+        id = node.id, label = node.label, slice = node.slice, folded = node.folded, yAlignMode = node.yAlignMode,
+        triangle = determineTerminalNodeTriangleRange(strWidthFunc, unpositionedTree.sentence, node),
+        position = determineTerminalNodePosition(strWidthFunc, unpositionedTree.sentence, node),
     )
 
     is UnpositionedStrandedNode -> PositionedStrandedNode(
         id = node.id, label = node.label, yAlignMode = node.yAlignMode,
-        position = determineStrandedNodePosition(strWidthFunc, sentence, node),
+        position = determineStrandedNodePosition(strWidthFunc, unpositionedTree, node),
     )
 }
 
@@ -145,7 +143,7 @@ internal fun applyNodePosition(
  */
 internal tailrec fun applyNodePositions(
     nodes: EntitySet<UnpositionedNode>,
-    sentence: Sentence,
+    unpositionedTree: UnpositionedTree,
     strWidthFunc: StrWidthFunc,
     alreadyPositionedNodes: EntitySet<PositionedNode> = EntitySet(),
 ): EntitySet<PositionedNode> {
@@ -160,24 +158,36 @@ internal tailrec fun applyNodePositions(
         } else positionedNode
     }
 
+    // First figure out which nodes should not be rendered at all
+    // Currently this only includes descendants of folded branching nodes
+    val hiddenNodes = nodes.descendantsOfFolded()
+
     // Nodes that can be positioned at this point in the process are:
     // * Terminal nodes, whose position is entirely based on their assigned slice
+    // * Folded branching nodes, which are treated as terminal nodes for rendering purposes
     // * Stranded nodes, which internally store the descendants or slice that they once had
     // * Branching nodes whose children all have known positions
     val nodesToPositionNow = nodes.filter { unpositionedNode ->
-        unpositionedNode !is UnpositionedBranchingNode || unpositionedNode.children.all { it in alreadyPositionedNodes }
-    }
+        unpositionedNode !is UnpositionedBranchingNode ||
+                unpositionedNode.children.all { it in alreadyPositionedNodes } ||
+                unpositionedNode.folded
+    } - hiddenNodes
 
     // Assign positions to all the nodes we've determined to be ready for positioning
     val newPositionedNodes = nodesToPositionNow.map {
-        applyNodePosition(alreadyPositionedNodes, strWidthFunc, sentence, it)
+        applyNodePosition(alreadyPositionedNodes, strWidthFunc, unpositionedTree, it)
     }
 
     // All other nodes will be positioned in one of the next iterations
-    val nodesToPositionNext = nodes.filter { it.id !in nodesToPositionNow }
+    val nodesToPositionNext = nodes.filter { it.id !in nodesToPositionNow } - hiddenNodes
 
     // Repeat the process, using as unpositioned nodes only those nodes that are have not been assigned positions yet
-    return applyNodePositions(nodesToPositionNext, sentence, strWidthFunc, alreadyPositionedNodes + newPositionedNodes)
+    return applyNodePositions(
+        nodes = nodesToPositionNext,
+        unpositionedTree = unpositionedTree,
+        strWidthFunc = strWidthFunc,
+        alreadyPositionedNodes = alreadyPositionedNodes + newPositionedNodes
+    )
 }
 
 /**
@@ -187,7 +197,7 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
     PositionedTree(
         id = tree.id,
         sentence = tree.sentence,
-        nodes = applyNodePositions(tree.nodes, tree.sentence, strWidthFunc),
+        nodes = applyNodePositions(tree.nodes, tree, strWidthFunc),
         position = CoordsInPlot(tree.coordsInPlot.plotX, tree.coordsInPlot.plotY),
         width = strWidthFunc(tree.sentence),
         strikethroughXRanges = tree.strikethroughs.map { slice ->

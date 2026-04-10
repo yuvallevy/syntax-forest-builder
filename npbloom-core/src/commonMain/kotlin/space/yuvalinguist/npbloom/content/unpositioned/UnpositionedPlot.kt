@@ -75,6 +75,20 @@ data class UnpositionedPlot internal constructor(
         )
 
     /**
+     * Transforms the children of the nodes with the given indicators using the given transform function
+     * at any point in any tree in the given plot.
+     */
+    internal fun transformChildrenOfNodes(
+        nodeIndicators: Set<NodeIndicatorInPlot>,
+        transformFunc: NodeTransformFunc,
+    ): UnpositionedPlot =
+        copy(
+            trees = trees + groupNodeIdsByTree(nodeIndicators).mapValues { (treeId, nodeIds) ->
+                trees[treeId]!!.transformChildrenOfNodes(nodeIds, transformFunc)
+            }.values
+        )
+
+    /**
      * Deletes the nodes with the given indicators from the given plot.
      */
     internal fun deleteNodes(nodeIndicators: Set<NodeIndicatorInPlot>) =

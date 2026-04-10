@@ -19,8 +19,8 @@ private val treeMagicNumber = "59b1001174ee0000".hexToByteArray()
 
 // The format version is a 2-byte sequence that is incremented whenever the file format changes in a way that is not
 // backwards-compatible.
-private val formatVersion = byteArrayOf(1, 1)
-private val oldFormatVersions = listOf(byteArrayOf(1, 0))
+private val formatVersion = byteArrayOf(1, 2)
+private val oldFormatVersions = listOf(byteArrayOf(1, 0), byteArrayOf(1, 1))
 
 @JsExport
 @JsName("contentStateToFileContents")

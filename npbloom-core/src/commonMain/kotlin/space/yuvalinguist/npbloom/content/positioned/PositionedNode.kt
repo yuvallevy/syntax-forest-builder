@@ -38,6 +38,7 @@ data class PositionedTerminalNode(
     override val position: CoordsInTree,
     val slice: StringSlice,
     val triangle: TreeXRange? = null,
+    val folded: Boolean = false,
     override val yAlignMode: YAlignMode = YAlignMode.Bottom,
 ) : PositionedNode {
     override fun withPosition(treeX: TreeX, treeY: TreeY) = copy(position = CoordsInTree(treeX, treeY))

@@ -36,6 +36,16 @@ internal fun EntitySet<UnpositionedNode>.descendantIds(node: UnpositionedBranchi
 internal fun EntitySet<UnpositionedNode>.descendantsOf(node: UnpositionedBranchingNode): EntitySet<UnpositionedNode> =
     EntitySet(descendantIds(node).map { this[it]!! })
 
+/**
+ * Returns the IDs of all nodes that are descendants of folded branching nodes.
+ * These nodes should be hidden when rendering the tree.
+ */
+internal fun EntitySet<UnpositionedNode>.descendantsOfFolded(): EntitySet<UnpositionedNode> =
+    filter { it is UnpositionedBranchingNode && it.folded }
+        .flatMap { descendantIds(it as UnpositionedBranchingNode) }
+        .toSet()
+        .let { EntitySet(it.map { this[it]!! }) }
+
 internal fun EntitySet<UnpositionedNode>.toStrandedNode(node: UnpositionedNode): UnpositionedStrandedNode =
     when (node) {
         is UnpositionedBranchingNode ->

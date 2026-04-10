@@ -84,7 +84,9 @@ const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): Rea
   node.triangle && <path
     key={`triangle-${nodeId}`}
     stroke="#000"
-    fill="none"
+    fill={node.folded
+      ? 'url(#folded-pattern)' // Folded branching node
+      : 'none'} // Natural triangle terminal node
     d={`M${node.position.treeX} ${node.position.treeY} L${node.triangle.treeX1} ${TRIANGLE_BASE_Y}  L${node.triangle.treeX2} ${TRIANGLE_BASE_Y} Z`}
   />;
 
@@ -95,6 +97,7 @@ const renderNode = (
   selectedNodeIds: Id[],
   markedNodeIds: Id[],
   prettyNodeLabels: boolean,
+  zoomLevel: number,
   nodeDragOffset?: ClientCoordsOffset,
   onMouseDown?: (event: React.MouseEvent<SVGElement>) => void,
   onSelect?: (id: Id, mode: EntitySelectionMode) => void,
@@ -132,8 +135,8 @@ const renderNode = (
   nodeDragOffset && selectedNodeIds.includes(nodeId) && <rect
     key={`${nodeId}-ghost`}
     className="TreeView--ghost"
-    x={node.position.treeX + NODE_AREA_RELATIVE_X + nodeDragOffset.dClientX}
-    y={node.position.treeY + NODE_AREA_RELATIVE_Y + nodeDragOffset.dClientY}
+    x={node.position.treeX + NODE_AREA_RELATIVE_X + nodeDragOffset.dClientX / zoomLevel}
+    y={node.position.treeY + NODE_AREA_RELATIVE_Y + nodeDragOffset.dClientY / zoomLevel}
     width={NODE_AREA_WIDTH}
     height={NODE_AREA_HEIGHT}
     rx={3}
@@ -256,7 +259,7 @@ const TreeView: React.FC<TreeViewProps> = ({
       />)}
     {tree.nodes.map(node =>
       renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, settingsState.prettyNodeLabels,
-        nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect, startEditing))}
+        state.panZoomState.zoomLevel, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect, startEditing))}
     {state.selectionAction === EntitySelectionAction.SelectTree && <>
       <rect
         x={-TREE_AREA_PADDING}
@@ -273,8 +276,8 @@ const TreeView: React.FC<TreeViewProps> = ({
       />
       {treeDragOffset && selectedTreeIds.includes(treeId) && <rect
         className="TreeView--ghost"
-        x={-TREE_AREA_PADDING + treeDragOffset.dClientX}
-        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY}
+        x={-TREE_AREA_PADDING + treeDragOffset.dClientX / state.panZoomState.zoomLevel}
+        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY / state.panZoomState.zoomLevel}
         width={tree.width + TREE_AREA_PADDING * 2}
         height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2}
         rx={3}
