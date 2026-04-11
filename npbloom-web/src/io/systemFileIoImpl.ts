@@ -98,7 +98,7 @@ const openFileNativeFallback = (): Promise<[string, Uint8Array]> =>
     });
     input.addEventListener('cancel', () => {
       input.remove();
-      reject(new Error('File selection cancelled'));
+      reject(new DOMException('File selection cancelled', 'AbortError'));
     });
     document.body.append(input);
     if ('showPicker' in HTMLInputElement.prototype) {
