@@ -137,7 +137,7 @@ const PlotView: React.FC = () => {
   const handlePlotWheel = (event: React.WheelEvent<SVGElement>) => {
     if (event.ctrlKey || event.metaKey) {
       const relativeZoomFactor = 1 - event.deltaY / 100;
-      dispatch(new Zoom(relativeZoomFactor, new CoordsInClient(event.clientX, event.clientY)));
+      dispatch(new Zoom(relativeZoomFactor, new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y)));
     } else if (event.shiftKey) {  // Horizontal pan, for devices with a vertical-only scroll wheel (most mice)
       dispatch(new Pan(new ClientCoordsOffset(-event.deltaY, 0)));
     } else {
