@@ -37,25 +37,18 @@ const isFileSystemApiSupported = () => {
  * and the file's contents as a Uint8Array.
  */
 const openFileNativeModern = async (): Promise<[string, Uint8Array]> => {
-  try {
-    // @ts-ignore
-    const handles: FileSystemFileHandle[] = await window.showOpenFilePicker({
-      types: [
-        {
-          description: 'NPBloom forest',
-          accept: { 'application/octet-stream': [FOREST_EXTENSION] },
-        },
-      ],
-    });
-    const file = await handles[0].getFile();
-    const arrayBuffer = await file.arrayBuffer();
-    return [file.name, new Uint8Array(arrayBuffer)];
-  } catch (e: any) {
-    if (e.name !== 'AbortError') {
-      alert(`${e.name}: ${e.message}`);
-    }
-    throw e;
-  }
+  // @ts-ignore
+  const handles: FileSystemFileHandle[] = await window.showOpenFilePicker({
+    types: [
+      {
+        description: 'NPBloom forest',
+        accept: { 'application/octet-stream': [FOREST_EXTENSION] },
+      },
+    ],
+  });
+  const file = await handles[0].getFile();
+  const arrayBuffer = await file.arrayBuffer();
+  return [file.name, new Uint8Array(arrayBuffer)];
 };
 
 /**
@@ -64,29 +57,22 @@ const openFileNativeModern = async (): Promise<[string, Uint8Array]> => {
  * Once the file is saved, the function returns a promise that resolves to the name of the saved file.
  */
 const saveFileNativeModern = async (data: Uint8Array, suggestedName?: string): Promise<string> => {
-  try {
-    // @ts-ignore
-    const handle = await window.showSaveFilePicker({
-      types: [
-        {
-          description: 'NPBloom forest',
-          accept: { 'application/octet-stream': [FOREST_EXTENSION] },
-        },
-      ],
-      suggestedName: (suggestedName || 'forest') +
-        (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : ''),
-    });
-    const writable = await handle.createWritable();
-    await writable.write(data);
-    await writable.close();
-    return handle.name.endsWith(FOREST_EXTENSION)
-      ? handle.name.slice(0, -FOREST_EXTENSION.length) : handle.name;
-  } catch (e: any) {
-    if (e.name !== 'AbortError') {
-      alert(`${e.name}: ${e.message}`);
-    }
-    throw e;
-  }
+  // @ts-ignore
+  const handle = await window.showSaveFilePicker({
+    types: [
+      {
+        description: 'NPBloom forest',
+        accept: { 'application/octet-stream': [FOREST_EXTENSION] },
+      },
+    ],
+    suggestedName: (suggestedName || 'forest') +
+      (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : ''),
+  });
+  const writable = await handle.createWritable();
+  await writable.write(data);
+  await writable.close();
+  return handle.name.endsWith(FOREST_EXTENSION)
+    ? handle.name.slice(0, -FOREST_EXTENSION.length) : handle.name;
 };
 
 /**
@@ -95,7 +81,7 @@ const saveFileNativeModern = async (data: Uint8Array, suggestedName?: string): P
  * and the file's contents as a Uint8Array.
  */
 const openFileNativeFallback = (): Promise<[string, Uint8Array]> =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.style.display = 'none';
     input.type = 'file';
@@ -103,11 +89,16 @@ const openFileNativeFallback = (): Promise<[string, Uint8Array]> =>
     input.addEventListener('change', async () => {
       input.remove();
       const file = input.files?.[0];
-      if (!file) {
-        throw new Error('No file selected');
+      if (file) {
+        const arrayBuffer = await file.arrayBuffer();
+        resolve([file.name, new Uint8Array(arrayBuffer)]);
+      } else {
+        reject(new Error('No file selected'));
       }
-      const arrayBuffer = await file.arrayBuffer();
-      resolve([file.name, new Uint8Array(arrayBuffer)]);
+    });
+    input.addEventListener('cancel', () => {
+      input.remove();
+      reject(new Error('File selection cancelled'));
     });
     document.body.append(input);
     if ('showPicker' in HTMLInputElement.prototype) {

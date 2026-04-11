@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AppShell, MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
 import theme from './theme';
 import './App.scss';
 import { Id } from './types';
@@ -100,21 +101,23 @@ const UiRoot = () => {
   );
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-    <AppShell
-      header={<MainMenu />}
-      navbar={<Toolbox />}
-      footer={<PlotSelector />}
-      padding={0}
-    >
-      <PlotView />
-    </AppShell>
-    {beginnersGuideActive ? <BeginnersGuide
-      onComplete={() => setBeginnersGuideActive(false)}
-    /> : activePlot.isEmpty && <PlotPlaceholder
-      showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
-      onDemoRequest={() => setBeginnersGuideActive(true)}
-    />}
-    <NewVersionModal />
+    <ModalsProvider>
+      <AppShell
+        header={<MainMenu />}
+        navbar={<Toolbox />}
+        footer={<PlotSelector />}
+        padding={0}
+      >
+        <PlotView />
+      </AppShell>
+      {beginnersGuideActive ? <BeginnersGuide
+        onComplete={() => setBeginnersGuideActive(false)}
+      /> : activePlot.isEmpty && <PlotPlaceholder
+        showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
+        onDemoRequest={() => setBeginnersGuideActive(true)}
+      />}
+      <NewVersionModal />
+    </ModalsProvider>
   </MantineProvider>;
 }
 

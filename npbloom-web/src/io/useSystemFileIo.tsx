@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { modals } from '@mantine/modals';
 import useUiState from '../useUiState.ts';
 import { openFileNative, saveFileNative } from './systemFileIoImpl.ts';
 import { LoadContentState, contentStateFromFileContents, contentStateToFileContents } from 'npbloom-core';
@@ -12,15 +13,36 @@ const useSystemFileIo = () => {
 
   const openSystemFileSaveModal = async () => {
     const data = contentStateToFileContents(state.contentState.current);
-    const fileName = await saveFileNative(new Uint8Array(data), activeFileName);
-    setActiveFileName(fileName);
+    try {
+      const fileName = await saveFileNative(new Uint8Array(data), activeFileName);
+      setActiveFileName(fileName);
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        modals.open({
+          title: 'Error saving file',
+          children: <div>{e.message || 'An unknown error occurred while saving the file.'}</div>,
+          centered: true,
+        });
+      }
+    }
   };
 
   const openSystemFileLoadModal = async () => {
-    const [fileName, data] = await openFileNative();
-    const contentState = contentStateFromFileContents(new Int8Array(data));
-    setActiveFileName(fileName);
-    dispatch(new LoadContentState(contentState));
+    try {
+      const [fileName, data] = await openFileNative();
+      const contentState = contentStateFromFileContents(new Int8Array(data));
+      setActiveFileName(fileName);
+      dispatch(new LoadContentState(contentState));
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        modals.open({
+          title: 'Error loading file',
+          children: <div>{e.message || 'An unknown error occurred while loading the file.'}</div>,
+          centered: true,
+        });
+      }
+      return;
+    }
   };
 
   return {

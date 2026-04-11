@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
 import useUiState from '../useUiState';
 import { LoadContentState } from 'npbloom-core';
 import {
@@ -48,9 +49,17 @@ const useBrowserFileIo = () => {
 
   const handleSave = (fileName: string): Promise<void> =>
     assertDbConnected(async db => {
-      await saveContentStateToFile(db, state.contentState.current, fileName);
-      setActiveFileName(fileName);
-      closeFileIoModal();
+      try {
+        await saveContentStateToFile(db, state.contentState.current, fileName);
+        setActiveFileName(fileName);
+        closeFileIoModal();
+      } catch (e: any) {
+        modals.open({
+          title: 'Error saving file',
+          children: <div>{e.message || 'An unknown error occurred while saving the file.'}</div>,
+          centered: true,
+        });
+      }
     });
 
   const handleLoad = (fileName: string): Promise<void> =>
@@ -60,8 +69,12 @@ const useBrowserFileIo = () => {
         setActiveFileName(fileName);
         dispatch(new LoadContentState(contentState));
         closeFileIoModal();
-      } catch (error: any) {
-        alert(error.message);
+      } catch (e: any) {
+        modals.open({
+          title: 'Error loading file',
+          children: <div>{e.message || 'An unknown error occurred while loading the file.'}</div>,
+          centered: true,
+        });
       }
     });
 
