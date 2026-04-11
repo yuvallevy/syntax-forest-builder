@@ -360,7 +360,7 @@ If the user clicks on a text input element - `SentenceView` or `LabelNodeEditor`
 
 On devices with a trackpad:
 * Two-finger scrolling pans the plot in all directions.
-* Pinching with two fingers is supposed to zoom the plot in and out. This is currently buggy and sometimes collides with the browser's built-in pinch gesture handling.
+* Pinching with two fingers zooms the plot in and out, centered on the current position of the cursor.
 
 Finally, another event that `PlotView` handles directly is dropping labelled bracket notation onto the plot. When the user drags and drops a bit of text from any other application onto the plot, if that text happens to be labelled bracket notation, NPBloom will parse it and create a new tree with the corresponding structure where the text was dropped. This is a small but nice feature that allows for easy import of trees from other sources.
 

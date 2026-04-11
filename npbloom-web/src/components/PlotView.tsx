@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AddTree, AddTreeFromLbn, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset,
   CoordsInPlot, CoordsInClient, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId,
@@ -20,6 +20,20 @@ const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to 
 const PlotView: React.FC = () => {
   const { state, dispatch } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+
+   /** Prevent pinch-zoom and ctrl+wheel zoom from also zooming the entire page,
+    * since we're handling zooming within the plot ourselves. */
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) e.preventDefault();
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, []);
 
   const nothingSelected = state.selection === NoSelectionInPlot.getInstance();
   const selectedNodeIndicators = state.selection instanceof NodeSelectionInPlot
@@ -163,6 +177,7 @@ const PlotView: React.FC = () => {
 
   return <>
     <svg
+      ref={svgRef}
       className="PlotView--svg"
       width="100%"
       height="100%"
