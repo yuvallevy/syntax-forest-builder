@@ -13,6 +13,8 @@
  * Modifications made by Yuval Levy (@yuvallevy) 2024.
  */
 
+const FOREST_EXTENSION = '.npbf';
+
 /**
  * Returns whether the file system API is supported in the current environment.
  */
@@ -41,7 +43,7 @@ const openFileNativeModern = async (): Promise<[string, Uint8Array]> => {
       types: [
         {
           description: 'NPBloom forest',
-          accept: { 'application/octet-stream': ['.npbf'] },
+          accept: { 'application/octet-stream': [FOREST_EXTENSION] },
         },
       ],
     });
@@ -68,15 +70,17 @@ const saveFileNativeModern = async (data: Uint8Array, suggestedName?: string): P
       types: [
         {
           description: 'NPBloom forest',
-          accept: { 'application/octet-stream': ['.npbf'] },
+          accept: { 'application/octet-stream': [FOREST_EXTENSION] },
         },
       ],
-      suggestedName: (suggestedName || 'forest') + '.npbf',
+      suggestedName: (suggestedName || 'forest') +
+        (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : ''),
     });
     const writable = await handle.createWritable();
     await writable.write(data);
     await writable.close();
-    return handle.name;
+    return handle.name.endsWith(FOREST_EXTENSION)
+      ? handle.name.slice(0, -FOREST_EXTENSION.length) : handle.name;
   } catch (e: any) {
     if (e.name !== 'AbortError') {
       alert(`${e.name}: ${e.message}`);
@@ -95,7 +99,7 @@ const openFileNativeFallback = (): Promise<[string, Uint8Array]> =>
     const input = document.createElement('input');
     input.style.display = 'none';
     input.type = 'file';
-    input.accept = '.npbf';
+    input.accept = FOREST_EXTENSION;
     input.addEventListener('change', async () => {
       input.remove();
       const file = input.files?.[0];
@@ -124,7 +128,8 @@ const saveFileNativeFallback = (data: Uint8Array, suggestedName?: string): Promi
     const blobUrl = URL.createObjectURL(new Blob([data], { type: 'application/octet-stream' }));
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = (suggestedName || 'forest') + '.npbf';
+    a.download = (suggestedName || 'forest') +
+      (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
     a.style.display = 'none';
     document.body.append(a);
     a.click();
