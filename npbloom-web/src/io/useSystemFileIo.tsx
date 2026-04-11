@@ -7,15 +7,21 @@ import { LoadContentState, contentStateFromFileContents, contentStateToFileConte
 /* Note: Kotlin's ByteArray gets compiled to Int8Array in JS, but the browser's File System API uses Uint8Array
  * so we need to convert between the two each time. */
 
-const useSystemFileIo = () => {
+const useSystemFileIo = ({
+  setBrowserIoActiveFileName,
+}: {
+  setBrowserIoActiveFileName: (fileName?: string) => void;
+}) => {
   const { state, dispatch } = useUiState();
-  const [activeFileName, setActiveFileName] = useState<string>();
+  const [systemIoActiveFileName, setSystemIoActiveFileName] = useState<string>();
 
   const openSystemFileSaveModal = async () => {
     const data = contentStateToFileContents(state.contentState.current);
     try {
-      const fileName = await saveFileNative(new Uint8Array(data), activeFileName);
-      setActiveFileName(fileName);
+      const fileName = await saveFileNative(new Uint8Array(data), systemIoActiveFileName);
+      setSystemIoActiveFileName(fileName);
+      // Clear the active file name in the browser file IO to prevent confusion
+      setBrowserIoActiveFileName(undefined);
     } catch (e: any) {
       if (e.name !== 'AbortError') {
         modals.open({
@@ -31,7 +37,9 @@ const useSystemFileIo = () => {
     try {
       const [fileName, data] = await openFileNative();
       const contentState = contentStateFromFileContents(new Int8Array(data));
-      setActiveFileName(fileName);
+      setSystemIoActiveFileName(fileName);
+      // Clear the active file name in the browser file IO to prevent confusion
+      setBrowserIoActiveFileName(undefined);
       dispatch(new LoadContentState(contentState));
     } catch (e: any) {
       if (e.name !== 'AbortError') {

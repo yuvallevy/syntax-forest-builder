@@ -14,13 +14,18 @@ import {
 } from './browserFileIoImpl';
 import BrowserFileIoModal from './BrowserFileIoModal';
 
-const useBrowserFileIo = () => {
+const useBrowserFileIo = ({
+  activeFileName,
+  setActiveFileName,
+}: {
+  activeFileName?: string;
+  setActiveFileName: (fileName?: string) => void;
+}) => {
   const { state, dispatch } = useUiState();
   const db = useRef<IDBDatabase>();
   const [browserFileIoModalOpened, { open: openFileIoModal, close: closeFileIoModal }] = useDisclosure(false);
   const [fileList, setFileList] = useState<FileWithMetadata[]>([]);
   const [interactionMode, setInteractionMode] = useState<'save' | 'load'>('load');
-  const [activeFileName, setActiveFileName] = useState<string>();
 
   const refreshFileList = async () => {
     if (!db.current) {
@@ -106,7 +111,6 @@ const useBrowserFileIo = () => {
 
   return {
     browserFileIoModalComponent,
-    activeFileName,
     openFileSaveModal,
     openFileLoadModal,
     saveOrSaveAs,

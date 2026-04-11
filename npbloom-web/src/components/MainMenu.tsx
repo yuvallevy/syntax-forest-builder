@@ -11,8 +11,7 @@ import useUiState from '../useUiState.ts';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
 import AboutButton from './meta/AboutButton';
-import useBrowserFileIo from '../io/useBrowserFileIo.tsx';
-import useSystemFileIo from '../io/useSystemFileIo.tsx';
+import useFileIo from '../io/useFileIo.ts';
 
 type MenuItem = {
   label: string;
@@ -32,8 +31,15 @@ type NamedMenuSection = [string, MenuSection];
 const MainMenu: React.FC = () => {
   const { state, dispatch } = useUiState();
 
-  const { browserFileIoModalComponent, activeFileName, openFileSaveModal, openFileLoadModal, saveOrSaveAs } = useBrowserFileIo();
-  const { openSystemFileLoadModal, openSystemFileSaveModal } = useSystemFileIo();
+  const {
+    browserFileIoModalComponent,
+    activeFileName,
+    openFileSaveModal,
+    openFileLoadModal,
+    saveOrSaveAs,
+    openSystemFileLoadModal,
+    openSystemFileSaveModal,
+  } = useFileIo();
 
   const os = useOs();
 
