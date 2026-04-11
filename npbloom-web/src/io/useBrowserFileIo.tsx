@@ -10,13 +10,13 @@ import {
   openFileDatabase,
   renameFile,
   saveContentStateToFile
-} from './fileIoImpl';
-import FileIoModal from './FileIoModal';
+} from './browserFileIoImpl';
+import BrowserFileIoModal from './BrowserFileIoModal';
 
-const useFileIo = () => {
+const useBrowserFileIo = () => {
   const { state, dispatch } = useUiState();
   const db = useRef<IDBDatabase>();
-  const [fileIoModalOpened, { open: openFileIoModal, close: closeFileIoModal }] = useDisclosure(false);
+  const [browserFileIoModalOpened, { open: openFileIoModal, close: closeFileIoModal }] = useDisclosure(false);
   const [fileList, setFileList] = useState<FileWithMetadata[]>([]);
   const [interactionMode, setInteractionMode] = useState<'save' | 'load'>('load');
   const [activeFileName, setActiveFileName] = useState<string>();
@@ -29,8 +29,8 @@ const useFileIo = () => {
   };
 
   useEffect(() => {
-    if (fileIoModalOpened) void refreshFileList();
-  }, [fileIoModalOpened]);
+    if (browserFileIoModalOpened) void refreshFileList();
+  }, [browserFileIoModalOpened]);
 
   const openFileSaveModal = () => {
     setInteractionMode('save');
@@ -79,8 +79,8 @@ const useFileIo = () => {
 
   const saveOrSaveAs = () => activeFileName ? handleSave(activeFileName) : openFileSaveModal();
 
-  const fileIoModalComponent = <FileIoModal
-    opened={fileIoModalOpened}
+  const browserFileIoModalComponent = <BrowserFileIoModal
+    opened={browserFileIoModalOpened}
     fileList={fileList}
     interactionMode={interactionMode}
     activeFileName={activeFileName}
@@ -92,7 +92,7 @@ const useFileIo = () => {
   />;
 
   return {
-    fileIoModalComponent,
+    browserFileIoModalComponent,
     activeFileName,
     openFileSaveModal,
     openFileLoadModal,
@@ -100,4 +100,4 @@ const useFileIo = () => {
   };
 };
 
-export default useFileIo;
+export default useBrowserFileIo;

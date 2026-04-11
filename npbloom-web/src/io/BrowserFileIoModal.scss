@@ -1,0 +1,11 @@
+.BrowserFileIoModal--file-actions {
+  visibility: hidden;
+}
+
+.BrowserFileIoModal--file-row .BrowserFileIoModal--new-file-name-input {
+  padding: 0;
+}
+
+.BrowserFileIoModal--file-row:hover .BrowserFileIoModal--file-actions {
+  visibility: visible;
+}

@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActionIcon, Button, Group, Modal, Popover, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { useInputState } from '@mantine/hooks';
 import { IconCheck, IconEdit, IconTrash, IconX } from '@tabler/icons-react';
-import { FileWithMetadata } from './fileIoImpl';
+import { FileWithMetadata } from './browserFileIoImpl';
 import prettyBytes from 'pretty-bytes';
-import './FileIoModal.scss';
+import './BrowserFileIoModal.scss';
 
-interface FileIoModalProps {
+interface BrowserFileIoModalProps {
   opened: boolean;
   fileList: FileWithMetadata[];
   interactionMode: 'save' | 'load';
@@ -24,7 +24,7 @@ const compareFileNames = (file1: FileWithMetadata, file2: FileWithMetadata) =>
 const prettyDate = (date: Date) =>
   (date.getDay() === new Date().getDay()) ? `Today, ${date.toLocaleTimeString()}` : date.toLocaleString();
 
-const FileIoModal: React.FC<FileIoModalProps> = ({
+const BrowserFileIoModal: React.FC<BrowserFileIoModalProps> = ({
   opened,
   fileList,
   interactionMode,
@@ -101,7 +101,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
         </tr>
         </thead>
         <tbody>
-          {sortedFileList.map((file) => <tr key={file.name} className="FileIoModal--file-row">
+          {sortedFileList.map((file) => <tr key={file.name} className="BrowserFileIoModal--file-row">
             <td
               style={{ cursor: interactionMode === 'load' ? 'pointer' : 'unset' }}
               onClick={interactionMode === 'load'
@@ -112,7 +112,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
                 ? <form onSubmit={(event) => { event.preventDefault(); handleRename(file.name, newFileName); }}>
                   <Popover opened={!!renamingStatus} position="bottom-start" withArrow offset={0}>
                     <Popover.Target>
-                      <TextInput ref={newFileNameInputRef} classNames={{ root: "FileIoModal--new-file-name-input" }} p="xs" value={newFileName} onInput={setNewFileName} />
+                      <TextInput ref={newFileNameInputRef} classNames={{ root: "BrowserFileIoModal--new-file-name-input" }} p="xs" value={newFileName} onInput={setNewFileName} />
                     </Popover.Target>
                     <Popover.Dropdown>
                       <Text color="red">{renamingStatus?.message}</Text>
@@ -125,7 +125,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
             <td>{prettyDate(file.modifiedTime)}</td>
             <td>
               {renamingFile
-                ? <Group spacing="xs" position="right" className="FileIoModal--file-actions">
+                ? <Group spacing="xs" position="right" className="BrowserFileIoModal--file-actions">
                   <ActionIcon variant="gradient" onClick={() => handleRename(file.name, newFileName)}>
                     <IconCheck size={18} />
                   </ActionIcon>
@@ -133,7 +133,7 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
                     <IconX size={18} />
                   </ActionIcon>
                 </Group>
-                : <Group spacing="xs" position="right" className="FileIoModal--file-actions">
+                : <Group spacing="xs" position="right" className="BrowserFileIoModal--file-actions">
                   <ActionIcon onClick={() => openNewFileNamePrompt(file.name)}>
                     <IconEdit size={18} />
                   </ActionIcon>
@@ -175,4 +175,4 @@ const FileIoModal: React.FC<FileIoModalProps> = ({
   </Modal>;
 };
 
-export default FileIoModal;
+export default BrowserFileIoModal;
