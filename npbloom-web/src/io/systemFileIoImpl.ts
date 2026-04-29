@@ -120,7 +120,7 @@ const saveFileNativeFallback = (data: Uint8Array, suggestedName?: string): Promi
     const a = document.createElement('a');
     a.href = blobUrl;
     a.download = (suggestedName || 'forest') +
-      (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
+      (!suggestedName || !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
     a.style.display = 'none';
     document.body.append(a);
     a.click();
