@@ -6,11 +6,15 @@ import space.yuvalinguist.npbloom.NoSuchTreeException
 import space.yuvalinguist.npbloom.content.EntitySet
 import space.yuvalinguist.npbloom.content.Id
 import space.yuvalinguist.npbloom.content.NodeIndicatorInPlot
+import space.yuvalinguist.npbloom.content.unpositioned.PlotShape
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 @JsExport
-data class PositionedPlot(val trees: EntitySet<PositionedTree>) {
+data class PositionedPlot(
+    val trees: EntitySet<PositionedTree>,
+    val shapes: EntitySet<PlotShape> = EntitySet(),
+) {
     fun tree(treeId: Id) = trees[treeId] ?: throw NoSuchTreeException(treeId)
 
     operator fun contains(treeId: Id) = treeId in trees

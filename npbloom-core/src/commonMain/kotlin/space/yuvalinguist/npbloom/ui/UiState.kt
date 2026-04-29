@@ -69,6 +69,13 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class FoldSelectedNodes : UiAction
 @JsExport class UnfoldSelectedNodes : UiAction
 @JsExport class UnfoldSelectedNodesOneLevel : UiAction
+@JsExport class AddShapeToPlot(val shape: PlotShape) : UiAction
+@JsExport class MoveSelectedShapes(val dx: Double, val dy: Double) : UiAction
+@JsExport class TransformSelectedShape(val newShape: PlotShape) : UiAction
+@JsExport class SetShapeTool(val tool: ShapeTool) : UiAction
+
+@JsExport
+enum class ShapeTool { None, Line, Arrow, Rectangle, RoundedRectangle, Ellipse }
 
 @JsExport
 data class UiState(
@@ -79,6 +86,7 @@ data class UiState(
     val objectMarkings: SelectionInPlot = NoSelectionInPlot,
     val editedNodeIndicator: NodeIndicatorInPlot?,
     val panZoomState: PanZoomState,
+    val activeShapeTool: ShapeTool = ShapeTool.None,
 )
 
 @JsExport
@@ -316,6 +324,14 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                     ),
                     selection = NoSelectionInPlot,
                     selectionAction = EntitySelectionAction.SelectTree,
+                )
+
+                is ShapeSelectionInPlot -> state.copy(
+                    contentState = contentReducer(
+                        state.contentState,
+                        DeleteShapes(state.activePlotIndex, state.selection.shapeIds)
+                    ),
+                    selection = NoSelectionInPlot,
                 )
 
                 else -> state
@@ -635,6 +651,48 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
 
         is RemoveAllRelationMarkings -> {
             return state.copy(objectMarkings = NoSelectionInPlot)
+        }
+
+        is AddShapeToPlot -> {
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    AddShape(state.activePlotIndex, action.shape)
+                ),
+                selection = ShapeSelectionInPlot(setOf(action.shape.id)),
+                activeShapeTool = ShapeTool.None,
+            )
+        }
+
+        is MoveSelectedShapes -> {
+            if (state.selection !is ShapeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    MoveShapes(
+                        state.activePlotIndex,
+                        state.selection.shapeIds,
+                        PlotCoordsOffset(action.dx, action.dy),
+                    )
+                ),
+            )
+        }
+
+        is TransformSelectedShape -> {
+            if (state.selection !is ShapeSelectionInPlot) return state
+            return state.copy(
+                contentState = contentReducer(
+                    state.contentState,
+                    TransformShape(state.activePlotIndex, action.newShape.id, action.newShape)
+                ),
+            )
+        }
+
+        is SetShapeTool -> {
+            return state.copy(
+                activeShapeTool = action.tool,
+                selection = if (action.tool != ShapeTool.None) NoSelectionInPlot else state.selection,
+            )
         }
     }
 }
