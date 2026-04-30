@@ -1,4 +1,4 @@
-import { ClientCoordsOffset, CoordsInClient, CoordsInPlot, coordsInPlotToCoordsInClient, EnclosureShape, EntitySelectionMode, PanZoomState } from 'npbloom-core';
+import { ClientCoordsOffset, CoordsInClient, CoordsInPlot, coordsInPlotToCoordsInClient, EnclosureShape, PanZoomState } from 'npbloom-core';
 import { renderHandles, snap } from './common';
 
 const renderBaseEnclosure = (
