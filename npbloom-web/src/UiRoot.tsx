@@ -5,9 +5,9 @@ import theme from './theme';
 import './App.scss';
 import { Id } from './types';
 import {
-  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NoSelectionInPlot,
-  NodeSelectionInPlot, Redo, SelectChildNode, SelectParentNodes, SetSelection, SetSelectionAction, StartEditing,
-  StringSlice, TreeSelectionInPlot, Undo, UnpositionedBranchingNode, UnpositionedTerminalNode
+  AddNodeBySelection, ChildNodeSide, DeleteSelectedEntities, generateNodeId, NoSelectionInPlot, NodeSelectionInPlot,
+  Redo, SelectChildNode, SelectParentNodes, SetSelection, StartEditing, StringSlice, Undo, UnpositionedBranchingNode,
+  UnpositionedTerminalNode
 } from 'npbloom-core';
 import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -18,7 +18,6 @@ import PlotSelector from './components/PlotSelector';
 import BeginnersGuide from './components/meta/BeginnersGuide';
 import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
-import useHeldHotkey from './useHeldHotkey';
 import './UiRoot.scss';
 
 const UiRoot = () => {
@@ -93,12 +92,6 @@ const UiRoot = () => {
                        // This seems unreliable. TODO: test cross-browser and on different computers
     }
   });
-
-  useHeldHotkey('Alt',
-    () => dispatch(new SetSelectionAction(EntitySelectionAction.SelectTree)),
-    () => !(state.selection instanceof TreeSelectionInPlot)
-        && dispatch(new SetSelectionAction(EntitySelectionAction.SelectNode))
-  );
 
   return <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
     <ModalsProvider>

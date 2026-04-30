@@ -44,6 +44,8 @@ const NODE_AREA_HEIGHT = 20;
 const NODE_AREA_RELATIVE_X = -(NODE_AREA_WIDTH / 2);
 const NODE_AREA_RELATIVE_Y = -18.5;
 
+const SENTENCE_AREA_HEIGHT = 1.25 * SENTENCE_FONT_SIZE_PX;
+
 const TREE_AREA_PADDING = 12;
 
 interface NodeCreationTriggerClickZoneProps {
@@ -246,6 +248,30 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   return <g id={`tree-${treeId}`}
             style={{ transform: `translate(${treePositionInClient.clientX}px, ${treePositionInClient.clientY}px) scale(${state.panZoomState.zoomLevel})` }}>
+    <g className={'TreeView--tree-handle' + (selectedTreeIds.includes(treeId) ? ' TreeView--tree-handle--selected' : '')}>
+      <rect
+        x={-TREE_AREA_PADDING}
+        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
+        width={tree.width + TREE_AREA_PADDING * 2}
+        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+        rx={3}
+        ry={3}
+        onMouseDown={event => {
+          handleSingleTreeSelect(treeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
+          onTreeMouseDown && onTreeMouseDown(event);
+        }}
+        className="TreeView--tree-area"
+      />
+      <rect
+        x={-TREE_AREA_PADDING}
+        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
+        width={tree.width + TREE_AREA_PADDING * 2}
+        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+        rx={3}
+        ry={3}
+        className="TreeView--tree-outline"
+      />
+    </g>
     {getNodeCreationTriggers(
       tree,
       strWidth,
@@ -260,30 +286,15 @@ const TreeView: React.FC<TreeViewProps> = ({
     {tree.nodes.map(node =>
       renderNode(node.id, node, tree.nodes, selectedNodeIds, markedNodeIds, settingsState.prettyNodeLabels,
         state.panZoomState.zoomLevel, nodeDragOffset, onNodeMouseDown, handleSingleNodeSelect, startEditing))}
-    {state.selectionAction === EntitySelectionAction.SelectTree && <>
-      <rect
-        x={-TREE_AREA_PADDING}
-        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
-        width={tree.width + TREE_AREA_PADDING * 2}
-        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2}
-        rx={3}
-        ry={3}
-        onMouseDown={event => {
-          handleSingleTreeSelect(treeId, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
-          onTreeMouseDown && onTreeMouseDown(event);
-        }}
-        className={'TreeView--tree-area' + (selectedTreeIds.includes(treeId) ? ' TreeView--tree-area--selected' : '')}
-      />
-      {treeDragOffset && selectedTreeIds.includes(treeId) && <rect
-        className="TreeView--ghost"
-        x={-TREE_AREA_PADDING + treeDragOffset.dClientX / state.panZoomState.zoomLevel}
-        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY / state.panZoomState.zoomLevel}
-        width={tree.width + TREE_AREA_PADDING * 2}
-        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2}
-        rx={3}
-        ry={3}
-      />}
-    </>}
+    {treeDragOffset && selectedTreeIds.includes(treeId) && <rect
+      className="TreeView--ghost"
+      x={-TREE_AREA_PADDING + treeDragOffset.dClientX / state.panZoomState.zoomLevel}
+      y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY / state.panZoomState.zoomLevel}
+      width={tree.width + TREE_AREA_PADDING * 2}
+      height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+      rx={3}
+      ry={3}
+    />}
     {strikethroughLines}
   </g>;
 };
