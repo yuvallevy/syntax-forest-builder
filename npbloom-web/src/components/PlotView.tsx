@@ -18,8 +18,6 @@ import SettingsStateContext from '../SettingsStateContext';
 import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
 
 const PlotView: React.FC = () => {
@@ -338,9 +336,6 @@ const PlotView: React.FC = () => {
         shape={creationPreviewShape}
         isSelected={false}
         panZoomState={state.panZoomState}
-        onMouseDown={noop}
-        onSelect={noop}
-        onResizeHandleMouseDown={noop}
       />}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView--selection-box"

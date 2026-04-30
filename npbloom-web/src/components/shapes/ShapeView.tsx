@@ -18,9 +18,9 @@ interface ShapeViewProps {
   panZoomState: PanZoomState;
   dragOffset?: ClientCoordsOffset;
   resizePreviewShape?: PlotShape;
-  onMouseDown: (event: React.MouseEvent<SVGElement>) => void;
-  onSelect: (id: Id, mode: EntitySelectionMode) => void;
-  onResizeHandleMouseDown: (handleId: string, event: React.MouseEvent<SVGElement>) => void;
+  onMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
+  onSelect?: (id: Id, mode: EntitySelectionMode) => void;
+  onResizeHandleMouseDown?: (handleId: string, event: React.MouseEvent<SVGElement>) => void;
 }
 
 const ShapeView: React.FC<ShapeViewProps> = ({
@@ -35,7 +35,7 @@ const ShapeView: React.FC<ShapeViewProps> = ({
 }) => {
   // Mouse interaction is the same for all shapes - clicking selects the shape, dragging moves it.
   // Resizing is handled separately since it is different between shape types.
-  const handleShapeMouseDown = (event: React.MouseEvent<SVGElement>) => {
+  const handleShapeMouseDown = (onSelect && onMouseDown) ? (event: React.MouseEvent<SVGElement>) => {
     event.stopPropagation();
     onSelect(
       shape.id,
@@ -44,7 +44,7 @@ const ShapeView: React.FC<ShapeViewProps> = ({
         : EntitySelectionMode.SetSelection
     );
     onMouseDown(event);
-  };
+  } : undefined;
 
   if (shape instanceof EnclosureShape) return renderEnclosure(
     shape,
