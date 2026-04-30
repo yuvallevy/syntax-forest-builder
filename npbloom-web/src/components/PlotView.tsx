@@ -1,11 +1,14 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AddTree, AddTreeFromLbn, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection, ClientCoordsOffset,
-  CoordsInPlot, CoordsInClient, DisownNodesBySelection, EntitySelectionAction, EntitySelectionMode, generateTreeId,
-  isNodeInRect, MoveSelectedNodes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan,
-  PositionedPlot, RectInClient, SelectionInPlot, SetSelection, Zoom
+  AddTree, AddTreeFromLbn, AddShapeToPlot, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection,
+  applyShapeSelection, Arrowhead, ClientCoordsOffset, CoordsInPlot, CoordsInClient, DisownNodesBySelection,
+  EnclosureShape, EntitySelectionAction, EntitySelectionMode, generateShapeId, generateTreeId, isNodeInRect,
+  LineShape, MoveSelectedNodes, MoveSelectedShapes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot,
+  NoSelectionInPlot, Pan, PlotShape, PositionedPlot, RectInClient, SelectionInPlot, SetSelection,
+  ShapeSelectionInPlot, ShapeTool, TransformSelectedShape, Zoom
 } from 'npbloom-core';
 import TreeView from './TreeView';
+import ShapeView from './shapes/ShapeView.tsx';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import ZoomControl from "./ZoomControl.tsx";
@@ -15,6 +18,8 @@ import SettingsStateContext from '../SettingsStateContext';
 import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
 
 const PlotView: React.FC = () => {
@@ -52,11 +57,18 @@ const PlotView: React.FC = () => {
     dispatch(new AdoptNodesBySelection(adoptedNodeIndicators));
   const disownNodes = (disownedNodeIndicators: NodeIndicatorInPlot[]) =>
     dispatch(new DisownNodesBySelection(disownedNodeIndicators));
+  const moveShapes = (dx: number, dy: number) => dispatch(new MoveSelectedShapes(dx, dy));
 
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
   const [dragEndCoords, setDragEndCoords] = useState<CoordsInClient | undefined>();
   const [mouseInteractionMode, setMouseInteractionMode] =
-    useState<'idle' | 'selecting' | 'panning' | 'draggingNodes' | 'draggingTrees'>('idle');
+    useState<'idle' | 'selecting' | 'panning' | 'draggingNodes' | 'draggingTrees' | 'draggingShapes' | 'resizingShape' | 'creatingShape'>('idle');
+  const [resizeHandleId, setResizeHandleId] = useState<string | undefined>();
+  const [resizingShape, setResizingShape] = useState<PlotShape | undefined>();
+
+  const selectedShapeIds = state.selection instanceof ShapeSelectionInPlot
+    ? state.selection.shapeIdsAsArray : [];
+  const isCreatingShape = state.activeShapeTool !== ShapeTool.None;
 
   const selectionBoxTopLeft: CoordsInClient | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? new CoordsInClient(
     Math.min(dragStartCoords.clientX, dragEndCoords.clientX),
@@ -94,7 +106,10 @@ const PlotView: React.FC = () => {
   };
 
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
-    if (event.currentTarget === event.target && !event.shiftKey) {  // Only start a selection box from an empty area
+    if (isCreatingShape && event.currentTarget === event.target && !event.shiftKey) {
+      setMouseInteractionMode('creatingShape');
+      setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
+    } else if (event.currentTarget === event.target && !event.shiftKey) {  // Only start a selection box from an empty area
       setMouseInteractionMode('selecting');
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     } else if (event.shiftKey) {
@@ -126,11 +141,26 @@ const PlotView: React.FC = () => {
       moveNodes(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
     } else if (dragOffset && mouseInteractionMode === 'draggingTrees') {
       moveTrees(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
+    } else if (dragOffset && mouseInteractionMode === 'draggingShapes') {
+      moveShapes(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
+    } else if (dragOffset && mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId) {
+      const dPlotX = dragOffset.dClientX / state.panZoomState.zoomLevel;
+      const dPlotY = dragOffset.dClientY / state.panZoomState.zoomLevel;
+      const newShape = computeResizedShape(resizingShape, resizeHandleId, dPlotX, dPlotY);
+      dispatch(new TransformSelectedShape(newShape));
+    } else if (dragOffset && mouseInteractionMode === 'creatingShape' && dragStartCoords && dragEndCoords
+      && (Math.abs(dragOffset.dClientX) > MINIMUM_DRAG_DISTANCE || Math.abs(dragOffset.dClientY) > MINIMUM_DRAG_DISTANCE)) {
+      const startPlot = dragStartCoords.toCoordsInPlot(state.panZoomState);
+      const endPlot = dragEndCoords.toCoordsInPlot(state.panZoomState);
+      const shape = createShapeFromDrag(startPlot, endPlot);
+      dispatch(new AddShapeToPlot(shape));
     } else if (dragStartCoords && event.currentTarget === event.target) {
       handlePlotClick(event);
     }
     setDragStartCoords(undefined);
     setDragEndCoords(undefined);
+    setResizeHandleId(undefined);
+    setResizingShape(undefined);
     setMouseInteractionMode('idle');
   };
 
@@ -145,6 +175,73 @@ const PlotView: React.FC = () => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
       setMouseInteractionMode('draggingTrees');
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
+    }
+  };
+
+  const handleShapeMouseDown = (event: React.MouseEvent<SVGElement>) => {
+    if (event.buttons === PRIMARY_MOUSE_BUTTON) {
+      setMouseInteractionMode('draggingShapes');
+      setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
+    }
+  };
+
+  const handleShapeSelect = (shapeId: string, mode: EntitySelectionMode) => {
+    const existing = state.selection instanceof ShapeSelectionInPlot
+      ? [...state.selection.shapeIdsAsArray] : [];
+    setSelection(applyShapeSelection(mode, [shapeId], existing));
+  };
+
+  const handleResizeHandleMouseDown = (handleId: string, event: React.MouseEvent<SVGElement>) => {
+    if (event.buttons === PRIMARY_MOUSE_BUTTON && selectedShapeIds.length === 1) {
+      const shape = plot.shapes.get(selectedShapeIds[0]);
+      if (shape) {
+        setMouseInteractionMode('resizingShape');
+        setResizeHandleId(handleId);
+        setResizingShape(shape);
+        setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
+      }
+    }
+  };
+
+  const computeResizedShape = (original: PlotShape, handleId: string, dPlotX: number, dPlotY: number): PlotShape => {
+    if (original instanceof EnclosureShape) {
+      let { x, y, width, height } = original;
+      if (handleId.includes('w')) { x += dPlotX; width -= dPlotX; }
+      if (handleId.includes('e')) { width += dPlotX; }
+      if (handleId.includes('n')) { y += dPlotY; height -= dPlotY; }
+      if (handleId.includes('s')) { height += dPlotY; }
+      // Prevent negative dimensions by flipping
+      if (width < 0) { x += width; width = -width; }
+      if (height < 0) { y += height; height = -height; }
+      return original.copy(undefined, x, y, width, height);
+    }
+    if (original instanceof LineShape) {
+      if (handleId === 'start') {
+        return original.copy(undefined, new CoordsInPlot(original.start.plotX + dPlotX, original.start.plotY + dPlotY));
+      }
+      if (handleId === 'end') {
+        return original.copy(undefined, undefined, new CoordsInPlot(original.end.plotX + dPlotX, original.end.plotY + dPlotY));
+      }
+    }
+    return original;
+  };
+
+  const createShapeFromDrag = (startCoords: CoordsInPlot, endCoords: CoordsInPlot) => {
+    const tool = state.activeShapeTool;
+    const id = generateShapeId();
+    if (tool === ShapeTool.Line || tool === ShapeTool.Arrow) {
+      return new LineShape(id, startCoords, endCoords,
+        tool === ShapeTool.Arrow ? Arrowhead.End : Arrowhead.None);
+    } else {
+      const x = Math.min(startCoords.plotX, endCoords.plotX);
+      const y = Math.min(startCoords.plotY, endCoords.plotY);
+      const w = Math.abs(endCoords.plotX - startCoords.plotX);
+      const h = Math.abs(endCoords.plotY - startCoords.plotY);
+      const cornerRadius =
+        tool === ShapeTool.Ellipse ? Infinity
+          : tool === ShapeTool.RoundedRectangle ? 8
+            : 0;
+      return new EnclosureShape(id, x, y, w, h, cornerRadius);
     }
   };
 
@@ -170,10 +267,23 @@ const PlotView: React.FC = () => {
     }
   };
 
+  const resizePreviewShape = mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId && dragOffset
+    ? computeResizedShape(resizingShape, resizeHandleId,
+        dragOffset.dClientX / state.panZoomState.zoomLevel,
+        dragOffset.dClientY / state.panZoomState.zoomLevel)
+    : undefined;
+
+  const creationPreviewShape = mouseInteractionMode === 'creatingShape' && dragStartCoords && dragEndCoords
+    && (Math.abs(dragEndCoords.clientX - dragStartCoords.clientX) > MINIMUM_DRAG_DISTANCE
+      || Math.abs(dragEndCoords.clientY - dragStartCoords.clientY) > MINIMUM_DRAG_DISTANCE)
+    ? createShapeFromDrag(dragStartCoords.toCoordsInPlot(state.panZoomState), dragEndCoords.toCoordsInPlot(state.panZoomState))
+    : undefined;
+
   const plotViewCursor =
-    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees') && dragOffset ? 'move'
-      : (mouseInteractionMode === 'panning') ? 'grabbing'
-        : 'crosshair';
+    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees' || mouseInteractionMode === 'draggingShapes') && dragOffset ? 'move'
+      : mouseInteractionMode === 'resizingShape' ? 'grabbing'
+        : (mouseInteractionMode === 'panning') ? 'grabbing'
+          : 'crosshair';
 
   return <>
     <svg
@@ -194,6 +304,12 @@ const PlotView: React.FC = () => {
         <pattern id="folded-pattern" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="6" stroke="#000" strokeWidth="1.5" />
         </pattern>
+        <marker id="arrowhead-end" markerWidth="20" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="10 0, 20 3.5, 10 7" fill="#000" />
+        </marker>
+        <marker id="arrowhead-start" markerWidth="14" markerHeight="7" refX="0" refY="3.5" orient="auto">
+          <polygon points="0 0, -10 3.5, 0 7" fill="#000" />
+        </marker>
       </defs>
       {plot.trees.map(tree =>
         <TreeView
@@ -205,6 +321,27 @@ const PlotView: React.FC = () => {
           onNodeMouseDown={handleNodeMouseDown}
           onTreeMouseDown={handleTreeMouseDown}
         />)}
+      {plot.shapes.map(shape =>
+        <ShapeView
+          key={`shape-${shape.id}`}
+          shape={shape}
+          isSelected={selectedShapeIds.includes(shape.id)}
+          panZoomState={state.panZoomState}
+          dragOffset={mouseInteractionMode === 'draggingShapes' ? dragOffset : undefined}
+          resizePreviewShape={resizePreviewShape && shape.id === resizePreviewShape.id ? resizePreviewShape : undefined}
+          onMouseDown={handleShapeMouseDown}
+          onSelect={handleShapeSelect}
+          onResizeHandleMouseDown={handleResizeHandleMouseDown}
+        />)}
+      {creationPreviewShape && <ShapeView
+        key="creation-preview"
+        shape={creationPreviewShape}
+        isSelected={false}
+        panZoomState={state.panZoomState}
+        onMouseDown={noop}
+        onSelect={noop}
+        onResizeHandleMouseDown={noop}
+      />}
       {selectionBoxTopLeft && selectionBoxBottomRight && <rect
         className="PlotView--selection-box"
         x={selectionBoxTopLeft.clientX}

@@ -1,12 +1,13 @@
 import {
   AddNodeBySelection, DeleteSelectedEntities, EntitySelectionAction, generateNodeId, NodeSelectionInPlot,
-  NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SliceSelectionInPlot, StartEditing,
-  ToggleSliceStrikethrough, ToggleTriangle, TreeSelectionInPlot, Undo, UnpositionedTerminalNode,
+  NoSelectionInPlot, Redo, ResetSelectedNodePositions, SetSelectionAction, SetShapeTool, ShapeTool,
+  SliceSelectionInPlot, StartEditing, ToggleSliceStrikethrough, ToggleTriangle, TreeSelectionInPlot, Undo,
+  UnpositionedTerminalNode,
 } from 'npbloom-core';
 import { ActionIcon, Paper, Navbar, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
-  IconArrowBackUp, IconArrowForwardUp, IconBracketsContain, IconCopy, IconPencil, IconPlus, IconStrikethrough,
-  IconTrash, IconTriangle, TablerIconsProps,
+  IconArrowBackUp, IconArrowForwardUp, IconArrowUpRight, IconBracketsContain, IconCircle, IconCopy, IconLine,
+  IconPencil, IconPlus, IconRectangle, IconStrikethrough, IconTrash, IconTriangle, TablerIconsProps,
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import './Toolbox.scss';
@@ -82,6 +83,8 @@ const Toolbox: React.FC = () => {
   }
   const undo = () => dispatch(new Undo());
   const redo = () => dispatch(new Redo());
+  const setShapeTool = (tool: ShapeTool) => dispatch(new SetShapeTool(
+    state.activeShapeTool === tool ? ShapeTool.None : tool));
 
   useHotkeys(['Ctrl+C', 'Meta+C'], event => {
     if (oneTreeSelected) {
@@ -167,7 +170,19 @@ const Toolbox: React.FC = () => {
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
     { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
       description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
-        substituteOsAwareHotkey('Ctrl+V', os) + '.' }
+        substituteOsAwareHotkey('Ctrl+V', os) + '.' },
+    { title: 'Draw line', icon: IconLine, action: () => setShapeTool(ShapeTool.Line),
+      toggleState: state.activeShapeTool === ShapeTool.Line ? 'on' : 'off',
+      description: 'Draw a line on the canvas.' },
+    { title: 'Draw arrow', icon: IconArrowUpRight, action: () => setShapeTool(ShapeTool.Arrow),
+      toggleState: state.activeShapeTool === ShapeTool.Arrow ? 'on' : 'off',
+      description: 'Draw an arrow on the canvas.' },
+    { title: 'Draw rectangle', icon: IconRectangle, action: () => setShapeTool(ShapeTool.Rectangle),
+      toggleState: state.activeShapeTool === ShapeTool.Rectangle ? 'on' : 'off',
+      description: 'Draw a rectangle on the canvas.' },
+    { title: 'Draw ellipse', icon: IconCircle, action: () => setShapeTool(ShapeTool.Ellipse),
+      toggleState: state.activeShapeTool === ShapeTool.Ellipse ? 'on' : 'off',
+      description: 'Draw an ellipse on the canvas.' },
   ];
 
   return <><Navbar width={{ base: TOOLBOX_WIDTH }} p={4} sx={{ zIndex: 90 }}>
