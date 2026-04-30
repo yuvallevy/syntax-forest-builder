@@ -1,0 +1,41 @@
+.ShapeView {
+  cursor: pointer;
+}
+
+.ShapeView--visual {
+  pointer-events: none;
+}
+
+.ShapeView--hitarea {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+  cursor: move;
+  pointer-events: stroke;
+}
+
+.ShapeView--handle {
+  fill: #fff;
+  stroke: #333;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.ShapeView--handle-hitarea {
+  fill: transparent;
+  stroke: none;
+}
+
+.ShapeView--ghost {
+  pointer-events: none;
+  stroke: #999;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  fill: none;
+  & line, & rect, & ellipse {
+    stroke: #999;
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    fill: none;
+  }
+}

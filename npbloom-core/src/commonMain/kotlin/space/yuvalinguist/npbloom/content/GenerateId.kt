@@ -26,3 +26,6 @@ fun generateTreeId() = generateId("t")
 
 @JsExport
 fun generateNodeId() = generateId("n")
+
+@JsExport
+fun generateShapeId() = generateId("s")

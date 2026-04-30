@@ -20,3 +20,11 @@ fun applyTreeSelection(
     existingTreeIds: Array<Id> = emptyArray(),
 ): SelectionInPlot =
     applyTreeSelection(mode, newTreeIds.toSet(), existingTreeIds.toSet())
+
+@JsExport
+fun applyShapeSelection(
+    mode: EntitySelectionMode,
+    newShapeIds: Array<Id>,
+    existingShapeIds: Array<Id> = emptyArray(),
+): SelectionInPlot =
+    applyShapeSelection(mode, newShapeIds.toSet(), existingShapeIds.toSet())
