@@ -42,8 +42,8 @@ export const renderLine = (
   const markerStart = hasStartArrow ? 'url(#arrowhead-start)' : undefined;
 
   // Shorten line so it ends at the base of the arrowhead, not past the tip
-  const lineEnd = hasEndArrow ? shortenEndpoint(start, end, ARROWHEAD_LENGTH) : end;
-  const lineStart = hasStartArrow ? shortenEndpoint(end, start, ARROWHEAD_LENGTH) : start;
+  const lineEnd = hasEndArrow ? shortenEndpoint(start, end, ARROWHEAD_LENGTH * zoomLevel) : end;
+  const lineStart = hasStartArrow ? shortenEndpoint(end, start, ARROWHEAD_LENGTH * zoomLevel) : start;
 
   // Move preview: render a ghost of the shape being dragged, transformed to the current mouse position
   const moveGhostTransform = dragOffset && isSelected
