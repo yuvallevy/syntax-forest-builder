@@ -130,7 +130,7 @@ const PlotView: React.FC = () => {
   const handlePlotMouseUp = (event: React.MouseEvent<SVGElement>) => {
     if (selectionBoxTopLeft && selectionBoxBottomRight &&
       // Dragging a tiny box is probably just intended to be a click, so don't count it as box selection
-      dragOffset && dragOffset.dClientX > MINIMUM_DRAG_DISTANCE && dragOffset.dClientY > MINIMUM_DRAG_DISTANCE) {
+      dragOffset && (Math.abs(dragOffset.dClientX) > MINIMUM_DRAG_DISTANCE || Math.abs(dragOffset.dClientY) > MINIMUM_DRAG_DISTANCE)) {
       const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight)
         .toRectInPlot(state.panZoomState);
       const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
