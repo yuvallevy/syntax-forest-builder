@@ -34,17 +34,14 @@ import { Id } from '../types';
 import './TreeView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
-import { SENTENCE_FONT_SIZE_PX } from '../uiDimensions.ts';
+import { NODE_AREA_HEIGHT, SENTENCE_AREA_HEIGHT, SENTENCE_FONT_SIZE_PX } from '../uiDimensions.ts';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
 
 const NODE_AREA_WIDTH = 35;
-const NODE_AREA_HEIGHT = 20;
 const NODE_AREA_RELATIVE_X = -(NODE_AREA_WIDTH / 2);
 const NODE_AREA_RELATIVE_Y = -18.5;
-
-const SENTENCE_AREA_HEIGHT = 1.25 * SENTENCE_FONT_SIZE_PX;
 
 const TREE_AREA_PADDING = 12;
 

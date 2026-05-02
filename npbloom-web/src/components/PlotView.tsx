@@ -1,11 +1,12 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AddTree, AddTreeFromLbn, AddShapeToPlot, AdoptNodesBySelection, applyNodePositionsToPlot, applyNodeSelection,
-  applyShapeSelection, Arrowhead, ClientCoordsOffset, CoordsInPlot, CoordsInClient, DisownNodesBySelection,
-  EnclosureShape, EntitySelectionAction, EntitySelectionMode, generateShapeId, generateTreeId, isNodeInRect,
-  LineShape, MoveSelectedNodes, MoveSelectedShapes, MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot,
-  NoSelectionInPlot, Pan, PlotShape, PositionedPlot, RectInClient, SelectionInPlot, SetSelection,
-  ShapeSelectionInPlot, ShapeTool, TransformSelectedShape, Zoom
+  applyShapeSelection, applyTreeSelection, Arrowhead, ClientCoordsOffset, CoordsInPlot, CoordsInClient,
+  DisownNodesBySelection, EnclosureShape, EntitySelectionAction, EntitySelectionMode, generateShapeId,
+  generateTreeId, isNodeInRect, LineShape, MoveSelectedNodes, MoveSelectedShapes, MoveSelectedTrees,
+  NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PlotShape, PositionedPlot, RectInClient,
+  RectInPlot, SelectionInPlot, SetSelection, ShapeSelectionInPlot, ShapeTool, TransformSelectedShape,
+  TreeSelectionInPlot, Zoom
 } from 'npbloom-core';
 import TreeView from './TreeView';
 import ShapeView from './shapes/ShapeView.tsx';
@@ -15,10 +16,16 @@ import ZoomControl from "./ZoomControl.tsx";
 import './PlotView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
-import { SVG_X, SVG_Y } from '../uiDimensions';
+import { NODE_AREA_HEIGHT, SENTENCE_AREA_HEIGHT, SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_DRAG_DISTANCE = 8;  // to leave some wiggle room for the mouse to move while clicking
+
+const isTreeInRect = (tree: { position: { plotX: number; plotY: number }; width: number; height: number }, rect: RectInPlot) =>
+  tree.position.plotX >= rect.topLeft.plotX &&
+  tree.position.plotX + tree.width <= rect.bottomRight.plotX &&
+  tree.position.plotY - tree.height - NODE_AREA_HEIGHT >= rect.topLeft.plotY &&
+  tree.position.plotY + SENTENCE_AREA_HEIGHT <= rect.bottomRight.plotY;
 
 const PlotView: React.FC = () => {
   const { state, dispatch } = useUiState();
@@ -133,8 +140,15 @@ const PlotView: React.FC = () => {
       dragOffset && (Math.abs(dragOffset.dClientX) > MINIMUM_DRAG_DISTANCE || Math.abs(dragOffset.dClientY) > MINIMUM_DRAG_DISTANCE)) {
       const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight)
         .toRectInPlot(state.panZoomState);
-      const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
-      handleNodesSelect(newSelectedNodes, event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
+      const mode = event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection;
+      const enclosedTreeIds = plot.trees.map(tree => tree).filter(tree => isTreeInRect(tree, rectInPlot)).map(tree => tree.id);
+      if (enclosedTreeIds.length > 0) {
+        const existingTreeIds = state.selection instanceof TreeSelectionInPlot ? state.selection.treeIdsAsArray : [];
+        setSelection(applyTreeSelection(mode, enclosedTreeIds, existingTreeIds));
+      } else {
+        const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
+        handleNodesSelect(newSelectedNodes, mode);
+      }
     } else if (dragOffset && mouseInteractionMode === 'draggingNodes') {
       moveNodes(dragOffset.dClientX / state.panZoomState.zoomLevel, dragOffset.dClientY / state.panZoomState.zoomLevel);
     } else if (dragOffset && mouseInteractionMode === 'draggingTrees') {
