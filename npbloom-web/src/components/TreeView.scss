@@ -53,24 +53,30 @@
 }
 
 .TreeView--tree-area {
-  fill: transparent;
-  stroke: none;
+  fill: none;
+  stroke: transparent;
+  stroke-width: 10;
   cursor: pointer;
+  pointer-events: stroke;
 }
 
-.TreeView--tree-area:not(.TreeView--tree-area--selected):hover {
+.TreeView--tree-outline {
+  fill: none;
+  stroke: none;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.TreeView--tree-handle:hover .TreeView--tree-outline {
   stroke: #275;
   stroke-opacity: 0.5;
-  stroke-dasharray: 4 4;
-  stroke-width: 1;
 }
 
-.TreeView--tree-area--selected {
-  fill: #000000;
-  fill-opacity: 0.02;
+.TreeView--tree-handle--selected .TreeView--tree-outline {
   stroke: #275;
+  stroke-opacity: 1;
   stroke-dasharray: 4 4;
-  stroke-width: 1;
   animation: marching-ants .75s linear infinite;
 }
 

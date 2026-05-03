@@ -13,7 +13,7 @@ import { useRef, useState } from 'react';
 import './Toolbox.scss';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey';
 import { useOs } from '@mantine/hooks';
-import { IconAdoptNode, IconDisownNode, IconResetNodePosition, IconToggleTreeSelectionMode } from './icons';
+import { IconAdoptNode, IconDisownNode, IconResetNodePosition } from './icons';
 import useUiState from '../useUiState';
 import useTextOutputModal from '../io/useTextOutputModal';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
@@ -36,7 +36,6 @@ const Toolbox: React.FC = () => {
 
   const { textOutputModalComponent, openTextOutputModal } = useTextOutputModal();
 
-  const noTreesInPlot = state.contentState.current.plots[state.activePlotIndex].treeCount === 0;
   const noNodesOrSliceSelected = state.selection === NoSelectionInPlot.getInstance() ||
     state.selection instanceof TreeSelectionInPlot;
   const sentenceIsEmpty = state.selection instanceof SliceSelectionInPlot &&
@@ -64,8 +63,6 @@ const Toolbox: React.FC = () => {
     state.selectionAction === EntitySelectionAction.Adopt ? EntitySelectionAction.SelectNode : EntitySelectionAction.Adopt));
   const toggleDisownMode = () => dispatch(new SetSelectionAction(
     state.selectionAction === EntitySelectionAction.Disown ? EntitySelectionAction.SelectNode : EntitySelectionAction.Disown));
-  const toggleTreeSelectMode = () => dispatch(new SetSelectionAction(
-    state.selectionAction === EntitySelectionAction.SelectTree ? EntitySelectionAction.SelectNode : EntitySelectionAction.SelectTree));
   const toggleSliceStrikethrough = (wasEditing: boolean) => {
     dispatch(new ToggleSliceStrikethrough());
     wasEditing && setTimeout(startEditing, 50);
@@ -159,9 +156,6 @@ const Toolbox: React.FC = () => {
       description: 'Disown one or more children of the selected node.' },
     { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
       description: 'Relocate the selected nodes to their original positions.' },
-    { title: 'Select trees', icon: IconToggleTreeSelectionMode, action: toggleTreeSelectMode, disabled: noTreesInPlot,
-      toggleState: state.selectionAction === EntitySelectionAction.SelectTree ? 'on' : 'off',
-      hotkey: 'Alt', hotkeyHold: true, description: 'Select entire trees instead of individual nodes.' },
     { title: 'Strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
       action: (_, focusEvent) =>
         toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
