@@ -18,15 +18,17 @@
  * are registered on the entity-level handlers as expected.
  */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   AddShapeToPlot, AddTree, AddTreeFromLbn, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection, Arrowhead,
   ClientCoordsOffset, CoordsInClient, CoordsInPlot, DisownNodesBySelection, EnclosureShape, EntitySelectionAction,
   EntitySelectionMode, generateShapeId, generateTreeId, isNodeInRect, LineShape, MoveSelectedNodes, MoveSelectedShapes,
   MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PanZoomState, PlotShape,
   PositionedPlot, PositionedTree, RectInClient, RectInPlot, SelectionInPlot, SetSelection, ShapeSelectionInPlot,
-  ShapeTool, TransformSelectedShape, TreeSelectionInPlot, UiAction, UiState, Zoom
+  ShapeTool, TransformSelectedShape, TreeSelectionInPlot, UiAction
 } from 'npbloom-core';
+import useUiState from '../useUiState';
+import usePlotMouseWheelInteractions from './usePlotMouseWheelInteractions';
 import { NODE_AREA_HEIGHT, SENTENCE_AREA_HEIGHT, SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
@@ -220,22 +222,10 @@ const actionOnDragCompletion = (
 };
 
 const usePlotMouseInteractions = (
-  state: UiState,
-  dispatch: React.Dispatch<UiAction>,
   plot: PositionedPlot,
   svgRef: React.RefObject<SVGSVGElement>,
 ) => {
-  /** Prevent pinch-zoom and ctrl+wheel zoom from also zooming the entire page,
-   * since we're handling zooming within the plot ourselves. */
-  useEffect(() => {
-    const el = svgRef.current;
-    if (!el) return;
-    const handler = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) e.preventDefault();
-    };
-    el.addEventListener('wheel', handler, { passive: false });
-    return () => el.removeEventListener('wheel', handler);
-  }, []);
+  const { state, dispatch } = useUiState();
 
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
   const [rawDragEndCoords, setRawDragEndCoords] = useState<CoordsInClient | undefined>();
@@ -453,16 +443,9 @@ const usePlotMouseInteractions = (
     }
   };
 
-  const handlePlotWheel = (event: React.WheelEvent<SVGElement>) => {
-    if (event.ctrlKey || event.metaKey) {
-      const relativeZoomFactor = 1 - event.deltaY / 100;
-      dispatch(new Zoom(relativeZoomFactor, new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y)));
-    } else if (event.shiftKey) {  // Horizontal pan, for devices with a vertical-only scroll wheel (most mice)
-      dispatch(new Pan(new ClientCoordsOffset(-event.deltaY, 0)));
-    } else {
-      dispatch(new Pan(new ClientCoordsOffset(-event.deltaX, -event.deltaY)));
-    }
-  };
+  // Mouse wheel interactions are deferred to a separate hook since they require some bespoke logic.
+  // See `usePlotMouseWheelInteractions` for details.
+  const { handlePlotWheel } = usePlotMouseWheelInteractions(svgRef);
 
   // Prevent the default browser drag-and-drop behavior when dragging files or text into the plot,
   // since we want to use drag-and-drop for adding trees from text, and the default behavior would interfere with that.

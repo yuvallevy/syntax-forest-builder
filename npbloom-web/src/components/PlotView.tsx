@@ -11,7 +11,7 @@ import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
 
 const PlotView: React.FC = () => {
-  const { state, dispatch } = useUiState();
+  const { state } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -42,7 +42,7 @@ const PlotView: React.FC = () => {
     handlePlotWheel,
     preventDefaultDragEvent,
     handleDrop,
-  } = usePlotMouseInteractions(state, dispatch, plot, svgRef);
+  } = usePlotMouseInteractions(plot, svgRef);
 
   return <>
     <svg
