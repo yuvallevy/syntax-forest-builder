@@ -1,15 +1,19 @@
 import React from 'react';
 import {
+  applyShapeSelection,
   ClientCoordsOffset,
   EnclosureShape,
   EntitySelectionMode,
   LineShape,
   PlotShape,
   PanZoomState,
+  SetSelection,
+  ShapeSelectionInPlot,
 } from 'npbloom-core';
 import { Id } from '../../types';
 import { renderEnclosure } from './enclosures';
 import { renderLine } from './lines';
+import useUiState from '../../useUiState';
 import './ShapeView.scss';
 
 interface ShapeViewProps {
@@ -30,21 +34,27 @@ const ShapeView: React.FC<ShapeViewProps> = ({
   dragOffset,
   resizePreviewShape,
   onMouseDown,
-  onSelect,
   onResizeHandleMouseDown,
 }) => {
+  const { state, dispatch } = useUiState();
+  const handleShapeSelect = (shapeId: string, mode: EntitySelectionMode) => {
+    const existing = state.selection instanceof ShapeSelectionInPlot
+      ? [...state.selection.shapeIdsAsArray] : [];
+    dispatch(new SetSelection(applyShapeSelection(mode, [shapeId], existing)));
+  };
+
   // Mouse interaction is the same for all shapes - clicking selects the shape, dragging moves it.
   // Resizing is handled separately since it is different between shape types.
-  const handleShapeMouseDown = (onSelect && onMouseDown) ? (event: React.MouseEvent<SVGElement>) => {
+  const handleShapeMouseDown = ((event: React.MouseEvent<SVGElement>) => {
     event.stopPropagation();
-    onSelect(
+    handleShapeSelect(
       shape.id,
       event.ctrlKey || event.metaKey
         ? EntitySelectionMode.AddToSelection
         : EntitySelectionMode.SetSelection
     );
-    onMouseDown(event);
-  } : undefined;
+    onMouseDown && onMouseDown(event);
+  });
 
   if (shape instanceof EnclosureShape) return renderEnclosure(
     shape,

@@ -15,6 +15,8 @@ data class PositionedPlot(
     val trees: EntitySet<PositionedTree>,
     val shapes: EntitySet<PlotShape> = EntitySet(),
 ) {
+    val treesAsArray get() = trees.toJsArray()
+
     fun tree(treeId: Id) = trees[treeId] ?: throw NoSuchTreeException(treeId)
 
     operator fun contains(treeId: Id) = treeId in trees
