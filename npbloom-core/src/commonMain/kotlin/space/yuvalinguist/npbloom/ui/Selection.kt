@@ -43,6 +43,15 @@ data class TreeSelectionInPlot(val treeIds: Set<Id>) : SelectionInPlot {
 @JsExport
 data class SliceSelectionInPlot(val treeId: Id, val slice: StringSlice) : SelectionInPlot
 
+@JsExport
+data class ShapeSelectionInPlot(val shapeIds: Set<Id>) : SelectionInPlot {
+    init {
+        if (shapeIds.isEmpty()) error("Empty ShapeSelectionInPlot - should not happen")
+    }
+
+    val shapeIdsAsArray = shapeIds.toTypedArray()
+}
+
 /**
  * If there are any node indicators in this collection, returns a NodeSelectionInPlot object consisting of them.
  * Otherwise, returns a NoSelectionInPlot object.
@@ -58,6 +67,9 @@ internal fun Collection<NodeIndicatorInPlot>.asSelectionInPlot() =
  */
 internal fun Collection<Id>.asTreeSelectionInPlot() =
     if (isEmpty()) NoSelectionInPlot else TreeSelectionInPlot(toSet())
+
+internal fun Collection<Id>.asShapeSelectionInPlot() =
+    if (isEmpty()) NoSelectionInPlot else ShapeSelectionInPlot(toSet())
 
 @JsExport
 enum class EntitySelectionAction { SelectNode, SelectTree, Adopt, Disown }
@@ -90,6 +102,17 @@ fun applyTreeSelection(
     EntitySelectionMode.ReplaceSelectionInTree -> existingTreeIds + newTreeIds
 }.asTreeSelectionInPlot()
 
+@JsName("applyShapeSelectionByKtSets")
+fun applyShapeSelection(
+    mode: EntitySelectionMode,
+    newShapeIds: Set<Id>,
+    existingShapeIds: Set<Id> = emptySet(),
+): SelectionInPlot = when (mode) {
+    EntitySelectionMode.AddToSelection -> existingShapeIds + newShapeIds
+    EntitySelectionMode.SetSelection -> newShapeIds
+    EntitySelectionMode.ReplaceSelectionInTree -> existingShapeIds + newShapeIds
+}.asShapeSelectionInPlot()
+
 /**
  * Removes nonexistent nodes from the given selection, based on the given plot.
  */
@@ -99,6 +122,7 @@ internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot):
         is SliceSelectionInPlot -> if (selection.treeId in plot) selection else NoSelectionInPlot
         is NodeSelectionInPlot -> selection.nodeIndicators.filter { it in plot }.asSelectionInPlot()
         is TreeSelectionInPlot -> selection.treeIds.filter { it in plot }.asTreeSelectionInPlot()
+        is ShapeSelectionInPlot -> selection.shapeIds.filter { plot.containsShape(it) }.asShapeSelectionInPlot()
     }
 
 @JsExport

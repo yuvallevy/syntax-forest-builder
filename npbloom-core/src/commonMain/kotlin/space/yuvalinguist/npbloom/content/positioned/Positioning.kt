@@ -212,6 +212,7 @@ internal fun applyNodePositionsToTree(strWidthFunc: StrWidthFunc, tree: Unpositi
 fun applyNodePositionsToPlot(strWidthFunc: StrWidthFunc, plot: UnpositionedPlot): PositionedPlot =
     PositionedPlot(
         trees = plot.trees.mapToNewEntitySet { tree -> applyNodePositionsToTree(strWidthFunc, tree) },
+        shapes = plot.shapes,
     )
 
 /**

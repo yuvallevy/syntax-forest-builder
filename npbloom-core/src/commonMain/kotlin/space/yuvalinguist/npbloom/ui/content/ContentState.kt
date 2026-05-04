@@ -119,6 +119,10 @@ internal data class SetTreeContent(
 ) : ContentAction
 
 internal data class DeleteTree(val plotIndex: PlotIndex, val treeId: Id) : ContentAction
+internal data class AddShape(val plotIndex: PlotIndex, val newShape: PlotShape) : ContentAction
+internal data class DeleteShapes(val plotIndex: PlotIndex, val shapeIds: Set<Id>) : ContentAction
+internal data class MoveShapes(val plotIndex: PlotIndex, val shapeIds: Set<Id>, val offset: PlotCoordsOffset) : ContentAction
+internal data class TransformShape(val plotIndex: PlotIndex, val shapeId: Id, val newShape: PlotShape) : ContentAction
 internal data class FoldNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
 internal data class UnfoldNodes(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
 internal data class UnfoldNodesOneLevel(val plotIndex: PlotIndex, val nodeIndicators: Set<NodeIndicatorInPlot>) : ContentAction
@@ -136,6 +140,9 @@ internal data class TreeChanged(val plotIndex: PlotIndex, val old: UnpositionedT
     ContentChange
 
 internal data class TreeDeleted(val plotIndex: PlotIndex, val removedTree: UnpositionedTree) : ContentChange
+internal data class ShapeAdded(val plotIndex: PlotIndex, val newShape: PlotShape) : ContentChange
+internal data class ShapeChanged(val plotIndex: PlotIndex, val old: PlotShape, val new: PlotShape) : ContentChange
+internal data class ShapeDeleted(val plotIndex: PlotIndex, val removedShape: PlotShape) : ContentChange
 
 private fun makeUndoable(state: ContentState, action: ContentAction): ContentChange = when (action) {
     AddPlot -> PlotAdded(state.plots.size, UnpositionedPlot())
@@ -268,6 +275,26 @@ private fun makeUndoable(state: ContentState, action: ContentAction): ContentCha
             if (it is UnpositionedBranchingNode) it.copy(folded = true) else it
         }
     )
+
+    is AddShape -> ShapeAdded(action.plotIndex, action.newShape)
+
+    is DeleteShapes -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].deleteShapes(action.shapeIds)
+    )
+
+    is MoveShapes -> PlotChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex],
+        state.plots[action.plotIndex].transformShapes(action.shapeIds) { it.move(action.offset) }
+    )
+
+    is TransformShape -> ShapeChanged(
+        action.plotIndex,
+        state.plots[action.plotIndex].shapes[action.shapeId]!!,
+        action.newShape
+    )
 }
 
 private fun applyUndoableAction(state: ContentState, action: ContentChange): ContentState = when (action) {
@@ -294,6 +321,27 @@ private fun applyUndoableAction(state: ContentState, action: ContentChange): Con
             state.plots[action.plotIndex].removeTree(action.removedTree.id)
         )
     )
+
+    is ShapeAdded -> state.copy(
+        plots = state.plots.changeAt(
+            action.plotIndex,
+            state.plots[action.plotIndex].setShape(action.newShape)
+        )
+    )
+
+    is ShapeChanged -> state.copy(
+        plots = state.plots.changeAt(
+            action.plotIndex,
+            state.plots[action.plotIndex].setShape(action.new)
+        )
+    )
+
+    is ShapeDeleted -> state.copy(
+        plots = state.plots.changeAt(
+            action.plotIndex,
+            state.plots[action.plotIndex].removeShape(action.removedShape.id)
+        )
+    )
 }
 
 private fun reverseUndoableAction(action: ContentChange): ContentChange = when (action) {
@@ -303,6 +351,9 @@ private fun reverseUndoableAction(action: ContentChange): ContentChange = when (
     is TreeAdded -> TreeDeleted(action.plotIndex, action.newTree)
     is TreeChanged -> action.copy(old = action.new, new = action.old)
     is TreeDeleted -> TreeAdded(action.plotIndex, action.removedTree)
+    is ShapeAdded -> ShapeDeleted(action.plotIndex, action.newShape)
+    is ShapeChanged -> action.copy(old = action.new, new = action.old)
+    is ShapeDeleted -> ShapeAdded(action.plotIndex, action.removedShape)
 }
 
 typealias UndoableContentState = UndoRedoHistory<ContentState, ContentChange>
