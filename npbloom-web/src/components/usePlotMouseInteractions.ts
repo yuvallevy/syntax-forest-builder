@@ -101,11 +101,26 @@ const actionOnSelectBoxCompletion = (
 };
 
 /**
+ * Given a delta x and y, returns a new delta x and y that is snapped to the nearest 45-degree angle.
+ */
+const snapAngleTo45Deg = (dx: number, dy: number): [number, number] => {
+  const snapped = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
+  const length = Math.hypot(dx, dy);
+  return [Math.cos(snapped) * length, Math.sin(snapped) * length];
+};
+
+/**
  * Given the original shape, the resize handle being dragged, and the distance dragged in plot coordinates,
  * computes the new shape that would result from resizing the original shape according to that drag.
  * Used both to show shape previews while resizing and to determine the final shape when completing a resize drag.
  */
-const computeResizedShape = (original: PlotShape, handleId: string, dPlotX: number, dPlotY: number): PlotShape => {
+const computeResizedShape = (
+  original: PlotShape,
+  handleId: string,
+  dPlotX: number,
+  dPlotY: number,
+  snapAngles: boolean, // Cannot rely on the effective dragOffset here, since the reference frame is not the same
+): PlotShape => {
   if (original instanceof EnclosureShape) {
     let { x, y, width, height } = original;
     if (handleId.includes('w')) { x += dPlotX; width -= dPlotX; }
@@ -119,10 +134,24 @@ const computeResizedShape = (original: PlotShape, handleId: string, dPlotX: numb
   }
   if (original instanceof LineShape) {
     if (handleId === 'start') {
-      return original.copy(undefined, new CoordsInPlot(original.start.plotX + dPlotX, original.start.plotY + dPlotY));
+      let newX = original.start.plotX + dPlotX;
+      let newY = original.start.plotY + dPlotY;
+      if (snapAngles) {
+        const [dx, dy] = snapAngleTo45Deg(newX - original.end.plotX, newY - original.end.plotY);
+        newX = original.end.plotX + dx;
+        newY = original.end.plotY + dy;
+      }
+      return original.copy(undefined, new CoordsInPlot(newX, newY));
     }
     if (handleId === 'end') {
-      return original.copy(undefined, undefined, new CoordsInPlot(original.end.plotX + dPlotX, original.end.plotY + dPlotY));
+      let newX = original.end.plotX + dPlotX;
+      let newY = original.end.plotY + dPlotY;
+      if (snapAngles) {
+        const [dx, dy] = snapAngleTo45Deg(newX - original.start.plotX, newY - original.start.plotY);
+        newX = original.start.plotX + dx;
+        newY = original.start.plotY + dy;
+      }
+      return original.copy(undefined, undefined, new CoordsInPlot(newX, newY));
     }
   }
   return original;
@@ -164,6 +193,7 @@ const actionOnDragCompletion = (
   activeShapeTool: ShapeTool,
   resizingShape: PlotShape | undefined,
   resizeHandleId: string | undefined,
+  isShiftDragging: boolean,
 ): UiAction | undefined => {
   // Find how much the mouse has moved in plot coordinates (taking zoom level into account) since the start of the drag
   const dPlotX = (dragEndCoords.clientX - dragStartCoords.clientX) / panZoomState.zoomLevel;
@@ -176,7 +206,7 @@ const actionOnDragCompletion = (
 
   // If we're resizing a shape, return a TransformSelectedShape action with the new shape resulting from that resize
   if (mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId) {
-    const newShape = computeResizedShape(resizingShape, resizeHandleId, dPlotX, dPlotY);
+    const newShape = computeResizedShape(resizingShape, resizeHandleId, dPlotX, dPlotY, isShiftDragging);
     return new TransformSelectedShape(newShape);
   }
 
@@ -208,11 +238,50 @@ const usePlotMouseInteractions = (
   }, []);
 
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
-  const [dragEndCoords, setDragEndCoords] = useState<CoordsInClient | undefined>();
+  const [rawDragEndCoords, setRawDragEndCoords] = useState<CoordsInClient | undefined>();
   const [mouseInteractionMode, setMouseInteractionMode] =
     useState<MouseInteractionMode>('idle');
   const [resizeHandleId, setResizeHandleId] = useState<string | undefined>();
   const [resizingShape, setResizingShape] = useState<PlotShape | undefined>();
+  const [isShiftDragging, setIsShiftDragging] = useState(false);
+
+  // `dragEndCoords` is split into "raw" and "effective" versions.
+  // The "raw" version is derived directly from the distance the mouse has traveled since the start of the drag,
+  // without any adjustments.
+  // The "effective" version is the one that is used in practice, and may be adjusted from the raw version
+  // when the Shift key is held down and at least one of the following interaction modes is in effect:
+  // - Creating a LineShape (i.e. line or arrow)
+  // - Moving nodes, trees, or shapes
+  //
+  // Note: the effective drag offset cannot be used for snapping when resizing lines.
+  // This is because the reference frame for moving is the drag start coordinates (what `dragOffset` assumes),
+  // while the reference frame for resizing is the opposite endpoint of the line (which is not at the drag start coordinates).
+  // See `computeResizedShape` for how snapping is handled when resizing line shapes.
+
+  // Whether we are currently in a mode where we want to snap to 45-degree angles when the user is holding Shift.
+  const canSnapTo45Deg = mouseInteractionMode === 'draggingNodes' ||
+    mouseInteractionMode === 'draggingTrees' ||
+    mouseInteractionMode === 'draggingShapes' ||
+    (mouseInteractionMode === 'creatingShape' && (
+      state.activeShapeTool === ShapeTool.Line || state.activeShapeTool === ShapeTool.Arrow
+    ));
+
+  const dragEndCoords = (() => {
+    if (!rawDragEndCoords) return undefined;
+    if (isShiftDragging && canSnapTo45Deg && dragStartCoords) {
+      const [snappedX, snappedY] = snapAngleTo45Deg(
+        rawDragEndCoords.clientX - dragStartCoords.clientX,
+        rawDragEndCoords.clientY - dragStartCoords.clientY,
+      );
+      return new CoordsInClient(dragStartCoords.clientX + snappedX, dragStartCoords.clientY + snappedY);
+    }
+    return rawDragEndCoords;
+  })();
+
+  const dragOffset: ClientCoordsOffset | undefined = dragStartCoords && dragEndCoords ? new ClientCoordsOffset(
+    dragEndCoords.clientX - dragStartCoords.clientX,
+    dragEndCoords.clientY - dragStartCoords.clientY,
+  ) : undefined;
 
   const selectedShapeIds = state.selection instanceof ShapeSelectionInPlot
     ? state.selection.shapeIdsAsArray : [];
@@ -228,11 +297,6 @@ const usePlotMouseInteractions = (
     Math.max(dragStartCoords.clientY, dragEndCoords.clientY),
   ) : undefined;
 
-  const dragOffset: ClientCoordsOffset | undefined = dragStartCoords && dragEndCoords ? new ClientCoordsOffset(
-    dragEndCoords.clientX - dragStartCoords.clientX,
-    dragEndCoords.clientY - dragStartCoords.clientY,
-  ) : undefined;
-
   const plotViewCursor =
     (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees' || mouseInteractionMode === 'draggingShapes') && dragOffset ? 'move'
       : mouseInteractionMode === 'resizingShape' ? 'grabbing'
@@ -242,14 +306,17 @@ const usePlotMouseInteractions = (
   const resizePreviewShape = mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId && dragOffset
     ? computeResizedShape(resizingShape, resizeHandleId,
         dragOffset.dClientX / state.panZoomState.zoomLevel,
-        dragOffset.dClientY / state.panZoomState.zoomLevel)
+        dragOffset.dClientY / state.panZoomState.zoomLevel,
+        isShiftDragging,
+      )
     : undefined;
 
   const creationPreviewShape = mouseInteractionMode === 'creatingShape' && dragStartCoords && dragEndCoords
-    && (Math.abs(dragEndCoords.clientX - dragStartCoords.clientX) > MINIMUM_SELECTION_BOX_DIMENSION
-      || Math.abs(dragEndCoords.clientY - dragStartCoords.clientY) > MINIMUM_SELECTION_BOX_DIMENSION)
-    ? createShapeFromDrag(state.activeShapeTool, dragStartCoords.toCoordsInPlot(state.panZoomState), dragEndCoords.toCoordsInPlot(state.panZoomState))
-    : undefined;
+    ? createShapeFromDrag(
+      state.activeShapeTool,
+      dragStartCoords.toCoordsInPlot(state.panZoomState),
+      dragEndCoords.toCoordsInPlot(state.panZoomState),
+    ) : undefined;
 
   const addTreeAndFocus = (position: CoordsInPlot) => {
     const newTreeId = generateTreeId();
@@ -281,15 +348,23 @@ const usePlotMouseInteractions = (
   };
 
   const handlePlotMouseMove = (event: React.MouseEvent<SVGElement>) => {
-    if (event.buttons === PRIMARY_MOUSE_BUTTON && !event.shiftKey && dragStartCoords) {
-      const xDistToDragStart = Math.abs(dragStartCoords?.clientX - event.clientX);
-      const yDistToDragStart = Math.abs(dragStartCoords?.clientY - event.clientY);
-      if (dragEndCoords || xDistToDragStart > MINIMUM_SELECTION_BOX_DIMENSION || yDistToDragStart > MINIMUM_SELECTION_BOX_DIMENSION) {
-        setDragEndCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
-      }
-    } else if (event.buttons === PRIMARY_MOUSE_BUTTON && mouseInteractionMode === 'panning') {
+    // Don't do anything if the mouse isn't dragging with the primary button pressed
+    if (event.buttons !== PRIMARY_MOUSE_BUTTON) return;
+  
+    // If we're panning, dispatch a Pan action for the distance the mouse has moved since the last event,
+    // and return early since we don't need to update any drag coordinates in state for a pan
+    if (mouseInteractionMode === 'panning') {
       dispatch(new Pan(new ClientCoordsOffset(event.movementX, event.movementY)));
+      return;
     }
+
+    // If for some reason the drag start coordinates aren't set, we probably aren't in a valid drag state,
+    // so don't do anything
+    if (!dragStartCoords) return;
+
+    // If we have valid drag start coordinates, update the drag end coordinates in state to the current mouse position
+    setRawDragEndCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
+    setIsShiftDragging(event.shiftKey);
   };
 
   const handlePlotMouseUp = (event: React.MouseEvent<SVGElement>) => {
@@ -328,15 +403,17 @@ const usePlotMouseInteractions = (
         state.activeShapeTool,
         resizingShape,
         resizeHandleId,
+        isShiftDragging,
       );
       if (action) dispatch(action);
     } else if (dragStartCoords && event.currentTarget === event.target) {
       handlePlotClick(event);
     }
     setDragStartCoords(undefined);
-    setDragEndCoords(undefined);
+    setRawDragEndCoords(undefined);
     setResizeHandleId(undefined);
     setResizingShape(undefined);
+    setIsShiftDragging(false);
     setMouseInteractionMode('idle');
   };
 
