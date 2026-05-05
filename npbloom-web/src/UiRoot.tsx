@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { AppShell, MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import theme from './theme';
@@ -15,16 +14,12 @@ import MainMenu from './components/MainMenu';
 import Toolbox from './components/Toolbox';
 import NewVersionModal from './components/meta/NewVersionModal.tsx';
 import PlotSelector from './components/PlotSelector';
-import BeginnersGuide from './components/meta/BeginnersGuide';
-import PlotPlaceholder from './components/meta/PlotPlaceholder';
 import useUiState from './useUiState';
 import './UiRoot.scss';
 
 const UiRoot = () => {
   const { state, dispatch } = useUiState();
   const { selection, activePlotIndex } = state;
-
-  const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
 
   const selectedNodeIndicators = selection instanceof NodeSelectionInPlot ? selection.nodeIndicatorsAsArray : [];
 
@@ -103,12 +98,6 @@ const UiRoot = () => {
       >
         <PlotView />
       </AppShell>
-      {beginnersGuideActive ? <BeginnersGuide
-        onComplete={() => setBeginnersGuideActive(false)}
-      /> : activePlot.isEmpty && <PlotPlaceholder
-        showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
-        onDemoRequest={() => setBeginnersGuideActive(true)}
-      />}
       <NewVersionModal />
     </ModalsProvider>
   </MantineProvider>;

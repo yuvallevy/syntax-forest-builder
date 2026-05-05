@@ -22,6 +22,7 @@ const EXTRA_SENTENCE_WIDTH = 4;
 interface SentenceViewProps {
   tree: PositionedTree;
   treeId: Id;
+  acceptMouseEvents: boolean;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
 const SentenceView: React.FC<SentenceViewProps> = ({
   tree,
   treeId,
+  acceptMouseEvents,
   className,
 }) => {
   const { state, dispatch } = useUiState();
@@ -155,6 +157,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({
       width: tree.sentence.length === 0
         ? (EMPTY_SENTENCE_WIDTH * state.panZoomState.zoomLevel)
         : (tree.width + EXTRA_SENTENCE_WIDTH) * state.panZoomState.zoomLevel,
+      pointerEvents: acceptMouseEvents ? 'auto' : 'none',
     }}
     placeholder="Type a sentence..."
     onFocus={e => {

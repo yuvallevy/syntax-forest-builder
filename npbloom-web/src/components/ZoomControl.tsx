@@ -8,12 +8,16 @@ const screenCenterCoords = (): CoordsInClient => new CoordsInClient(window.inner
 const zoomLevelToString = (zoomLevel: number) =>
   zoomLevel.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0, style: 'percent' });
 
-const ZoomControl: React.FC = () => {
+interface ZoomControlProps {
+  acceptMouseEvents: boolean;
+}
+
+const ZoomControl: React.FC<ZoomControlProps> = ({ acceptMouseEvents }) => {
   const { state, dispatch } = useUiState();
 
   const currentZoomLevelStr = zoomLevelToString(state.panZoomState.zoomLevel);
 
-  return <div className="ZoomControl">
+  return <div className="ZoomControl" style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}>
     <Menu shadow="md" position="top-end">
       <Menu.Target>
         <Button variant="white" color="gray" size="sm">

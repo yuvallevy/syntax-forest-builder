@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef } from 'react';
+import { useContext, useMemo, useRef, useState } from 'react';
 import { applyNodePositionsToPlot, MouseInteractionMode, PositionedPlot } from 'npbloom-core';
 import usePlotMouseInteractions from './usePlotMouseInteractions';
 import TreeView from './TreeView';
@@ -6,17 +6,23 @@ import ShapeView from './shapes/ShapeView.tsx';
 import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import ZoomControl from './ZoomControl.tsx';
-import './PlotView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
+import BeginnersGuide from './meta/BeginnersGuide.tsx';
+import PlotPlaceholder from './meta/PlotPlaceholder.tsx';
+import './PlotView.scss';
 
 const PlotView: React.FC = () => {
   const { state } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
 
+  const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
+  
   const svgRef = useRef<SVGSVGElement>(null);
 
   const { editedNodeIndicator } = state;
+
+  const activePlot = state.contentState.current.plots[state.activePlotIndex];
 
   const plot: PositionedPlot = useMemo(() => {
     const unpositionedPlot = state.contentState.current.plots[state.activePlotIndex];
@@ -43,6 +49,8 @@ const PlotView: React.FC = () => {
     preventDefaultDragEvent,
     handleDrop,
   } = usePlotMouseInteractions(plot, svgRef);
+
+  const isMouseIdle = mouseInteractionMode === MouseInteractionMode.Idle;
 
   return <>
     <svg
@@ -110,6 +118,7 @@ const PlotView: React.FC = () => {
         key={`sentence-${tree.id}`}
         tree={tree}
         treeId={tree.id}
+        acceptMouseEvents={isMouseIdle}
         className={selectionBoxTopLeft && selectionBoxBottomRight ? 'box-selecting' : undefined}
       />)}
     {editedNodeIndicator && <LabelNodeEditor
@@ -117,7 +126,15 @@ const PlotView: React.FC = () => {
       tree={plot.tree(editedNodeIndicator.treeId)}
       nodeId={editedNodeIndicator.nodeId}
     />}
-    <ZoomControl />
+    <ZoomControl acceptMouseEvents={isMouseIdle} />
+    {beginnersGuideActive ? <BeginnersGuide
+      acceptMouseEvents={isMouseIdle}
+      onComplete={() => setBeginnersGuideActive(false)}
+    /> : activePlot.isEmpty && <PlotPlaceholder
+      showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
+      acceptMouseEvents={isMouseIdle}
+      onDemoRequest={() => setBeginnersGuideActive(true)}
+    />}
   </>;
 };
 

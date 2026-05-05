@@ -8,6 +8,7 @@ import {
 import useUiState from '../../useUiState';
 
 interface BeginnersGuideProps {
+  acceptMouseEvents: boolean;
   onComplete: () => void;
 }
 
@@ -50,7 +51,7 @@ const steps = [
   },
 ];
 
-const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
+const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete, acceptMouseEvents }) => {
   const { state } = useUiState();
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -77,7 +78,7 @@ const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete }) => {
 
   const currentStep = steps[currentStepIndex];
 
-  return <div className="BeginnersGuide">
+  return <div className="BeginnersGuide" style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}>
     <Alert icon={<currentStep.icon />} title={currentStep.title} withCloseButton={false}>
       {currentStep.body}
     </Alert>
