@@ -48,6 +48,6 @@ tasks.register("patchKotlinJsBugs") {
     }
 }
 
-tasks.named("build") {
+tasks.named("assemble") {
     finalizedBy("patchKotlinJsBugs")
 }
