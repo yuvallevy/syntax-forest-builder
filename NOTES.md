@@ -60,6 +60,18 @@ Terminal nodes have a "triangle" flag, which is used for notating phrase nodes w
 
 For a time, NPBloom did actually use a recursive structure for its internal representation. The shortcomings of this approach were quickly revealed, and I rewrote the engine to use a flat data structure instead. If this were a final assignment for CS 101, of course I would have stayed with the recursive solution - that would have been the point of the exercise. However, in the context of real-world software built with humans in mind, it achieves very little beyond intellectual purity while introducing innumerable issues in everything from maintainability to usability.
 
+##### Shapes
+
+Beyond trees, NPBloom also allows inserting arbitrary shapes into the canvas. These are useful, for example, for illustrating relations between trees or highlighting specific nodes for emphasis.
+
+Shapes are implemented as a separate data structure from trees, since they are not part of the tree structure and do not have any inherent relationship with the nodes. They are stored in an `EntitySet<Shape>` in the UI state, with each shape having its own position and dimensions on the canvas. Shapes can be moved around and resized independently of the trees and each other.
+
+There are two classes of shapes: `LineShape` and `EnclosureShape`. `LineShape` is a straight line between two points, with an optional arrowhead at one or both ends. `EnclosureShape` is a closed shape defined by a bounding box, with an optional corner radius determining whether it should be drawn as a rectangle (radius = 0), an ellipse (radius = infinity), or a rounded rectangle (radius > 0).
+
+Future plans for shapes are:
+* Allowing shapes to be associated with specific nodes, trees, or slices, so that they can be anchored to them and move with them when they are moved.
+* Adding an "arc" or "curve" shape type. This could be useful for illustrating syntactic movements, for example by drawing a curved line from the trace of a moved constituent to its destination.
+
 #### A note on serialization
 
 The `content` package includes a number of `@Serializable` classes. In almost all of them, the fields are all marked with `@SerialName` with a single-character name. This is part of the saving and loading logic, which uses the `kotlinx.serialization` library to serialize the data into CBOR. The single-character names are used to minimize the size of the serialized data, which is already quite small thanks to the compact nature of CBOR.
@@ -336,13 +348,14 @@ The primary mode of interaction with `PlotView` is with the mouse. Since this in
 * `idle`: The default state when the user is not performing any mouse interactions.
 * `selecting`: When the user is clicking and dragging to create a selection box for selecting multiple nodes or trees.
 * `panning`: When the user is Shift+clicking and dragging on an empty area of the plot to pan around.
-* `draggingNodes` and `draggingTrees`: When the user is clicking and dragging nodes/trees to move them around.
+* `draggingNodes`, `draggingTrees`, `draggingShapes`: When the user is clicking and dragging nodes, trees, or shapes to move them around.
+* `resizingShape`: When the user is clicking and dragging the edges of a shape to resize it.
 
 Since dragging is a repeating theme here, `dragStartCoords` and `dragEndCoords` are used across all drag modes to keep track of the starting and current coordinates of the drag action. How these are used depends on the specific gesture being performed. In node/tree dragging modes, the generic `dragOffset` is used to determine how far the objects should be moved, while selection mode uses the more specialized `selectionBoxTopLeft` and `selectionBoxBottomRight` derived from these coordinates to render the selection box.
 
-`mouseInteractionMode` enters a state other than `idle` whenever the primary mouse button is pressed down on a node, a tree, or a blank area of the plot.
+`mouseInteractionMode` enters a state other than `idle` whenever the primary mouse button is pressed down on a node, a tree, a shape, or a blank area of the plot.
 
-* If the user clicks on a node, `mouseInteractionMode` becomes `draggingNodes`, and the user can drag the node around to move it. If tree selection mode is enabled, the same applies to trees instead, with `draggingTrees`.
+* If the user clicks on a node, `mouseInteractionMode` becomes `draggingNodes`, and the user can drag the node around to move it. The same applies to trees and shapes, with `draggingTrees` and `draggingShapes` respectively.
 * If the user clicks on an empty area of the plot, `mouseInteractionMode` depends on whether the Shift key is held down:
   - If Shift is held down, `mouseInteractionMode` becomes `panning`, and the user can drag to pan around the plot.
   - If Shift is not held down, `mouseInteractionMode` becomes `selecting`, and the user can drag to create a selection box for selecting multiple nodes or trees.
@@ -377,6 +390,19 @@ The most important bit of functionality in `TreeView` is `renderNode`, which tak
 Finally, `TreeView` renders a box around the entire tree when it is selected, which is done by calculating the bounding box of all nodes in the tree and rendering a rectangle around it.
 
 `TreeView` is _not_ responsible for rendering the sentence; that is the job of `SentenceView`, which is rendered separately below the tree. This allows the sentence to be edited directly as text.
+
+#### `ShapeView`
+
+`ShapeView` is the equivalent of `TreeView` for shapes, which are the rectangles and ellipses that users can create to annotate the plot. It is responsible for rendering these shapes and connecting them to the mouse interaction system for dragging and resizing. Since shapes are not part of the tree structure, they are rendered directly within `PlotView` rather than within `TreeView`. They also have their own selection logic, separate from the node and tree selection, which is handled by `ShapeView`.
+
+The rendering logic for `ShapeView` consists of five parts:
+* The visual representation of the shape itself, which is either a rectangle or an ellipse based on the shape's properties.
+* A thick, invisible border around the shape that serves as the trigger for dragging the shape around. This is necessary since thin borders can be hard to click on, especially when the shape is small.
+* Small squares ("handles") that serve as triggers for resizing the shape. For lines, these are shown at the endpoints; for enclosures, they are shown at the corners and midpoints of the edges. These are only visible when the shape is selected, and they allow the user to click and drag to resize the shape in different directions.
+* A ghost for the shape that appears when the user is dragging it, showing where the shape will be dropped if the user releases the mouse button at that moment.
+* A ghost for the shape that appears when the user is resizing it by dragging one of the handles, showing the new dimensions of the shape as it is being resized.
+
+The mouse dragging behavior for shapes is implemented in the `usePlotMouseInteractions` hook, similarly to the dragging behavior for nodes and trees. When the user clicks and drags on a shape, the hook updates the `mouseInteractionMode` to `draggingShapes`, and the corresponding `UiAction` is dispatched when the mouse button is released to apply the change to the state. A similar process applies to resizing shapes by dragging the handles.
 
 ### Main menu, toolbox, and other UI components
 
