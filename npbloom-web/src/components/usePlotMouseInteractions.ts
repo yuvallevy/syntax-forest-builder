@@ -1,7 +1,4 @@
 /**
- * Watch out - this is a big one!
- * If you're reading this for the first time, start with the entry point, `usePlotMouseInteractions`.
- * 
  * This file contains the mouse interaction logic for the plot, consisting of:
  * - a mouse interaction state machine that tracks what the user is currently doing with the mouse
  * - handlers for mouse events on the plot and its entities that update the mouse interaction state
@@ -20,206 +17,17 @@
 
 import { useState } from 'react';
 import {
-  AddShapeToPlot, AddTree, AddTreeFromLbn, AdoptNodesBySelection, applyNodeSelection, applyTreeSelection, Arrowhead,
-  ClientCoordsOffset, CoordsInClient, CoordsInPlot, DisownNodesBySelection, EnclosureShape, EntitySelectionAction,
-  EntitySelectionMode, generateShapeId, generateTreeId, isNodeInRect, LineShape, MoveSelectedNodes, MoveSelectedShapes,
-  MoveSelectedTrees, NodeIndicatorInPlot, NodeSelectionInPlot, NoSelectionInPlot, Pan, PanZoomState, PlotShape,
-  PositionedPlot, PositionedTree, RectInClient, RectInPlot, SelectionInPlot, SetSelection, ShapeSelectionInPlot,
-  ShapeTool, TransformSelectedShape, TreeSelectionInPlot, UiAction
+  AddTree, AddTreeFromLbn, ClientCoordsOffset, computeResizedShape, CoordsInClient, CoordsInPlot, createShapeFromDrag,
+  determineActionOnDragCompletion,
+  determineActionOnSelectBoxCompletion, EntitySelectionMode, generateTreeId, MouseInteractionMode, NoSelectionInPlot,
+  Pan, PlotShape, PositionedPlot, RectInClient, SetSelection, ShapeSelectionInPlot, ShapeTool, snapAngleTo45Deg
 } from 'npbloom-core';
 import useUiState from '../useUiState';
 import usePlotMouseWheelInteractions from './usePlotMouseWheelInteractions';
-import { NODE_AREA_HEIGHT, SENTENCE_AREA_HEIGHT, SVG_X, SVG_Y } from '../uiDimensions';
+import { SVG_X, SVG_Y } from '../uiDimensions';
 
 const PRIMARY_MOUSE_BUTTON = 1;
 const MINIMUM_SELECTION_BOX_DIMENSION = 8;  // to leave some wiggle room for the mouse to move while clicking
-
-type MouseInteractionMode =
-  | 'idle'
-  | 'selecting'
-  | 'panning'
-  | 'draggingNodes'
-  | 'draggingTrees'
-  | 'draggingShapes'
-  | 'resizingShape'
-  | 'creatingShape'
-;
-
-/**
- * Returns whether the given tree's bounding box is fully enclosed within the given rectangle in plot coordinates.
- * Used to determine whether a selection box should select trees or nodes.
- */
-const isTreeInRect = (tree: PositionedTree, rect: RectInPlot) =>
-  // tree.position.plotX and tree.position.plotY are at the top left of the sentence area.
-  // The tree's bounding box extends to the right by tree.width, upwards by tree.height + NODE_AREA_HEIGHT, and downwards by SENTENCE_AREA_HEIGHT.
-  tree.position.plotX >= rect.topLeft.plotX &&
-  tree.position.plotX + tree.width <= rect.bottomRight.plotX &&
-  tree.position.plotY - (tree.height + NODE_AREA_HEIGHT) >= rect.topLeft.plotY &&
-  tree.position.plotY + SENTENCE_AREA_HEIGHT <= rect.bottomRight.plotY;
-
-/**
- * Determines the correct action to take when a new node selection is made, based on
- * - the current selection mode (replace or add to selection)
- * - the current selection action (set selection, adopt into selection, or disown from selection)
- * and returns the corresponding UiAction to dispatch.
- */
-const nodeSelectionAction = (
-  newNodeIndicators: NodeIndicatorInPlot[],
-  alreadySelectedNodeIndicators: NodeIndicatorInPlot[],
-  selectionMode: EntitySelectionMode = EntitySelectionMode.SetSelection,
-  selectionAction: EntitySelectionAction,
-): UiAction =>
-  selectionAction === EntitySelectionAction.Adopt ? new AdoptNodesBySelection(newNodeIndicators)
-    : selectionAction === EntitySelectionAction.Disown ? new DisownNodesBySelection(newNodeIndicators)
-      : new SetSelection(applyNodeSelection(selectionMode, newNodeIndicators, alreadySelectedNodeIndicators));
-
-/**
- * Determines the correct action to take when a new selection box is made.
- * If any trees are fully enclosed in the selection box, these trees will be selected;
- * otherwise, any nodes that are enclosed in the selection box will be selected
- * (which may include nodes from partially enclosed trees, and may include nodes across multiple trees).
- * In the case of nodes, the exact action is deferred to the nodeSelectionAction function,
- * which takes into account the current selection action (set, adopt, or disown) and mode (replace or add).
- * Returns the corresponding UiAction to dispatch.
- */
-const actionOnSelectBoxCompletion = (
-  plot: PositionedPlot,
-  rectInPlot: RectInPlot,
-  currentSelection: SelectionInPlot,
-  selectionMode: EntitySelectionMode,
-  selectionAction: EntitySelectionAction,
-): UiAction => {
-  // Figure out if we're trying to select nodes or trees
-  const enclosedTreeIds = plot.treesAsArray.filter(tree => isTreeInRect(tree, rectInPlot)).map(tree => tree.id);
-
-  if (enclosedTreeIds.length > 0) {
-    const alreadySelectedTreeIds = currentSelection instanceof TreeSelectionInPlot ? currentSelection.treeIdsAsArray : [];
-    return new SetSelection(applyTreeSelection(selectionMode, enclosedTreeIds, alreadySelectedTreeIds));
-  } else {
-    const alreadySelectedNodeIndicators = currentSelection instanceof NodeSelectionInPlot ? currentSelection.nodeIndicatorsAsArray : [];
-    const newSelectedNodes = plot.filterNodeIndicatorsAsArray((tree, node) => isNodeInRect(tree, node, rectInPlot));
-    return nodeSelectionAction(newSelectedNodes, alreadySelectedNodeIndicators, selectionMode, selectionAction);
-  }
-};
-
-/**
- * Given a delta x and y, returns a new delta x and y that is snapped to the nearest 45-degree angle.
- */
-const snapAngleTo45Deg = (dx: number, dy: number): [number, number] => {
-  const snapped = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
-  const length = Math.hypot(dx, dy);
-  return [Math.cos(snapped) * length, Math.sin(snapped) * length];
-};
-
-/**
- * Given the original shape, the resize handle being dragged, and the distance dragged in plot coordinates,
- * computes the new shape that would result from resizing the original shape according to that drag.
- * Used both to show shape previews while resizing and to determine the final shape when completing a resize drag.
- */
-const computeResizedShape = (
-  original: PlotShape,
-  handleId: string,
-  dPlotX: number,
-  dPlotY: number,
-  snapAngles: boolean, // Cannot rely on the effective dragOffset here, since the reference frame is not the same
-): PlotShape => {
-  if (original instanceof EnclosureShape) {
-    let { x, y, width, height } = original;
-    if (handleId.includes('w')) { x += dPlotX; width -= dPlotX; }
-    if (handleId.includes('e')) { width += dPlotX; }
-    if (handleId.includes('n')) { y += dPlotY; height -= dPlotY; }
-    if (handleId.includes('s')) { height += dPlotY; }
-    // Prevent negative dimensions by flipping
-    if (width < 0) { x += width; width = -width; }
-    if (height < 0) { y += height; height = -height; }
-    return original.copy(undefined, x, y, width, height);
-  }
-  if (original instanceof LineShape) {
-    if (handleId === 'start') {
-      let newX = original.start.plotX + dPlotX;
-      let newY = original.start.plotY + dPlotY;
-      if (snapAngles) {
-        const [dx, dy] = snapAngleTo45Deg(newX - original.end.plotX, newY - original.end.plotY);
-        newX = original.end.plotX + dx;
-        newY = original.end.plotY + dy;
-      }
-      return original.copy(undefined, new CoordsInPlot(newX, newY));
-    }
-    if (handleId === 'end') {
-      let newX = original.end.plotX + dPlotX;
-      let newY = original.end.plotY + dPlotY;
-      if (snapAngles) {
-        const [dx, dy] = snapAngleTo45Deg(newX - original.start.plotX, newY - original.start.plotY);
-        newX = original.start.plotX + dx;
-        newY = original.start.plotY + dy;
-      }
-      return original.copy(undefined, undefined, new CoordsInPlot(newX, newY));
-    }
-  }
-  return original;
-};
-
-/**
- * Given the shape tool being used and the start and end coordinates of a drag in plot coordinates,
- * returns the corresponding shape to be added to the plot.
- * Used both to show shape previews while creating and to determine the final shape when completing a creation drag.
- */
-const createShapeFromDrag = (tool: ShapeTool, startCoords: CoordsInPlot, endCoords: CoordsInPlot) => {
-  const id = generateShapeId();
-  if (tool === ShapeTool.Line || tool === ShapeTool.Arrow) {
-    return new LineShape(id, startCoords, endCoords,
-      tool === ShapeTool.Arrow ? Arrowhead.End : Arrowhead.None);
-  } else {
-    const x = Math.min(startCoords.plotX, endCoords.plotX);
-    const y = Math.min(startCoords.plotY, endCoords.plotY);
-    const w = Math.abs(endCoords.plotX - startCoords.plotX);
-    const h = Math.abs(endCoords.plotY - startCoords.plotY);
-    const cornerRadius =
-      tool === ShapeTool.Ellipse ? Infinity
-        : tool === ShapeTool.RoundedRectangle ? 8
-          : 0;
-    return new EnclosureShape(id, x, y, w, h, cornerRadius);
-  }
-};
-
-/**
- * Determines the correct editing action to take when a drag is completed.
- * Returns the corresponding UiAction to dispatch.
- * This can be moving nodes, trees, or shapes; resizing a shape; or creating a shape.
- */
-const actionOnDragCompletion = (
-  mouseInteractionMode: MouseInteractionMode,
-  dragStartCoords: CoordsInClient,
-  dragEndCoords: CoordsInClient,
-  panZoomState: PanZoomState,
-  activeShapeTool: ShapeTool,
-  resizingShape: PlotShape | undefined,
-  resizeHandleId: string | undefined,
-  isShiftDragging: boolean,
-): UiAction | undefined => {
-  // Find how much the mouse has moved in plot coordinates (taking zoom level into account) since the start of the drag
-  const dPlotX = (dragEndCoords.clientX - dragStartCoords.clientX) / panZoomState.zoomLevel;
-  const dPlotY = (dragEndCoords.clientY - dragStartCoords.clientY) / panZoomState.zoomLevel;
-
-  // If we're moving any entity, return the corresponding Move action for that entity type
-  if (mouseInteractionMode === 'draggingNodes') return new MoveSelectedNodes(dPlotX, dPlotY);
-  if (mouseInteractionMode === 'draggingTrees') return new MoveSelectedTrees(dPlotX, dPlotY);
-  if (mouseInteractionMode === 'draggingShapes') return new MoveSelectedShapes(dPlotX, dPlotY);
-
-  // If we're resizing a shape, return a TransformSelectedShape action with the new shape resulting from that resize
-  if (mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId) {
-    const newShape = computeResizedShape(resizingShape, resizeHandleId, dPlotX, dPlotY, isShiftDragging);
-    return new TransformSelectedShape(newShape);
-  }
-
-  // If we're creating a shape, return an AddShapeToPlot action with the shape corresponding to the drag we just made
-  if (mouseInteractionMode === 'creatingShape') {
-    const startCoordsInPlot = dragStartCoords.toCoordsInPlot(panZoomState);
-    const endCoordsInPlot = dragEndCoords.toCoordsInPlot(panZoomState);
-    const shape = createShapeFromDrag(activeShapeTool, startCoordsInPlot, endCoordsInPlot);
-    return new AddShapeToPlot(shape);
-  }
-};
 
 const usePlotMouseInteractions = (
   plot: PositionedPlot,
@@ -230,7 +38,7 @@ const usePlotMouseInteractions = (
   const [dragStartCoords, setDragStartCoords] = useState<CoordsInClient | undefined>();
   const [rawDragEndCoords, setRawDragEndCoords] = useState<CoordsInClient | undefined>();
   const [mouseInteractionMode, setMouseInteractionMode] =
-    useState<MouseInteractionMode>('idle');
+    useState<MouseInteractionMode>(MouseInteractionMode.Idle);
   const [resizeHandleId, setResizeHandleId] = useState<string | undefined>();
   const [resizingShape, setResizingShape] = useState<PlotShape | undefined>();
   const [isShiftDragging, setIsShiftDragging] = useState(false);
@@ -249,17 +57,17 @@ const usePlotMouseInteractions = (
   // See `computeResizedShape` for how snapping is handled when resizing line shapes.
 
   // Whether we are currently in a mode where we want to snap to 45-degree angles when the user is holding Shift.
-  const canSnapTo45Deg = mouseInteractionMode === 'draggingNodes' ||
-    mouseInteractionMode === 'draggingTrees' ||
-    mouseInteractionMode === 'draggingShapes' ||
-    (mouseInteractionMode === 'creatingShape' && (
+  const canSnapTo45Deg = mouseInteractionMode === MouseInteractionMode.DraggingNodes ||
+    mouseInteractionMode === MouseInteractionMode.DraggingTrees ||
+    mouseInteractionMode === MouseInteractionMode.DraggingShapes ||
+    (mouseInteractionMode === MouseInteractionMode.CreatingShape && (
       state.activeShapeTool === ShapeTool.Line || state.activeShapeTool === ShapeTool.Arrow
     ));
 
   const dragEndCoords = (() => {
     if (!rawDragEndCoords) return undefined;
     if (isShiftDragging && canSnapTo45Deg && dragStartCoords) {
-      const [snappedX, snappedY] = snapAngleTo45Deg(
+      const { dClientX: snappedX, dClientY: snappedY } = snapAngleTo45Deg(
         rawDragEndCoords.clientX - dragStartCoords.clientX,
         rawDragEndCoords.clientY - dragStartCoords.clientY,
       );
@@ -277,23 +85,23 @@ const usePlotMouseInteractions = (
     ? state.selection.shapeIdsAsArray : [];
   const isCreatingShape = state.activeShapeTool !== ShapeTool.None;
 
-  const selectionBoxTopLeft: CoordsInClient | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? new CoordsInClient(
+  const selectionBoxTopLeft: CoordsInClient | undefined = mouseInteractionMode === MouseInteractionMode.Selecting && dragStartCoords && dragEndCoords ? new CoordsInClient(
     Math.min(dragStartCoords.clientX, dragEndCoords.clientX),
     Math.min(dragStartCoords.clientY, dragEndCoords.clientY),
   ) : undefined;
 
-  const selectionBoxBottomRight: CoordsInClient | undefined = mouseInteractionMode === 'selecting' && dragStartCoords && dragEndCoords ? new CoordsInClient(
+  const selectionBoxBottomRight: CoordsInClient | undefined = mouseInteractionMode === MouseInteractionMode.Selecting && dragStartCoords && dragEndCoords ? new CoordsInClient(
     Math.max(dragStartCoords.clientX, dragEndCoords.clientX),
     Math.max(dragStartCoords.clientY, dragEndCoords.clientY),
   ) : undefined;
 
   const plotViewCursor =
-    (mouseInteractionMode === 'draggingNodes' || mouseInteractionMode === 'draggingTrees' || mouseInteractionMode === 'draggingShapes') && dragOffset ? 'move'
-      : mouseInteractionMode === 'resizingShape' ? 'grabbing'
-        : (mouseInteractionMode === 'panning') ? 'grabbing'
+    (mouseInteractionMode === MouseInteractionMode.DraggingNodes || mouseInteractionMode === MouseInteractionMode.DraggingTrees || mouseInteractionMode === MouseInteractionMode.DraggingShapes) && dragOffset ? 'move'
+      : mouseInteractionMode === MouseInteractionMode.ResizingShape ? 'grabbing'
+        : (mouseInteractionMode === MouseInteractionMode.Panning) ? 'grabbing'
           : 'crosshair';
 
-  const resizePreviewShape = mouseInteractionMode === 'resizingShape' && resizingShape && resizeHandleId && dragOffset
+  const resizePreviewShape = mouseInteractionMode === MouseInteractionMode.ResizingShape && resizingShape && resizeHandleId && dragOffset
     ? computeResizedShape(resizingShape, resizeHandleId,
         dragOffset.dClientX / state.panZoomState.zoomLevel,
         dragOffset.dClientY / state.panZoomState.zoomLevel,
@@ -301,7 +109,7 @@ const usePlotMouseInteractions = (
       )
     : undefined;
 
-  const creationPreviewShape = mouseInteractionMode === 'creatingShape' && dragStartCoords && dragEndCoords
+  const creationPreviewShape = mouseInteractionMode === MouseInteractionMode.CreatingShape && dragStartCoords && dragEndCoords
     ? createShapeFromDrag(
       state.activeShapeTool,
       dragStartCoords.toCoordsInPlot(state.panZoomState),
@@ -327,13 +135,13 @@ const usePlotMouseInteractions = (
 
   const handlePlotMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (isCreatingShape && event.currentTarget === event.target && !event.shiftKey) {
-      setMouseInteractionMode('creatingShape');
+      setMouseInteractionMode(MouseInteractionMode.CreatingShape);
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     } else if (event.currentTarget === event.target && !event.shiftKey) {  // Only start a selection box from an empty area
-      setMouseInteractionMode('selecting');
+      setMouseInteractionMode(MouseInteractionMode.Selecting);
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     } else if (event.shiftKey) {
-      setMouseInteractionMode('panning');
+      setMouseInteractionMode(MouseInteractionMode.Panning);
     }
   };
 
@@ -343,7 +151,7 @@ const usePlotMouseInteractions = (
   
     // If we're panning, dispatch a Pan action for the distance the mouse has moved since the last event,
     // and return early since we don't need to update any drag coordinates in state for a pan
-    if (mouseInteractionMode === 'panning') {
+    if (mouseInteractionMode === MouseInteractionMode.Panning) {
       dispatch(new Pan(new ClientCoordsOffset(event.movementX, event.movementY)));
       return;
     }
@@ -375,17 +183,17 @@ const usePlotMouseInteractions = (
     if (isSelectionBoxIntentional) {
       const rectInPlot = new RectInClient(selectionBoxTopLeft, selectionBoxBottomRight)
         .toRectInPlot(state.panZoomState);
-      dispatch(actionOnSelectBoxCompletion(
+      dispatch(determineActionOnSelectBoxCompletion(
         plot,
         rectInPlot,
         state.selection,
         event.ctrlKey || event.metaKey ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection,
         state.selectionAction
       ));
-    } else if (dragStartCoords && dragEndCoords && mouseInteractionMode !== 'selecting') {
+    } else if (dragStartCoords && dragEndCoords && mouseInteractionMode !== MouseInteractionMode.Selecting) {
       // In the context of editing the content, we will count any drag as intentional,
       // since even small drags can be meaningful (e.g. dragging a node a small distance to adjust the tree layout).
-      const action = actionOnDragCompletion(
+      const action = determineActionOnDragCompletion(
         mouseInteractionMode,
         dragStartCoords,
         dragEndCoords,
@@ -404,7 +212,7 @@ const usePlotMouseInteractions = (
     setResizeHandleId(undefined);
     setResizingShape(undefined);
     setIsShiftDragging(false);
-    setMouseInteractionMode('idle');
+    setMouseInteractionMode(MouseInteractionMode.Idle);
   };
 
   // When the user clicks on an entity, we want to start a drag immediately so that they can move the entity by dragging without having to click twice.
@@ -412,21 +220,21 @@ const usePlotMouseInteractions = (
   // and this handler will just take care of starting the drag after the entity is selected.
   const handleNodeMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
-      setMouseInteractionMode('draggingNodes');
+      setMouseInteractionMode(MouseInteractionMode.DraggingNodes);
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     }
   };
 
   const handleTreeMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
-      setMouseInteractionMode('draggingTrees');
+      setMouseInteractionMode(MouseInteractionMode.DraggingTrees);
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     }
   };
 
   const handleShapeMouseDown = (event: React.MouseEvent<SVGElement>) => {
     if (event.buttons === PRIMARY_MOUSE_BUTTON) {
-      setMouseInteractionMode('draggingShapes');
+      setMouseInteractionMode(MouseInteractionMode.DraggingShapes);
       setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));
     }
   };
@@ -435,7 +243,7 @@ const usePlotMouseInteractions = (
     if (event.buttons === PRIMARY_MOUSE_BUTTON && selectedShapeIds.length === 1) {
       const shape = plot.shapes.get(selectedShapeIds[0]);
       if (shape) {
-        setMouseInteractionMode('resizingShape');
+        setMouseInteractionMode(MouseInteractionMode.ResizingShape);
         setResizeHandleId(handleId);
         setResizingShape(shape);
         setDragStartCoords(new CoordsInClient(event.clientX - SVG_X, event.clientY - SVG_Y));

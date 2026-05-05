@@ -4,6 +4,8 @@ package space.yuvalinguist.npbloom.content.positioned
 
 import space.yuvalinguist.npbloom.NoSuchNodeException
 import space.yuvalinguist.npbloom.content.*
+import space.yuvalinguist.npbloom.ui.NODE_AREA_HEIGHT
+import space.yuvalinguist.npbloom.ui.SENTENCE_AREA_HEIGHT
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -18,7 +20,18 @@ data class PositionedTree(
 ) : TreeBase {
     fun node(nodeId: Id) = nodes[nodeId] ?: throw NoSuchNodeException(nodeId)
 
-    val height = if (nodes.isEmpty()) 0.0 else -nodes.minOf { it.position.treeY }
+    // tree.position.plotX and tree.position.plotY are at the top left of the sentence area.
+    // The tree's bounding box extends to the right by tree.width, upwards by -tree.topBound,
+    // and downwards by tree.bottomBound.
+    val visualTopBound =
+        if (nodes.isEmpty()) 0.0
+        else nodes.minOf { it.position.treeY } - NODE_AREA_HEIGHT
+    val visualBottomBound = SENTENCE_AREA_HEIGHT
+
+    val visualHeight = visualBottomBound - visualTopBound
+
+    val visualTopLeftCorner = CoordsInPlot(position.plotX, position.plotY + visualTopBound)
+    val visualBottomRightCorner = CoordsInPlot(position.plotX + width, position.plotY + visualBottomBound)
 
     val strikethroughXRangesAsArray get() = strikethroughXRanges.toTypedArray()
 

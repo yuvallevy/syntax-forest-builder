@@ -5,8 +5,6 @@ package space.yuvalinguist.npbloom.ui
 import space.yuvalinguist.npbloom.content.Id
 import space.yuvalinguist.npbloom.content.NodeIndicatorInPlot
 import space.yuvalinguist.npbloom.content.StringSlice
-import space.yuvalinguist.npbloom.content.positioned.PositionedNode
-import space.yuvalinguist.npbloom.content.positioned.PositionedTree
 import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedPlot
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -124,7 +122,3 @@ internal fun pruneSelection(selection: SelectionInPlot, plot: UnpositionedPlot):
         is TreeSelectionInPlot -> selection.treeIds.filter { it in plot }.asTreeSelectionInPlot()
         is ShapeSelectionInPlot -> selection.shapeIds.filter { plot.containsShape(it) }.asShapeSelectionInPlot()
     }
-
-@JsExport
-fun isNodeInRect(tree: PositionedTree, node: PositionedNode, rect: RectInPlot) =
-    calculateNodeCenterOnPlot(tree, node) in rect

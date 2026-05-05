@@ -34,7 +34,7 @@ import { Id } from '../types';
 import './TreeView.scss';
 import useUiState from '../useUiState';
 import SettingsStateContext from '../SettingsStateContext';
-import { NODE_AREA_HEIGHT, SENTENCE_AREA_HEIGHT, SENTENCE_FONT_SIZE_PX } from '../uiDimensions.ts';
+import { NODE_AREA_HEIGHT, SENTENCE_FONT_SIZE_PX } from '../uiDimensions.ts';
 
 const NODE_LEVEL_SPACING = 20;
 const TRIANGLE_BASE_Y = -2;
@@ -248,9 +248,9 @@ const TreeView: React.FC<TreeViewProps> = ({
     <g className={'TreeView--tree-handle' + (selectedTreeIds.includes(treeId) ? ' TreeView--tree-handle--selected' : '')}>
       <rect
         x={-TREE_AREA_PADDING}
-        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
+        y={tree.visualTopBound - TREE_AREA_PADDING}
         width={tree.width + TREE_AREA_PADDING * 2}
-        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+        height={tree.visualHeight + TREE_AREA_PADDING * 2}
         rx={3}
         ry={3}
         onMouseDown={event => {
@@ -261,9 +261,9 @@ const TreeView: React.FC<TreeViewProps> = ({
       />
       <rect
         x={-TREE_AREA_PADDING}
-        y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING}
+        y={tree.visualTopBound - TREE_AREA_PADDING}
         width={tree.width + TREE_AREA_PADDING * 2}
-        height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+        height={tree.visualHeight + TREE_AREA_PADDING * 2}
         rx={3}
         ry={3}
         className="TreeView--tree-outline"
@@ -286,9 +286,9 @@ const TreeView: React.FC<TreeViewProps> = ({
     {treeDragOffset && selectedTreeIds.includes(treeId) && <rect
       className="TreeView--ghost"
       x={-TREE_AREA_PADDING + treeDragOffset.dClientX / state.panZoomState.zoomLevel}
-      y={-tree.height - NODE_AREA_HEIGHT - TREE_AREA_PADDING + treeDragOffset.dClientY / state.panZoomState.zoomLevel}
+      y={tree.visualTopBound - TREE_AREA_PADDING + treeDragOffset.dClientY / state.panZoomState.zoomLevel}
       width={tree.width + TREE_AREA_PADDING * 2}
-      height={tree.height + NODE_AREA_HEIGHT + TREE_AREA_PADDING * 2 + SENTENCE_AREA_HEIGHT}
+      height={tree.visualHeight + TREE_AREA_PADDING * 2}
       rx={3}
       ry={3}
     />}

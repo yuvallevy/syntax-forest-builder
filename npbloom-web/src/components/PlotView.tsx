@@ -1,5 +1,5 @@
 import { useContext, useMemo, useRef } from 'react';
-import { applyNodePositionsToPlot, PositionedPlot } from 'npbloom-core';
+import { applyNodePositionsToPlot, MouseInteractionMode, PositionedPlot } from 'npbloom-core';
 import usePlotMouseInteractions from './usePlotMouseInteractions';
 import TreeView from './TreeView';
 import ShapeView from './shapes/ShapeView.tsx';
@@ -75,8 +75,8 @@ const PlotView: React.FC = () => {
           key={`tree-${tree.id}`}
           treeId={tree.id}
           tree={tree}
-          nodeDragOffset={mouseInteractionMode === 'draggingNodes' ? dragOffset : undefined}
-          treeDragOffset={mouseInteractionMode === 'draggingTrees' ? dragOffset : undefined}
+          nodeDragOffset={mouseInteractionMode === MouseInteractionMode.DraggingNodes ? dragOffset : undefined}
+          treeDragOffset={mouseInteractionMode === MouseInteractionMode.DraggingTrees ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}
           onTreeMouseDown={handleTreeMouseDown}
         />)}
@@ -86,7 +86,7 @@ const PlotView: React.FC = () => {
           shape={shape}
           isSelected={selectedShapeIds.includes(shape.id)}
           panZoomState={state.panZoomState}
-          dragOffset={mouseInteractionMode === 'draggingShapes' ? dragOffset : undefined}
+          dragOffset={mouseInteractionMode === MouseInteractionMode.DraggingShapes ? dragOffset : undefined}
           resizePreviewShape={resizePreviewShape && shape.id === resizePreviewShape.id ? resizePreviewShape : undefined}
           onMouseDown={handleShapeMouseDown}
           onResizeHandleMouseDown={handleResizeHandleMouseDown}

@@ -105,8 +105,16 @@ class PositionedTreeTest {
 
     @Test
     fun measureTreeHeight() {
-        assertEquals(80.0, tree.height)
-        assertEquals(60.0, treeWithoutSNode.height)
-        assertEquals(0.0, tree.copy(nodes = EntitySet()).height)
+        // Visual height is the distance from the top of the topmost node to the bottom of the sentence
+        assertEquals(120.0, tree.visualHeight)
+        assertEquals(100.0, treeWithoutSNode.visualHeight)
+        // No nodes - height is just the height of the sentence area
+        assertEquals(20.0, tree.copy(nodes = EntitySet()).visualHeight)
+    }
+
+    @Test
+    fun locateCorners() {
+        assertEquals(CoordsInPlot(50.0, -132.0), tree.visualTopLeftCorner)
+        assertEquals(CoordsInPlot(154.0, -12.0), tree.visualBottomRightCorner)
     }
 }
