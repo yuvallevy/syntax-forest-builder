@@ -233,6 +233,8 @@ Managing the state for these settings is the responsibility of `SettingsState`, 
 
 **`Selection.kt`**: Logic for managing the current selection, which can consist of nodes, trees, or a slice. The UI state manager refers to this to determine what is currently selected, and updates it in response to user interactions. The selection state is also used by the frontend to determine what to highlight on the canvas and what operations are available to the user at any given time.
 
+**`MouseInteraction.kt`**: Logic for handling various mouse interactions, such as clicking, dragging objects, and making selection boxes. This mostly consists of determining what the user is interacting with and what actions should be triggered in response. These functions are called by the frontend in response to mouse events, with the relevant coordinates and other information passed in as parameters.
+
 **`Coords.kt`**: A supplement to `CoordsInPlot` and `CoordsInTree` from `content`, concerning coordinates more directly related to the UI than to the content itself. These include client coordinates (relative to the viewport) and rectangles (used for selection boxes and similar features). This file also includes some utility functions for converting between different coordinate systems, which are used throughout the frontend.
 
 **`PanZoomState.kt`**: Encapsulates the state related to panning and zooming around the canvas. This functionality is why the aforementioned conversion functions are necessary, since the positions of nodes and trees are defined in terms of plot coordinates, but the user interacts with them in terms of client coordinates.
@@ -344,7 +346,7 @@ Selection state is represented by objects imported from `npbloom-core`: `NodeSel
 
 #### Mouse interaction state machine
 
-The primary mode of interaction with `PlotView` is with the mouse. Since this interaction can take multiple forms, the application manages which gesture the user is currently performing with a mouse interaction state machine - `mouseInteractionMode`. The states include:
+The primary mode of interaction with `PlotView` is with the mouse. Since this interaction can take multiple forms, the application manages which gesture the user is currently performing with a mouse interaction state machine, implemented in the `usePlotMouseInteractions` hook on the frontend and `MouseInteraction.kt` in `npbloom-core`. The states include:
 * `idle`: The default state when the user is not performing any mouse interactions.
 * `selecting`: When the user is clicking and dragging to create a selection box for selecting multiple nodes or trees.
 * `panning`: When the user is Shift+clicking and dragging on an empty area of the plot to pan around.
@@ -353,14 +355,14 @@ The primary mode of interaction with `PlotView` is with the mouse. Since this in
 
 Since dragging is a repeating theme here, `dragStartCoords` and `dragEndCoords` are used across all drag modes to keep track of the starting and current coordinates of the drag action. How these are used depends on the specific gesture being performed. In node/tree dragging modes, the generic `dragOffset` is used to determine how far the objects should be moved, while selection mode uses the more specialized `selectionBoxTopLeft` and `selectionBoxBottomRight` derived from these coordinates to render the selection box.
 
-`mouseInteractionMode` enters a state other than `idle` whenever the primary mouse button is pressed down on a node, a tree, a shape, or a blank area of the plot.
+`mouseInteractionMode` enters a state other than `Idle` whenever the primary mouse button is pressed down on a node, a tree, a shape, or a blank area of the plot.
 
-* If the user clicks on a node, `mouseInteractionMode` becomes `draggingNodes`, and the user can drag the node around to move it. The same applies to trees and shapes, with `draggingTrees` and `draggingShapes` respectively.
+* If the user clicks on a node, `mouseInteractionMode` becomes `DraggingNodes`, and the user can drag the node around to move it. The same applies to trees and shapes, with `DraggingTrees` and `DraggingShapes` respectively.
 * If the user clicks on an empty area of the plot, `mouseInteractionMode` depends on whether the Shift key is held down:
-  - If Shift is held down, `mouseInteractionMode` becomes `panning`, and the user can drag to pan around the plot.
-  - If Shift is not held down, `mouseInteractionMode` becomes `selecting`, and the user can drag to create a selection box for selecting multiple nodes or trees.
+  - If Shift is held down, `mouseInteractionMode` becomes `Panning`, and the user can drag to pan around the plot.
+  - If Shift is not held down, `mouseInteractionMode` becomes `Selecting`, and the user can drag to create a selection box for selecting multiple nodes or trees.
 
-In all cases, `mouseInteractionMode` returns to `idle` when the primary mouse button is released, and the corresponding `UiAction` is dispatched (e.g. moving the dragged nodes/trees, selecting the nodes/trees within the selection box, etc.).
+In all cases, `mouseInteractionMode` returns to `Idle` when the primary mouse button is released, and the corresponding `UiAction` is dispatched (e.g. moving the dragged nodes/trees, selecting the nodes/trees within the selection box, etc.).
 
 If the user clicks on a text input element - `SentenceView` or `LabelNodeEditor` - the mouse interaction state machine does not apply, since the user is interacting with the text input rather than the plot. `PlotView` will simply not capture these events, instead letting the text inputs handle them as normal. However, interacting with `SentenceView` will fire events that update the selection state to `SliceSelectionInPlot`.
 
@@ -402,7 +404,7 @@ The rendering logic for `ShapeView` consists of five parts:
 * A ghost for the shape that appears when the user is dragging it, showing where the shape will be dropped if the user releases the mouse button at that moment.
 * A ghost for the shape that appears when the user is resizing it by dragging one of the handles, showing the new dimensions of the shape as it is being resized.
 
-The mouse dragging behavior for shapes is implemented in the `usePlotMouseInteractions` hook, similarly to the dragging behavior for nodes and trees. When the user clicks and drags on a shape, the hook updates the `mouseInteractionMode` to `draggingShapes`, and the corresponding `UiAction` is dispatched when the mouse button is released to apply the change to the state. A similar process applies to resizing shapes by dragging the handles.
+The mouse dragging behavior for shapes is implemented in the `usePlotMouseInteractions` hook, similarly to the dragging behavior for nodes and trees. When the user clicks and drags on a shape, the hook updates the `mouseInteractionMode` to `DraggingShapes`, and the corresponding `UiAction` is dispatched when the mouse button is released to apply the change to the state. A similar process applies to resizing shapes by dragging the handles.
 
 ### Main menu, toolbox, and other UI components
 
