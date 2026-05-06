@@ -10,7 +10,7 @@ const Settings: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const { settingsState, settingsDispatch } = useContext(SettingsStateContext);
 
-  useHotkeys(['Ctrl+,', 'Meta+,'], event => { event.preventDefault(); open(); },
+  useHotkeys(['Control+,', 'Meta+,'], event => { event.preventDefault(); open(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   return <>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Hook to track the state of a modifier key (Alt, Shift, Ctrl, or Meta).
+ * Hook to track the state of a modifier key (Alt, Shift, Control, or Meta).
  */
-const useModifierKey = (key: 'Alt' | 'Shift' | 'Ctrl' | 'Meta'): boolean => {
+const useModifierKey = (key: 'Alt' | 'Shift' | 'Control' | 'Meta'): boolean => {
   const [isHeld, setIsHeld] = useState(false);
 
   useEffect(() => {

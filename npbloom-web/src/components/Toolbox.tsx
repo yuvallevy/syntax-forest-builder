@@ -88,7 +88,7 @@ const Toolbox: React.FC = () => {
 
   const { exportSelectedTree } = useTreeExport();
 
-  useHotkeys(['Ctrl+C', 'Meta+C'], event => {
+  useHotkeys(['Control+C', 'Meta+C'], event => {
     if (oneTreeSelected) {
       event.preventDefault();
       copySelectedTree();
@@ -137,9 +137,9 @@ const Toolbox: React.FC = () => {
 
   const sections: NamedToolboxSection[] = [
     ['Edit', [
-      { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl+Z',
+      { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Control+Z',
         description: 'Undo the last action.' },
-      { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl+Y',
+      { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Control+Y',
         description: 'Redo the last undone action.' },
       { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty,
         hotkey: 'Up', description: 'Add a new parent node for the selected text or nodes.' },
@@ -172,9 +172,9 @@ const Toolbox: React.FC = () => {
         disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
       { title: 'Export to image', icon: IconPhoto, action: exportSelectedTree, disabled: !oneTreeSelected,
         description: 'Export the selected tree as a PNG image.' },
-      { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
+      { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Control+C', disabled: !oneTreeSelected,
         description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
-          substituteOsAwareHotkey('Ctrl+V', os) + '.' },
+          substituteOsAwareHotkey('Control+V', os) + '.' },
     ]],
     ['Draw', [
       { title: 'Draw line', icon: IconLine, action: () => setShapeTool(ShapeTool.Line),

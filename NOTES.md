@@ -429,7 +429,8 @@ Because of the multiple layers of abstraction between the frontend and the core 
   a. If it's a menu action, define it under `components/MainMenu.tsx`. If it's a toolbox action, define it under `components/Toolbox.tsx`. If it's a keyboard shortcut without a menu item, define it directly in `UiRoot.tsx`.
   b. Import the new `UiAction` from `npbloom-core`, and then add a new menu item under `mainMenuElements` (`MainMenu.tsx`) or `items` (`Toolbox.tsx`) that dispatches this action when clicked.
   c. If the action has a keyboard shortcut, you should define it in the `hotkey` property of the menu item and implement it using the `useHotkeys` hook.
-    * The system for defining hotkeys is a bit unrefined. The `hotkey` property is set independently from the `useHotkeys` hook and can sometimes be defined slightly differently. In our example case, `hotkey` would be defined as `'Ctrl+D'`, while in the `useHotkeys` hook, you would have to listen for both `'Ctrl+D'` and `'Meta+D'` to make sure the Command key on Mac is also supported.
+    * The system for defining hotkeys is a bit unrefined. The `hotkey` property is set independently from the `useHotkeys` hook and can sometimes be defined slightly differently. In our example case, `hotkey` would be defined as `'Control+D'`, while in the `useHotkeys` hook, you would have to listen for both `'Control+D'` and `'Meta+D'` to make sure the Command key on Mac is also supported.
+      - The Ctrl key should be referred to as `Control`, not `Ctrl`, to match `useHotkeys`'s expected format.
     * Once the hotkey is defined on the menu or toolbox action, its appearance will adapt to the OS-appropriate format across all three major platforms: "Ctrl+D" on Windows, "⌘D" on Mac, and "Ctrl-D" on Linux.
 
 ### String width measurement

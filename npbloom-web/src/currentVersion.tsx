@@ -19,7 +19,7 @@ const os: OS = (() => {
 export const changesFromPreviousVersion: (string | JSX.Element)[] = [
   <>
     Added ability to fold/unfold nodes through new options in the menu and new keyboard shortcuts
-    ({substituteOsAwareHotkey('Ctrl--', os)} and {substituteOsAwareHotkey('Ctrl-=', os)}).<br />
+    ({substituteOsAwareHotkey('Control+-', os)} and {substituteOsAwareHotkey('Control+=', os)}).<br />
     This is useful for large trees where irrelevant parts of the tree need to be temporarily hidden.
   </>,
 ];

@@ -69,23 +69,23 @@ const MainMenu: React.FC = () => {
 
   const unfoldSelectedNodesOneLevel = () => dispatch(new UnfoldSelectedNodesOneLevel());
 
-  useHotkeys(['Ctrl+O', 'Meta+O'], event => { event.preventDefault(); openFileLoadModal(); },
+  useHotkeys(['Control+O', 'Meta+O'], event => { event.preventDefault(); openFileLoadModal(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Ctrl+S', 'Meta+S'], event => { event.preventDefault(); saveOrSaveAs(); },
+  useHotkeys(['Control+S', 'Meta+S'], event => { event.preventDefault(); saveOrSaveAs(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Ctrl+-', 'Meta+-'], event => { event.preventDefault(); foldSelectedNodes(); },
+  useHotkeys(['Control+-', 'Meta+-'], event => { event.preventDefault(); foldSelectedNodes(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Ctrl+=', 'Meta+='], event => { event.preventDefault(); unfoldSelectedNodes(); },
+  useHotkeys(['Control+=', 'Meta+=', 'Control++', 'Meta++'], event => { event.preventDefault(); unfoldSelectedNodes(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   const mainMenuElements: NamedMenuSection[] = [
     ['File', [
       [
-        { label: 'Open...', icon: IconFolder, hotkey: 'Ctrl+O', action: openFileLoadModal },
-        { label: activeFileName ? 'Save' : 'Save...', icon: IconDeviceFloppy, hotkey: 'Ctrl+S', action: saveOrSaveAs },
+        { label: 'Open...', icon: IconFolder, hotkey: 'Control+O', action: openFileLoadModal },
+        { label: activeFileName ? 'Save' : 'Save...', icon: IconDeviceFloppy, hotkey: 'Control+S', action: saveOrSaveAs },
         { label: 'Save as...', disabled: !activeFileName, action: openFileSaveModal },
       ],
       [
@@ -109,8 +109,8 @@ const MainMenu: React.FC = () => {
           action: () => dispatch(new RemoveAllRelationMarkings()) },
       ],
       [
-        { label: 'Fold selected nodes', disabled: noNodesSelected, action: foldSelectedNodes, hotkey: 'Ctrl--' },
-        { label: 'Unfold selected nodes', disabled: noNodesSelected, action: unfoldSelectedNodes, hotkey: 'Ctrl-=' },
+        { label: 'Fold selected nodes', disabled: noNodesSelected, action: foldSelectedNodes, hotkey: 'Control+-' },
+        { label: 'Unfold selected nodes', disabled: noNodesSelected, action: unfoldSelectedNodes, hotkey: 'Control+=' },
         { label: 'Unfold selected nodes by one level', disabled: noNodesSelected, action: unfoldSelectedNodesOneLevel },
       ]
     ]],

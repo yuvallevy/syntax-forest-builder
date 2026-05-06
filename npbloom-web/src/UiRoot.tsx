@@ -75,10 +75,10 @@ const UiRoot = () => {
     }
   })
 
-  useHotkeys(['Ctrl+Z', 'Meta+Z'], event => { event.preventDefault(); undo(); },
+  useHotkeys(['Control+Z', 'Meta+Z'], event => { event.preventDefault(); undo(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
-  useHotkeys(['Ctrl+Y', 'Meta+Y'], event => { event.preventDefault(); redo(); },
+  useHotkeys(['Control+Y', 'Meta+Y'], event => { event.preventDefault(); redo(); },
     { ignoredElementWhitelist: ['INPUT'] });
 
   useHotkeys(Array.from('abcdefghijklmnopqrstuvwxyz', letter => `Shift+${letter}`), () => {
