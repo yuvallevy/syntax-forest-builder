@@ -22,7 +22,7 @@ const EXTRA_SENTENCE_WIDTH = 4;
 interface SentenceViewProps {
   tree: PositionedTree;
   treeId: Id;
-  acceptMouseEvents: boolean;
+  acceptMouseEvents?: boolean;
   className?: string;
 }
 
@@ -34,7 +34,7 @@ const getSelectionSlice = (element: HTMLInputElement): StringSlice | null =>
 const SentenceView: React.FC<SentenceViewProps> = ({
   tree,
   treeId,
-  acceptMouseEvents,
+  acceptMouseEvents = true,
   className,
 }) => {
   const { state, dispatch } = useUiState();
