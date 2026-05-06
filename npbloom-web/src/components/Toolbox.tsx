@@ -7,7 +7,7 @@ import {
 import { ActionIcon, Paper, Navbar, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconArrowUpRight, IconBracketsContain, IconCircle, IconCopy, IconLine,
-  IconPencil, IconPlus, IconRectangle, IconStrikethrough, IconTrash, IconTriangle, TablerIconsProps,
+  IconPencil, IconPhoto, IconPlus, IconRectangle, IconStrikethrough, IconTrash, IconTriangle, TablerIconsProps,
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import './Toolbox.scss';
@@ -19,6 +19,7 @@ import useTextOutputModal from '../io/useTextOutputModal';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { copyTreeToClipboard } from '../io/clipboardIo';
 import { TOOLBOX_WIDTH } from '../uiDimensions';
+import useTreeExport from '../useTreeExport';
 
 type ToolboxItem = {
   title: string;
@@ -85,6 +86,8 @@ const Toolbox: React.FC = () => {
   const setShapeTool = (tool: ShapeTool) => dispatch(new SetShapeTool(
     state.activeShapeTool === tool ? ShapeTool.None : tool));
 
+  const { exportSelectedTree } = useTreeExport();
+
   useHotkeys(['Ctrl+C', 'Meta+C'], event => {
     if (oneTreeSelected) {
       event.preventDefault();
@@ -134,56 +137,58 @@ const Toolbox: React.FC = () => {
 
   const sections: NamedToolboxSection[] = [
     ['Edit', [
-    { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl+Z',
-      description: 'Undo the last action.' },
-    { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl+Y',
-      description: 'Redo the last undone action.' },
+      { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl+Z',
+        description: 'Undo the last action.' },
+      { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl+Y',
+        description: 'Redo the last undone action.' },
       { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty,
         hotkey: 'Up', description: 'Add a new parent node for the selected text or nodes.' },
-    { title: 'Delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
-      hotkey: 'Backspace', description: 'Delete the selected ' +
-        (state.selection instanceof TreeSelectionInPlot ? 'trees' : 'nodes') + '.' },
-    { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
-      toggleState: state.editedNodeIndicator ? 'on' : 'off', description: 'Edit the selected node.' },
-    { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),
-      action: (_, focusEvent) =>
-        // Terrible hack to figure out if the user was in the middle of editing a node when they clicked the button
-        toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
-      description: 'Toggle triangle connectors for the selected terminal nodes.'
-    },
-    { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === EntitySelectionAction.Adopt ? 'on' : 'off',
-      description: 'Adopt one or more nodes as children of the selected node.' },
-    { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
-      toggleState: state.selectionAction === EntitySelectionAction.Disown ? 'on' : 'off',
-      description: 'Disown one or more children of the selected node.' },
-    { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
-      description: 'Relocate the selected nodes to their original positions.' },
-    { title: 'Strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
-      action: (_, focusEvent) =>
-        toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
-      disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
+      { title: 'Delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
+        hotkey: 'Backspace', description: 'Delete the selected ' +
+          (state.selection instanceof TreeSelectionInPlot ? 'trees' : 'nodes') + '.' },
+      { title: 'Edit', icon: IconPencil, action: startEditing, disabled: noNodesSelected, hotkey: 'Enter',
+        toggleState: state.editedNodeIndicator ? 'on' : 'off', description: 'Edit the selected node.' },
+      { title: 'Triangle', icon: IconTriangle, ...getTriangleButtonState(),
+        action: (_, focusEvent) =>
+          // Terrible hack to figure out if the user was in the middle of editing a node when they clicked the button
+          toggleTriangle(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
+        description: 'Toggle triangle connectors for the selected terminal nodes.'
+      },
+      { title: 'Adopt', icon: IconAdoptNode, action: toggleAdoptMode, disabled: noNodesSelected,
+        toggleState: state.selectionAction === EntitySelectionAction.Adopt ? 'on' : 'off',
+        description: 'Adopt one or more nodes as children of the selected node.' },
+      { title: 'Disown', icon: IconDisownNode, action: toggleDisownMode, disabled: noNodesSelected,
+        toggleState: state.selectionAction === EntitySelectionAction.Disown ? 'on' : 'off',
+        description: 'Disown one or more children of the selected node.' },
+      { title: 'Reset position', icon: IconResetNodePosition, action: resetNodePositions, disabled: noNodesSelected,
+        description: 'Relocate the selected nodes to their original positions.' },
+      { title: 'Strikethrough', icon: IconStrikethrough, ...getSliceStrikethroughToggleState(),
+        action: (_, focusEvent) =>
+          toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
+        disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
     ]],
     ['Export', [
-    { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
-      disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
-    { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
-      description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
-        substituteOsAwareHotkey('Ctrl+V', os) + '.' },
+      { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
+        disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
+      { title: 'Export to image', icon: IconPhoto, action: exportSelectedTree, disabled: !oneTreeSelected,
+        description: 'Export the selected tree as a PNG image.' },
+      { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
+        description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
+          substituteOsAwareHotkey('Ctrl+V', os) + '.' },
     ]],
     ['Draw', [
-    { title: 'Draw line', icon: IconLine, action: () => setShapeTool(ShapeTool.Line),
-      toggleState: state.activeShapeTool === ShapeTool.Line ? 'on' : 'off',
-      description: 'Draw a line on the canvas.' },
-    { title: 'Draw arrow', icon: IconArrowUpRight, action: () => setShapeTool(ShapeTool.Arrow),
-      toggleState: state.activeShapeTool === ShapeTool.Arrow ? 'on' : 'off',
-      description: 'Draw an arrow on the canvas.' },
-    { title: 'Draw rectangle', icon: IconRectangle, action: () => setShapeTool(ShapeTool.Rectangle),
-      toggleState: state.activeShapeTool === ShapeTool.Rectangle ? 'on' : 'off',
-      description: 'Draw a rectangle on the canvas.' },
-    { title: 'Draw ellipse', icon: IconCircle, action: () => setShapeTool(ShapeTool.Ellipse),
-      toggleState: state.activeShapeTool === ShapeTool.Ellipse ? 'on' : 'off',
-      description: 'Draw an ellipse on the canvas.' },
+      { title: 'Draw line', icon: IconLine, action: () => setShapeTool(ShapeTool.Line),
+        toggleState: state.activeShapeTool === ShapeTool.Line ? 'on' : 'off',
+        description: 'Draw a line on the canvas.' },
+      { title: 'Draw arrow', icon: IconArrowUpRight, action: () => setShapeTool(ShapeTool.Arrow),
+        toggleState: state.activeShapeTool === ShapeTool.Arrow ? 'on' : 'off',
+        description: 'Draw an arrow on the canvas.' },
+      { title: 'Draw rectangle', icon: IconRectangle, action: () => setShapeTool(ShapeTool.Rectangle),
+        toggleState: state.activeShapeTool === ShapeTool.Rectangle ? 'on' : 'off',
+        description: 'Draw a rectangle on the canvas.' },
+      { title: 'Draw ellipse', icon: IconCircle, action: () => setShapeTool(ShapeTool.Ellipse),
+        toggleState: state.activeShapeTool === ShapeTool.Ellipse ? 'on' : 'off',
+        description: 'Draw an ellipse on the canvas.' },
     ]],
   ];
 
@@ -191,30 +196,30 @@ const Toolbox: React.FC = () => {
     {sections.map(([sectionName, items], sectionIndex) => (
       <Navbar.Section key={sectionName} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
         {sectionIndex > 0 && <div className="Toolbox--section-divider" />}
-      <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
-        {items.map(item =>
-          <div
-            key={item.title}
-            onMouseEnter={() => setHoveredItem(item)}
-            onMouseLeave={() => setHoveredItem(undefined)}
-          >
-            <ActionIcon
-              size="lg"
-              variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
-              disabled={item.disabled}
-              color={theme.primaryColor}
-              sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
-              onFocus={e => { lastFocusEvent.current = e; }}
-              onClick={clickEvent => item.action(clickEvent, lastFocusEvent.current)}
+        <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
+          {items.map(item =>
+            <div
+              key={item.title}
+              onMouseEnter={() => setHoveredItem(item)}
+              onMouseLeave={() => setHoveredItem(undefined)}
             >
-              {item.icon
-                ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
-                : item.title.slice(0, 2)}
-            </ActionIcon>
-          </div>
-        )}
-      </SimpleGrid>
-    </Navbar.Section>
+              <ActionIcon
+                size="lg"
+                variant={item.toggleState === 'on' ? 'gradient' : item.toggleState === 'indeterminate' ? 'light' : 'subtle'}
+                disabled={item.disabled}
+                color={theme.primaryColor}
+                sx={{ ':disabled': { backgroundColor: theme.white, borderColor: theme.white } }}
+                onFocus={e => { lastFocusEvent.current = e; }}
+                onClick={clickEvent => item.action(clickEvent, lastFocusEvent.current)}
+              >
+                {item.icon
+                  ? <item.icon stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }}/>
+                  : item.title.slice(0, 2)}
+              </ActionIcon>
+            </div>
+          )}
+        </SimpleGrid>
+      </Navbar.Section>
     ))}
     {textOutputModalComponent}
   </Navbar>
