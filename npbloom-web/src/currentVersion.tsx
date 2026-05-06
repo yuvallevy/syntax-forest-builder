@@ -1,25 +1,14 @@
-import type { OS } from '@mantine/hooks';
-import substituteOsAwareHotkey from './components/substituteOsAwareHotkey.ts';
-
-export const currentVersion: string = '0.7.5';
-
-const os: OS = (() => {
-  const platform = window.navigator.platform.toLowerCase();
-  if (platform.includes('win')) return 'windows';
-  if (platform.includes('mac')) return 'macos';
-  if (platform.includes('linux')) return 'linux';
-  if (/windows/.test(navigator.userAgent.toLowerCase())) return 'windows';
-  if (/macos|mac os|macintosh/.test(navigator.userAgent.toLowerCase())) return 'macos';
-  if (/linux/.test(navigator.userAgent.toLowerCase())) return 'linux';
-  if (/android/.test(navigator.userAgent.toLowerCase())) return 'android';
-  if (/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase())) return 'ios';
-  return 'undetermined';
-})();
+export const currentVersion: string = '0.8';
 
 export const changesFromPreviousVersion: (string | JSX.Element)[] = [
+  'Added a new "Shapes" feature, allowing users to draw simple shapes on the canvas to annotate their trees.',
   <>
-    Added ability to fold/unfold nodes through new options in the menu and new keyboard shortcuts
-    ({substituteOsAwareHotkey('Control+-', os)} and {substituteOsAwareHotkey('Control+=', os)}).<br />
-    This is useful for large trees where irrelevant parts of the tree need to be temporarily hidden.
+    Added an option to import and export entire forests as files, allowing users to transfer their work between different devices and share it with others.<br />
+    Select <b>Import forest...</b> and <b>Export forest...</b> from the File menu to use this feature.
   </>,
+  <>
+    Added an option to export a single tree as a PNG file.<br />
+    Select <b>Export tree as image...</b> from the File menu to use this feature.
+  </>,
+  'Minor improvements to performance, graphics, and UX.',
 ];

@@ -1,4 +1,14 @@
 ## Alpha
+### 0.8 (2026-05-06)
+* Added a new "Shapes" feature, allowing users to draw simple shapes on the canvas to annotate their trees. (tnx Adi Raz for requesting)
+* Added an option to import and export entire forests as files, allowing users to transfer their work between different devices and share it with others.
+* Added the long-awaited option to export a single tree as a PNG file.
+* Improved performance when panning and zooming around the canvas when large trees are present.
+* Reworked tree selection UX:
+  - Removed old, buggy "Select trees" mode.
+  - Added option to select a tree without Alt+clicking by clicking on its boundary.
+  - Selection boxes are now smarter, selecting either nodes or trees depending on the contents of the box.
+* Fixed minor graphical error where lines connecting two child nodes to their parent would be drawn with a small gap between them.
 ### 0.7.5 (2026-02-22)
 * Added ability to fold/unfold nodes through new options in the menu and new keyboard shortcuts (Ctrl-- and Ctrl-=).
   This is useful for large trees where irrelevant parts of the tree need to be temporarily hidden.
