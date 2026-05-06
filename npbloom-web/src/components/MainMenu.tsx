@@ -92,8 +92,8 @@ const MainMenu: React.FC = () => {
         { label: activeFileName ? `Currently open file:\n${activeFileName}` : '', disabled: true, hidden: !activeFileName },
       ],
       [
-        { label: 'Import forest (experimental)...', icon: IconFileImport, action: openSystemFileLoadModal },
-        { label: 'Export forest (experimental)...', icon: IconFileExport, action: openSystemFileSaveModal },
+        { label: 'Import forest...', icon: IconFileImport, action: openSystemFileLoadModal },
+        { label: 'Export forest...', icon: IconFileExport, action: openSystemFileSaveModal },
       ],
       [
         { label: 'Export tree as image...', icon: IconFileVector, disabled: !oneTreeSelected, action: exportSelectedTree },
