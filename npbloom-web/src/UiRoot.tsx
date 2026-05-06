@@ -12,7 +12,6 @@ import PlotView from './components/PlotView';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import MainMenu from './components/MainMenu';
 import Toolbox from './components/Toolbox';
-import NewVersionModal from './components/meta/NewVersionModal.tsx';
 import PlotSelector from './components/PlotSelector';
 import useUiState from './useUiState';
 import './UiRoot.scss';
@@ -98,7 +97,6 @@ const UiRoot = () => {
       >
         <PlotView />
       </AppShell>
-      <NewVersionModal />
     </ModalsProvider>
   </MantineProvider>;
 }

@@ -4,9 +4,11 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { currentVersion } from '../../currentVersion.tsx';
 import Logo from './npbloom-logo.svg';
+import NewVersionModal from './NewVersionModal.tsx';
 
 const AboutButton = () => {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [aboutBoxOpened, { open: openAboutBox, close: closeAboutBox }] = useDisclosure(false);
+  const [newVersionModalOpened, { open: openNewVersionModal, close: closeNewVersionModal }] = useDisclosure(false);
 
   // Only show the email address after a delay so scrapers have to work extra hard to pick it up
   const [contactEmailAddress, setContactEmailAddress] = useState('');
@@ -18,11 +20,11 @@ const AboutButton = () => {
     <Button
       variant="subtle"
       size="sm"
-      onClick={open}
+      onClick={openAboutBox}
     >
       <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; About
     </Button>
-    <Modal opened={opened} onClose={close} title="About" centered size="lg">
+    <Modal opened={aboutBoxOpened && !newVersionModalOpened} onClose={closeAboutBox} title="About" centered size="lg">
       <div style={{ textAlign: 'center' }}>
         <img src={Logo} height={120} alt="NPBloom logo"/>
       </div>
@@ -53,11 +55,17 @@ const AboutButton = () => {
       <p>
         For feedback, bug reports, or feature requests, please contact me at <b>{contactEmailAddress}</b>.
       </p>
-      <p><small>
-        Version {currentVersion}.
+      <p style={{ fontSize: 'small' }}>
+        Version {currentVersion}.{' '}
+        <Button variant="white" style={{ fontSize: 'inherit' }} onClick={openNewVersionModal}>See what's new</Button><br />
         {import.meta.env.VITE_BUILD_TIMESTAMP && <> Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</>}
-      </small></p>
+      </p>
     </Modal>
+    <NewVersionModal
+      opened={newVersionModalOpened}
+      onOpen={openNewVersionModal}
+      onClose={closeNewVersionModal}
+    />
   </>;
 };
 
