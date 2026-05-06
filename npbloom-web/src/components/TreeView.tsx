@@ -64,12 +64,57 @@ const prettyNodeLabel = (rawNodeLabel: string): string => {
   return (formatSubscriptInString(rawNodeLabel) || rawNodeLabel).replace(/^([a-zA-Z])'/g, `$1\u0304`);
 }
 
-const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: EntitySet<PositionedNode>): React.ReactNode[] =>
-  node.childrenAsArray.map(childId => {
-    const childNode = allNodes.get(childId);
-    if (!childNode) return false;
-    return <line
-        key={`to-${childId}`}
+const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: EntitySet<PositionedNode>): React.ReactNode[] => {
+  // If there is only one child, we simply render one line
+  if (node.childrenAsArray.length === 1) {
+    const childNode = allNodes.get(node.childrenAsArray[0]);
+    if (!childNode) return [];
+    return [
+      <line
+        key={`to-${childNode.id}`}
+        data-npb-export={true}
+        stroke="#000"
+        x1={node.position.treeX}
+        y1={node.position.treeY}
+        x2={childNode.position.treeX}
+        y2={childNode.position.treeY - (childNode.label ? NODE_LEVEL_SPACING : 0)}
+      />
+    ];
+  }
+
+  // If there are multiple children, we first take the first and last one and render a path from
+  // 1. the leftmost child
+  // 2. to the parent
+  // 3. to the rightmost child
+  // This way we don't get the lines looking weird where they meet because their strokes don't connect.
+  // Instead, the connections to the leftmost and rightmost child will intersect with a nice miter/bevel joint
+  // (depending on the angle) at the parent node.
+  const allChildNodes = allNodes.filter(otherNode => node.childrenAsArray.includes(otherNode.id))
+    .toSortedArrayBy(otherNode => otherNode.position.treeX);
+  const leftmostChild = allChildNodes[0];
+  const rightmostChild = allChildNodes[allChildNodes.length - 1];
+  if (!leftmostChild || !rightmostChild) return [];
+  const leftmostChildX = leftmostChild.position.treeX;
+  const leftmostChildY = leftmostChild.position.treeY - (leftmostChild.label ? NODE_LEVEL_SPACING : 0);
+  const rightmostChildX = rightmostChild.position.treeX;
+  const rightmostChildY = rightmostChild.position.treeY - (rightmostChild.label ? NODE_LEVEL_SPACING : 0);
+  const pathData = `M${leftmostChildX} ${leftmostChildY} ` +
+    `L${node.position.treeX} ${node.position.treeY} ` +
+    `L${rightmostChildX} ${rightmostChildY}`;
+  return [
+    <path
+      key={`to-${node.childrenAsArray.join(',')}`}
+      data-npb-export={true}
+      stroke="#000"
+      fill="none"
+      d={pathData}
+    />,
+    // Then we render the rest of the connections -
+    // these will be perfectly covered by the path's stroke at the intersection point
+    allChildNodes.slice(1, -1).map(childNode => {
+      if (!childNode) return false;
+      return <line
+        key={`to-${childNode.id}`}
         data-npb-export={true}
         stroke="#000"
         x1={node.position.treeX}
@@ -77,8 +122,9 @@ const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: Ent
         x2={childNode.position.treeX}
         y2={childNode.position.treeY - (childNode.label ? NODE_LEVEL_SPACING : 0)}
       />;
-    }
-  );
+    })
+  ]
+};
 
 const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): React.ReactNode =>
   node.triangle && <path

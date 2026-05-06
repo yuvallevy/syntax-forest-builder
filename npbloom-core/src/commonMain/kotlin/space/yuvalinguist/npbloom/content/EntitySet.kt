@@ -53,7 +53,7 @@ data class EntitySet<T : WithId> internal constructor(
     internal inline fun any(predicate: (T) -> Boolean) = entities.any(predicate)
     internal inline fun none(predicate: (T) -> Boolean) = entities.none(predicate)
 
-    internal inline fun filter(predicate: (T) -> Boolean) = EntitySet(entities.filter(predicate))
+    fun filter(predicate: (T) -> Boolean) = EntitySet(entities.filter(predicate))
     internal inline fun filterNot(predicate: (T) -> Boolean) = EntitySet(entities.filterNot(predicate))
     internal inline fun find(predicate: (T) -> Boolean) = entities.find(predicate)
     internal inline fun <R> flatMap(transform: (T) -> Iterable<R>) = entities.flatMap(transform)
@@ -61,6 +61,7 @@ data class EntitySet<T : WithId> internal constructor(
     @JsName("map") fun <R> mapAsArray(transform: (T) -> R) = entities.map(transform).toJsArray()
     internal inline fun <U : WithId> mapToNewEntitySet(transform: (T) -> U) = EntitySet(entities.map(transform))
     internal inline fun <R : Comparable<R>> minOf(selector: (T) -> R) = entities.minOf(selector)
+    fun <R : Comparable<R>> toSortedArrayBy(selector: (T) -> R): Array<T> = entities.sortedBy(selector).toJsArray()
 }
 
 internal expect fun <T> Collection<T>.toJsArray(): Array<T>
