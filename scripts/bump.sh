@@ -51,15 +51,15 @@ jq ".packages.\"\".version = \"$new\"" tmp.json > tmp2.json
 mv tmp2.json ../npbloom-web/package-lock.json
 rm tmp.json
 # Update the version number in npbloom-core/build.gradle.kts
-sed -i "s/version = \".*\"/version = \"$newshort\"/g" ../npbloom-core/build.gradle.kts
+sed -i '' "s/version = \".*\"/version = \"$newshort\"/g" ../npbloom-core/build.gradle.kts
 # Update the version number and clear change list in npbloom-web/src/currentVersion.tsx
 # (lazy solution: remove all lines starting with two spaces)
-sed -i "s/currentVersion: string = '.*'/currentVersion: string = '$newshort'/g" ../npbloom-web/src/currentVersion.tsx
-sed -i '/^  /d' ../npbloom-web/src/currentVersion.tsx
+sed -i '' "s/currentVersion: string = '.*'/currentVersion: string = '$newshort'/g" ../npbloom-web/src/currentVersion.tsx
+sed -i '' '/^  /d' ../npbloom-web/src/currentVersion.tsx
 # Add a new entry in HISTORY.md
 # Skip the first line (the title), insert a new line with the new version number and the current date,
 # then insert a new line for the new version's change list
-sed -i "1 a\\
+sed -i '' "1 a\\
 ### $newshort ($(date +%Y-%m-%d))\\
 " ../HISTORY.md
 
