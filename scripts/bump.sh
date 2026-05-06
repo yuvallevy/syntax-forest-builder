@@ -40,6 +40,8 @@ else
   newshort="${version[0]}.${version[1]}.${version[2]}"
 fi
 
+newtag="v$newshort"
+
 # Update the version number in npbloom-web/package.json
 jq ".version = \"$new\"" ../npbloom-web/package.json > tmp.json
 mv tmp.json ../npbloom-web/package.json
@@ -68,3 +70,5 @@ echo "When you're done, press Enter to commit the changes."
 read
 git add ../npbloom-web/package.json ../npbloom-web/package-lock.json ../npbloom-core/build.gradle.kts ../npbloom-web/src/currentVersion.tsx ../HISTORY.md
 git commit -m "Bump version to $newshort"
+git tag -a "$newtag" -m "$newtag"
+echo "Committed and tagged the new version as $newtag."
