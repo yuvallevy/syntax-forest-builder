@@ -1,11 +1,9 @@
 import { MantineThemeOverride, rem } from '@mantine/core';
 
-const primaryColor = 'teal';
-const nextToPrimaryColor = 'rgba(20, 177, 163)';
-
 const globalTheme: MantineThemeOverride = {
-  defaultGradient: { deg: 60, from: primaryColor, to: nextToPrimaryColor },
-  primaryColor,
+  defaultGradient: { deg: 60, from: 'teal.7', to: 'cyan.7' },
+  primaryColor: 'teal',
+  primaryShade: 8,
   shadows: {
     xs: '0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.04)',
     sm: '0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 0.5rem 0.75rem -0.25rem, rgba(0, 0, 0, 0.04) 0 0.375rem 0.375rem -0.25rem',
@@ -47,6 +45,18 @@ const sizes = {
 };
 
 const componentThemes: MantineThemeOverride['components'] = {
+  Anchor: {
+    styles: (theme) => ({
+      root: {
+        // Force shade 8 for links, since Mantine's default is shade 7
+        color: theme.colors[theme.primaryColor][8],
+        textDecoration: 'none',
+        '&:hover': {
+          textDecoration: 'underline',
+        },
+      },
+    }),
+  },
   TextInput: {
     sizes: {
       xs: () => ({ input: { height: sizes.xs, minHeight: sizes.xs } }),
