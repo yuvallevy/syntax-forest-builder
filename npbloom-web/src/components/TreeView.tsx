@@ -70,6 +70,7 @@ const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: Ent
     if (!childNode) return false;
     return <line
         key={`to-${childId}`}
+        data-npb-export={true}
         stroke="#000"
         x1={node.position.treeX}
         y1={node.position.treeY}
@@ -82,6 +83,7 @@ const renderChildNodeConnections = (node: PositionedBranchingNode, allNodes: Ent
 const renderTriangleConnection = (nodeId: Id, node: PositionedTerminalNode): React.ReactNode =>
   node.triangle && <path
     key={`triangle-${nodeId}`}
+    data-npb-export={true}
     stroke="#000"
     fill={node.folded
       ? 'url(#folded-pattern)' // Folded branching node
@@ -104,6 +106,7 @@ const renderNode = (
 ): React.ReactNode[] => [
   <g
     key={nodeId}
+    data-npb-export={true}
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
       + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')
       + (markedNodeIds.includes(nodeId) ? ' TreeView--node--marked' : '')}
@@ -120,6 +123,8 @@ const renderNode = (
       height={NODE_AREA_HEIGHT}
       rx={3}
       ry={3}
+      fill="transparent"
+      stroke="none"
     />
     {(isPositionedNodeTopLevel(allNodes, nodeId) || node.label) && <text
       x={node.position.treeX}
@@ -236,6 +241,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   const strikethroughLines = tree.strikethroughXRangesAsArray.map(({ treeX1, treeX2 }) =>
     <line
       key={`${treeX1}-${treeX2}`}
+      data-npb-export={true}
       x1={treeX1}
       y1={strikethroughYPosition}
       x2={treeX2}

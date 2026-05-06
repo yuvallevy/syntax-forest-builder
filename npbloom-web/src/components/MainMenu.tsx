@@ -1,17 +1,19 @@
 import { Fragment } from 'react';
 import { Button, Flex, Header, Menu, Space, Text } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
-import { IconDeviceFloppy, IconFileExport, IconFileImport, IconFolder, TablerIconsProps } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconFileExport, IconFileImport, IconFileVector, IconFolder, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { FoldSelectedNodes, MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot,
-  RemoveRelationMarkingsInSelectedTree, RemoveAllRelationMarkings, UnfoldSelectedNodes, UnfoldSelectedNodesOneLevel,
+  RemoveRelationMarkingsInSelectedTree, RemoveAllRelationMarkings, TreeSelectionInPlot, UnfoldSelectedNodes,
+  UnfoldSelectedNodesOneLevel,
 } from 'npbloom-core';
 import useUiState from '../useUiState.ts';
 import substituteOsAwareHotkey from './substituteOsAwareHotkey.ts';
 import Settings from './meta/Settings';
 import AboutButton from './meta/AboutButton';
 import useFileIo from '../io/useFileIo.ts';
+import useTreeExport from '../useTreeExport.ts';
 
 type MenuItem = {
   label: string;
@@ -43,10 +45,15 @@ const MainMenu: React.FC = () => {
 
   const os = useOs();
 
+  const { exportSelectedTree } = useTreeExport();
+
   const noNodesSelected = !(state.selection instanceof NodeSelectionInPlot);
 
   const oneNodeSelected = state.selection instanceof NodeSelectionInPlot &&
     state.selection.nodeIndicatorsAsArray.length === 1;
+
+  const oneTreeSelected = state.selection instanceof TreeSelectionInPlot &&
+    state.selection.treeIdsAsArray.length === 1;
 
   const markCCommandingNodes = () => {
     if (oneNodeSelected) dispatch(new MarkCCommandingNodes());
@@ -87,6 +94,9 @@ const MainMenu: React.FC = () => {
       [
         { label: 'Import forest (experimental)...', icon: IconFileImport, action: openSystemFileLoadModal },
         { label: 'Export forest (experimental)...', icon: IconFileExport, action: openSystemFileSaveModal },
+      ],
+      [
+        { label: 'Export tree as image...', icon: IconFileVector, disabled: !oneTreeSelected, action: exportSelectedTree },
       ],
     ]],
     ['View', [
