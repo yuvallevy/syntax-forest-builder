@@ -7,6 +7,7 @@ import SentenceView from './SentenceView';
 import LabelNodeEditor from './LabelNodeEditor';
 import ZoomControl from './ZoomControl.tsx';
 import useUiState from '../useUiState';
+import useModifierKey from '../useModifierKey';
 import SettingsStateContext from '../SettingsStateContext';
 import BeginnersGuide from './meta/BeginnersGuide.tsx';
 import PlotPlaceholder from './meta/PlotPlaceholder.tsx';
@@ -19,6 +20,8 @@ const PlotView: React.FC = () => {
   const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
   
   const svgRef = useRef<SVGSVGElement>(null);
+
+  const isAltHeld = useModifierKey('Alt');
 
   const { editedNodeIndicator } = state;
 
@@ -83,6 +86,7 @@ const PlotView: React.FC = () => {
           key={`tree-${tree.id}`}
           treeId={tree.id}
           tree={tree}
+          isAltHeld={isAltHeld}
           nodeDragOffset={mouseInteractionMode === MouseInteractionMode.DraggingNodes ? dragOffset : undefined}
           treeDragOffset={mouseInteractionMode === MouseInteractionMode.DraggingTrees ? dragOffset : undefined}
           onNodeMouseDown={handleNodeMouseDown}

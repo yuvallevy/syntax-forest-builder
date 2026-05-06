@@ -80,6 +80,19 @@
   animation: marching-ants .75s linear infinite;
 }
 
+.TreeView--alt-selection-area {
+  fill: transparent;
+  stroke: none;
+  stroke-opacity: 0.5;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  cursor: pointer;
+}
+
+.TreeView--alt-selection-area:hover {
+  stroke: #275;
+}
+
 .NodeCreationTriggerClickZone--area {
   cursor: pointer;
   stroke: none;

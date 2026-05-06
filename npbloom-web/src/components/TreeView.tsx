@@ -53,6 +53,7 @@ interface NodeCreationTriggerClickZoneProps {
 interface TreeViewProps {
   treeId: Id;
   tree: PositionedTree;
+  isAltHeld?: boolean;
   nodeDragOffset?: ClientCoordsOffset;
   treeDragOffset?: ClientCoordsOffset;
   onNodeMouseDown?: (event: React.MouseEvent<SVGElement>) => void;
@@ -241,6 +242,7 @@ const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> 
 const TreeView: React.FC<TreeViewProps> = ({
   treeId,
   tree,
+  isAltHeld,
   nodeDragOffset,
   treeDragOffset,
   onNodeMouseDown,
@@ -345,6 +347,23 @@ const TreeView: React.FC<TreeViewProps> = ({
       ry={3}
     />}
     {strikethroughLines}
+
+    {/* Render an additional selection handle covering the entire tree when Alt is held,
+        to make it easier to select the tree without having to aim for the comparatively small outline handle. */}
+    {isAltHeld && <rect
+      className="TreeView--alt-selection-area"
+      x={-TREE_AREA_PADDING}
+      y={tree.visualTopBound - TREE_AREA_PADDING}
+      width={tree.width + TREE_AREA_PADDING * 2}
+      height={tree.visualHeight + TREE_AREA_PADDING * 2}
+      rx={3}
+      ry={3}
+      onMouseDown={event => {
+        handleSingleTreeSelect(treeId, event.ctrlKey || event.metaKey
+          ? EntitySelectionMode.AddToSelection : EntitySelectionMode.SetSelection);
+        onTreeMouseDown && onTreeMouseDown(event);
+      }}
+    />}
   </g>;
 };
 
