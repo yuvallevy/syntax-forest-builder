@@ -1,10 +1,8 @@
-.Toolbox--title {
-  text-align: center;
-  font-size: small;
-  opacity: 0.667;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  user-select: none;
+.Toolbox--section-divider {
+  height: 1px;
+  width: 100%;
+  background-color: #0000001a;
+  margin: 0.5em 0;
 }
 
 .Toolbox--tool-info {

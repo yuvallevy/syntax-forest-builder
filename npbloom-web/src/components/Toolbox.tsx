@@ -31,6 +31,8 @@ type ToolboxItem = {
   description: string;
 };
 
+type NamedToolboxSection = [string, ToolboxItem[]];
+
 const Toolbox: React.FC = () => {
   const { state, dispatch } = useUiState();
 
@@ -130,13 +132,14 @@ const Toolbox: React.FC = () => {
     };
   };
 
-  const items: ToolboxItem[] = [
+  const sections: NamedToolboxSection[] = [
+    ['Edit', [
     { title: 'Undo', icon: IconArrowBackUp, action: undo, disabled: !state.contentState.canUndo, hotkey: 'Ctrl+Z',
       description: 'Undo the last action.' },
     { title: 'Redo', icon: IconArrowForwardUp, action: redo, disabled: !state.contentState.canRedo, hotkey: 'Ctrl+Y',
       description: 'Redo the last undone action.' },
-    { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty, hotkey: 'Up',
-      description: 'Add a new parent node for the selected text or nodes.' },
+      { title: 'Add', icon: IconPlus, action: addNode, disabled: noNodesOrSliceSelected || sentenceIsEmpty,
+        hotkey: 'Up', description: 'Add a new parent node for the selected text or nodes.' },
     { title: 'Delete', icon: IconTrash, action: deleteEntities, disabled: noNodesSelected && noTreesSelected,
       hotkey: 'Backspace', description: 'Delete the selected ' +
         (state.selection instanceof TreeSelectionInPlot ? 'trees' : 'nodes') + '.' },
@@ -160,11 +163,15 @@ const Toolbox: React.FC = () => {
       action: (_, focusEvent) =>
         toggleSliceStrikethrough(focusEvent?.relatedTarget?.className === 'LabelNodeEditorInput'),
       disabled: noSliceSelected, description: 'Toggle strikethrough for the selected part of the sentence.' },
+    ]],
+    ['Export', [
     { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
       disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
     { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Ctrl+C', disabled: !oneTreeSelected,
       description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +
         substituteOsAwareHotkey('Ctrl+V', os) + '.' },
+    ]],
+    ['Draw', [
     { title: 'Draw line', icon: IconLine, action: () => setShapeTool(ShapeTool.Line),
       toggleState: state.activeShapeTool === ShapeTool.Line ? 'on' : 'off',
       description: 'Draw a line on the canvas.' },
@@ -177,10 +184,13 @@ const Toolbox: React.FC = () => {
     { title: 'Draw ellipse', icon: IconCircle, action: () => setShapeTool(ShapeTool.Ellipse),
       toggleState: state.activeShapeTool === ShapeTool.Ellipse ? 'on' : 'off',
       description: 'Draw an ellipse on the canvas.' },
+    ]],
   ];
 
   return <><Navbar width={{ base: TOOLBOX_WIDTH }} p={4} sx={{ zIndex: 90 }}>
-    <Navbar.Section sx={{ display: 'flex', justifyContent: 'center' }}>
+    {sections.map(([sectionName, items], sectionIndex) => (
+      <Navbar.Section key={sectionName} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+        {sectionIndex > 0 && <div className="Toolbox--section-divider" />}
       <SimpleGrid cols={2} spacing={0} verticalSpacing={0}>
         {items.map(item =>
           <div
@@ -205,6 +215,7 @@ const Toolbox: React.FC = () => {
         )}
       </SimpleGrid>
     </Navbar.Section>
+    ))}
     {textOutputModalComponent}
   </Navbar>
   {hoveredItem && <Paper
