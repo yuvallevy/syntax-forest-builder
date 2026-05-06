@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Button, Group, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { changesFromPreviousVersion, currentVersion } from '../../currentVersion';
+import './NewVersionModal.scss';
 
 /**
  * Modal that shows the changes from the previous version to the current one,
@@ -35,7 +36,7 @@ const NewVersionModal = () => {
   >
     <p style={{ fontSize: 'large', fontWeight: 'bold' }}>You are now using NPBloom {currentVersion}!</p>
     <p>Changes from previous version:</p>
-    <ul>
+    <ul className="NewVersionModal--changes">
       {changesFromPreviousVersion.map((change, index) => <li key={index}>{change}</li>)}
     </ul>
     <Group position="right">
