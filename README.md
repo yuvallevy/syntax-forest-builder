@@ -28,16 +28,15 @@ NPBloom's standout features include:
 - **WYSIWYG interface**: You don't define the tree in one place and then see it rendered in another. Instead, you build the tree directly on the canvas, and it looks exactly as it will when you export it.
 - **Infinite canvas**: Draw any tree anywhere you want, not limited even by the size of your screen. Illustrate a progression, compare different analyses side by side, or even use the canvas as a substitute for a whiteboard.
 - **Infinite complexity**: NPBloom's navigation and "folding" utilities tame even the most terrifying center-embedded monstrosities into just another tree. The rat the cat the dog bit chased escaped? No problem.
-- **Local saving**: You can save your trees locally on your device, without needing to create an account or worry about data privacy.
+- **Local saving**: You can save your trees locally on your device, without needing to create an account or worry about data privacy. You can also export your trees as high-resolution PNG images for use in presentations and papers, or in a custom format that preserves all the information about the plots and trees for later editing.
 
 **NPBloom does not facilitate cheating and does not use AI, generative or otherwise.** As a professor or TA, you can safely distribute NPBloom to your students without worrying they may use it to generate answers to assignments or exams. It replaces the manual work of drawing trees, not the intellectual work of thinking about them.
 
 ## Current status and future plans
 
-While NPBloom is functional and has proven itself in real-world use, it lacks a few important features that are on the roadmap for future development. These include:
+NPBloom is functional and has proven itself in real-world academic settings, but it is still in active development.
 
-* Exporting trees in various formats (e.g. PNG, SVG, LaTeX). You can save trees within the app, and you can export to and import from labelled bracket notation, but there is currently no way to directly export them as images for use in papers or presentations. This is a high priority for future development.
-* Support for top-down trees, as is common in certain modern frameworks of syntax such as minimalism. Currently, NPBloom only supports the more traditional bottom-up style of tree, where the words are aligned at the bottom and the root is at the top. This is the style most commonly used in introductory syntax courses, but I plan to add support for top-down trees in the future.
+Currently, NPBloom only supports the more traditional bottom-up style of tree, where the words are aligned at the bottom and the root is at the top. This is the style most commonly used in introductory syntax courses, but I plan to add support for top-down trees in the future.
 
 ## Stack
 
