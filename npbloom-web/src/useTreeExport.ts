@@ -10,7 +10,7 @@ const EXPORT_PADDING_X = 2;
 const EXPORT_PADDING_Y = 0;
 
 // Scale factor for the exported image
-const EXPORT_SCALE = 2;
+const EXPORT_SCALE = 3;
 
 const EXPORT_SVG_INITIAL_TEMPLATE = `
   <defs>
