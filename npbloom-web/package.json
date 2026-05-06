@@ -4,7 +4,7 @@
   "version": "0.8.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "export VITE_BUILD_TIMESTAMP=$(date -u +\"%b %d %Y %H:%M %Z\"); vite",
     "test": "vitest",
     "build": "export VITE_BUILD_TIMESTAMP=$(date -u +\"%b %d %Y %H:%M %Z\"); tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
