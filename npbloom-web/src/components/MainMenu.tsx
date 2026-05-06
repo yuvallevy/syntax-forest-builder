@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Button, Flex, Header, Menu, Space, Text } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
-import { IconDeviceFloppy, IconFileExport, IconFileImport, IconFileVector, IconFolder, TablerIconsProps } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconFileExport, IconFileImport, IconFolder, IconPhoto, TablerIconsProps } from '@tabler/icons-react';
 import { MAIN_MENU_HEIGHT } from '../uiDimensions.ts';
 import useHotkeys from '@reecelucas/react-use-hotkeys';
 import { FoldSelectedNodes, MarkCCommandedNodes, MarkCCommandingNodes, NodeSelectionInPlot,
@@ -96,7 +96,7 @@ const MainMenu: React.FC = () => {
         { label: 'Export forest...', icon: IconFileExport, action: openSystemFileSaveModal },
       ],
       [
-        { label: 'Export tree as image...', icon: IconFileVector, disabled: !oneTreeSelected, action: exportSelectedTree },
+        { label: 'Export tree as image...', icon: IconPhoto, disabled: !oneTreeSelected, action: exportSelectedTree },
       ],
     ]],
     ['View', [
