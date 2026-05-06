@@ -15,6 +15,8 @@
 
 const FOREST_EXTENSION = '.npbf';
 
+type FilePickerType = { description: string; accept: Record<string, string[]> };
+
 /**
  * Returns whether the file system API is supported in the current environment.
  */
@@ -28,6 +30,46 @@ const isFileSystemApiSupported = () => {
     return window.self === window.top;
   } catch {
     return false;
+  }
+};
+
+// Opens a file picker, writes the blob to the selected file, and returns the handle.
+// Throws if the user cancels.
+const saveWithPicker = async (blob: Blob, suggestedName: string, types: FilePickerType[]): Promise<FileSystemFileHandle> => {
+  // @ts-ignore
+  const handle: FileSystemFileHandle = await window.showSaveFilePicker({ types, suggestedName });
+  // @ts-ignore
+  const writable = await handle.createWritable();
+  await writable.write(blob);
+  await writable.close();
+  return handle;
+};
+
+// Downloads a blob by creating a temporary <a> element with a blob URL.
+const downloadViaAnchor = (blob: Blob, filename: string): void => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.append(a);
+  a.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    a.remove();
+  }, 1000);
+};
+
+/**
+ * Saves a blob using whichever file-saving method is available:
+ * the File System Access API's save picker if supported, a fallback anchor-download otherwise.
+ * Silently does nothing if the user cancels the picker.
+ */
+export const saveBlob = async (blob: Blob, filename: string, types: FilePickerType[]): Promise<void> => {
+  if (isFileSystemApiSupported()) {
+    await saveWithPicker(blob, filename, types).catch(() => {}); // user cancelled
+  } else {
+    downloadViaAnchor(blob, filename);
   }
 };
 
@@ -57,20 +99,12 @@ const openFileNativeModern = async (): Promise<[string, Uint8Array]> => {
  * Once the file is saved, the function returns a promise that resolves to the name of the saved file.
  */
 const saveFileNativeModern = async (data: Uint8Array, suggestedName?: string): Promise<string> => {
-  // @ts-ignore
-  const handle = await window.showSaveFilePicker({
-    types: [
-      {
-        description: 'NPBloom forest',
-        accept: { 'application/octet-stream': [FOREST_EXTENSION] },
-      },
-    ],
-    suggestedName: (suggestedName || 'forest') +
-      (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : ''),
-  });
-  const writable = await handle.createWritable();
-  await writable.write(data);
-  await writable.close();
+  const filename = (suggestedName || 'forest') +
+    (suggestedName && !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
+  const blob = new Blob([data as unknown as BlobPart], { type: 'application/octet-stream' });
+  const handle = await saveWithPicker(blob, filename, [
+    { description: 'NPBloom forest', accept: { 'application/octet-stream': [FOREST_EXTENSION] } },
+  ]);
   return handle.name.endsWith(FOREST_EXTENSION)
     ? handle.name.slice(0, -FOREST_EXTENSION.length) : handle.name;
 };
@@ -114,23 +148,13 @@ const openFileNativeFallback = (): Promise<[string, Uint8Array]> =>
  * Once the file is saved, the function returns a promise that resolves to `undefined`,
  * in order to match the behavior of `saveFileNativeModern`.
  */
-const saveFileNativeFallback = (data: Uint8Array, suggestedName?: string): Promise<undefined> =>
-  new Promise((resolve) => {
-    const blobUrl = URL.createObjectURL(new Blob([data], { type: 'application/octet-stream' }));
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = (suggestedName || 'forest') +
-      (!suggestedName || !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
-    a.style.display = 'none';
-    document.body.append(a);
-    a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(blobUrl);
-      a.remove();
-      // There's no way to know what name the file was saved as, so we just resolve to undefined
-      resolve(undefined);
-    }, 1000);
-  });
+const saveFileNativeFallback = (data: Uint8Array, suggestedName?: string): Promise<undefined> => {
+  const filename = (suggestedName || 'forest') +
+    (!suggestedName || !suggestedName.endsWith(FOREST_EXTENSION) ? FOREST_EXTENSION : '');
+  downloadViaAnchor(new Blob([data as unknown as BlobPart], { type: 'application/octet-stream' }), filename);
+  // There's no way to know what name the file was saved as, so we resolve to undefined
+  return Promise.resolve(undefined);
+};
 
 /**
  * Opens a file using the native file picker dialog, using whatever method is supported in the current environment.
