@@ -1,10 +1,11 @@
-import { Anchor, Button, Modal } from '@mantine/core';
+import { Anchor, Button, Group, Modal, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { currentVersion } from '../../currentVersion.tsx';
 import Logo from './npbloom-logo.svg';
 import NewVersionModal from './NewVersionModal.tsx';
+import './AboutButton.scss';
 
 const AboutButton = () => {
   const [aboutBoxOpened, { open: openAboutBox, close: closeAboutBox }] = useDisclosure(false);
@@ -24,41 +25,36 @@ const AboutButton = () => {
     >
       <IconInfoCircle stroke={1} style={{ transform: 'translate(0.5px, 0.5px)' }} />&nbsp; About
     </Button>
-    <Modal opened={aboutBoxOpened && !newVersionModalOpened} onClose={closeAboutBox} title="About" centered size="lg">
-      <div style={{ textAlign: 'center' }}>
-        <img src={Logo} height={120} alt="NPBloom logo"/>
-      </div>
-      <p>Build <strong>constituent trees</strong> for articles, lectures, homework etc.
+    <Modal
+      opened={aboutBoxOpened && !newVersionModalOpened}
+      onClose={closeAboutBox}
+      title={<Group position="apart" spacing="none">
+        <img src={Logo} height={80} alt="NPBloom logo" />
+        <Text size="lg">Awaken your colorless green ideas.</Text>
+      </Group>}
+      centered
+      size="lg"
+      className="Modal-product-info"
+      withCloseButton={false}
+    >
+      <p>Build <strong>syntax trees</strong> for presentations, papers, or homework assignments
         using an in-browser point-and-click interface.</p>
       <p>To begin, click anywhere and start typing a sentence.
         Click above the words to add nodes, and click above the nodes to add parent nodes,
         working your way up the tree.</p>
       <p>
-        NPBloom is written in <Anchor href="https://kotlinlang.org/" target="_blank" rel="noopener noreferrer">
-          Kotlin
-        </Anchor> and <Anchor href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">
-          TypeScript
-        </Anchor>, powered by <Anchor href="https://react.dev/" target="_blank" rel="noopener noreferrer">
-          React
-        </Anchor> and <Anchor href="https://www.w3.org/Graphics/SVG/" target="_blank" rel="noopener noreferrer">
-          SVG
-        </Anchor>, and made prettier with <Anchor href="https://mantine.dev/" target="_blank" rel="noopener noreferrer">
-          Mantine
-        </Anchor> and <Anchor href="https://tabler-icons.io/" target="_blank" rel="noopener noreferrer">
-          Tabler
-        </Anchor>. Logo by <Anchor href="https://hadarorenart.wixsite.com/hrodesign" target="_blank">
-          hro-arts
-        </Anchor>. See <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main" target="_blank" rel="noopener noreferrer">
-          GitHub
-        </Anchor> for full source code.
-      </p>
-      <p>
-        For feedback, bug reports, or feature requests, please contact me at <b>{contactEmailAddress}</b>.
+        For feedback, bug reports, or feature requests, please contact me at <b>{contactEmailAddress}</b>.<br />
+        For contributing, see the <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/tree/main" target="_blank" rel="noopener noreferrer">GitHub repository</Anchor>.
       </p>
       <p style={{ fontSize: 'small' }}>
         Version {currentVersion}.{' '}
         <Button variant="white" style={{ fontSize: 'inherit' }} onClick={openNewVersionModal}>See what's new</Button><br />
         {import.meta.env.VITE_BUILD_TIMESTAMP && <> Last updated {import.meta.env.VITE_BUILD_TIMESTAMP}.</>}
+      </p>
+      <p style={{ fontSize: 'small' }}>
+        Logo by <Anchor href="https://hadarorenart.wixsite.com/hrodesign" target="_blank">
+          hro-arts
+        </Anchor>.
       </p>
     </Modal>
     <NewVersionModal

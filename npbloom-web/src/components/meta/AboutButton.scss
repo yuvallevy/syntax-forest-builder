@@ -1,0 +1,10 @@
+.AboutButton--how-to {
+  display: flex;
+  gap: 2em;
+  margin-inline: 2em;
+
+  .mantine-Stack-root {
+    flex: 1;
+    text-align: center;
+  }
+}

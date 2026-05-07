@@ -1,8 +1,24 @@
 .NewVersionModal--changes {
+  .NewVersionModal--change {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 1em;
+    &:not(:last-child) {
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 1em;
+    }
+  }
+
+  .tabler-icon {
+    stroke-width: 1.5px;
+    transform: translate(0.5px, 0.5px);
+  }
+
   .menu-icon {
     width: 1em;
     height: 1em;
-    transform: translate(-0.5px, 1.5px);
+    transform: translate(0.5px, 1.5px);
   }
 
   .toolbox-icon {

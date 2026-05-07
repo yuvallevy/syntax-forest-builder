@@ -19,3 +19,25 @@ code {
 #root {
   height: 100vh;
 }
+
+@font-face {
+  font-family: 'Comfortaa';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/comfortaa/v47/1Pt_g8LJRfWJmhDAuUsSQamb1W0lwk4S4TbMDrMfIA.woff2) format('woff2');
+  unicode-range: U+0000-00FF;
+}
+
+.Modal-product-info {
+  .mantine-Modal-header {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 2em 1.5em;
+    margin-bottom: 1.5em;
+    .mantine-Modal-title {
+      width: 100%;
+      font-size: 1.5em;
+    }
+  }
+}

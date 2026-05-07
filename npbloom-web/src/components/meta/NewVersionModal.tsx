@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { Button, Group, Modal } from '@mantine/core';
-import { changesFromPreviousVersion, currentVersion } from '../../currentVersion';
+import { Anchor, Badge, Button, Container, Group, Modal, Space, Stack, Text, ThemeIcon } from '@mantine/core';
+import { changesFromPreviousVersion, currentVersion, releaseDate } from '../../currentVersion';
 import './NewVersionModal.scss';
 
 interface NewVersionModalProps {
@@ -8,6 +8,12 @@ interface NewVersionModalProps {
   onOpen: () => void;
   onClose: () => void;
 }
+
+const colorByChangeType: Record<string, string> = {
+  'New': 'lime',
+  'Improved': 'blue',
+  'Fix': 'orange',
+};
 
 /**
  * Modal that shows the changes from the previous version to the current one,
@@ -40,14 +46,36 @@ const NewVersionModal = ({
     size="lg"
     withCloseButton={false}
     onClose={onClose}
+    className="Modal-product-info"
+    title={<Group position="apart">
+      <Text>What's new in NPBloom</Text>
+      <Badge variant="gradient" size="xl" sx={{ textTransform: 'none' }}>
+        v{currentVersion}
+      </Badge>
+    </Group>}
   >
-    <p style={{ fontSize: 'large', fontWeight: 'bold' }}>What's new in NPBloom {currentVersion}</p>
-    <p>Changes from previous version:</p>
-    <ul className="NewVersionModal--changes">
-      {changesFromPreviousVersion.map((change, index) => <li key={index}>{change}</li>)}
-    </ul>
-    <Group position="right">
-      <Button variant="subtle" onClick={onClose}>OK</Button>
+    <Stack className="NewVersionModal--changes" spacing="lg">
+      {changesFromPreviousVersion.map(({ icon: Icon, title, badge, description }, index) => (
+        <Container key={index} className="NewVersionModal--change">
+          <ThemeIcon size="xl" radius="md" variant="light" color={colorByChangeType[badge || '']}>
+            <Icon />
+          </ThemeIcon>
+          <Stack spacing="xs">
+            <Group>
+              <Text weight="bold">{title}</Text>
+              {badge && <Badge variant="light" color={colorByChangeType[badge]}>{badge}</Badge>}
+            </Group>
+            <div className="NewVersionModal--change-description">{description}</div>
+          </Stack>
+        </Container>
+      ))}
+    </Stack>
+    <Space h="xl" />
+    <Group position="apart">
+      <Text size="sm">
+        Released {releaseDate} &nbsp;&middot;&nbsp; <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main/HISTORY.md" target="_blank" rel="noopener">Full release notes</Anchor>
+      </Text>
+      <Button size="md" onClick={onClose}>OK</Button>
     </Group>
   </Modal>;
 }

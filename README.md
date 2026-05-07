@@ -40,7 +40,9 @@ Currently, NPBloom only supports the more traditional bottom-up style of tree, w
 
 ## Stack
 
-NPBloom is divided into two main components:
+NPBloom is written in [Kotlin](https://kotlinlang.org/) and [TypeScript](https://www.typescriptlang.org/), powered by [React](https://react.dev/) and [SVG](https://www.w3.org/Graphics/SVG/), and made prettier with [Mantine](https://mantine.dev/) and [Tabler](https://tabler-icons.io/). 
+
+From an architecture standpoint, NPBloom is divided into two main components:
 * `npbloom-core`: A Kotlin Multiplatform library that implements the core logic of the application, including tree data structures, algorithms for tree manipulation, and some underlying UI logic.
 * `npbloom-web`: A web application built with React and TypeScript that provides the user interface for creating and editing syntax trees. It uses `npbloom-core` for the underlying logic. No external libraries are used for rendering the trees; all rendering is done using plain SVG.
 
