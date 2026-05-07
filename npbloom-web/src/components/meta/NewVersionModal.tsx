@@ -75,7 +75,7 @@ const NewVersionModal = ({
       <Text size="sm">
         Released {releaseDate} &nbsp;&middot;&nbsp; <Anchor href="https://github.com/yuvallevy/syntax-forest-builder/blob/main/HISTORY.md" target="_blank" rel="noopener">Full release notes</Anchor>
       </Text>
-      <Button size="md" onClick={onClose}>OK</Button>
+      <Button size="md" onClick={onClose} data-autofocus>OK</Button>
     </Group>
   </Modal>;
 }
