@@ -7,7 +7,7 @@ import {
 import { ActionIcon, Paper, Navbar, SimpleGrid, useMantineTheme } from '@mantine/core';
 import {
   IconArrowBackUp, IconArrowForwardUp, IconArrowUpRight, IconBracketsContain, IconCircle, IconCopy, IconLine,
-  IconPencil, IconPhoto, IconPlus, IconRectangle, IconStrikethrough, IconTrash, IconTriangle, TablerIconsProps,
+  IconPencil, IconPhotoShare, IconPlus, IconRectangle, IconStrikethrough, IconTrash, IconTriangle, TablerIconsProps,
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import './Toolbox.scss';
@@ -170,7 +170,7 @@ const Toolbox: React.FC = () => {
     ['Export', [
       { title: 'Export to labelled bracket notation', icon: IconBracketsContain, action: exportToText,
         disabled: noTreesSelected, description: 'Export the selected trees to labelled bracket notation.' },
-      { title: 'Export to image', icon: IconPhoto, action: exportSelectedTree, disabled: !oneTreeSelected,
+      { title: 'Export to image', icon: IconPhotoShare, action: exportSelectedTree, disabled: !oneTreeSelected,
         description: 'Export the selected tree as a PNG image.' },
       { title: 'Copy tree', icon: IconCopy, action: copySelectedTree, hotkey: 'Control+C', disabled: !oneTreeSelected,
         description: 'Copy the selected tree to the clipboard.\nTo paste, click anywhere and then press ' +

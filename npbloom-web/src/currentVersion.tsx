@@ -1,4 +1,12 @@
-import { IconActivity, IconCircleSquare, IconFileExport, IconFileImport, IconPhoto, IconShare2 } from '@tabler/icons-react';
+import {
+  IconActivity,
+  IconCircleSquare,
+  IconFileExport,
+  IconFileImport,
+  IconPhoto,
+  IconPhotoShare,
+  IconShare2,
+} from '@tabler/icons-react';
 
 export const currentVersion: string = '0.8';
 
@@ -33,7 +41,7 @@ export const changesFromPreviousVersion: Change[] = [
     badge: 'New',
     description: <>
       Export a single tree as a PNG file.{' '}
-      Select a tree, then select <IconPhoto className="menu-icon" /> <b>Export tree as image...</b> from the File menu or click <IconPhoto className="toolbox-icon" /> on the toolbox.
+      Select a tree, then select <IconPhotoShare className="menu-icon" /> <b>Export tree as image...</b> from the File menu or click <IconPhotoShare className="toolbox-icon" /> on the toolbox.
     </>,
   },
   {
