@@ -1,4 +1,4 @@
-# NPBloom
+# ![NPBloom](npbloom-web/src/components/meta/npbloom-logo.svg)
 
 _They say colorless green ideas sleep furiously. With NPBloom, you can watch them wake up and dance around._
 
