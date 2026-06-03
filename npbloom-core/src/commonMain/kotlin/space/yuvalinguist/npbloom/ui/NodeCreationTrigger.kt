@@ -112,7 +112,7 @@ private fun PositionedTree.getNodeCreationTargets(
         }
     }.toSet()
 
-    return parentNodeCreationTargets + terminalNodeCreationTargets
+    return terminalNodeCreationTargets + parentNodeCreationTargets
 }
 
 @JsName("getNodeCreationTriggersAsKtList")
