@@ -1,4 +1,8 @@
 ## Alpha
+### 0.8.1 (2026-06-03)
+* Slightly improved node creation trigger UX:
+  - Branching node creation triggers are no longer hidden by terminal node creation triggers.
+  - When three or more top-level nodes are selected in the same tree, a branching node creation trigger for all selected nodes will appear above the middle of the selection. This is useful for ditransitive verbs in some syntax models.
 ### 0.8 (2026-05-06)
 * Added a new "Shapes" feature, allowing users to draw simple shapes on the canvas to annotate their trees. (tnx Adi Raz for requesting)
 * Added an option to import and export entire forests as files, allowing users to transfer their work between different devices and share it with others.
