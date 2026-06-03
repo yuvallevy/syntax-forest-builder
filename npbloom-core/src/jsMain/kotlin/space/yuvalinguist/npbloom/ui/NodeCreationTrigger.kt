@@ -10,6 +10,6 @@ import space.yuvalinguist.npbloom.content.positioned.StrWidthFunc
 @JsName("getNodeCreationTriggers")
 fun PositionedTree.getNodeCreationTriggersAsArray(
     strWidthFunc: StrWidthFunc,
-    selectedSlice: StringSlice?,
+    selectionInPlot: SelectionInPlot,
 ): Array<NodeCreationTrigger> =
-    getNodeCreationTriggers(strWidthFunc, selectedSlice).toTypedArray()
+    getNodeCreationTriggers(strWidthFunc, selectionInPlot).toTypedArray()

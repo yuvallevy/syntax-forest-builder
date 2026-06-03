@@ -3,6 +3,7 @@
 package space.yuvalinguist.npbloom.ui
 
 import space.yuvalinguist.npbloom.content.Id
+import space.yuvalinguist.npbloom.content.NodeIndicatorInPlot
 import space.yuvalinguist.npbloom.content.Sentence
 import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.positioned.*
@@ -74,13 +75,23 @@ private fun getSpaceSequenceSlices(sentence: Sentence): Set<StringSlice> =
 
 private fun PositionedTree.getNodeCreationTargets(
     strWidthFunc: StrWidthFunc,
-    selectedSlice: StringSlice?,
+    selectionInPlot: SelectionInPlot,
 ): Set<NodeCreationTarget> {
     // We only need node creation triggers to add parent nodes for top-level nodes, so discard the rest
-    val topLevelNodeIds = sortNodesByXCoord(getTopLevelNodes().ids)
+    val topLevelNodeIds: List<Id> = sortNodesByXCoord(getTopLevelNodes().ids)
 
     // We also need one trigger above each space between two horizontally adjacent nodes
-    val topLevelNodeIdPairs = topLevelNodeIds.windowed(2)
+    val topLevelNodeIdPairs: List<List<Id>> = topLevelNodeIds.windowed(2)
+
+    // If three or more top-level nodes in this tree are selected, we also need one trigger for all of them together
+    val selectedTopLevelNodes: List<Id>? = (selectionInPlot as? NodeSelectionInPlot)
+        ?.nodeIndicators
+        ?.filter { it.treeId == id && it.nodeId in topLevelNodeIds }
+        // We only need this special case for 3+ nodes - for 2 nodes, the trigger above the space between them is sufficient
+        ?.takeIf { it.size >= 3 }
+        ?.map(NodeIndicatorInPlot::nodeId)
+
+    val selectedSlice = (selectionInPlot as? SliceSelectionInPlot)?.slice?.trimSpacesForString(sentence)
 
     // Finally, we need one trigger for each word that isn't already assigned to a terminal node
     // and isn't part of the selection
@@ -90,15 +101,12 @@ private fun PositionedTree.getNodeCreationTargets(
             unassignedWordSlices.filterNot { it overlapsWith selectedSlice } + selectedSlice
         else unassignedWordSlices
 
+    val childNodesWithTriggers: List<List<Id>> =
+        topLevelNodeIds.map { listOf(it) } +  // Single nodes
+            topLevelNodeIdPairs +  // Node pairs
+            selectedTopLevelNodes?.let { listOf(it) }.orEmpty()  // Selected nodes, if any
+
     // Find the targets for all of these triggers, i.e. where nodes can be added
-    val parentNodeCreationTargets: Set<NodeCreationTarget> =
-        (topLevelNodeIds.map { listOf(it) } + topLevelNodeIdPairs).map { nodeIds ->
-            BranchingNodeCreationTarget(
-                position = determineNaturalParentNodePosition(nodeIds.map { node(it).position }.toSet()),
-                childIds = nodeIds.toSet(),
-                childPositions = nodeIds.map { node(it).position },
-            )
-        }.toSet()
     val terminalNodeCreationTargets: Set<NodeCreationTarget> = unassignedSlices.map { slice ->
         sliceOffsetAndWidth(strWidthFunc, sentence, slice).let { (widthBeforeSlice, sliceWidth) ->
             TerminalNodeCreationTarget(
@@ -111,6 +119,14 @@ private fun PositionedTree.getNodeCreationTargets(
             )
         }
     }.toSet()
+    val parentNodeCreationTargets: Set<NodeCreationTarget> =
+        childNodesWithTriggers.map { nodeIds ->
+            BranchingNodeCreationTarget(
+                position = determineNaturalParentNodePosition(nodeIds.map { node(it).position }.toSet()),
+                childIds = nodeIds.toSet(),
+                childPositions = nodeIds.map { node(it).position },
+            )
+        }.toSet()
 
     return terminalNodeCreationTargets + parentNodeCreationTargets
 }
@@ -118,9 +134,9 @@ private fun PositionedTree.getNodeCreationTargets(
 @JsName("getNodeCreationTriggersAsKtList")
 fun PositionedTree.getNodeCreationTriggers(
     strWidthFunc: StrWidthFunc,
-    selectedSlice: StringSlice?,
+    selectionInPlot: SelectionInPlot,
 ): List<NodeCreationTrigger> =
-    getNodeCreationTargets(strWidthFunc, selectedSlice?.trimSpacesForString(sentence)).map { target ->
+    getNodeCreationTargets(strWidthFunc, selectionInPlot).map { target ->
         val origin = target.position
         val topLeft = CoordsInTree(
             target.position.treeX - MAX_TRIGGER_WIDTH / 2, target.position.treeY - MAX_TRIGGER_PADDING_TOP

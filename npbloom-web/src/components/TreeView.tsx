@@ -25,7 +25,6 @@ import {
   PositionedTree,
   SelectionInPlot,
   SetSelection,
-  SliceSelectionInPlot,
   StartEditing,
   TerminalNodeCreationTrigger,
   TreeSelectionInPlot,
@@ -326,7 +325,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     {getNodeCreationTriggers(
       tree,
       strWidth,
-      state.selection instanceof SliceSelectionInPlot ? state.selection.slice : null,
+      state.selection,
     ).map(trigger =>
       <NodeCreationTriggerClickZone
         trigger={trigger}
