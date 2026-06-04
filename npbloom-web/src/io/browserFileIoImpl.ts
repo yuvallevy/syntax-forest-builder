@@ -2,7 +2,7 @@
  * IndexedDB-based simulation of file I/O.
  */
 
-import { ContentState, contentStateFromFileContents, contentStateToFileContents } from 'npbloom-core';
+import { FileContents, fileContentsFromByteArray, fileContentsToByteArray } from 'npbloom-core';
 
 const DB_NAME = 'NPBloomFiles';
 const DB_VERSION = 1;
@@ -108,22 +108,22 @@ const loadFileRaw = (db: IDBDatabase, fileName: string): Promise<Int8Array> =>
   });
 
 /**
- * Saves the content state to a file in the IndexedDB under the given name.
+ * Saves the file state to a file in the IndexedDB under the given name.
  */
-export const saveContentStateToFile = (
+export const saveFileContents = (
   db: IDBDatabase,
-  contentState: ContentState,
+  fileContents: FileContents,
   fileName: string,
   modifiedTime: Date = new Date(),
 ): Promise<[void, void]> =>
-  saveFileRaw(db, contentStateToFileContents(contentState), fileName, modifiedTime);
+  saveFileRaw(db, fileContentsToByteArray(fileContents), fileName, modifiedTime);
 
 /**
  * Retrieves the content of a file stored in the IndexedDB by name,
- * and returns a promise resolving to the reconstructed ContentState object.
+ * and returns a promise resolving to the reconstructed FileContents object.
  */
-export const loadContentStateFromFile = async (db: IDBDatabase, fileName: string): Promise<ContentState> =>
-  contentStateFromFileContents(await loadFileRaw(db, fileName));
+export const loadFileContents = async (db: IDBDatabase, fileName: string): Promise<FileContents> =>
+  fileContentsFromByteArray(await loadFileRaw(db, fileName));
 
 export const renameFile = async (db: IDBDatabase, oldFileName: string, newFileName: string): Promise<[void, void]> => {
   if (await fileExists(db, newFileName)) throw new Error(`A file named '${newFileName}' already exists`);

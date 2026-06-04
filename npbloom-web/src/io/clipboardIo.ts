@@ -1,4 +1,4 @@
-import { treeFromFileContents, treeToFileContents, UnpositionedTree } from 'npbloom-core';
+import { treeFromByteArray, treeToByteArray, UnpositionedTree } from 'npbloom-core';
 
 /**
  * Converts an Int8Array to a hex string. Negative bytes are represented as two's complement.
@@ -66,10 +66,10 @@ const copyInt8ArrayToClipboard = async (data: Int8Array): Promise<void> => {
  * Copies the given tree to the clipboard as a hex string.
  */
 export const copyTreeToClipboard = (tree: UnpositionedTree): Promise<void> =>
-  copyInt8ArrayToClipboard(treeToFileContents(tree));
+  copyInt8ArrayToClipboard(treeToByteArray(tree));
 
 /**
  * Attempts to read the hex string from the clipboard as a tree and returns the tree if successful.
  */
 export const extractTreeFromClipboardData = async (data: string): Promise<UnpositionedTree> =>
-  treeFromFileContents(hexStringToInt8Array(data))
+  treeFromByteArray(hexStringToInt8Array(data))

@@ -13,6 +13,7 @@ import space.yuvalinguist.npbloom.content.unpositioned.*
 import space.yuvalinguist.npbloom.ui.content.*
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 private typealias PlotIndex = Int
 
@@ -58,7 +59,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetTree(val treeId: Id, val tree: UnpositionedTree) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
-@JsExport class LoadContentState(val contentState: ContentState) : UiAction
+@JsExport class LoadContentState(val fileContents: FileContents) : UiAction
 @JsExport class Pan(val clientCoordsOffset: ClientCoordsOffset) : UiAction
 @JsExport class Zoom(val relativeFactor: Double, val focus: CoordsInClient) : UiAction
 @JsExport class SetZoomLevel(val newZoomLevel: Double, val focus: CoordsInClient) : UiAction
@@ -77,6 +78,15 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport
 enum class ShapeTool { None, Line, Arrow, Rectangle, RoundedRectangle, Ellipse }
 
+private val defaultPanZoomState = PanZoomState(PlotCoordsOffset(0.0, 0.0), 1.0)
+
+private fun List<PanZoomState>.syncToPlotCount(plotCount: Int): List<PanZoomState> =
+    if (size >= plotCount) take(plotCount)
+    else this + List(plotCount - size) { defaultPanZoomState }
+
+private fun List<PanZoomState>.updateByIndex(index: Int, func: (PanZoomState) -> PanZoomState): List<PanZoomState> =
+    mapIndexed { i, pz -> if (i == index) func(pz) else pz }
+
 @JsExport
 data class UiState(
     val contentState: UndoableContentState,
@@ -85,9 +95,15 @@ data class UiState(
     val selectionAction: EntitySelectionAction,
     val objectMarkings: SelectionInPlot = NoSelectionInPlot,
     val editedNodeIndicator: NodeIndicatorInPlot?,
-    val panZoomState: PanZoomState,
+    @JsName("plotPanZoomStatesAsKtList") val plotPanZoomStates: List<PanZoomState>,
     val activeShapeTool: ShapeTool = ShapeTool.None,
-)
+) {
+    val panZoomState get() = plotPanZoomStates[activePlotIndex]
+
+    // JS-friendly array for TypeScript callers (e.g. file I/O)
+    @JsName("plotPanZoomStates")
+    val plotPanZoomStatesAsArray get() = plotPanZoomStates.toTypedArray()
+}
 
 @JsExport
 val initialUiState = UiState(
@@ -96,7 +112,7 @@ val initialUiState = UiState(
     selection = NoSelectionInPlot,
     selectionAction = EntitySelectionAction.SelectNode,
     editedNodeIndicator = null,
-    panZoomState = PanZoomState(PlotCoordsOffset(0.0, 0.0), 1.0)
+    plotPanZoomStates = listOf(defaultPanZoomState),
 )
 
 private fun selectParentNodes(activePlot: UnpositionedPlot, selection: SelectionInPlot): SelectionInPlot =
@@ -139,6 +155,7 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 selection = NoSelectionInPlot,
                 selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = null,
+                plotPanZoomStates = state.plotPanZoomStates + defaultPanZoomState,
             )
         }
 
@@ -157,6 +174,8 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 selection = NoSelectionInPlot,
                 selectionAction = EntitySelectionAction.SelectNode,
                 editedNodeIndicator = null,
+                plotPanZoomStates = if (isLastRemainingPlot) listOf(defaultPanZoomState)
+                                    else state.plotPanZoomStates.toMutableList().also { it.removeAt(action.plotIndex) },
             )
         }
 
@@ -596,24 +615,34 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 contentState = newContentState,
                 activePlotIndex = newActivePlotIndex,
                 selection = pruneSelection(state.selection, newContentState.current.plots[newActivePlotIndex]),
+                plotPanZoomStates = state.plotPanZoomStates.syncToPlotCount(newContentState.current.plots.size),
             )
         }
 
-        is LoadContentState ->
+        is LoadContentState -> {
+            val plotCount = action.fileContents.contentState.plots.size
             return initialUiState.copy(
-                contentState = initialContentState.copy(current = action.contentState)
+                contentState = initialContentState.copy(current = action.fileContents.contentState),
+                plotPanZoomStates = action.fileContents.plotPanZoomStates.syncToPlotCount(plotCount),
             )
+        }
 
         is Pan -> {
-            return state.copy(panZoomState = state.panZoomState.panBy(action.clientCoordsOffset))
+            return state.copy(plotPanZoomStates = state.plotPanZoomStates.updateByIndex(state.activePlotIndex) {
+                it.panBy(action.clientCoordsOffset)
+            })
         }
 
         is Zoom -> {
-            return state.copy(panZoomState = state.panZoomState.zoomBy(action.relativeFactor, action.focus.toOffset()))
+            return state.copy(plotPanZoomStates = state.plotPanZoomStates.updateByIndex(state.activePlotIndex) {
+                it.zoomBy(action.relativeFactor, action.focus.toOffset())
+            })
         }
 
         is SetZoomLevel -> {
-            return state.copy(panZoomState = state.panZoomState.setZoomLevel(action.newZoomLevel, action.focus.toOffset()))
+            return state.copy(plotPanZoomStates = state.plotPanZoomStates.updateByIndex(state.activePlotIndex) {
+                it.setZoomLevel(action.newZoomLevel, action.focus.toOffset())
+            })
         }
 
         is MarkCCommandingNodes -> {

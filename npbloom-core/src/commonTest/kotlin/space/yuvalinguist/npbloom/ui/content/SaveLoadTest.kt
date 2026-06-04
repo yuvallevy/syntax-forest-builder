@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package space.yuvalinguist.npbloom.ui.content
 
 import space.yuvalinguist.npbloom.content.EntitySet
@@ -5,8 +7,9 @@ import space.yuvalinguist.npbloom.content.StringSlice
 import space.yuvalinguist.npbloom.content.YAlignMode
 import space.yuvalinguist.npbloom.content.positioned.CoordsInPlot
 import space.yuvalinguist.npbloom.content.unpositioned.*
+import space.yuvalinguist.npbloom.content.unpositioned.PlotCoordsOffset
+import space.yuvalinguist.npbloom.ui.PanZoomState
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class SaveLoadTest {
@@ -76,125 +79,45 @@ class SaveLoadTest {
         ))
     )
 
-    private val fileContentsOldFormat: ByteArray = byteArrayOf(
-        89,  -79, 0,   17,  -16, 78,  87,  0,   1,   2,   -65, 97,  112, -97, -65, 97,
-        116, -65, 97,  101, -97, -65, 97,  105, 100, 99,  108, 101, 111, 97,  115, 109,
-        67,  108, 101, 111, 32,  108, 97,  117, 103, 104, 101, 100, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 49,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  102,
-        102, 102, 102, 102, 102, -1,  97,  89,  -97, 99,  110, 112, 49,  99,  118, 112,
-        49,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  110, 112, 49,  97,  108,
-        98,  78,  80,  97,  89,  -97, 98,  110, 49,  -1,  -1,  -1,  -97, 97,  84,  -65,
-        97,  105, 98,  110, 49,  97,  108, 97,  78,  97,  115, -97, 0,   4,   -1,  -1,
-        -1,  -97, 97,  84,  -65, 97,  105, 99,  118, 112, 49,  97,  108, 98,  86,  80,
-        97,  115, -97, 5,   12,  -1,  97,  45,  97,  94,  -1,  -1,  -1,  -1,  -1,  -65,
-        97,  105, 100, 97,  108, 101, 120, 97,  115, 115, 65,  108, 101, 120, 32,  98,
-        97,  107, 101, 100, 32,  99,  111, 111, 107, 105, 101, 115, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 50,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  0,
-        0,   0,   0,   0,   0,   -1,  97,  89,  -97, 100, 110, 112, 50,  97,  99,  118,
-        112, 50,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 100, 110, 112, 50,  97,
-        97,  108, 98,  78,  80,  97,  89,  -97, 98,  110, 50,  -1,  -1,  -1,  -97, 97,
-        84,  -65, 97,  105, 98,  110, 50,  97,  108, 97,  78,  97,  115, -97, 0,   4,
-        -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  118, 112, 50,  97,  108, 98,
-        86,  80,  97,  89,  -97, 98,  118, 50,  100, 110, 112, 50,  98,  -1,  -1,  -1,
-        -97, 97,  84,  -65, 97,  105, 98,  118, 50,  97,  108, 97,  86,  97,  115, -97,
-        5,   10,  -1,  -1,  -1,  -97, 97,  84,  -65, 97,  105, 100, 110, 112, 50,  98,
-        97,  108, 98,  78,  80,  97,  115, -97, 11,  18,  -1,  -1,  -1,  -1,  -1,  -1,
-        -1,  -1,  -1,  -1,  -1,
-    )
+    // Format 1.2 - bare ContentState, no plotPanZoomStates
+    private val bytesFormat12 = "59b10011f04e57000102bf61709fbf6174bf61659fbf616964636c656f61736d436c656f206c6175676865642e616ebf61659f9f6142bf6169627331616c6153616f9ffb0000000000000000fb4014666666666666ff61599f636e703163767031ffffff9f6142bf6169636e7031616c624e5061599f626e31ffffff9f6154bf6169626e31616c614e61739f0004ffffff9f6154bf616963767031616c62565061739f050cff612d615effffffffffbf616964616c6578617373416c65782062616b656420636f6f6b6965732e616ebf61659f9f6142bf6169627332616c6153616f9ffb0000000000000000fb4014000000000000ff61599f646e70326163767032ffffff9f6142bf6169646e703261616c624e5061599f626e32ffffff9f6154bf6169626e32616c614e61739f0004ffffff9f6142bf616963767032616c62565061599f627632646e703262ffffff9f6154bf6169627632616c615661739f050affffff9f6154bf6169646e703262616c624e5061739f0b12ffffffffffffffffffffff".hexToByteArray()
 
-    private val fileContentsNewFormat: ByteArray = byteArrayOf(
-        89,  -79, 0,   17,  -16, 78,  87,  0,   1,   3,   -65, 97,  112, -97, -65, 97,
-        116, -65, 97,  101, -97, -65, 97,  105, 100, 99,  108, 101, 111, 97,  115, 109,
-        67,  108, 101, 111, 32,  108, 97,  117, 103, 104, 101, 100, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 49,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  102,
-        102, 102, 102, 102, 102, -1,  97,  89,  -97, 99,  110, 112, 49,  99,  118, 112,
-        49,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  110, 112, 49,  97,  108,
-        98,  78,  80,  97,  89,  -97, 98,  110, 49,  -1,  -1,  -1,  -97, 97,  84,  -65,
-        97,  105, 98,  110, 49,  97,  108, 97,  78,  97,  115, -97, 0,   4,   -1,  -1,
-        -1,  -97, 97,  84,  -65, 97,  105, 99,  118, 112, 49,  97,  108, 98,  86,  80,
-        97,  115, -97, 5,   12,  -1,  97,  45,  97,  94,  -1,  -1,  -1,  -1,  -1,  -65,
-        97,  105, 100, 97,  108, 101, 120, 97,  115, 115, 65,  108, 101, 120, 32,  98,
-        97,  107, 101, 100, 32,  99,  111, 111, 107, 105, 101, 115, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 50,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  0,
-        0,   0,   0,   0,   0,   -1,  97,  89,  -97, 100, 110, 112, 50,  97,  99,  118,
-        112, 50,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 100, 110, 112, 50,  97,
-        97,  108, 98,  78,  80,  97,  89,  -97, 98,  110, 50,  -1,  -1,  -1,  -97, 97,
-        84,  -65, 97,  105, 98,  110, 50,  97,  108, 97,  78,  97,  115, -97, 0,   4,
-        -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  118, 112, 50,  97,  108, 98,
-        86,  80,  97,  89,  -97, 98,  118, 50,  100, 110, 112, 50,  98,  -1,  -1,  -1,
-        -97, 97,  84,  -65, 97,  105, 98,  118, 50,  97,  108, 97,  86,  97,  115, -97,
-        5,   10,  -1,  -1,  -1,  -97, 97,  84,  -65, 97,  105, 100, 110, 112, 50,  98,
-        97,  108, 98,  78,  80,  97,  115, -97, 11,  18,  -1,  -1,  -1,  -1,  -1,  -1,
-        -1,  -1,  -1,  -1,  -1,
-    )
-
-    private val fileContentsNewFormatWithShapes: ByteArray = byteArrayOf(
-        89,  -79, 0,   17,  -16, 78,  87,  0,   1,   3,   -65, 97,  112, -97, -65, 97,
-        116, -65, 97,  101, -97, -65, 97,  105, 100, 99,  108, 101, 111, 97,  115, 109,
-        67,  108, 101, 111, 32,  108, 97,  117, 103, 104, 101, 100, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 49,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  102,
-        102, 102, 102, 102, 102, -1,  97,  89,  -97, 99,  110, 112, 49,  99,  118, 112,
-        49,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  110, 112, 49,  97,  108,
-        98,  78,  80,  97,  89,  -97, 98,  110, 49,  -1,  -1,  -1,  -97, 97,  84,  -65,
-        97,  105, 98,  110, 49,  97,  108, 97,  78,  97,  115, -97, 0,   4,   -1,  -1,
-        -1,  -97, 97,  84,  -65, 97,  105, 99,  118, 112, 49,  97,  108, 98,  86,  80,
-        97,  115, -97, 5,   12,  -1,  97,  45,  97,  94,  -1,  -1,  -1,  -1,  -1,  -65,
-        97,  105, 100, 97,  108, 101, 120, 97,  115, 115, 65,  108, 101, 120, 32,  98,
-        97,  107, 101, 100, 32,  99,  111, 111, 107, 105, 101, 115, 46,  97,  110, -65,
-        97,  101, -97, -97, 97,  66,  -65, 97,  105, 98,  115, 50,  97,  108, 97,  83,
-        97,  111, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  20,  0,
-        0,   0,   0,   0,   0,   -1,  97,  89,  -97, 100, 110, 112, 50,  97,  99,  118,
-        112, 50,  -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 100, 110, 112, 50,  97,
-        97,  108, 98,  78,  80,  97,  89,  -97, 98,  110, 50,  -1,  -1,  -1,  -97, 97,
-        84,  -65, 97,  105, 98,  110, 50,  97,  108, 97,  78,  97,  115, -97, 0,   4,
-        -1,  -1,  -1,  -97, 97,  66,  -65, 97,  105, 99,  118, 112, 50,  97,  108, 98,
-        86,  80,  97,  89,  -97, 98,  118, 50,  100, 110, 112, 50,  98,  -1,  -1,  -1,
-        -97, 97,  84,  -65, 97,  105, 98,  118, 50,  97,  108, 97,  86,  97,  115, -97,
-        5,   10,  -1,  -1,  -1,  -97, 97,  84,  -65, 97,  105, 100, 110, 112, 50,  98,
-        97,  108, 98,  78,  80,  97,  115, -97, 11,  18,  -1,  -1,  -1,  -1,  -1,  -1,
-        -1,  -1,  97,  115, -65, 97,  101, -97, -97, 98,  69,  78,  -65, 97,  105, 105,
-        114, 101, 99,  116, 97,  110, 103, 108, 101, 97,  120, -5,  64,  16,  0,   0,
-        0,   0,   0,   0,   97,  121, -5,  64,  32,  0,   0,   0,   0,   0,   0,   97,
-        119, -5,  64,  94,  0,   0,   0,   0,   0,   0,   97,  104, -5,  64,  68,  0,
-        0,   0,   0,   0,   0,   -1,  -1,  -97, 98,  69,  78,  -65, 97,  105, 103, 101,
-        108, 108, 105, 112, 115, 101, 97,  120, -5,  64,  32,  0,   0,   0,   0,   0,
-        0,   97,  121, -5,  64,  16,  0,   0,   0,   0,   0,   0,   97,  119, -5,  64,
-        68,  0,   0,   0,   0,   0,   0,   97,  104, -5,  64,  84,  0,   0,   0,   0,
-        0,   0,   97,  114, -5,  127, -16, 0,   0,   0,   0,   0,   0,   -1,  -1,  -97,
-        98,  76,  83,  -65, 97,  105, 100, 108, 105, 110, 101, 97,  115, -97, -5,  64,
-        94,  0,   0,   0,   0,   0,   0,   -5,  0,   0,   0,   0,   0,   0,   0,   0,
-        -1,  97,  101, -97, -5,  0,   0,   0,   0,   0,   0,   0,   0,   -5,  64,  84,
-        0,   0,   0,   0,   0,   0,   -1,  97,  97,  97,  69,  -1,  -1,  -1,  -1,  -1,
-        -1,  -1,
-    )
+    // Format 1.3 - bare ContentState, no plotPanZoomStates, with shapes
+    private val bytesFormat13WithShapes = "59b10011f04e57000103bf61709fbf6174bf61659fbf616964636c656f61736d436c656f206c6175676865642e616ebf61659f9f6142bf6169627331616c6153616f9ffb0000000000000000fb4014666666666666ff61599f636e703163767031ffffff9f6142bf6169636e7031616c624e5061599f626e31ffffff9f6154bf6169626e31616c614e61739f0004ffffff9f6154bf616963767031616c62565061739f050cff612d615effffffffffbf616964616c6578617373416c65782062616b656420636f6f6b6965732e616ebf61659f9f6142bf6169627332616c6153616f9ffb0000000000000000fb4014000000000000ff61599f646e70326163767032ffffff9f6142bf6169646e703261616c624e5061599f626e32ffffff9f6154bf6169626e32616c614e61739f0004ffffff9f6142bf616963767032616c62565061599f627632646e703262ffffff9f6154bf6169627632616c615661739f050affffff9f6154bf6169646e703262616c624e5061739f0b12ffffffffffffffff6173bf61659f9f62454ebf61696972656374616e676c656178fb40100000000000006179fb40200000000000006177fb405e0000000000006168fb4044000000000000ffff9f62454ebf616967656c6c697073656178fb40200000000000006179fb40100000000000006177fb40440000000000006168fb40540000000000006172fb7ff0000000000000ffff9f624c53bf6169646c696e6561739ffb405e000000000000fb0000000000000000ff61659ffb0000000000000000fb4054000000000000ff61616145ffffffffffffff".hexToByteArray()
 
     @Test
-    fun serializeToNewFormat() {
-        assertContentEquals(fileContentsNewFormat, content.toFileContents())
+    fun roundTripCurrentFormat() {
+        val fileContents = FileContents(content)
+        assertEquals(fileContents, FileContents.fromByteArray(fileContents.toByteArray()))
     }
 
     @Test
-    fun deserializeFromNewFormat() {
-        assertEquals(content, ContentState.fromFileContents(fileContentsNewFormat))
+    fun roundTripCurrentFormatWithShapes() {
+        val fileContents = FileContents(contentWithShapes)
+        assertEquals(fileContents, FileContents.fromByteArray(fileContents.toByteArray()))
     }
 
     @Test
-    fun serializeFromNewFormatWithShapes() {
-        assertContentEquals(fileContentsNewFormatWithShapes, contentWithShapes.toFileContents())
+    fun roundTripCurrentFormatWithPanZoom() {
+        val plotPanZoomStates = listOf(PanZoomState(PlotCoordsOffset(100.0, -50.0), 1.5))
+        val fileContents = FileContents(content, plotPanZoomStates)
+        val restored = FileContents.fromByteArray(fileContents.toByteArray())
+        assertEquals(fileContents.contentState, restored.contentState)
+        assertEquals(plotPanZoomStates, restored.plotPanZoomStates)
     }
 
     @Test
-    fun deserializeFromNewFormatWithShapes() {
-        assertEquals(contentWithShapes, ContentState.fromFileContents(fileContentsNewFormatWithShapes))
+    fun deserializeFromFormat13() {
+        assertEquals(contentWithShapes, FileContents.fromByteArray(bytesFormat13WithShapes).contentState)
     }
 
     @Test
-    fun deserializeFromOldFormat() {
-        assertEquals(content, ContentState.fromFileContents(fileContentsOldFormat))
+    fun deserializeFromFormat13HasEmptyPlotPanZoomStates() {
+        assertEquals(emptyList(), FileContents.fromByteArray(bytesFormat13WithShapes).plotPanZoomStates)
+    }
+
+    @Test
+    fun deserializeFromFormat12() {
+        assertEquals(content, FileContents.fromByteArray(bytesFormat12).contentState)
     }
 }

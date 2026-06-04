@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import useUiState from '../useUiState';
-import { LoadContentState } from 'npbloom-core';
+import { LoadContentState, createFileContents } from 'npbloom-core';
 import {
   deleteFile,
   FileWithMetadata,
   getFileMetadataList,
-  loadContentStateFromFile,
+  loadFileContents,
   openFileDatabase,
   renameFile,
-  saveContentStateToFile
+  saveFileContents
 } from './browserFileIoImpl';
 import BrowserFileIoModal from './BrowserFileIoModal';
 
@@ -55,7 +55,8 @@ const useBrowserFileIo = ({
   const handleSave = (fileName: string): Promise<void> =>
     assertDbConnected(async db => {
       try {
-        await saveContentStateToFile(db, state.contentState.current, fileName);
+        const fileContents = createFileContents(state.contentState.current, state.plotPanZoomStates);
+        await saveFileContents(db, fileContents, fileName);
         setActiveFileName(fileName);
         closeFileIoModal();
       } catch (e: any) {
@@ -70,9 +71,9 @@ const useBrowserFileIo = ({
   const handleLoad = (fileName: string): Promise<void> =>
     assertDbConnected(async db => {
       try {
-        const contentState = await loadContentStateFromFile(db, fileName);
+        const fileContents = await loadFileContents(db, fileName);
         setActiveFileName(fileName);
-        dispatch(new LoadContentState(contentState));
+        dispatch(new LoadContentState(fileContents));
         closeFileIoModal();
       } catch (e: any) {
         modals.open({

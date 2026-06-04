@@ -2,14 +2,20 @@
 
 package space.yuvalinguist.npbloom.ui
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import space.yuvalinguist.npbloom.content.unpositioned.PlotCoordsOffset
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 typealias ZoomLevel = Double
 
+@Serializable
 @JsExport
-data class PanZoomState(val viewPositionInPlot: PlotCoordsOffset, val zoomLevel: ZoomLevel) {
+data class PanZoomState(
+    @SerialName("p") val viewPositionInPlot: PlotCoordsOffset,
+    @SerialName("z") val zoomLevel: ZoomLevel,
+) {
     private val allowedZoomRange = 0.1..10.0
 
     fun panBy(relativePanOffset: ClientCoordsOffset) =

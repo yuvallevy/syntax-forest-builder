@@ -3,9 +3,11 @@
 package space.yuvalinguist.npbloom.ui.content
 
 import space.yuvalinguist.npbloom.content.unpositioned.UnpositionedTree
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 @JsExport
-fun contentStateFromFileContents(byteArray: ByteArray) = ContentState.fromFileContents(byteArray)
+fun fileContentsFromByteArray(byteArray: ByteArray) = FileContents.fromByteArray(byteArray)
 
 @JsExport
-fun treeFromFileContents(byteArray: ByteArray) = UnpositionedTree.fromFileContents(byteArray)
+fun treeFromByteArray(byteArray: ByteArray) = UnpositionedTree.fromByteArray(byteArray)
