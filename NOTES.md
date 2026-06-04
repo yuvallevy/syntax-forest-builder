@@ -151,7 +151,9 @@ The entry point is `contentReducer`, which handles `ContentOrHistoryAction`: dis
 
 **`EditNodes.kt`**: A supplement to `content/unpositioned/Manipulation.kt` with some routines that facilitate better UX in addition to the fundamental tree manipulation logic in the other package. Two main functionalities are implemented here: (a) adjusting terminal node slices when words are added or removed, and (b) guessing user intent when inserting nodes based on their current selection.
 
-**`SaveLoad.kt`**: Logic for saving and loading trees locally on the user's device. This is done by serializing the current content state into CBOR using `kotlinx.serialization`, prefixed with a magic number and a format version. This file is only responsible for saving and loading in NPBloom's native format; labelled bracket notation export and import are handled in `content`.
+**`SaveLoad.kt`**: Logic for saving and loading files locally on the user's device. The serialized unit is `FileContents` (defined in `FileContents.kt`), which packages a `ContentState` together with the per-plot pan/zoom states. `FileContents` is encoded into CBOR using `kotlinx.serialization`, then prefixed with a magic number and a format version byte-pair.
+  - Files from format versions 1.x stored only a bare `ContentState` and are handled by wrapping the decoded object in a `FileContents` with empty pan/zoom state.
+  - This file is only responsible for saving and loading in NPBloom's native format; labelled bracket notation export and import are handled in `content`.
 
 **`AutoFormat.kt`**: A simple routine for formatting subscripts in node labels and sentences. For example, "NP[1]" would be automatically converted to "NP₁", and "Mary[i]" would be converted to "Maryᵢ". This is purely a cosmetic feature, but it adds a nice touch of polish to the output and is easy to implement.
 
@@ -188,6 +190,19 @@ Each coordinate system is represented by its own set of types:
 The relationship between these spaces is mediated by the **pan/zoom state** (`PanZoomState`), which consists of two values:
 * `viewPositionInPlot`: a `PlotCoordsOffset` representing the plot coordinate that currently appears at the top-left corner of the viewport.
 * `zoomLevel`: a `Double` scale factor (clamped to the range 0.1–10.0) by which the canvas is magnified.
+
+##### Storing pan and zoom state
+
+Each plot has its own independent `PanZoomState`. `UiState` stores them as `plotPanZoomStates: List<PanZoomState>`, one entry per plot, indexed by plot index. The active plot's state is exposed as a computed property `panZoomState` for convenience.
+
+At first glance, this seems a bit roundabout. This design decision had to balance three factors:
+1. Each plot should have its own pan/zoom state, independent of the other plots.
+2. Pan/zoom state should be preserved when saving and loading files.
+3. Pan/zoom state is a UI concern, not a content concern, since it is not related to the structure or content of the trees in any way.
+
+(1) and (2) alone imply we would want to store pan/zoom state under `UnpositionedPlot`, since that is the main data structure for each plot, which gets serialized and deserialized when saving. However, that would violate (3) - we don't want to mix UI state with content state.
+
+To avoid this, we store pan/zoom state separately in `UiState`, but we still include it in the serialized file format by packaging it together with the content state in `FileContents`. This way, we keep pan/zoom state separate from content state in the codebase, while still preserving it across save/load.
 
 ##### Converting between plot and client coordinates
 
@@ -516,17 +531,17 @@ The implementation for this system is located in `io/browserFileIoImpl.ts`, whic
 The main entry points are:
 * `openFileDatabase()`: Opens a connection to the IndexedDB database, creating it if it doesn't exist. This must be called before any other file I/O operations, and the resulting database connection must be passed to those operations.
 * `getFileMetadataList(db)`: Retrieves a list of metadata for all files currently stored in the database, including their names, modified times, types (currently only `'forest'`), and sizes.
-* `saveContentStateToFile(db, contentState, fileName)`: Saves the given content state to a new file with the given name. The content state is serialized into CBOR using the logic in `content/SaveLoad.kt` before being stored in the database. An optional parameter `modifiedTime` can be provided to set the modified time of the file; if not provided, it defaults to the current time.
-  - Internally, this serializes the forest to CBOR, then calls the private `saveFileRaw` function, which adds the raw content to the content store and the metadata to the metadata store.
-* `loadContentStateFromFile(db, fileName)`: Replaces the current content state with the content loaded from the file with the given name. The file content is deserialized from CBOR using the logic in `content/SaveLoad.kt` before being applied to the state.
+* `saveFileContents(db, fileContents, fileName)`: Saves the given `FileContents` (content state + per-plot pan/zoom states) to a new file with the given name. The object is serialized into CBOR using the logic in `content/SaveLoad.kt` before being stored in the database. An optional parameter `modifiedTime` can be provided to set the modified time of the file; if not provided, it defaults to the current time.
+  - Internally, this serializes to CBOR, then calls the private `saveFileRaw` function, which adds the raw content to the content store and the metadata to the metadata store.
+* `loadFileContents(db, fileName)`: Loads and deserializes a file from the database by name, returning a `FileContents` object. The file content is deserialized from CBOR using the logic in `content/SaveLoad.kt`.
 * `renameFile(db, oldFileName, newFileName)`: Renames the file with the given old name to the new name.
 * `deleteFile(db, fileName)`: Deletes the file with the given name from the database.
 
 Serialized data in CBOR is passed between the frontend and `npbloom-core` as an `Int8Array`, which is how Kotlin/JS translates Kotlin `ByteArray`s to JavaScript. This type is also used to store the content in the IndexedDB database.
 
 `browserFileIoImpl.ts` is a pure data layer, knowing about databases, files, and serialization, but nothing about user intent or the rest of the UI. All of its functionality is exposed to the rest of the frontend via the `useBrowserFileIo` hook, which is a higher-level wrapper around the functions described before. This hook bridges the data layer with the UI layer, exposing an interface built around menu actions ("Open", "Save", "Save as") and translating them into the appropriate file operations using a dedicated file I/O modal (`BrowserFileIoModal.tsx`) that handles user interactions related to file management. There is a one-to-one mapping between `useBrowserFileIo`'s exposed functions and menu actions related to file I/O:
-* `openFileLoadModal()`: Opens the file load modal, allowing the user to choose a file to load. This calls `loadContentStateFromFile` internally with the chosen file. Equivalent to the "Open" menu action.
-* `openFileSaveModal()`: Opens the file save modal, allowing the user to choose a name to save the current content state under. This calls `saveContentStateToFile` internally with the chosen name. Equivalent to the "Save As" menu action.
+* `openFileLoadModal()`: Opens the file load modal, allowing the user to choose a file to load. This calls `loadFileContents` internally with the chosen file. Equivalent to the "Open" menu action.
+* `openFileSaveModal()`: Opens the file save modal, allowing the user to choose a name to save under. This constructs a `FileContents` from the current content state and pan/zoom states (via `createFileContents`), then calls `saveFileContents` internally. Equivalent to the "Save As" menu action.
 * `saveOrSaveAs()`: If the current content state has already been saved to a file, this saves it to that file again (overwriting the previous content). If it has not been saved before, this opens the file save modal as described above. Equivalent to the "Save" menu action.
 
 `useBrowserFileIo` also exposes `activeFileName`, which is the name of the file that the current content state is saved under, or `null` if it has not been saved before. This is used to show the current file name in the UI. It is _not_ used to determine whether "Save" should trigger a save or a save-as operation; that is determined within `useBrowserFileIo` itself and not exposed to the rest of the frontend.
@@ -549,8 +564,8 @@ The implementation for this system is located in `io/systemFileIoImpl.ts`, which
 Each of these functions has two implementations: a modern one using the File System Access API, and a fallback implementation that works by creating temporary links and blobs. The implementation to use is determined automatically depending on the browser's capabilities (whether the API is supported) and its security context (the API is only available in secure contexts, i.e. over HTTPS or on localhost).
 
 These functions are exposed to the rest of the frontend via the `useSystemFileIo` hook, which, like `useBrowserFileIo`, is a higher-level wrapper around the file I/O functions that bridges the data layer with the application state. It exposes two main functions:
-* `openSystemFileLoadModal()`: Opens the system file picker for opening files, allowing the user to choose a file to load. This calls `openFileNative` internally, then deserializes the chosen file and applies it to the content state.
-* `openSystemFileSaveModal()`: Opens the system file picker for saving files, allowing the user to choose a location to save the current content state. This calls `saveFileNative` internally with the serialized content state.
+* `openSystemFileLoadModal()`: Opens the system file picker for opening files, allowing the user to choose a file to load. This calls `openFileNative` internally, then deserializes the chosen file via `fileContentsFromByteArray` and dispatches `LoadContentState` with the resulting `FileContents` (which includes both content and per-plot pan/zoom states).
+* `openSystemFileSaveModal()`: Opens the system file picker for saving files, allowing the user to choose a location to save the current state. This constructs a `FileContents` via `createFileContents` from the current content state and pan/zoom states, serializes it via `fileContentsToByteArray`, then calls `saveFileNative`.
 
 Since the native file I/O system is still experimental and not guaranteed to work in all environments, it is exposed through menu actions as "Import" and "Export", hinting that it is not the primary means of saving and loading files in NPBloom. Unlike the browser file I/O system, the "active file" is not exposed, only existing so that the same name is used when exporting multiple times in a row.
 
