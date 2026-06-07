@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { applyNodePositionsToPlot, MouseInteractionMode, PositionedPlot } from 'npbloom-core';
 import usePlotMouseInteractions from './usePlotMouseInteractions';
 import TreeView from './TreeView';
@@ -54,6 +54,8 @@ const PlotView: React.FC = () => {
   } = usePlotMouseInteractions(plot, svgRef);
 
   const isMouseIdle = mouseInteractionMode === MouseInteractionMode.Idle;
+
+  const handleBeginnersGuideComplete = useCallback(() => setBeginnersGuideActive(false), []);
 
   return <>
     <svg
@@ -133,7 +135,7 @@ const PlotView: React.FC = () => {
     <ZoomControl acceptMouseEvents={isMouseIdle} />
     {beginnersGuideActive ? <BeginnersGuide
       acceptMouseEvents={isMouseIdle}
-      onComplete={() => setBeginnersGuideActive(false)}
+      onComplete={handleBeginnersGuideComplete}
     /> : activePlot.isEmpty && <PlotPlaceholder
       showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
       acceptMouseEvents={isMouseIdle}

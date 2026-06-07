@@ -17,7 +17,7 @@ const PlotPlaceholder: React.FC<PlotPlaceholderProps> = ({ showWelcome, acceptMo
       style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}
     >
       To start, click anywhere and type a sentence,
-      or <Anchor onClick={onDemoRequest}>try the demo</Anchor> first.
+      or <Anchor onClick={onDemoRequest}>watch a demo</Anchor> first.
     </Alert> : <img src={LogoDim} height={120} alt="NPBloom logo" />}
   </div>;
 

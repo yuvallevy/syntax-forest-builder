@@ -46,6 +46,8 @@ const TREE_AREA_PADDING = 12;
 
 interface NodeCreationTriggerClickZoneProps {
   trigger: NodeCreationTrigger;
+  targetChildren?: Id[]; // For branching node creation triggers, the IDs of the children that would be adopted
+  targetSlice?: string; // For terminal node creation triggers, the slice of the sentence that would be covered
   onClick?: () => void;
 }
 
@@ -153,6 +155,7 @@ const renderNode = (
   <g
     key={nodeId}
     data-npb-export={true}
+    data-raw-label={node.label}
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
       + (selectedNodeIds.includes(nodeId) ? ' TreeView--node--selected' : '')
       + (markedNodeIds.includes(nodeId) ? ' TreeView--node--marked' : '')}
@@ -196,9 +199,16 @@ const renderNode = (
   node instanceof PositionedBranchingNode && renderChildNodeConnections(node, allNodes),
 ];
 
-const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({ trigger, onClick }) =>
+const NodeCreationTriggerClickZone: React.FC<NodeCreationTriggerClickZoneProps> = ({
+  trigger,
+  targetChildren,
+  targetSlice,
+  onClick,
+}) =>
   <g
     className="NodeCreationTriggerClickZone"
+    data-target-children={targetChildren ? targetChildren.join(',') : undefined}
+    data-target-slice={targetSlice}
     onClick={onClick}
   >
     <rect
@@ -328,9 +338,14 @@ const TreeView: React.FC<TreeViewProps> = ({
       state.selection,
     ).map(trigger =>
       <NodeCreationTriggerClickZone
+        key={trigger instanceof BranchingNodeCreationTrigger
+          ? `branching-${trigger.childIds.join('-')}`
+          : trigger instanceof TerminalNodeCreationTrigger
+            ? `terminal-${trigger.slice.start}-${trigger.slice.endExclusive}`
+            : `stranded-${trigger.origin.treeX}-${trigger.origin.treeY}`}
         trigger={trigger}
-        key={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIds.join()
-          : `${(trigger as TerminalNodeCreationTrigger).slice.start},${(trigger as TerminalNodeCreationTrigger).slice.endExclusive}`}
+        targetChildren={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIds.map(id => tree.nodes.get(id)?.label ?? '') : undefined}
+        targetSlice={trigger instanceof TerminalNodeCreationTrigger ? tree.sentence.slice(trigger.slice.start, trigger.slice.endExclusive) : undefined}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
     {tree.nodes.map(node =>

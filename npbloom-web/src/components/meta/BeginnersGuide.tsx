@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { generateSentence, UnpositionedBranchingNode, UnpositionedPlot } from 'npbloom-core';
-import { Alert } from '@mantine/core';
+import { Alert, Group, useMantineTheme } from '@mantine/core';
 import './BeginnersGuide.scss';
 import {
-  IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant, IconWritingSign
+  IconBabyCarriage, IconBinaryTree, IconChristmasTree, IconLadder, IconPencilPlus, IconPlant,
 } from '@tabler/icons-react';
-import useUiState from '../../useUiState';
+import runDemo from './demo/runDemo';
 
 interface BeginnersGuideProps {
   acceptMouseEvents: boolean;
@@ -15,72 +14,77 @@ interface BeginnersGuideProps {
 const steps = [
   {
     icon: IconPlant,
-    title: "Plant your first tree",
-    body: `Click anywhere on the board and enter a sentence, like "${generateSentence()}".`
+    title: 'Click and type',
   },
   {
     icon: IconPencilPlus,
-    title: "Add your first node",
-    body: <>Once you're done typing, click <b>above</b> any of the words to add a corresponding node and give it a label
-      (e.g. N, V, Conj, etc.).</>,
-  },
-  {
-    icon: IconWritingSign,
-    title: "Add more nodes",
-    body: "Click above each word to add a node for it.",
+    title: 'Add a node for each word',
   },
   {
     icon: IconBabyCarriage,
-    title: "Give them parents",
-    body: "Once you have enough nodes at the bottom of the tree, click directly above a node to add a parent node for it.",
+    title: 'Give them parents',
   },
   {
     icon: IconBinaryTree,
-    title: "Branch out",
-    body: "Click above the space between two adjacent nodes to add a parent node for both of them.",
+    title: 'Branch out',
   },
   {
     icon: IconLadder,
-    title: "Up we go!",
-    body: "Continue adding nodes until the tree is complete.",
+    title: 'Up we go!',
   },
   {
     icon: IconChristmasTree,
-    title: "That's it!",
-    body: "Congratulations, you just built a syntax tree!",
+    title: 'That\'s it!',
   },
 ];
 
 const BeginnersGuide: React.FC<BeginnersGuideProps> = ({ onComplete, acceptMouseEvents }) => {
-  const { state } = useUiState();
+  const theme = useMantineTheme();
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
-  const plotState = state.contentState.current.plots[state.activePlotIndex];
-  const previousPlotState = useRef<UnpositionedPlot>();
+  const beginnersGuideAlert = useRef<HTMLDivElement>(null);
+
+  const handleNextStep = async () => {
+    // Fade out the current alert, waiting for the animation to finish
+    beginnersGuideAlert.current?.style.setProperty('animation-name', 'fadeOut');
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Move to the next step, or finish if there are no more steps
+    // Setting currentStepIndex to -1 will signal that the demo is complete and the alert should be removed
+    setCurrentStepIndex(prev => prev < steps.length - 1 ? prev + 1 : -1);
+
+    if (currentStepIndex >= 0) {
+      // Fade the new alert in
+      beginnersGuideAlert.current?.style.setProperty('animation-name', 'fadeIn');
+    }
+  };
 
   useEffect(() => {
-    const tree = plotState.isEmpty ? undefined : plotState.treesAsArray[0];
-    if (!tree) return;
-    if (currentStepIndex === 0 && tree.sentence.length >= 15) setCurrentStepIndex(1);
-    else if (currentStepIndex === 1 && tree.hasNodes && tree.nodesAsArray[0].label.length > 0) setCurrentStepIndex(2);
-    else if (currentStepIndex === 2 && tree.nodeCount >= 2) setCurrentStepIndex(3);
-    else if (currentStepIndex === 3 && tree.anyNodes(
-      node => node.label.length > 0 && node instanceof UnpositionedBranchingNode))
-      setCurrentStepIndex(4);
-    else if (currentStepIndex === 4 && tree.anyNodes(
-      node => node.label.length > 0 && node instanceof UnpositionedBranchingNode && node.childrenAsArray.length >= 2))
-      setCurrentStepIndex(5);
-    else if (currentStepIndex === 5 && tree.isComplete) setCurrentStepIndex(6);
-    else if (currentStepIndex === 6 && plotState !== previousPlotState.current) onComplete();
-    previousPlotState.current = plotState;
-  }, [currentStepIndex, plotState, onComplete]);
+    runDemo(handleNextStep);
+  }, [onComplete]);
+
+  useEffect(() => {
+    if (currentStepIndex === -1) {
+      onComplete();
+    }
+  }, [currentStepIndex, onComplete]);
 
   const currentStep = steps[currentStepIndex];
+  if (!currentStep) return null;
 
   return <div className="BeginnersGuide" style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}>
-    <Alert icon={<currentStep.icon />} title={currentStep.title} withCloseButton={false}>
-      {currentStep.body}
+    <Alert ref={beginnersGuideAlert} withCloseButton={false} radius="md" sx={{
+      animationDuration: '0.5s',
+      animationFillMode: 'forwards',
+    }}>
+      <Group spacing="md" sx={{
+        color: theme.primaryColor,
+        fontWeight: 'bold',
+      }}>
+        <currentStep.icon />
+        <div>{currentStep.title}</div>
+      </Group>
     </Alert>
   </div>;
 };
