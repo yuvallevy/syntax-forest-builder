@@ -55,7 +55,7 @@ val guidedTourSteps = arrayOf(
     GuidedTourStep(
         id = "plant-tree",
         title = "Plant your first tree",
-        body = "Click anywhere on the board and enter a sentence, like \"I drew this tree\".",
+        body = "Click anywhere and enter a sentence.",
         actions = listOf(
             AddTree("tour", treePositionByViewport(getViewportWidth(), getViewportHeight())),
             SetSentence("I drew this tree.", StringSlice(0, 0), "tour"),
@@ -64,8 +64,7 @@ val guidedTourSteps = arrayOf(
     GuidedTourStep(
         id = "add-first-node",
         title = "Add your first node",
-        body = "Once you're done typing, click above any of the words to add a corresponding node " +
-            "and give it a label (e.g. N, V, Conj, etc.).",
+        body = "Click above any of the words to add a node for it.",
         actions = listOf(
             AddTerminalNodeByTarget("tour", "tourN1", StringSlice(0, 1), false),
             SetEditedNodeLabel("N"),
@@ -80,7 +79,7 @@ val guidedTourSteps = arrayOf(
     GuidedTourStep(
         id = "add-parent-nodes",
         title = "Give them parents",
-        body = "Once you have enough nodes at the bottom of the tree, click directly above a node to add a parent node for it.",
+        body = "Click above a node to add a parent node for it.",
         actions = listOf(
             AddBranchingNodeByTarget("tour", "tourNP1", arrayOf("tourN1")),
             SetEditedNodeLabel("NP"),
@@ -109,7 +108,6 @@ val guidedTourSteps = arrayOf(
     GuidedTourStep(
         id = "thats-it",
         title = "That's it!",
-        body = "Congratulations, you just built a syntax tree! " +
-            "Feel free to experiment with the editor and see what else you can create.",
+        body = "Have fun!",
     ),
 )
