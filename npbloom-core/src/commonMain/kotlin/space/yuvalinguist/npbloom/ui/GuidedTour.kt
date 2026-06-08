@@ -32,7 +32,6 @@ fun applyTourStepsUpTo(stepId: String, treeCoordsInPlot: CoordsInPlot): UiState 
     return guidedTourSteps(treeCoordsInPlot)
         .take(stepIndex)
         .flatMap { it.actions }
-        .also { println("Applying actions for steps up to '$stepId': $it") }
         .fold(initialUiState) { state, action -> uiReducer(state, action, ::mockStrWidthFunc) }
         .copy(editedNodeIndicator = null, selection = NoSelectionInPlot)
 }

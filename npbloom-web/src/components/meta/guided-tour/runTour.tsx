@@ -32,7 +32,6 @@ const registerFakeId = async (fakeId: string, signal: AbortSignal, realId?: stri
   await wait(50, signal);
   // Get the real ID of the newly created node and store it in the map
   fakeIdToRealIdMap[fakeId] = realId ?? getLastCreatedNodeId();
-  console.log(`Registered fake ID '${fakeId}' as real ID '${fakeIdToRealIdMap[fakeId]}'`);
 };
 
 /**
