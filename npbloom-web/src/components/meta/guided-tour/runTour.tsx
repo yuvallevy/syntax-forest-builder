@@ -1,5 +1,5 @@
 import { SVG_X, SVG_Y } from '../../../uiDimensions';
-import { AddBranchingNodeByTarget, AddTerminalNodeByTarget, AddTree, applyTourStepsUpTo, guidedTourSteps, LoadState, SetEditedNodeLabel, SetSentence, StringSlice, UiAction } from 'npbloom-core';
+import { AddBranchingNodeByTarget, AddTerminalNodeByTarget, AddTree, applyTourStepsUpTo, CoordsInPlot, guidedTourSteps, LoadState, SetEditedNodeLabel, SetSentence, StringSlice, UiAction } from 'npbloom-core';
 import { clickElement, clickElementCenter, removeGhostCursor, typeIntoInput, wait, waitForElement } from './tourAnimationUtils';
 
 // HACK: The tour depends on specific entity IDs, but entities created during the tour will have randomly generated IDs.
@@ -118,6 +118,13 @@ let abortCurrentCycle: (() => void) | null = null;
 const isAbortError = (e: unknown): boolean =>
   e instanceof DOMException && e.name === 'AbortError';
 
+const treePositionByViewport = (viewportWidth: number, viewportHeight: number) => new CoordsInPlot(
+  Math.round(viewportWidth / 2.0 - 50.0 - SVG_X),
+  Math.round(viewportHeight / 2.0 + 190.0 - SVG_Y),
+);
+
+export const getInitialTreePosition = () => treePositionByViewport(window.innerWidth, window.innerHeight);
+
 /**
  * The main entry point for running the guided tour. It takes care of orchestrating the execution of tour steps,
  * including handling user-initiated step advancement (which will abort the current cycle and advance to the next step)
@@ -143,7 +150,7 @@ const runTour = (
 
   const run = async () => {
     isTourRunning = true;
-    const steps = guidedTourSteps.get();
+    const steps = guidedTourSteps(getInitialTreePosition());
 
     // Loop through the steps, and for each step, perform its actions in a loop.
     for (let i = 0; i < steps.length; i++) {
@@ -157,7 +164,7 @@ const runTour = (
         clearIdMap();
         // Set up the state for this step by applying all the tour steps up to this one.
         // This ensures that the state is correct even if the user advances through the steps quickly.
-        dispatch(new LoadState(applyTourStepsUpTo(steps[i].id)));
+        dispatch(new LoadState(applyTourStepsUpTo(steps[i].id, getInitialTreePosition())));
 
         try {
           for (const action of steps[i].actions) {

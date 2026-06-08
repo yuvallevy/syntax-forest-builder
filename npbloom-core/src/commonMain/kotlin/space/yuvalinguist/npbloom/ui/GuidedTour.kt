@@ -9,19 +9,6 @@ import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.math.round
 
-expect fun getViewportWidth(): Int
-
-expect fun getViewportHeight(): Int
-
-/**
- * Returns the coordinates for the tree used in the guided tour based on the viewport dimensions.
- * This is necessary to ensure that the tree is positioned correctly below the center of the viewport,
- * regardless of the viewport size.
- */
-fun treePositionByViewport(viewportWidth: Int, viewportHeight: Int) =
-    // Pan and zoom state will stay at the default, so plot coordinates will equal client coordinates in this case
-    CoordsInPlot(round(viewportWidth / 2.0 - 50.0), round(viewportHeight / 2.0 + 170.0))
-
 private fun mockStrWidthFunc(str: String) = str.length * 10.0
 
 @JsExport
@@ -40,9 +27,9 @@ data class GuidedTourStep(
  * This is used to set the content state for each step in the guided tour demo.
  */
 @JsExport
-fun applyTourStepsUpTo(stepId: String): UiState {
-    val stepIndex = guidedTourSteps.indexOfFirst { it.id == stepId }
-    return guidedTourSteps
+fun applyTourStepsUpTo(stepId: String, treeCoordsInPlot: CoordsInPlot): UiState {
+    val stepIndex = guidedTourSteps(treeCoordsInPlot).indexOfFirst { it.id == stepId }
+    return guidedTourSteps(treeCoordsInPlot)
         .take(stepIndex)
         .flatMap { it.actions }
         .also { println("Applying actions for steps up to '$stepId': $it") }
@@ -51,13 +38,13 @@ fun applyTourStepsUpTo(stepId: String): UiState {
 }
 
 @JsExport
-val guidedTourSteps = arrayOf(
+fun guidedTourSteps(treeCoordsInPlot: CoordsInPlot = CoordsInPlot.ZERO) = arrayOf(
     GuidedTourStep(
         id = "plant-tree",
         title = "Plant your first tree",
         body = "Click anywhere and enter a sentence.",
         actions = listOf(
-            AddTree("tour", treePositionByViewport(getViewportWidth(), getViewportHeight())),
+            AddTree("tour", treeCoordsInPlot),
             SetSentence("I drew this tree.", StringSlice(0, 0), "tour"),
         ),
     ),

@@ -55,7 +55,7 @@ const useTour = (dispatch: React.Dispatch<UiAction>, onComplete: () => void) => 
     advanceTourRef.current?.();
   };
 
-  const steps = guidedTourSteps.get();
+  const steps = guidedTourSteps();
   const stepIndex = tourPhase.phase !== 'complete' ? tourPhase.stepIndex : -1;
   const currentStep = stepIndex >= 0 ? steps[stepIndex] : undefined;
   const isLastStep = stepIndex === steps.length - 1;
