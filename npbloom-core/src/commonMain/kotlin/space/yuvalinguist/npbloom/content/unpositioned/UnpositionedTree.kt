@@ -44,19 +44,6 @@ data class UnpositionedTree(
     fun anyNodes(predicate: (node: UnpositionedNode) -> Boolean) = nodes.any(predicate)
 
     /**
-     * Determines whether this tree is "complete" by checking whether it has only one undominated node.
-     * This is a bad metric because a tree can have a single undominated node without being complete.
-     * TODO: Make this smarter
-     */
-    val isComplete: Boolean
-        get() {
-            val allChildIds = nodes.flatMap { if (it is UnpositionedBranchingNode) it.children else emptySet() }
-                .toSet()
-            val topLevelNodeIds = (nodeIds - allChildIds).toList()
-            return topLevelNodeIds.singleOrNull()?.let { node(it).label.isNotEmpty() } ?: false
-        }
-
-    /**
      * Returns whether ancestorNodeId dominates descendantNodeId in the tree.
      */
     private fun dominates(ancestorNodeId: Id, descendantNodeId: Id): Boolean =

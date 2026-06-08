@@ -1,4 +1,4 @@
-.BeginnersGuide {
+.GuidedTour {
   position: fixed;
   left: 0;
   top: 0;
@@ -8,8 +8,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: -100;  // The tree may end up overlapping the instruction box - make sure the plot is always on top of it,
-                  // otherwise people might not be able to complete the demo!
 }
 
 @keyframes fadeIn {

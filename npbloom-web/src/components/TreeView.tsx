@@ -154,6 +154,7 @@ const renderNode = (
 ): React.ReactNode[] => [
   <g
     key={nodeId}
+    data-node-id={nodeId}
     data-npb-export={true}
     data-raw-label={node.label}
     className={'TreeView--node' + (node.label ? '' : ' TreeView--node--empty-label')
@@ -344,8 +345,8 @@ const TreeView: React.FC<TreeViewProps> = ({
             ? `terminal-${trigger.slice.start}-${trigger.slice.endExclusive}`
             : `stranded-${trigger.origin.treeX}-${trigger.origin.treeY}`}
         trigger={trigger}
-        targetChildren={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIds.map(id => tree.nodes.get(id)?.label ?? '') : undefined}
-        targetSlice={trigger instanceof TerminalNodeCreationTrigger ? tree.sentence.slice(trigger.slice.start, trigger.slice.endExclusive) : undefined}
+        targetChildren={trigger instanceof BranchingNodeCreationTrigger ? trigger.childIds : undefined}
+        targetSlice={trigger instanceof TerminalNodeCreationTrigger ? `${trigger.slice.start},${trigger.slice.endExclusive}` : undefined}
         onClick={() => handleNodeCreationTriggerClick(trigger)}
       />)}
     {tree.nodes.map(node =>

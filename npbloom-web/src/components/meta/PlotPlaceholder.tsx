@@ -5,10 +5,10 @@ import LogoDim from './npbloom-logo-dim.svg';
 interface PlotPlaceholderProps {
   showWelcome: boolean;
   acceptMouseEvents: boolean;
-  onDemoRequest: () => void;
+  onTourRequest: () => void;
 }
 
-const PlotPlaceholder: React.FC<PlotPlaceholderProps> = ({ showWelcome, acceptMouseEvents, onDemoRequest }) =>
+const PlotPlaceholder: React.FC<PlotPlaceholderProps> = ({ showWelcome, acceptMouseEvents, onTourRequest }) =>
   <div className="PlotPlaceholder--container">
     {showWelcome ? <Alert
       className="PlotPlaceholder--alert"
@@ -17,7 +17,7 @@ const PlotPlaceholder: React.FC<PlotPlaceholderProps> = ({ showWelcome, acceptMo
       style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}
     >
       To start, click anywhere and type a sentence,
-      or <Anchor onClick={onDemoRequest}>watch a demo</Anchor> first.
+      or <Anchor onClick={onTourRequest}>take the guided tour</Anchor>.
     </Alert> : <img src={LogoDim} height={120} alt="NPBloom logo" />}
   </div>;
 

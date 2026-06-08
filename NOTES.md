@@ -600,8 +600,8 @@ The `components/meta` directory contains some components that are not directly r
 
     Currently, `showWelcome` is true if the undo/redo history is empty; this way, the welcome message is only shown when the user opens the application, not every time they clear a plot or open a new one.
 
-**`BeginnersGuide`** is shown when the user clicks "watch a demo" on the welcome message. It is a simple step-by-step animation that demonstrates the process of building a tree for a simple sentence, introducing the user to the basic interactions.
-* Under the hood, `BeginnersGuide` calls `runDemo`, which is a function that moves a fake cursor around the screen and dispatches mouse events to simulate the user interactions needed to build the tree. No state events are directly dispatched; instead, the demo relies on existing event handlers in the application to respond to simulated mouse events and update the state accordingly. This allows the demo to be built on top of the actual application logic, ensuring that it remains accurate and up-to-date as the application evolves.
+**`GuidedTour`** is shown when the user clicks "watch a demo" on the welcome message. It is a simple step-by-step animation that demonstrates the process of building a tree for a simple sentence, introducing the user to the basic interactions.
+* Under the hood, `GuidedTour` calls `runTour`, which is a function that moves a fake cursor around the screen and dispatches mouse events to simulate the user interactions needed to build the tree.
 
 **`AboutButton`** is a button on the end of the main menu that opens a modal with information about the application. This includes:
 * A brief description of what the application is and what it can be used for
