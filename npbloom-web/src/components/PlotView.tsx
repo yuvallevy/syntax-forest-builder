@@ -134,7 +134,6 @@ const PlotView: React.FC = () => {
     />}
     <ZoomControl acceptMouseEvents={isMouseIdle} />
     {guidedTourActive ? <GuidedTour
-      acceptMouseEvents={isMouseIdle}
       onComplete={handleGuidedTourComplete}
     /> : activePlot.isEmpty && <PlotPlaceholder
       showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}

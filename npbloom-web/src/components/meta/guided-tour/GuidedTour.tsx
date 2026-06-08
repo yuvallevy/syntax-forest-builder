@@ -7,7 +7,6 @@ import useUiState from '../../../useUiState';
 import useTour from './useTour';
 
 interface GuidedTourProps {
-  acceptMouseEvents: boolean;
   onComplete: () => void;
 }
 
@@ -20,7 +19,7 @@ const stepIcons: Record<string, React.FC> = {
   'thats-it': IconChristmasTree,
 };
 
-const GuidedTour: React.FC<GuidedTourProps> = ({ onComplete, acceptMouseEvents }) => {
+const GuidedTour: React.FC<GuidedTourProps> = ({ onComplete }) => {
   const { dispatch } = useUiState();
   const { tourPhase, alertRef, handleNext, currentStep, isLastStep } = useTour(dispatch, onComplete);
 
@@ -28,7 +27,7 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ onComplete, acceptMouseEvents }
 
   const StepIcon = stepIcons[currentStep.id];
 
-  return <div className="GuidedTour" style={{ pointerEvents: acceptMouseEvents ? 'auto' : 'none' }}>
+  return <div className="GuidedTour">
     <Alert
       ref={alertRef}
       withCloseButton={false}
@@ -41,11 +40,11 @@ const GuidedTour: React.FC<GuidedTourProps> = ({ onComplete, acceptMouseEvents }
       title={currentStep.title}
     >
       {currentStep.body}
-        <Group mt="sm">
-          <Button size="xs" onClick={handleNext}>
-            {isLastStep ? 'Finish' : 'Next'}
-          </Button>
-        </Group>
+      <Group mt="sm">
+        <Button size="xs" onClick={handleNext}>
+          {isLastStep ? 'Finish' : 'Next'}
+        </Button>
+      </Group>
     </Alert>
   </div>;
 };
