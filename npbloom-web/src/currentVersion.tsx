@@ -1,11 +1,8 @@
-import {
-  IconClick,
-} from '@tabler/icons-react';
-import ternaryNodeCreationExample from './components/meta/ternary-node-creation.png';
+import { IconAdjustmentsHorizontal, IconLifebuoy, IconRulerMeasure } from '@tabler/icons-react';
 
-export const currentVersion: string = '0.8.1';
+export const currentVersion: string = '0.8.2';
 
-export const releaseDate: string = new Date(2026, 5, 3).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+export const releaseDate: string = new Date(2026, 5, 10).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
 type ChangeBadge = 'New' | 'Improved' | 'Fix';
 
@@ -29,19 +26,23 @@ export const changesFromPreviousVersion: Change[] = [
 //     </>,
 //   },
   {
-    icon: IconClick,
-    title: 'Node creation UX',
+    icon: IconLifebuoy,
+    title: 'Guided tour',
+    badge: 'New',
+    description: <>
+      The old demo feature has been replaced with an animated tour that teaches users how to use the app.
+      The tour is accessible from the welcome message when the app is first loaded.
+    </>,
+  },
+  {
+    icon: IconRulerMeasure,
+    title: 'Text width measurement',
     badge: 'Improved',
     description: <>
-      <div>
-        Fixed usability issues in node creation and added the ability to quickly add a parent node for all selected nodes.<br />
-        This is useful for ditransitive verbs in some syntax models:
-      </div>
-      <img
-        src={ternaryNodeCreationExample}
-        alt="Example of creating a parent node for three selected nodes"
-        style={{ maxWidth: '25ch' }}
-      />
-    </>
-  }
+      The old method of estimating text width has been retired.
+      The new method introduced in v0.5 as "experimental" is now the default.<br />
+      This fixes some bugs with sentences being cut off and terminal nodes being misplaced.<br />
+      Use the <IconAdjustmentsHorizontal className="toolbox-icon" /> <b>Settings</b> menu to switch back to the old method.
+    </>,
+  },
 ];

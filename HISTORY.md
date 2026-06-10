@@ -1,4 +1,9 @@
 ## Alpha
+### 0.8.2 (2026-06-10)
+* Made live string width measurement the default, since the old method caused more problems than expected. (tnx Adi Raz for reporting)
+* Replaced the old hand-holdy "demo" with an animated, step-by-step "guided tour" that teaches users how to use the app.
+  - Unlike the old demo, this tour is by design _not_ interactive. This means it does not require any linguistics knowledge to complete, making it more accessible to non-linguists.
+  - Instead of interactivity, this tour uses an animated mouse cursor to show users exactly where to click, bypassing the lack of a mouse on mobile devices. This is important because the app is heavily mouse-dependent and the old demo was hard to follow on mobile.
 ### 0.8.1 (2026-06-03)
 * Slightly improved node creation trigger UX:
   - Branching node creation triggers are no longer hidden by terminal node creation triggers.
