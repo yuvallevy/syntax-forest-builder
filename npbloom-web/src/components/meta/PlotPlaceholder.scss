@@ -4,6 +4,7 @@
   top: 0;
   width: 100%;
   height: 100%;
+  padding: 0 10vw;
   pointer-events: none;
   display: flex;
   justify-content: center;
@@ -27,5 +28,12 @@
 
   .PlotPlaceholder--mobile-alert-content {
     display: block;
+  }
+
+  /* On mobile, add some horizontal padding to the alert to prevent it from
+     touching the toolbox or the right edge of the screen. */
+  .PlotPlaceholder--container {
+    padding-left: 100px;
+    padding-right: 20px;
   }
 }
