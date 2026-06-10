@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { applyNodePositionsToPlot, MouseInteractionMode, PositionedPlot } from 'npbloom-core';
 import usePlotMouseInteractions from './usePlotMouseInteractions';
 import TreeView from './TreeView';
@@ -9,7 +9,7 @@ import ZoomControl from './ZoomControl.tsx';
 import useUiState from '../useUiState';
 import useModifierKey from '../useModifierKey';
 import SettingsStateContext from '../SettingsStateContext';
-import BeginnersGuide from './meta/BeginnersGuide.tsx';
+import GuidedTour from './meta/guided-tour/GuidedTour.tsx';
 import PlotPlaceholder from './meta/PlotPlaceholder.tsx';
 import './PlotView.scss';
 
@@ -17,7 +17,7 @@ const PlotView: React.FC = () => {
   const { state } = useUiState();
   const { strWidth } = useContext(SettingsStateContext);
 
-  const [beginnersGuideActive, setBeginnersGuideActive] = useState<boolean>(false);
+  const [guidedTourActive, setGuidedTourActive] = useState<boolean>(false);
   
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -54,6 +54,8 @@ const PlotView: React.FC = () => {
   } = usePlotMouseInteractions(plot, svgRef);
 
   const isMouseIdle = mouseInteractionMode === MouseInteractionMode.Idle;
+
+  const handleGuidedTourComplete = useCallback(() => setGuidedTourActive(false), []);
 
   return <>
     <svg
@@ -131,13 +133,12 @@ const PlotView: React.FC = () => {
       nodeId={editedNodeIndicator.nodeId}
     />}
     <ZoomControl acceptMouseEvents={isMouseIdle} />
-    {beginnersGuideActive ? <BeginnersGuide
-      acceptMouseEvents={isMouseIdle}
-      onComplete={() => setBeginnersGuideActive(false)}
+    {guidedTourActive ? <GuidedTour
+      onComplete={handleGuidedTourComplete}
     /> : activePlot.isEmpty && <PlotPlaceholder
       showWelcome={!state.contentState.canUndo && !state.contentState.canRedo}
       acceptMouseEvents={isMouseIdle}
-      onDemoRequest={() => setBeginnersGuideActive(true)}
+      onTourRequest={() => setGuidedTourActive(true)}
     />}
   </>;
 };

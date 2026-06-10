@@ -262,8 +262,6 @@ Managing the state for these settings is the responsibility of `SettingsState`, 
 
 Currently, node creation triggers are rather basic and all have the same shape and size, a simple square centered on the relevant location. In the future, I plan to use a radius-limited Voronoi diagram to prevent the triggers from overlapping even in dense areas.
 
-**`GenerateSentence.kt`**: A small utility for generating random sentences to use as demonstration content. This is used in the application when the user starts up the program and clicks "try the demo". The sentences are extremely simple three-word sentences with a fixed structure, meant to serve as a starting point for users to experiment with the app.
-
 ### Tests for `npbloom-core`
 
 The `npbloom-core` library includes a few hundred tests covering the core logic of the application, including tree manipulation, layout, and state management. These tests are implemented using `kotlin.test` and are located in the `commonTest` directory of the `npbloom-core` module. The Gradle tasks `jvmTest` and `jsTest` can be used to run the tests on the JVM and JS platforms respectively.
@@ -597,12 +595,13 @@ In the future, this will be used for other export formats as well, such as LaTeX
 The `components/meta` directory contains some components that are not directly related to the functionality of the application itself, but instead give information about the application or otherwise enhance the user experience.
 
 **`PlotPlaceholder`** is a simple component that is rendered in the plot area when there are no trees to display. It takes two forms:
-* If `showWelcome` is true, it shows a welcome message prompting the user to create their first tree or try the guided demo.
+* If `showWelcome` is true, it shows a welcome message prompting the user to create their first tree or watch the demo.
 * If `showWelcome` is false, it shows a washed-out NPBloom logo, as an indicator that the plot is currently empty.
 
     Currently, `showWelcome` is true if the undo/redo history is empty; this way, the welcome message is only shown when the user opens the application, not every time they clear a plot or open a new one.
 
-**`BeginnersGuide`** is shown when the user clicks "Try the demo" on the welcome message. It is a simple step-by-step guide that walks the user through building a tree for a simple sentence, introducing them to the basic interactions along the way. It is implemented as a series of steps, each with its own instructions and interactions that the user must complete in order to move on to the next step. The content of the guide is hardcoded in `BeginnersGuide.tsx`.
+**`GuidedTour`** is shown when the user clicks "watch a demo" on the welcome message. It is a simple step-by-step animation that demonstrates the process of building a tree for a simple sentence, introducing the user to the basic interactions.
+* Under the hood, `GuidedTour` calls `runTour`, which is a function that moves a fake cursor around the screen and dispatches mouse events to simulate the user interactions needed to build the tree.
 
 **`AboutButton`** is a button on the end of the main menu that opens a modal with information about the application. This includes:
 * A brief description of what the application is and what it can be used for

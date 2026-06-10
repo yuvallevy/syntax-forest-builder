@@ -110,6 +110,14 @@
   display: unset;
 }
 
+/**
+ * Hack: allow forcing a hover state using JavaScript by applying the "hover" class to the trigger element.
+ * This is useful for automated testing or demo purposes.
+ */
+.NodeCreationTriggerClickZone.hover .NodeCreationTriggerClickZone--indicator {
+  display: unset;
+}
+
 .TreeView--strikethrough {
   z-index: 1;
   stroke: currentColor;

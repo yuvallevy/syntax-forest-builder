@@ -59,6 +59,7 @@ enum class ChildNodeSide { Left, Right, Center }
 @JsExport class SetTree(val treeId: Id, val tree: UnpositionedTree) : UiAction
 @JsExport class Undo : UiAction
 @JsExport class Redo : UiAction
+@JsExport class LoadState(val uiState: UiState) : UiAction
 @JsExport class LoadContentState(val fileContents: FileContents) : UiAction
 @JsExport class Pan(val clientCoordsOffset: ClientCoordsOffset) : UiAction
 @JsExport class Zoom(val relativeFactor: Double, val focus: CoordsInClient) : UiAction
@@ -475,12 +476,12 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
         }
 
         is SetSentence -> {
-            if (selectedTreeId == null) return state
+            if (selectedTreeId == null && action.treeId == null) return state
             return state.copy(
                 contentState = contentReducer(
                     state.contentState, SetSentence(
                         state.activePlotIndex,
-                        action.treeId ?: selectedTreeId,
+                        action.treeId ?: selectedTreeId!!,
                         action.newSentence,
                         action.oldSelectedSlice,
                     )
@@ -617,6 +618,10 @@ fun uiReducer(state: UiState, action: UiAction, strWidthFunc: StrWidthFunc): UiS
                 selection = pruneSelection(state.selection, newContentState.current.plots[newActivePlotIndex]),
                 plotPanZoomStates = state.plotPanZoomStates.syncToPlotCount(newContentState.current.plots.size),
             )
+        }
+
+        is LoadState -> {
+            return action.uiState
         }
 
         is LoadContentState -> {

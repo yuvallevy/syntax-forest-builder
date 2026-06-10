@@ -179,14 +179,6 @@ class UnpositionedTreeTest {
         assertFalse(tree.anyNodes { "Adj" in it.label })
 
     @Test
-    fun isCompleteTrue() =
-        assertTrue(tree.isComplete)
-
-    @Test
-    fun isCompleteFalse() =
-        assertFalse(treeWithoutTopLevelBranchingNode.isComplete)
-
-    @Test
     fun oneNodeParentId() =
         assertEquals(setOf("branch1"), tree.getParentNodeIds(setOf("term1")))
 
