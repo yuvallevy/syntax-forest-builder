@@ -13,3 +13,19 @@
 .PlotPlaceholder--alert {
   z-index: 110;
 }
+
+/* On mobile, show a message directing users to use a larger screen,
+   since the app is heavily mouse-dependent. */
+.PlotPlaceholder--mobile-alert-content {
+  display: none;
+}
+
+@media (max-width: 767px) and (pointer: coarse) {
+  .PlotPlaceholder--desktop-alert-content {
+    display: none;
+  }
+
+  .PlotPlaceholder--mobile-alert-content {
+    display: block;
+  }
+}
