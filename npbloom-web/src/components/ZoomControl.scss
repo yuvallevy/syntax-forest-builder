@@ -5,3 +5,10 @@
   width: auto;
   z-index: 100;
 }
+
+/* On mobile, hide the zoom control, since it takes up too much space and may interfere with the demo. */
+@media (max-width: 767px) and (pointer: coarse) {
+  .ZoomControl {
+    display: none;
+  }
+}
