@@ -33,7 +33,7 @@ const Settings: React.FC = () => {
           onChange={(event) => settingsDispatch(new SetAutoFormatSubscript(event.currentTarget.checked))}
         />
         <Checkbox
-          label="Use experimental text width measurement (slightly slower, more accurate)"
+          label="Use new text width measurement (slightly slower, more accurate)"
           checked={settingsState.liveStringWidth}
           onChange={(event) => settingsDispatch(new SetLiveStringWidth(event.currentTarget.checked))}
         />
