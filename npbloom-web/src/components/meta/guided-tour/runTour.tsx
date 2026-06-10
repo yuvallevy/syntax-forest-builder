@@ -119,7 +119,9 @@ const isAbortError = (e: unknown): boolean =>
 
 const treePositionByViewport = (viewportWidth: number, viewportHeight: number) => new CoordsInPlot(
   Math.round(viewportWidth / 2.0 - 50.0 - SVG_X),
-  Math.round(viewportHeight / 2.0 + 190.0 - SVG_Y),
+  // Position the tree below the center of the viewport, to avoid being obscured by the guided tour text which is centered in the viewport.
+  // At the same time, ensure the tree is not too close to the bottom edge of the viewport, to avoid being cut off.
+  Math.min(Math.round(viewportHeight / 2.0 + 200.0 - SVG_Y), viewportHeight - 100),
 );
 
 export const getInitialTreePosition = () => treePositionByViewport(window.innerWidth, window.innerHeight);
