@@ -2,12 +2,12 @@
   cursor: pointer;
 }
 
-.TreeView--node rect {
+.TreeView--node .TreeView--node-hitbox {
   fill: transparent;
   stroke: none;
 }
 
-.TreeView--node:hover rect {
+.TreeView--node:hover .TreeView--node-hitbox {
   fill: #eee;
 }
 
@@ -15,7 +15,7 @@
   fill: #888;
 }
 
-.TreeView--node--selected rect {
+.TreeView--node--selected .TreeView--node-hitbox {
   fill: #000000;
   fill-opacity: 0.02;
   stroke: #444;
@@ -24,7 +24,7 @@
   animation: marching-ants .75s linear infinite;
 }
 
-.TreeView--node--marked rect {
+.TreeView--node--marked .TreeView--node-hitbox {
   fill: #fa3;
   fill-opacity: 0.5;
   stroke: #fa3;
@@ -33,9 +33,16 @@
   animation: none;
 }
 
-.TreeView--node--marked:hover rect {
+.TreeView--node--marked:hover .TreeView--node-hitbox {
   fill: #f90;
   stroke: #f90;
+}
+
+.TreeView--node-enclosure {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1;
+  pointer-events: none;
 }
 
 .TreeView--ghost {

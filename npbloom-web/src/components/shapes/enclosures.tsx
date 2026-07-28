@@ -1,7 +1,7 @@
 import { ClientCoordsOffset, CoordsInClient, CoordsInPlot, coordsInPlotToCoordsInClient, EnclosureShape, PanZoomState } from 'npbloom-core';
 import { renderHandles, snap } from './common';
 
-const renderBaseEnclosure = (
+export const renderBaseEnclosure = (
   topLeft: CoordsInClient,
   width: number,
   height: number,
