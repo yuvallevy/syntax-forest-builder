@@ -16,6 +16,7 @@ internal data class InsertedBranchingNode(
     override val targetParentId: Id?,
     val targetChildIds: Set<Id>,
     override val yAlignMode: YAlignMode = YAlignMode.Bottom,
+    override val enclosureCornerRadius: Double? = null,
 ) : InsertedNode
 
 internal data class InsertedTerminalNode(
@@ -25,6 +26,7 @@ internal data class InsertedTerminalNode(
     val targetSlice: StringSlice,
     val triangle: Boolean,
     override val yAlignMode: YAlignMode = YAlignMode.Bottom,
+    override val enclosureCornerRadius: Double? = null,
 ) : InsertedNode
 
 internal fun EntitySet<UnpositionedNode>.descendantIds(node: UnpositionedBranchingNode): Set<Id> {

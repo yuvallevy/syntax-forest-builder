@@ -103,8 +103,12 @@ data class UnpositionedTree(
             val treeWithoutExistingConnections =
                 transformAllNodes { nodes.unassignAsChildren(adoptedNodeIds, it) }
             treeWithoutExistingConnections.transformNode(adoptingNodeId) {
-                UnpositionedBranchingNode(it.id, it.label, TreeCoordsOffset.ZERO,
-                    (if (it is UnpositionedBranchingNode) it.children else emptySet()) + adoptedNodeIds
+                UnpositionedBranchingNode(
+                    id = it.id,
+                    label = it.label,
+                    offset = TreeCoordsOffset.ZERO,
+                    children = (if (it is UnpositionedBranchingNode) it.children else emptySet()) + adoptedNodeIds,
+                    enclosureCornerRadius = it.enclosureCornerRadius,
                 )
             }
         }
