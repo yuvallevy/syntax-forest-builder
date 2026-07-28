@@ -36,6 +36,17 @@ fun isNodeInRect(tree: PositionedTree, node: PositionedNode, rect: RectInPlot) =
     calculateNodeCenterOnPlot(tree, node) in rect
 
 /**
+ * Returns the indicator for the node enclosed by the given coordinate pair, if there is exactly one.
+ * Used for dragging an enclosure around a single node.
+ */
+private fun findSingleNodeEnclosedByRect(
+    plot: PositionedPlot,
+    rectInPlot: RectInPlot,
+): NodeIndicatorInPlot? = plot
+    .filterNodeIndicators { tree, node -> isNodeInRect(tree, node, rectInPlot) }
+    .singleOrNull()
+
+/**
  * Returns true if the given tree's visual bounding box is entirely within the given rectangle in plot coordinates.
  * Used to determine whether a selection box should select trees or nodes.
  */
@@ -177,6 +188,15 @@ fun computeResizedShape(
 }
 
 /**
+ * Returns the appropriate corner radius to use for an enclosure, based on the shape tool currently in use.
+ */
+fun cornerRadiusByShapeTool(shapeTool: ShapeTool) = when (shapeTool) {
+    ShapeTool.RoundedRectangle -> 8.0
+    ShapeTool.Ellipse -> Double.POSITIVE_INFINITY
+    else -> 0.0
+}
+
+/**
  * Given the shape tool being used and the start and end coordinates of a drag in plot coordinates,
  * returns the corresponding shape to be added to the plot.
  * Used both to show shape previews while dragging to create a new shape
@@ -201,11 +221,7 @@ fun createShapeFromDrag(
         y = min(start.plotY, end.plotY),
         width = abs(end.plotX - start.plotX),
         height = abs(end.plotY - start.plotY),
-        cornerRadius = when (tool) {
-            ShapeTool.RoundedRectangle -> 8.0
-            ShapeTool.Ellipse -> Double.POSITIVE_INFINITY
-            else -> 0.0
-        },
+        cornerRadius = cornerRadiusByShapeTool(tool),
     )
 }
 
@@ -217,6 +233,7 @@ fun createShapeFromDrag(
  */
 @JsExport
 fun determineActionOnDragCompletion(
+    plot: PositionedPlot,
     mouseInteractionMode: MouseInteractionMode,
     dragStartCoords: CoordsInClient,
     dragEndCoords: CoordsInClient,
@@ -248,8 +265,23 @@ fun determineActionOnDragCompletion(
     if (mouseInteractionMode == MouseInteractionMode.CreatingShape) {
         val startCoordsInPlot = dragStartCoords.toCoordsInPlot(panZoomState)
         val endCoordsInPlot = dragEndCoords.toCoordsInPlot(panZoomState)
-        val shape = createShapeFromDrag(activeShapeTool, startCoordsInPlot, endCoordsInPlot)
-        return AddShapeToPlot(shape)
+
+        // Two paths from here:
+        // The enclosure may have been drawn around a single node,
+        // in which case the shape needs to be attached to the node.
+        val nodeMatchingCoordinates = findSingleNodeEnclosedByRect(plot, RectInPlot(startCoordsInPlot, endCoordsInPlot))
+        if (nodeMatchingCoordinates != null) {
+            println("Drawing enclosure of type $activeShapeTool around node $nodeMatchingCoordinates")
+            return SetNodeEnclosureCornerRadius(
+                nodeMatchingCoordinates,
+                cornerRadiusByShapeTool(activeShapeTool),
+            )
+        }
+
+        // The enclosure may have been drawn around no nodes or two or more nodes,
+        // in which case the shape needs to stand on its own exactly where drawn.
+        val freeStandingShape = createShapeFromDrag(activeShapeTool, startCoordsInPlot, endCoordsInPlot)
+        return AddShapeToPlot(freeStandingShape)
     }
 
     return null

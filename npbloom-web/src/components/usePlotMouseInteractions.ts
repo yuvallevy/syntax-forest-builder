@@ -170,7 +170,8 @@ const usePlotMouseInteractions = (
     // - Making a box selection (if we dragged out a selection box from an empty area)
     // - Moving nodes, trees, or shapes (if we dragged from a selected entity)
     // - Resizing a shape (if we dragged from a shape's resize handle)
-    // - Creating a shape (if we dragged from an empty area while a shape tool was active)
+    // - Creating a shape at an arbitrary position (if we dragged from an empty area while a shape tool was active)
+    // - Creating an enclosure shape around a node (if we dragged an enclosure shape around a single node)
     // - Clicking to clear selection or create a new tree (if we just clicked without dragging)
 
     // To count as a box selection, we must have a selection box (which only starts if we drag from an empty area)
@@ -194,6 +195,7 @@ const usePlotMouseInteractions = (
       // In the context of editing the content, we will count any drag as intentional,
       // since even small drags can be meaningful (e.g. dragging a node a small distance to adjust the tree layout).
       const action = determineActionOnDragCompletion(
+        plot,
         mouseInteractionMode,
         dragStartCoords,
         dragEndCoords,
